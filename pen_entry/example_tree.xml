@@ -1,0 +1,152 @@
+<SymbolTree>
+	<Category name="Root">
+		<Category name="Digits">
+			<Symbol name="0" unicode="0"/>
+			<Symbol name="1" unicode="1"/>
+			<Symbol name="2" unicode="2"/>
+			<Symbol name="3" unicode="3"/>
+			<Symbol name="4" unicode="4"/>
+			<Symbol name="5" unicode="5"/>
+			<Symbol name="6" unicode="6"/>
+			<Symbol name="7" unicode="7"/>
+			<Symbol name="8" unicode="8"/>
+			<Symbol name="9" unicode="9"/>
+		</Category>
+		<Category name="Operators">
+			<Symbol name="plus" unicode="+"/>
+			<Symbol name="minus" unicode="-"/>
+			<Symbol name="equals" unicode="="/>
+			<Symbol name="greater_than_or_equal" unicode="&#x2265;"/>
+			<Symbol name="greater_than" unicode="&#x3E;"/>
+			<Symbol name="less_than_or_equal" unicode="&#x2264;"/>
+			<!-- FIX THIS-->
+			<!--<Symbol name="less_than" unicode="<"/>-->
+			<Symbol name="integral" unicode="&#x222B;"/>
+			<Symbol name="product" unicode="&#x3A0;"/>
+			<Symbol name="summation" unicode="&#x3A3;"/>
+			<Symbol name="root" unicode="&#x221A;"/>
+		</Category>
+		<Category name="Brackets">
+			<Symbol name="left_bracket" unicode="["/>
+			<Symbol name="right_bracket" unicode="]"/>
+			<Symbol name="left_parenthesis" unicode="("/>
+			<Symbol name="right_parenthesis" unicode=")"/>
+		</Category>
+		<Category name="Special">
+			<Symbol name="infinity" unicode="&#x221E;"/>
+		</Category>
+		<Category name="Latin Letters">
+			<Category name="Lower Case">
+				<Symbol name="a" unicode="a"/>
+				<Symbol name="b" unicode="b"/>
+				<Symbol name="c" unicode="c"/>
+				<Symbol name="d" unicode="d"/>
+				<Symbol name="e" unicode="e"/>
+				<Symbol name="f" unicode="f"/>
+				<Symbol name="g" unicode="g"/>
+				<Symbol name="h" unicode="h"/>
+				<Symbol name="i" unicode="i"/>
+				<Symbol name="j" unicode="j"/>
+				<Symbol name="k" unicode="k"/>
+				<Symbol name="l" unicode="l"/>
+				<Symbol name="m" unicode="m"/>
+				<Symbol name="n" unicode="n"/>
+				<Symbol name="o" unicode="o"/>
+				<Symbol name="p" unicode="p"/>
+				<Symbol name="q" unicode="q"/>
+				<Symbol name="r" unicode="r"/>
+				<Symbol name="s" unicode="s"/>
+				<Symbol name="t" unicode="t"/>
+				<Symbol name="u" unicode="u"/>
+				<Symbol name="v" unicode="v"/>
+				<Symbol name="w" unicode="w"/>
+				<Symbol name="x" unicode="x"/>
+				<Symbol name="y" unicode="y"/>
+				<Symbol name="z" unicode="z"/>
+			</Category>
+			<Category name="Upper Case">
+				<Symbol name="A" unicode="A"/>
+				<Symbol name="B" unicode="B"/>
+				<Symbol name="C" unicode="C"/>
+				<Symbol name="D" unicode="D"/>
+				<Symbol name="E" unicode="E"/>
+				<Symbol name="F" unicode="F"/>
+				<Symbol name="G" unicode="G"/>
+				<Symbol name="H" unicode="H"/>
+				<Symbol name="I" unicode="I"/>
+				<Symbol name="J" unicode="J"/>
+				<Symbol name="K" unicode="K"/>
+				<Symbol name="L" unicode="L"/>
+				<Symbol name="M" unicode="M"/>
+				<Symbol name="N" unicode="N"/>
+				<Symbol name="O" unicode="O"/>
+				<Symbol name="P" unicode="P"/>
+				<Symbol name="Q" unicode="Q"/>
+				<Symbol name="R" unicode="R"/>
+				<Symbol name="S" unicode="S"/>
+				<Symbol name="T" unicode="T"/>
+				<Symbol name="U" unicode="U"/>
+				<Symbol name="V" unicode="V"/>
+				<Symbol name="W" unicode="W"/>
+				<Symbol name="X" unicode="X"/>
+				<Symbol name="Y" unicode="Y"/>
+				<Symbol name="Z" unicode="Z"/>			
+			</Category>
+		</Category>
+		<Category name="Greek Letters">
+			<Category name="Lower Case">
+				<Symbol name="alpha" unicode="&#x03B1;"/>
+				<Symbol name="beta" unicode="&#x03B2;"/>
+				<Symbol name="gamma" unicode="&#x03B3;"/>
+				<Symbol name="delta" unicode="&#x03B4;"/>
+				<Symbol name="epsilon" unicode="&#x03B5;"/>
+				<Symbol name="zeta" unicode="&#x03B6;"/>
+				<Symbol name="eta" unicode="&#x03B7;"/>
+				<Symbol name="theta" unicode="&#x03B8;"/>
+				<Symbol name="iota" unicode="&#x03B9;"/>
+				<Symbol name="kappa" unicode="&#x03BA;"/>
+				<Symbol name="lambda" unicode="&#x03BB;"/>
+				<Symbol name="mu" unicode="&#x03BC;"/>
+				<Symbol name="nu" unicode="&#x03BD;"/>
+				<Symbol name="xi" unicode="&#x03BE;"/>
+				<Symbol name="omicron" unicode="&#x03BF;"/>
+				<Symbol name="pi" unicode="&#x03C0;"/>
+				<Symbol name="rho" unicode="&#x03C1;"/>
+				<Symbol name="sigma" unicode="&#x03C3;"/>
+				<Symbol name="tau" unicode="&#x03C4;"/>
+				<Symbol name="upsilon" unicode="&#x03C5;"/>
+				<Symbol name="phi" unicode="&#x03C6;"/>
+				<Symbol name="chi" unicode="&#x03C7;"/>
+				<Symbol name="psi" unicode="&#x03C8;"/>
+				<Symbol name="omega" unicode="&#x03C9;"/>
+			</Category>
+			<Category name="Upper Case">
+				<Symbol name="Alpha" unicode="&#x0391;"/>
+				<Symbol name="Beta" unicode="&#x0392;"/>
+				<Symbol name="Gamma" unicode="&#x0393;"/>
+				<Symbol name="Delta" unicode="&#x0394;"/>
+				<Symbol name="Epsilon" unicode="&#x0395;"/>
+				<Symbol name="Zeta" unicode="&#x0396;"/>
+				<Symbol name="Eta" unicode="&#x0397;"/>
+				<Symbol name="Theta" unicode="&#x0398;"/>
+				<Symbol name="Iota" unicode="&#x0399;"/>
+				<Symbol name="Kappa" unicode="&#x039A;"/>
+				<Symbol name="Lambda" unicode="&#x039B;"/>
+				<Symbol name="Mu" unicode="&#x039C;"/>
+				<Symbol name="Nu" unicode="&#x039D;"/>
+				<Symbol name="Xi" unicode="&#x039E;"/>
+				<Symbol name="Omicron" unicode="&#x039F;"/>
+				<Symbol name="Pi" unicode="&#x03A0;"/>
+				<Symbol name="Rho" unicode="&#x03A1;"/>
+				<Symbol name="Sigma" unicode="&#x03A3;"/>
+				<Symbol name="Tau" unicode="&#x03A4;"/>
+				<Symbol name="Upsilon" unicode="&#x03A5;"/>
+				<Symbol name="Phi" unicode="&#x03A6;"/>
+				<Symbol name="Chi" unicode="&#x03A7;"/>
+				<Symbol name="Psi" unicode="&#x03A8;"/>
+				<Symbol name="Omega" unicode="&#x03A9;"/>
+			</Category>			
+		</Category>
+	</Category>
+</SymbolTree>	
+
