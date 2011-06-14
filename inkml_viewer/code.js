@@ -1,12 +1,14 @@
 inkml_list = new Array();
+mathml_list = new Array();
 attribute_table_list = new Array();
-//mathml_list = new Array();
 filename_list = new Array();
+traceid_to_node_list = new Array();
 svg_list = new Array();
 current_index = 0;
 total_inkmls = 0;
 loaded_inkmls = 0;
 
+// histograms
 writer_histogram = {};
 writer_histogram.writer_list = new Array();
 
@@ -85,19 +87,12 @@ convert_math_nodes = function(in_node)
 				if(is_white_space(child.data) == false)
 				{
 					var data = mathml_dictionary[child.data];
-					
 					var text;
-					
 					if(typeof data == "undefined")
 						text = document.createTextNode(child.data)
 					else
 						text = document.createTextNode(data);
 					result.appendChild(text);				
-				
-					
-
-					
-					
 				}
 				break;
 		}
@@ -106,11 +101,68 @@ convert_math_nodes = function(in_node)
 	return result;
 }
 
+build_trace_to_mathml_node_map = function(in_mathml, in_tracegroups)
+{
+	// build map of xml:id attributes to mathml nodes
+	var xmlid_to_mathnode = {};
+	
+	var node_stack = new Array();
+	node_stack.push(in_mathml);
+	
+	while(node_stack.length > 0)
+	{
+		var math_node = node_stack.pop();
+		var attributes = math_node.attributes;
+		for(var k = 0; k < attributes.length; k++)
+		{
+			var pair = attributes.item(k);
+			//pair.nodeName, pair.nodeValue
+			if(pair.nodeName == "xml:id")
+			{
+				xmlid_to_mathnode[pair.nodeValue] = math_node;
+				break;
+			}
+		}
+	
+		var child_list = math_node.childNodes;
+		for(var k = 0; k < child_list.length; k++)
+		{
+			var child = child_list.item(k);
+			if(child.nodeType == 1)	// ELEMENT_NODE
+			{
+				node_stack.push(child);
+			}
+		}
+	}
+	
+	// now build map from trace id to mathml node
+	
+	var trace_id_to_mathmlnode = {};
+	for(var k = 0; k < in_tracegroups.length; k++)
+	{
+		var tracegroup = in_tracegroups.item(k);
+		if(tracegroup.parentNode.nodeName == "traceGroup")
+		{
+			var traceViews = tracegroup.getElementsByTagName("traceView");
+			var annotationxml = tracegroup.getElementsByTagName("annotationXML").item(0);
+			var href = annotationxml.getAttribute("href");
+			for(var j = 0; j < traceViews.length; j++)
+			{
+				var trace_data_ref = traceViews.item(j).getAttribute("traceDataRef");
+				trace_id_to_mathmlnode[trace_data_ref] = xmlid_to_mathnode[href];
+				console.log(trace_data_ref + " " + href);
+			}
+		}
+	}
+	
+	return trace_id_to_mathmlnode;
+}
+
 
 // timeout variable to handle animations
 animation_timeout = null;
 /** Convert a list of trace nodes to an SVG file **/
-trace_nodes_to_svg = function(trace_nodes)
+trace_nodes_to_svg = function(trace_nodes, global_index)
 {
 	// build our root svg
 	result_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -132,7 +184,7 @@ trace_nodes_to_svg = function(trace_nodes)
 			var paths = this.parentNode.getElementsByTagName("path");
 			var first_trace_total_length;
 			// 'clear' the pen strokes
-			for(var k = 0; k < paths.length; k++)
+			for(var k = 0; k < paths.length; k+=2)
 			{
 				var p = paths.item(k);
 				p.setAttribute("stroke-width", 1);
@@ -165,10 +217,10 @@ trace_nodes_to_svg = function(trace_nodes)
 					animating_trace.setAttribute("stroke-dashoffset", 0);
 					trace_id++;
 					// end condition
-					if(trace_id == total_traces)
+					if(trace_id == total_traces / 2)
 					{
 						var paths = animating_trace.parentNode.parentNode.getElementsByTagName("path");
-						for(var k = 0; k < paths.length;k++)
+						for(var k = 0; k < paths.length;k+=2)
 						{
 							paths.item(k).setAttribute("stroke-width", 4);
 						}
@@ -178,7 +230,7 @@ trace_nodes_to_svg = function(trace_nodes)
 					else
 					{
 						var trace_list = animating_trace.parentNode.parentNode.getElementsByTagName("path");
-						animating_trace = trace_list.item(trace_id);
+						animating_trace = trace_list.item(2 * trace_id);
 						new_offset = animating_trace.total_length + new_offset;
 						animating_trace.setAttribute("stroke-dashoffset", new_offset);
 					}
@@ -211,6 +263,8 @@ trace_nodes_to_svg = function(trace_nodes)
 	var traces = new Array();
 	// length of each trace
 	var trace_lengths = new Array();
+	// trace id (from xml) for each trace
+	var trace_ids = new Array();
 	
 	// extents of this stroke
 	var min_x = Number.POSITIVE_INFINITY;
@@ -227,6 +281,7 @@ trace_nodes_to_svg = function(trace_nodes)
 	// parsing the inkml trace nodes
 	for(var k = 0; k < trace_nodes.length; k++)
 	{
+		trace_ids.push(trace_nodes.item(k).getAttribute("id"));
 		// parse points using regular expressions
 		var raw_point_text = trace_nodes.item(k).textContent; 
 		// remove any newlines
@@ -363,7 +418,8 @@ trace_nodes_to_svg = function(trace_nodes)
 		//  build the path
 		var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 		
-		
+		path.setAttribute("fill", "none");
+		//path.setAttribute("stroke", "none");
 		path.setAttribute("d", sb.toString());
 		path.total_length = path.getTotalLength();
 		path.trace_id = k;
@@ -374,39 +430,63 @@ trace_nodes_to_svg = function(trace_nodes)
 		path.setAttribute("stroke-width", 4);
 		
 		path.setAttribute("id", "path_" + k);
-
-		
-		// add circles and polyline to stroke group
-		stroke_group.appendChild(path);
-		stroke_group.appendChild(circle_group);
 		
 		// build events to show/hide circles
 		circle_group.style.visibility = "hidden";
-		path.addEventListener("mouseover",
+		
+		var mouse_path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+		mouse_path.setAttribute("fill", "none");
+		mouse_path.setAttribute("class", "invisible");
+		mouse_path.setAttribute("d", sb.toString());
+		
+		mouse_path.inkml_index = global_index;
+		mouse_path.trace_id = trace_ids[k];
+		path.inkml_index = global_index;
+		path.trace_id = trace_ids[k];
+		mouse_path.addEventListener("mouseover",
 		function()
 		{
 			this.parentNode.getElementsByTagName("g").item(0).style.visibility = "visible";
+			var node = traceid_to_node_list[this.inkml_index][this.trace_id];
+			node.setAttribute("style", "outline:#000 dotted thin;background:orange;");
+			
+			/*
+			var table = attribute_table_list[current_index];
+			while(table.math_jax.hasChildNodes())
+				table.math_jax.removeChild(table.math_jax.lastChild);
+			table.math_jax.appendChild(mathml_list[current_index]);
+			MathJax.Hub.Queue(["Typeset",MathJax.Hub,table.math_jax]);			
+			*/
 		},
-		true
+		false
 		);
-		path.addEventListener("mouseout",
+		mouse_path.addEventListener("mouseout",
 		function()
 		{
 			this.parentNode.getElementsByTagName("g").item(0).style.visibility = "hidden";
+			var node = traceid_to_node_list[this.inkml_index][this.trace_id];
+			node.setAttribute("style", "");
+			
+			/*
+			var table = attribute_table_list[current_index];
+			while(table.math_jax.hasChildNodes())
+				table.math_jax.removeChild(table.math_jax.lastChild);
+			table.math_jax.appendChild(mathml_list[current_index]);
+			MathJax.Hub.Queue(["Typeset",MathJax.Hub,table.math_jax]);		
+			*/
 		},
 		false
-		);		
+		);
+		
+		// add circles and path to stroke group
+		stroke_group.appendChild(path);
+		stroke_group.appendChild(circle_group);
+		stroke_group.appendChild(mouse_path);
 		
 		
 		// add the stroke data to the trace group
 		trace_group.appendChild(stroke_group);
-		
-		
 	}
-
-
-		
-
 	
 	return result_svg;
 }
@@ -441,12 +521,11 @@ build_attribute_table = function(annotation_nodes, filename, mathml)
 		second_row.appendChild(td_attr_value);
 		var td_mathml = document.createElement("td");
 			td_mathml.setAttribute("rowspan", annotation_nodes.length);
-			
 			var div_math_div = document.createElement("div");
 				div_math_div.setAttribute("id", "math_div");
 				div_math_div.appendChild(mathml);
 			td_mathml.appendChild(div_math_div);
-			result_table.math_jax = div_math_div;	
+			//result_table.math_jax = div_math_div;	
 		second_row.appendChild(td_mathml);
 	result_table.appendChild(second_row);
 	
@@ -457,13 +536,15 @@ build_attribute_table = function(annotation_nodes, filename, mathml)
 	for(var k = 0; k < annotation_nodes.length; k++)
 	{
 		var annotation = annotation_nodes.item(k);
+		
+		if(annotation.parentNode.nodeName == "traceGroup")
+			continue;
+		
 		var type = annotation.getAttribute("type");
 		var value = annotation.textContent;
 
 		switch(type)
 		{
-			case "truth":
-				continue;
 			case "writer":
 				writer = value;
 				break;
@@ -477,8 +558,6 @@ build_attribute_table = function(annotation_nodes, filename, mathml)
 				hand = value;
 				break;
 			case "truth":
-				if(annotation.parentNode.nodeName == "traceGroup")
-					continue;
 				expression = value;
 				break;
 		}
@@ -543,7 +622,7 @@ on_xml_load = function(event)
 				return;
 			}
 			var mathml = convert_math_nodes(math_nodes.item(0));
-			//mathml_list[e.currentTarget.index] = mathml;
+			mathml_list[e.currentTarget.index] = mathml;
 
 			// build annotations
 			annotation_nodes = xmlDOC.getElementsByTagName("annotation");
@@ -555,14 +634,16 @@ on_xml_load = function(event)
 			var table = build_attribute_table(annotation_nodes, filename_list[e.currentTarget.index], mathml);
 			attribute_table_list[e.currentTarget.index] = table;
 			
+			//  build our mapping from trace ids to xml:ids in mathml
+			trace_group_nodes = xmlDOC.getElementsByTagName("traceGroup");
+			traceid_to_node_list[e.currentTarget.index] = build_trace_to_mathml_node_map(mathml, trace_group_nodes);
+			
 			// get our trace nodes			
 			trace_nodes = xmlDOC.getElementsByTagName("trace");
-			if(trace_nodes.length == 0)
-			{
-				alert(filename_list[e.currentTarget.index] + "does not contain any trace nodes");
-				return;
-			}
-			var svg = trace_nodes_to_svg(trace_nodes);
+			var svg = null;
+			if(trace_nodes.length > 0)
+				svg = trace_nodes_to_svg(trace_nodes, e.currentTarget.index);
+			
 			svg_list[e.currentTarget.index] = svg;			
 			
 			if(e.currentTarget.index == 0)
@@ -574,8 +655,11 @@ on_xml_load = function(event)
 			
 			loaded_inkmls++;
 			// build our histogram
+			/*
+			
 			if(loaded_inkmls == total_inkmls)
 			{
+			
 			
 				var sb = new StringBuilder();
 				console.log("Writer Histogram");
@@ -597,6 +681,7 @@ on_xml_load = function(event)
 				}
 				console.log(sb.toString());
 			}
+			*/
 		}
 		r.index = k;
 		filename_list[k] = file.fileName;
@@ -607,19 +692,7 @@ on_xml_load = function(event)
 // updates the screen to reflect the current inkml file
 update_view = function()
 {
-	/*
-	// file data
-	
-	var filename_div = document.getElementById("current_math");
-	filename_div.innerHTML = filename_list[current_index];
-	
-	// insert the mathml
-	var mathml = mathml_list[current_index];
-	var math_div = document.getElementById("math_div");
-	while(math_div.hasChildNodes())
-		math_div.removeChild(math_div.lastChild);
-	math_div.appendChild(mathml);	
-	*/
+	console.log(current_index);
 	// insert table
 	var table = attribute_table_list[current_index];
 	var table_div = document.getElementById("table_div");
@@ -627,25 +700,32 @@ update_view = function()
 		table_div.removeChild(table_div.lastChild);
 	table_div.appendChild(table);
 	
-	MathJax.Hub.Queue(["Typeset",MathJax.Hub,table.math_jax]);
-	
+	/*
+	while(table.math_jax.hasChildNodes())
+		table.math_jax.removeChild(table.math_jax.lastChild);
+	table.math_jax.appendChild(mathml_list[current_index]);
+	//MathJax.Hub.Queue(["Typeset",MathJax.Hub,table.math_jax]);
+	*/
 	// insert the svg
 	var svg = svg_list[current_index];
 	var ink_div = document.getElementById("ink_div");
 	while(ink_div.hasChildNodes())
 		ink_div.removeChild(ink_div.lastChild);
-	ink_div.appendChild(svg);
+	if(svg != null)
+		ink_div.appendChild(svg);
 	
 	// cancel animation and reset strokes
 	clearTimeout(animation_timeout);
-	var paths = svg.getElementsByTagName("path");
-	for(var k = 0; k < paths.length; k++)
+	if(svg != null)
 	{
-		var p = paths.item(k);
-		p.setAttribute("stroke-width", 4);
-		p.setAttribute("stroke-dashoffset", 0);
+		var paths = svg.getElementsByTagName("path");
+		for(var k = 0; k < paths.length; k+=2)
+		{
+			var p = paths.item(k);
+			p.setAttribute("stroke-width", 4);
+			p.setAttribute("stroke-dashoffset", 0);
+		}
 	}
-	
 	document.getElementById("current_index").innerHTML = (current_index + 1) + " / " + total_inkmls;
 	
 	
@@ -692,3 +772,4 @@ navigation = function(event)
 document.getElementById("prev_button").addEventListener("click", previous, true);
 document.getElementById("next_button").addEventListener("click", next, true);
 document.addEventListener("keydown", navigation, true);
+
