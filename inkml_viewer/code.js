@@ -266,6 +266,9 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 	// trace id (from xml) for each trace
 	var trace_ids = new Array();
 	
+	// colors for traces
+	var trace_colors = new Array();
+	
 	// extents of this stroke
 	var min_x = Number.POSITIVE_INFINITY;
 	var min_y = Number.POSITIVE_INFINITY;
@@ -282,6 +285,8 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 	for(var k = 0; k < trace_nodes.length; k++)
 	{
 		trace_ids.push(trace_nodes.item(k).getAttribute("id"));
+		trace_colors.push( trace_nodes.item( k ).getAttribute( "color" ) );
+		
 		// parse points using regular expressions
 		var raw_point_text = trace_nodes.item(k).textContent; 
 		// remove any newlines
@@ -418,8 +423,8 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 		//  build the path
 		var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 		
-		path.setAttribute("fill", "none");
-		//path.setAttribute("stroke", "none");
+		path.setAttribute( "stroke", trace_colors[ k ] == null ? "#000000" : trace_colors[ k ] );
+		
 		path.setAttribute("d", sb.toString());
 		path.total_length = path.getTotalLength();
 		path.trace_id = k;
@@ -443,6 +448,7 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 		mouse_path.trace_id = trace_ids[k];
 		path.inkml_index = global_index;
 		path.trace_id = trace_ids[k];
+		
 		mouse_path.addEventListener("mouseover",
 		function()
 		{
@@ -460,6 +466,7 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 		},
 		false
 		);
+		
 		mouse_path.addEventListener("mouseout",
 		function()
 		{
