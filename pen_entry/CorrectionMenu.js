@@ -222,6 +222,8 @@ CorrectionMenu.show = function()
 				symbol_node.name = rec_result.symbols[k];
 				console.log("name: " + symbol_node.name);
 				symbol_node.symbol = RecognitionManager.symbol_name_to_unicode[symbol_node.name];
+				if(typeof(symbol_node.symbol) == "undefined")
+					symbol_node.symbol = symbol_node.name;
 				console.log("symbol: " + symbol_node.symbol);
 			CorrectionMenu.recognition_node.children.push(symbol_node);
 		}

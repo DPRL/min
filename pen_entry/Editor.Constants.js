@@ -12,7 +12,7 @@ Editor.connected_components_server_url = "http://129.21.34.104:2000/";
 // lei classifier (saskatoon)
 //Editor.classifier_server_url = "http://129.21.34.109:1500/";
 // lei classifier (ottawa)
-Editor.classifier_server_url = "http://129.21.34.107:1500/";
+Editor.classifier_server_url = "http://129.21.34.109:1500/";
 // draculae (saskatoon)
 Editor.align_server_url = "http://129.21.34.109:1000/";
 // data server (saskatoon)
