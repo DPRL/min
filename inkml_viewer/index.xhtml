@@ -113,9 +113,9 @@
 				fill: #F00;
 			}
 			table
-			{
+			{				
 				margin-left: auto;
-				margin-right: auto;
+				margin-right: auto;				
 				border: 1px dashed black;
 				padding: 10px;
 			}
@@ -143,13 +143,72 @@
 				padding-right: 30px;
 				font-size: 200%;
 			}
+			
+			div#content {
+			}
+			
+			div#classification_div {
+				background-color: #eee;
+				width: 200px;
+				font-size: 0.8em;
+				border: 1px solid #d5d5d5;
+				height: 200px;
+				max-height: 200px;
+				margin: 0;
+			}
+			
+			.classification_div_element {
+				margin-left: 10px;
+				margin-right: 10px;
+			}
+			
+			.classification_div_index {
+				color: #666;
+				margin-right: 5px;
+				display: none;
+			}
+			.classification_div_index:before {
+				content: "[";
+				color: #666;
+			}
+			.classification_div_index:after {
+				content: "]";
+				color: #666;
+			}			
+			
+			.classification_div_symbol {
+				margin-right: 5px;			
+			}
+			
+			.classification_div_prob {
+				color: #444;
+			}
+			.classification_div_prob:before {
+				content: "(";
+				color: #444;
+			}
+			.classification_div_prob:after {
+				content: ")";
+				color: #444;
+			}
+			
+			.classification_div_table {
+				margin: 5px;
+			}
+			
+			.classification_div_table div {
+				margin: 0;
+				padding: 0;
+				text-align: left;
+			}
 		</style>
 		<!--<script type="text/javascript"
    src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>-->
 
 	</head>
 	
-	<body style="text-align:center;">
+	<body style="text-align:center;">		
+		
 		<div id="content">
 			<h1>ICDAR 2011 inkml Renderer</h1>
 			
@@ -171,7 +230,7 @@
 			
 			<div id="table_div">
 			</div>
-			
+		
 			<!--
 			<table  id="attribute_table">
 				<tr>
@@ -185,15 +244,16 @@
 				</tr>
 			</table>
 			-->
-			
+		
 			<div id="ink_div" style="margin: 30px;">
 			</div>
-			
+		
 			<div id="chart_div" sstyle="margin: 30px;">
-			</div>
+			</div>			
 			
 			
 		</div>
+		
 		<script type="text/javascript" src="string_builder.js"/>
 		<script type="text/javascript" src="base64.js"/>
 		<script type="text/javascript" src="code.js"/>   

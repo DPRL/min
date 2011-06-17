@@ -4,6 +4,7 @@ attribute_table_list = new Array();
 filename_list = new Array();
 traceid_to_node_list = new Array();
 svg_list = new Array();
+
 current_index = 0;
 total_inkmls = 0;
 loaded_inkmls = 0;
@@ -269,6 +270,8 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 	// colors for traces
 	var trace_colors = new Array();
 	
+	var classification = new Array();
+	
 	// extents of this stroke
 	var min_x = Number.POSITIVE_INFINITY;
 	var min_y = Number.POSITIVE_INFINITY;
@@ -286,6 +289,7 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 	{
 		trace_ids.push(trace_nodes.item(k).getAttribute("id"));
 		trace_colors.push( trace_nodes.item( k ).getAttribute( "color" ) );
+		classification.push( trace_nodes.item( k ).getAttribute( "classification" ) );
 		
 		// parse points using regular expressions
 		var raw_point_text = trace_nodes.item(k).textContent; 
@@ -446,6 +450,9 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 		
 		mouse_path.inkml_index = global_index;
 		mouse_path.trace_id = trace_ids[k];
+		
+		mouse_path.classification_table = classificationToTable( classification[ k ] );
+		
 		path.inkml_index = global_index;
 		path.trace_id = trace_ids[k];
 		
@@ -455,6 +462,9 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 			this.parentNode.getElementsByTagName("g").item(0).style.visibility = "visible";
 			var node = traceid_to_node_list[this.inkml_index][this.trace_id];
 			node.setAttribute("style", "outline:#000 dotted thin;background:orange;");
+			
+			var table = document.getElementById( "classification_div" );
+			table.appendChild( this.classification_table );
 			
 			/*
 			var table = attribute_table_list[current_index];
@@ -474,6 +484,8 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 			var node = traceid_to_node_list[this.inkml_index][this.trace_id];
 			node.setAttribute("style", "");
 			
+			var table = document.getElementById( "classification_div" );
+			table.removeChild( table.firstChild );
 			/*
 			var table = attribute_table_list[current_index];
 			while(table.math_jax.hasChildNodes())
@@ -514,6 +526,9 @@ build_attribute_table = function(annotation_nodes, filename, mathml)
 		var th_mathml = document.createElement("th");
 			th_mathml.innerHTML = "MathML";
 		top_row.appendChild(th_mathml);
+		var th_classification = document.createElement( "th" );
+			th_classification.innerHTML = "Classification";
+		top_row.appendChild( th_classification );
 	result_table.appendChild(top_row);
 	
 	// second row
@@ -534,6 +549,14 @@ build_attribute_table = function(annotation_nodes, filename, mathml)
 			td_mathml.appendChild(div_math_div);
 			//result_table.math_jax = div_math_div;	
 		second_row.appendChild(td_mathml);
+		
+		var td_classification = document.createElement("td");
+			td_classification.setAttribute("rowspan", annotation_nodes.length);
+			var div_classification_div = document.createElement("div");
+				div_classification_div.setAttribute("id", "classification_div");
+			td_classification.appendChild(div_classification_div);
+		second_row.appendChild(td_classification);
+		
 	result_table.appendChild(second_row);
 	
 	var writer, age, gender, hand;
@@ -749,6 +772,39 @@ previous = function()
 {
 	current_index = (current_index - 1 + inkml_list.length) % inkml_list.length;
 	update_view();
+}
+
+// classification attribute to printable string
+classificationToString = function( data ) {
+	if ( data == null ) return null;
+	
+	var html = "";
+	var cls = data.split( "|" );
+	for ( var i = 0; i < Math.min( 5, cls.length ); i++ ) {
+		var c = cls[ i ].split( "," );
+		html += "<span class=\"classification_div_element\"><span class=\"classification_div_index\">" + i + "</span>"
+			+ "<span class=\"classification_div_symbol\">" + c[ 0 ] + "</span>"
+			+ "<span class=\"classification_div_prob\">" + c[ 1 ] + "</span></span>";
+	}
+	return html;
+}
+
+classificationToTable = function( data ) {	
+	var table = document.createElement( "div" );
+	table.setAttribute( "class", "classification_div_table" );	
+	if ( data == null ) return table;
+	var cls = data.split( "|" );
+	
+	html = "";
+	for ( var i = 0; i < Math.min( 10, cls.length ); i++ ) {		
+		var c = cls[ i ].split( "," );
+		html += "<div><span class=\"classification_div_symbol\">" + c[ 0 ] + "</span>"
+			+ "<span class=\"classification_div_prob\">" + c[ 1 ] + "</span></div>";
+	}
+	
+	console.log( html );
+	table.innerHTML = html;
+	return table;
 }
 
 if(window.FileReader)
