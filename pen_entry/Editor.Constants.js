@@ -4,15 +4,15 @@ Editor.classifier = new Classifier();
 
 /** Server configuration **/
 
-Editor.editor_root = "http://people.rit.edu/rap3064/math/";
+Editor.editor_root = "http://129.21.34.109/";
 //Editor.editor_root = "./";
 Editor.connected_components_server_url = "http://129.21.34.104:2000/";
 // dummy classifier (niagra)
 //Editor.classifier_server_url = "http://129.21.34.104:1500/";
 // lei classifier (saskatoon)
-//Editor.classifier_server_url = "http://129.21.34.109:1500/";
-// lei classifier (ottawa)
 Editor.classifier_server_url = "http://129.21.34.109:1500/";
+// lei classifier (ottawa)
+//Editor.classifier_server_url = "http://129.21.34.107:1500/";
 // draculae (saskatoon)
 Editor.align_server_url = "http://129.21.34.109:1000/";
 // data server (saskatoon)

@@ -57,7 +57,7 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 	RecognitionManager.result_table = new Array();
 	RecognitionManager.segment_queue = new Array();
 	RecognitionManager.timeout = null;
-	RecognitionManager.max_segments = 3;
+	RecognitionManager.max_segments = 1;
 	RecognitionManager.symbol_name_to_unicode = new Array();
 	RecognitionManager.unicode_to_symbol_name = new Array();
  }
@@ -112,12 +112,12 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 	RecognitionManager.segment_queue.push(segment);
 	if(RecognitionManager.segment_queue.length >= RecognitionManager.max_segments)
 	{
-		RecognitionManager.classify_queued(true);
+		RecognitionManager.classify_queued(false);
 	}
 	else
 	{
 		console.log("Setting timeouot");
-		RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(true);", 1500);
+		RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false);", 1500);
 	}
 	
  }

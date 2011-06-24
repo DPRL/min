@@ -286,7 +286,7 @@ draw_plots = function()
 		series: 
 		{ 
 			//lines: {show: false},
-			points: {show: true, fill: false, radius: 3, lineWidth: 6}, 
+			points: {show: true, fill: false, radius: 1, lineWidth: 2}, 
 			color: "rgba(0,128,255,0.1)", 
 			shadowSize: 0
 		},
