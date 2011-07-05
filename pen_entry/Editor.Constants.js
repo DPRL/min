@@ -19,7 +19,9 @@ Editor.align_server_url = "http://129.21.34.109:1000/";
 Editor.data_server_url = "http://129.21.34.109:500/"
 //Editor.data_server_url = "http://129.21.34.107:1500";
 
-Editor.symbol_tree = "example_tree.xml";
+Editor.inkml_save_server_url = "http://129.21.34.102:4205/";
+
+Editor.symbol_tree = "example_tree_icdar.xml";
 
 /** Asthetics **/
 

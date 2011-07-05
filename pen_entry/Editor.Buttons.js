@@ -15,6 +15,7 @@ Buttons.Redo = 6;
 Buttons.Group = 7;
 Buttons.Label = 8;
 Buttons.Clear = 9;
+Buttons.GetInkML = 10;
 
 function ButtonState(button_id)
 {
@@ -122,6 +123,7 @@ Editor.build_buttons = function(in_div_name)
 		Editor.button_states.push(new ButtonState("group"));
 		Editor.button_states.push(new ButtonState("relabel"));
 		Editor.button_states.push(new ButtonState("clear"));
+		Editor.button_states.push(new ButtonState("getInkML"));
 	
 	Editor.clearButtonOverlays();
 	//alert(Editor.toolbar_button_overlay.length);

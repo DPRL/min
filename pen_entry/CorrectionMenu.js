@@ -162,8 +162,11 @@ CorrectionMenu.populateSymbolGrid = function(grid_div, node, start_index)
 		{
 			var div = document.createElement("div");
 			div.className = "symbol_cell button";
+			
 			console.log(child_nodes[k].symbol);
+			
 			div.innerHTML = child_nodes[k].symbol;
+			
 			console.log(child_nodes[k].symbol);
 			div.addEventListener("click", CorrectionMenu.select_symbol, true);
 			div.style.lineHeight = CorrectionMenu.center_panel.clientHeight / 3 + "px";
@@ -264,11 +267,15 @@ CorrectionMenu.select_category = function(e)
  
 	var symbol = RecognitionManager.unicode_to_symbol_name[e.currentTarget.innerHTML];
 	if(symbol != "")
-	{
+	{	
+		var new_recognition = null;
+			
 		console.log("Selected: " + symbol);
-		var set_id = Segment.set_count++
+		var set_id = Segment.set_count++;
 		for(var k = 0; k < Editor.selected_segments.length; k++)
 		{
+			if ( new_recognition == null ) new_recognition = RecognitionManager.getRecognition( Editor.selected_segments[ k ].set_id );
+			
 			console.log("Removing: " + Editor.selected_segments[k].set_id);
 			RecognitionManager.removeRecognition(Editor.selected_segments[k].set_id);
 			
@@ -276,12 +283,19 @@ CorrectionMenu.select_category = function(e)
 			
 		}
 		
-		var new_recognition = new RecognitionResult();
-			new_recognition.symbols.push(symbol);
-			new_recognition.certainties.push(1.0);
-			new_recognition.results = 1;
-			new_recognition.set_id = set_id;
-		RecognitionManager.result_table.push(new_recognition);
+		for ( var i = 0; i < new_recognition.symbols.length; i++ ) {
+			if ( new_recognition.symbols[ i ] == symbol ) {
+				var sym = symbol;
+				var cer = new_recognition.certainties[ i ];
+				new_recognition.symbols.splice( i, 1 );
+				new_recognition.certainties.splice( i, 1 );
+				new_recognition.symbols.unshift( sym );
+				new_recognition.certainties.unshift( cer );
+				new_recognition.set_id = set_id;
+				RecognitionManager.result_table.push( new_recognition );
+				break;
+			}
+		}
 		
 		RenderManager.render();
 		

@@ -83,6 +83,8 @@ Editor.setup_events = function()
 	document.getElementById("relabel").addEventListener("click", Editor.relabel, true);
 	document.getElementById("clear").addEventListener("click", Editor.clear, true);
 	
+	document.getElementById( "getInkML" ).addEventListener( "click", Editor.getInkML, true );
+	
 	if(Editor.using_ipad)
 	{
 		// delete tool
@@ -1102,6 +1104,89 @@ Editor.clear = function()
 	
 	// reset editor
 	//
+}
+
+Editor.getInkML = function() {
+	// alert( "getInkML" );
+	var inkml = "<ink xmlns=\"http://www.w3.org/2003/InkML\">";
+	var segments = new Array();
+	var segarray = Editor.segments.slice( 0 );
+	segarray.sort( function( o1, o2 ) { return o1.instance_id - o2.instance_id } );
+	
+	for ( var i = 0; i < segarray.length; i++ ) {
+		var stroke = segarray[ i ];
+		var strokeid = stroke.instance_id;
+		var segid = stroke.set_id;
+		
+		// translation for absolute positioning
+		var tx = stroke.translation.x;
+		var ty = stroke.translation.y;
+		var sx = stroke.scale.x;
+		var sy = stroke.scale.y;
+		// add to proper segment
+		if ( segments[ segid ] == null ) segments[ segid ] = new Array();
+		segments[ segid ].push( strokeid );
+		
+		// add stroke data to inkml
+		inkml += "<trace id=\"" + strokeid + "\">";
+		var strokedata = new Array();
+		for ( var j = 0; j < stroke.points.length; j++ ) {
+			strokedata.push( ( ( stroke.points[ j ].x * sx ) + tx ) + " " + ( ( stroke.points[ j ].y * sy ) + ty ) );
+		}
+		inkml += strokedata.join( ", " );
+		inkml += "</trace>";		
+	}
+	
+	for ( var i = 0; i < segments.length; i++ ) {
+		if ( segments[ i ] == null ) continue;
+		var strokeids = segments[ i ];
+		
+		inkml += "<traceGroup xml:id=\"TG" + i + "\">";
+		
+		// label
+		inkml += "<annotation type=\"truth\">" + RecognitionManager.getRecognition( i ).symbols[ 0 ] + "</annotation>"
+		
+		for ( var j = 0; j < strokeids.length; j++ ) {
+			inkml += "<traceView traceDataRef=\"" + strokeids[ j ] + "\" />";
+		}
+		
+		inkml += "</traceGroup>";
+	}
+	inkml += "</ink>";
+	
+	if ( Editor.using_ipad ) {
+		
+		// ask for filename
+		var fname = prompt( "Enter filename (leave blank for random)." );
+		if ( fname == null ) return; // "cancel"
+		
+		// save to server
+		$.ajax(
+			{
+				url: Editor.inkml_save_server_url + "?fname=" + fname + "&s=" + escape( inkml ),
+				success: function( in_data, textStatus, xmlhttp ) {  	
+					alert( "Saved: " + in_data.split( "!" )[ 1 ] );
+				},
+				error: function( jqXHR, textStatus, errorThrown ) {
+					console.log( jqXHR );
+					console.log( textStatus );
+					console.log( errorThrown );
+					if ( jqXHR.status == 0 ) {
+						alert( "Error: server offline." );
+					} else {
+						alert( "Error: " + textStatus + "/" + errorThrown );
+					}
+				}
+			}
+		);
+		
+	} else {
+	
+		// save locally
+		var datauri = "data:text/inkml," + escape( inkml ); // yes, this is an invalid mime type
+		window.open( datauri );
+		
+	}
 }
 
 /*

@@ -31,6 +31,8 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 				//if(document.styleSheets[i].rules[j].mathch
 			}
 		}
+		
+		document.getElementById( "getInkMLbutton" ).innerHTML = "Save InkML";
 	}
 	
 	Editor.canvas_div = document.getElementById(String(in_equation_canvas_name));
