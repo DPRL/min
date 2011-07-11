@@ -1,34 +1,35 @@
 
+RowType = {"Category" : 1, "Feature" : 2};
+
 // colors for point series
 colors = ["rgba(0,0,0,0.5)","rgba(255,0,0,0.5)","rgba(255,128,0,0.5)","rgba(0,0,255,0.5)","rgba(255,0,255,0.5)", "rgba(0,255,0,0.5)"];
 
-function DataRow()
-{
-	this.child_truth = "";
-	this.relationship = "";
-	this.parent_truth = "";
-	this.child = "";
-	this.parent = "";
-	this.top = 0.0;
-	this.bottom = 0.0;
-}
-
+// all our data
 table = new Array();
 current_data_series = null;
 
-child_truth_filter = new Array();
-relationship_filter = new Array();
-parent_truth_filter = new Array();
-child_filter = new Array();
-parent_filter = new Array();
 
-// master list
-child_truth_values = new Array();
-relationship_values = new Array();
-parent_truth_values = new Array();
-child_values = new Array();
-parent_values = new Array();
+// array of strings of the features
+features = new Array();
 
+// data for the x axis
+x_axis = null;
+// data for the y axis
+y_axis = null;
+
+// name of each category we can filter by
+categories = new Array();
+// name of the class heading
+class_name = null;
+// heading names
+heading_names = new Array();
+heading_types = new Array();
+// class names
+classes = new Array();
+// will contain a set of arrays to filter by
+filters = {};
+// a set of all values for each category
+master_list = {};
 
 // absolute mins and maxes
 max_x = null;
@@ -42,32 +43,30 @@ disp_max_y = null;
 disp_min_x = null;
 disp_min_y = null;
 
+generate_colors = function (color_count)
+{
+	colors = new Array();
+	var hue = 1;
+	var lum = 1;
+	var sat = 1;
+	
+	
+	for(var k = 0; k < color_count; k++)
+	{
+		hue = ((16807 * hue) % 0xFFFFFFFF) % 360;
+		lum = ((16807 * lum) % 0xFFFFFFFF) % 25 + 25;
+		sat = ((16807 * sat) % 0xFFFFFFFF) % 25 + 75;
+		colors.push("hsla(" + hue + ", " + sat + "%," + lum + "%, 0.75)");		
+		console.log(colors[k]);
+	}
+	
+}
 
 filter_data = function(event)
 {
 	var category = this.getAttribute("id");
 
-	var array = null;
-	switch(category)
-	{
-		case "child_truth":
-			array = child_truth_filter;
-			break;
-		case "relationship":
-			array = relationship_filter;
-			break;
-		case "parent_truth":
-			array = parent_truth_filter;
-			break;
-		case "child":
-			array = child_filter;
-			break;
-		case "parent":
-			array = parent_filter;
-			break;
-		default:
-			return;
-	}
+	var array = filters[category];
 	
 	array.length = 0;
 	
@@ -76,35 +75,36 @@ filter_data = function(event)
 		if(this.children[k].selected == true)
 			array.push(this.children[k].getAttribute("value"));
 	}
+	
 	build_data_series();
 	draw_plots();
 }
 
+set_axis = function(event)
+{
+	var axis = this.getAttribute("id");
+	
+	for(var k = 0; k < this.children.length; k++)
+	{
+		if(this.children[k].selected == true)
+		{
+			if(axis == "x_feature")
+				x_axis = this.children[k].getAttribute("value");
+			else 
+				y_axis = this.children[k].getAttribute("value");
+		}
+	}
+	
+	build_data_series();
+	draw_plots();
+}
+
+// performs filtering on the data
 build_data_series = function()
 {
-/*
-	current_data_series.length = 0;
-	
-	
-	for(var k = 0; k < table.length; k++)
-	{
-		dr = table[k];
-		if
-		(
-		jQuery.inArray(dr.child_truth, child_truth_filter) > -1 &&
-		jQuery.inArray(dr.relationship, relationship_filter) > -1 &&
-		jQuery.inArray(dr.parent_truth, parent_truth_filter) > -1 &&
-		jQuery.inArray(dr.child, child_filter) > -1 &&
-		jQuery.inArray(dr.parent, parent_filter) > -1
-		)
-			current_data_series.push([dr.top, dr.bottom]);
-	}
-*/
 	current_data_series = {};
-	for(var k = 0; k < relationship_values.length; k++)
-		current_data_series[relationship_values[k]] = new Array();
-	
-	
+	for(var k = 0; k < master_list[class_name].length; k++)
+		current_data_series[master_list[class_name][k]] = new Array();
 
 	// figure out min and max of our data
 	max_x = max_y = Number.NEGATIVE_INFINITY;
@@ -114,6 +114,28 @@ build_data_series = function()
 	for(var k = 0; k < table.length; k++)
 	{
 		dr = table[k];
+		var include_row = true;
+		for(var j = 0; j < heading_names.length; j++)
+		{
+			if(heading_types[j] == RowType.Feature) continue;
+			if(jQuery.inArray(dr[heading_names[j]], filters[heading_names[j]]) > -1) continue;
+			include_row = false;
+			break;
+		}
+		
+		if(include_row)
+		{
+			var x_val = dr[x_axis];
+			var y_val = dr[y_axis];
+		
+			max_x = Math.max(max_x, x_val);
+			max_y = Math.max(max_y, y_val);
+			min_x = Math.min(min_x, x_val);
+			min_y = Math.min(min_x, y_val);
+			current_data_series[dr[class_name]].push([x_val, y_val]);
+		}
+		
+		/*
 		if
 		(
 		jQuery.inArray(dr.child_truth, child_truth_filter) > -1 &&
@@ -130,13 +152,12 @@ build_data_series = function()
 			min_y = Math.min(min_y, dr.bottom);
 			current_data_series[dr.relationship].push([dr.top, dr.bottom]);
 		}
+		*/
 	}
 	
 	current_data_series.length = 0;
-	for(var k = 0; k < relationship_values.length; k++)
-		current_data_series.length += current_data_series[relationship_values[k]].length;
-		
-	console.log(current_data_series.length);
+	for(var k = 0; k < classes.length; k++)
+		current_data_series.length += current_data_series[classes[k]].length;
 }
 
 on_csv_load = function(event)
@@ -148,7 +169,156 @@ on_csv_load = function(event)
 	{
 		//console.log(e.target.result);
 		var row_strings = e.target.result.split('\n');
-		// ignore header
+		// read header and define our filtering
+		var headings = row_strings[0].split(",");
+		var columns = headings.length;
+		for(var k = 0; k < columns; k++)
+		{
+			var pair = headings[k].split(':');
+			switch(pair[0])
+			{
+			// class defines color of drawn point
+			case "Class":
+				class_name = pair[1];
+			// these are used to filter
+			case "String":
+				categories.push(pair[1]);
+				heading_types.push(RowType.Category);
+				master_list[pair[1]] = new Array();
+				filters[pair[1]] = new Array();
+				break;
+			// features define points
+			case "Feature":
+				features.push(pair[1]);
+				heading_types.push(RowType.Feature);
+				break;
+			}
+			heading_names.push(pair[1]);
+			
+		}
+		
+		// parse each row
+		for(var k = 1; k < row_strings.length; k++)
+		{
+			var cells = row_strings[k].split(',');
+			if(cells.length == columns)
+			{
+				var data_row = {};
+				var bad_feature = false;
+				// parse each cell
+				for(var j = 0; j < columns; j++)
+				{
+					if(heading_types[j] == RowType.Category)
+					{
+						data_row[heading_names[j]] = cells[j];
+						// build filter bank
+						if(jQuery.inArray(cells[j], master_list[heading_names[j]]) < 0)
+							master_list[heading_names[j]].push(cells[j]);
+					}
+					else if(heading_types[j] == RowType.Feature)
+					{
+						var val = parseFloat(cells[j]);
+						if(isNaN(val) || !isFinite(val))
+						{
+							bad_feature = true;
+							break;
+						}
+						data_row[heading_names[j]] = val;
+					}
+				}
+				if(bad_feature)
+					continue;
+				table.push(data_row);
+			}
+		}
+		
+		// get list of all classes
+		for(var k = 0; k < master_list[class_name].length; k++)
+			classes.push(master_list[class_name][k]);
+		
+		// build our list of colors
+		generate_colors(classes.length);
+		
+		// foreach category, add in filterin widgets
+		var headings = document.getElementById("headings");
+		var filter_row = document.getElementById("filter_row");
+		for(var j = 0; j < heading_names.length; j++)
+		{
+			if(heading_types[j] == RowType.Feature) continue;
+		
+			var th = document.createElement("th");
+			th.innerHTML = heading_names[j];
+			headings.appendChild(th);
+			
+			var td = document.createElement("td");
+			td.setAttribute("rowspan", "4");
+			td.setAttribute("class", "filter");
+			filter_row.appendChild(td);
+			
+			var select = document.createElement("select");
+			select.setAttribute("multiple", "true");
+			select.setAttribute("id", heading_names[j]);
+			select.setAttribute("size", "5");
+			
+			master_list[heading_names[j]].sort();
+			
+			for(var i = 0; i < master_list[heading_names[j]].length; i++)
+			{
+				// build options for selection
+				var name = master_list[heading_names[j]][i];
+				var selection = document.createElement("option");
+				selection.selected = true;
+				selection.setAttribute("value", name);
+				selection.innerHTML = name;
+				select.appendChild(selection);
+				
+				// fill in filter bansk while we're at it
+				filters[heading_names[j]].push(name);
+			}
+			select.addEventListener("change", filter_data, true);
+			td.appendChild(select);
+		}
+		
+		// add features to both x and y axis list
+		var x_select = document.getElementById("x_feature");
+		var y_select = document.getElementById("y_feature");
+		
+		for(var k = 0; k < features.length; k++)
+		{
+			var option = document.createElement("option");
+			if(k == 0)
+				option.selected = true;
+			option.setAttribute("value", features[k]);
+			option.innerHTML = features[k];
+			x_select.appendChild(option);
+			
+			option = document.createElement("option");
+			if(k == 1)
+				option.selected = true;
+			option.setAttribute("value", features[k]);
+			option.innerHTML = features[k];
+			y_select.appendChild(option);			
+		}
+		
+		x_select.addEventListener("change", set_axis, true);
+		y_select.addEventListener("change", set_axis, true);
+		
+		x_axis = features[0];
+		y_axis = features[1];		
+		
+		/*
+		for(var k = 0; k < child_truth_values.length; k++)
+		{
+			var selection = document.createElement("option");
+			selection.selected = true;
+			selection.setAttribute("value", child_truth_values[k]);
+			selection.innerHTML = child_truth_values[k];
+			document.getElementById("child_truth").appendChild(selection);
+			child_truth_filter.push(child_truth_values[k]);
+		}
+		document.getElementById("child_truth").addEventListener("change", filter_data, true);
+		*/
+		/*
 		current_data_series = new Array();
 		for(var k = 1; k < row_strings.length; k++)
 		{
@@ -244,6 +414,7 @@ on_csv_load = function(event)
 		}
 		document.getElementById("parent").addEventListener("change", filter_data, true);
 		// add filters
+		*/
 		
 		build_data_series();
 		draw_plots();
@@ -286,7 +457,7 @@ draw_plots = function()
 		series: 
 		{ 
 			//lines: {show: false},
-			points: {show: true, fill: false, radius: 1, lineWidth: 2}, 
+			points: {show: true, fill: false, radius: 1.5, lineWidth: 3}, 
 			color: "rgba(0,128,255,0.1)", 
 			shadowSize: 0
 		},
@@ -309,6 +480,18 @@ draw_plots = function()
 	}
 
 	var data_list = new Array();
+
+	for(var k = 0; k < master_list[class_name].length; k++)
+	{
+		var series = 
+		{
+			data: current_data_series[master_list[class_name][k]],
+			color: colors[k]
+		};
+		data_list.push(series);
+	}
+	
+	/*
 	for(var k = 0; k < relationship_filter.length; k++)
 	{
 		var series = 
@@ -319,6 +502,7 @@ draw_plots = function()
 		data_list.push(series);
 		
 	}
+	*/
 	
 	$.plot($("#plot"), data_list, options);
 }

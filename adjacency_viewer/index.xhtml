@@ -48,58 +48,18 @@
 			<div><input type="file" id="csv_input" /></div>
 		</form>
 		
-		<p>
-		X-Axis corresponds to the child segment's top position relative to its parent, while the Y-Axis corresponds to the child segment's bottom position relative to its parent.  A value of 0.0 corresponds  with the top of the parent segment, a value of 1.0 corresponds to the bottom of the parent segment.</p>
-		<p>
-		The statistics files can be found at:
-		<br/><a href="http://saskatoon.cs.rit.edu/part1.stats.csv">http://saskatoon.cs.rit.edu/part1.stats.csv</a>
-		<br/><a href="http://saskatoon.cs.rit.edu/part2.stats.csv">http://saskatoon.cs.rit.edu/part2.stats.csv</a>
-		</p>
-
-
+		<!-- window and feature selection -->
 		<table>
 			<tr>
-				<th>Child Truth</th>
-				<th>Relationship</th>
-				<th>Parent Truth</th>
-				<th>Child</th>
-				<th>Parent</th>
 				<th colspan="3">View Window</th>
+				<th colspan="2">Features</th>
 			</tr>
 			<tr>
-				<td rowspan="4" class="filter">
-					<select multiple="" id="child_truth" size="5">
-					
-					</select>
-				</td>
-				<td rowspan="4" class="filter">
-					<select multiple="" id="relationship" size="5">
-					
-					</select>
-					</td>
-				<td rowspan="4" class="filter">
-					<select multiple="" id="parent_truth" size="5">
-					
-					</select>
-				</td>
-				<td rowspan="4" class="filter">
-					<select multiple="" id="child" size="5"> 
-					
-					</select>
-				</td>
-				<td rowspan="4" class="filter">
-					<select multiple="" id="parent" size="5">
-					
-					</select>
-				</td>
-				<td>
-				</td>
-				<td>
-					Min
-				</td>
-				<td>
-					Max
-				</td>
+				<td></td>
+				<td>Min</td>
+				<td>Max</td>
+				<td>X Axis</td>
+				<td>Y Axis</td>
 			</tr>
 			<tr>
 				<td>
@@ -110,6 +70,14 @@
 				</td>
 				<td>
 				<input type="text" size="7" id="max_x"></input>
+				</td>
+				<td rowspan="3">
+					<select id="x_feature" size="5">
+					</select>
+				</td>
+				<td rowspan="3">
+					<select id="y_feature" size="5">
+					</select>
 				</td>
 			</tr>
 			<tr>
@@ -130,6 +98,13 @@
 				<td>
 				<input type="checkbox" id="lock_window"></input>
 				</td>
+			</tr>			
+		</table>
+		<!-- filters -->
+		<table>
+			<tr id="headings">
+			</tr>
+			<tr id="filter_row">
 			</tr>
 		</table>
 		<div id="plot" style="width:95%;height:600px;margin: 10px auto;"></div>
