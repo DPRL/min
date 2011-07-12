@@ -170,11 +170,19 @@ on_csv_load = function(event)
 		//console.log(e.target.result);
 		var row_strings = e.target.result.split('\n');
 		// read header and define our filtering
-		var headings = row_strings[0].split(",");
-		var columns = headings.length;
+		var column_defs = row_strings[0].split(",");
+		var column_names = row_strings[1].split(",");
+		
+		if(column_defs.length != column_names.length)
+		{
+			alert("Inconsistent number of columns in data");
+			return;
+		}
+		
+		var columns = column_defs.length;
 		for(var k = 0; k < columns; k++)
 		{
-			var pair = headings[k].split(':');
+			var pair = [column_defs[k], column_names[k]];
 			switch(pair[0])
 			{
 			// class defines color of drawn point
@@ -198,7 +206,7 @@ on_csv_load = function(event)
 		}
 		
 		// parse each row
-		for(var k = 1; k < row_strings.length; k++)
+		for(var k = 2; k < row_strings.length; k++)
 		{
 			var cells = row_strings[k].split(',');
 			if(cells.length == columns)
@@ -306,116 +314,6 @@ on_csv_load = function(event)
 		x_axis = features[0];
 		y_axis = features[1];		
 		
-		/*
-		for(var k = 0; k < child_truth_values.length; k++)
-		{
-			var selection = document.createElement("option");
-			selection.selected = true;
-			selection.setAttribute("value", child_truth_values[k]);
-			selection.innerHTML = child_truth_values[k];
-			document.getElementById("child_truth").appendChild(selection);
-			child_truth_filter.push(child_truth_values[k]);
-		}
-		document.getElementById("child_truth").addEventListener("change", filter_data, true);
-		*/
-		/*
-		current_data_series = new Array();
-		for(var k = 1; k < row_strings.length; k++)
-		{
-			var cells = row_strings[k].split(',');
-			if(cells.length == 7)
-			{
-				var dr  = new DataRow();
-					dr.child_truth = cells[0];
-					dr.relationship = cells[1];
-					dr.parent_truth = cells[2];
-					dr.child = cells[3];
-					dr.parent = cells[4];
-					dr.top = parseFloat(cells[5]);
-					dr.bottom = parseFloat(cells[6]);
-				
-				
-				if(isNaN(dr.top) || isNaN(dr.bottom) || !isFinite(dr.top) || !isFinite(dr.bottom))
-					continue;
-				
-				// build our lists
-				if(jQuery.inArray(dr.child_truth, child_truth_values) < 0)
-					child_truth_values.push(dr.child_truth);
-				if(jQuery.inArray(dr.relationship, relationship_values) < 0)
-					relationship_values.push(dr.relationship);
-				if(jQuery.inArray(dr.parent_truth, parent_truth_values) < 0)
-					parent_truth_values.push(dr.parent_truth);
-				if(jQuery.inArray(dr.child, child_values) < 0)
-					child_values.push(dr.child);
-				if(jQuery.inArray(dr.parent, parent_values) < 0)
-					parent_values.push(dr.parent);
-				
-				var point = [dr.top, dr.bottom];
-				current_data_series.push(point);
-				
-				table.push(dr);
-			}
-		}
-		
-		child_truth_values.sort();
-		relationship_values.sort();
-		parent_truth_values.sort();
-		child_values.sort();
-		parent_values.sort();
-		
-		for(var k = 0; k < child_truth_values.length; k++)
-		{
-			var selection = document.createElement("option");
-			selection.selected = true;
-			selection.setAttribute("value", child_truth_values[k]);
-			selection.innerHTML = child_truth_values[k];
-			document.getElementById("child_truth").appendChild(selection);
-			child_truth_filter.push(child_truth_values[k]);
-		}
-		document.getElementById("child_truth").addEventListener("change", filter_data, true);
-		for(var k = 0; k < relationship_values.length; k++)
-		{
-			var selection = document.createElement("option");
-			selection.selected = true;
-			selection.setAttribute("value", relationship_values[k]);
-			selection.innerHTML = relationship_values[k];
-			document.getElementById("relationship").appendChild(selection);
-			relationship_filter.push(relationship_values[k]);
-		}
-		document.getElementById("relationship").addEventListener("change", filter_data, true);
-		for(var k = 0; k < parent_truth_values.length; k++)
-		{
-			var selection = document.createElement("option");
-			selection.selected = true;
-			selection.setAttribute("value", parent_truth_values[k]);
-			selection.innerHTML = parent_truth_values[k];
-			document.getElementById("parent_truth").appendChild(selection);
-			parent_truth_filter.push(parent_truth_values[k]);
-		}
-		document.getElementById("parent_truth").addEventListener("change", filter_data, true);
-		for(var k = 0; k < child_values.length; k++)
-		{
-			var selection = document.createElement("option");
-			selection.selected = true;
-			selection.setAttribute("value", child_values[k]);
-			selection.innerHTML = child_values[k];
-			document.getElementById("child").appendChild(selection);
-			child_filter.push(child_values[k]);
-		}
-		document.getElementById("child").addEventListener("change", filter_data, true);
-		for(var k = 0; k < parent_values.length; k++)
-		{
-			var selection = document.createElement("option");
-			selection.selected = true;
-			selection.setAttribute("value", parent_values[k]);
-			selection.innerHTML = parent_values[k];
-			document.getElementById("parent").appendChild(selection);
-			parent_filter.push(parent_values[k]);
-		}
-		document.getElementById("parent").addEventListener("change", filter_data, true);
-		// add filters
-		*/
-		
 		build_data_series();
 		draw_plots();
 
@@ -490,19 +388,7 @@ draw_plots = function()
 		};
 		data_list.push(series);
 	}
-	
-	/*
-	for(var k = 0; k < relationship_filter.length; k++)
-	{
-		var series = 
-		{
-			data: current_data_series[relationship_filter[k]],
-			color: colors[relationship_values.indexOf(relationship_filter[k])]
-		};
-		data_list.push(series);
-		
-	}
-	*/
+
 	
 	$.plot($("#plot"), data_list, options);
 }
