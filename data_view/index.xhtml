@@ -15,10 +15,10 @@
 
 			table
 			{
-				margin-left: auto;
-				margin-right: auto;
+				display: inline-table;
 				border: 1px dashed black;
-				padding: 10px;
+				padding: 5px;
+				height: 160px;
 			}
 			
 			th
@@ -38,6 +38,10 @@
 				margin: 10px;
 				text-align: left;
 			}
+			div#table_container
+			{
+				padding: 10px;
+			}
 		</style>	
 	</head>
 	<body style="text-align:center;">
@@ -48,6 +52,7 @@
 			<div><input type="file" id="csv_input" /></div>
 		</form>
 		
+		<div id="table_container">
 		<!-- window and feature selection -->
 		<table>
 			<tr>
@@ -107,6 +112,7 @@
 			<tr id="filter_row">
 			</tr>
 		</table>
+		</div>
 		<div id="plot" style="width:95%;height:600px;margin: 10px auto;"></div>
 		<script type="text/javascript" src="code.js"/>
 		<script type="text/javascript" src="jquery.js"/>

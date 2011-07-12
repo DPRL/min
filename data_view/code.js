@@ -43,22 +43,127 @@ disp_max_y = null;
 disp_min_x = null;
 disp_min_y = null;
 
+clamp = function(val, min, max)
+{
+	if(val < min) return min;
+	if(val > max) return max;
+	return val;
+}
+
 generate_colors = function (color_count)
 {
 	colors = new Array();
 	var hue = 1;
-	var lum = 1;
-	var sat = 1;
+	var sat = 2;
+	var light = 3;
 	
+	var hues = new Array();
+	var saturations = new Array();
+	var lightnesses = new Array();
 	
 	for(var k = 0; k < color_count; k++)
 	{
-		hue = ((16807 * hue) % 0xFFFFFFFF) % 360;
-		lum = ((16807 * lum) % 0xFFFFFFFF) % 25 + 25;
-		sat = ((16807 * sat) % 0xFFFFFFFF) % 25 + 75;
-		colors.push("hsla(" + hue + ", " + sat + "%," + lum + "%, 0.75)");		
-		console.log(colors[k]);
+		hue = ((16807 * hue) % 0xFFFFFFFF);
+		sat = ((16807 * sat) % 0xFFFFFFFF);
+		light = ((16807 * light) % 0xFFFFFFFF);
+		
+		hues.push(hue % 360);
+		saturations.push(sat % 25 + 75);
+		lightnesses.push(light % 20 + 30);
 	}
+
+	hues.push(0);
+	saturations.push(0);
+	lightnesses.push(25);
+	
+	// gradient descent method, try to maximize distance between points
+	
+	var d_hue = new Array();
+	var d_sat = new Array();
+	var d_light = new Array();
+	var step_size = 10;
+	for(var k = 0; k < 50; k++)
+	{
+		// calculate error and derivatives
+		var distance = 0;
+		for(var i = 0; i < color_count; i++)
+		{
+			d_hue[i] = 0;
+			d_sat[i] = 0;
+			d_light[i] = 0;
+			
+			var min_distance = Number.POSITIVE_INFINITY;
+			var distance = 0;
+			// color count + 1 for the base color which isn't used for points, but which the points shuld also be far away from
+			for(var j = i + 1; j < color_count+1; j++)
+			{
+				// error
+				
+				var hue_diff = hues[i] - hues[j];
+				if(hue_diff > 180)
+					hue_diff -= 360;
+				else if(hue_diff < -180)
+					hue_diff += 360;
+				
+				var diff = [hue_diff, saturations[i] - saturations[j], lightnesses[i] - lightnesses[j]];
+				var temp_distance = (diff[0] * diff[0])  + (diff[1] * diff[1]) + (diff[2] * diff[2]) ;
+				
+				//distance += temp_distance;
+				
+				if(temp_distance < min_distance)
+				{
+					min_distance = temp_distance;
+					// partial derivatives
+					d_hue[i] = (2 * (hue_diff) ) ;
+					d_sat[i] = (2 * (saturations[i] - saturations[j]) );
+					d_light[i] = (2 * (lightnesses[i] - lightnesses[j]) );
+				}
+			}
+			
+			
+			
+			if(isFinite(min_distance)) distance += min_distance;
+		}
+		console.log("Distance: " + distance);
+
+		
+		// normalize derivative parameters
+		var factor = 0.0;
+		for(var i = 0; i < color_count; i++)
+			factor += d_hue[i] * d_hue[i] + d_sat[i] * d_sat[i] + d_light[i] * d_light[i];
+		factor = Math.sqrt(factor);
+		for(var i = 0; i < color_count; i++)
+		{
+			d_hue[i] /= factor;
+			d_sat[i] /= factor;
+			d_light[i] /= factor;
+		}
+		console.log("Factor: " + factor);
+		console.log(d_hue[0]);
+		console.log(d_sat[0]);
+		console.log(d_light[0]);
+				
+		
+		// now increment
+		for(var i = 0; i < color_count; i++)
+		{
+			console.log(hues[i]);
+			hues[i] = (hues[i] + 20 * step_size * d_hue[i]) % 360;
+			console.log(hues[i]);
+			console.log("...");
+			while(hues[i] < 0) hues[i] += 360;
+			saturations[i] = clamp(saturations[i] + step_size * d_sat[i], 75, 100);
+			lightnesses[i] = clamp(lightnesses[i] + step_size * d_light[i], 30, 50);
+		}
+	}
+	
+	for(var i = 0; i < color_count; i++)
+	{
+		colors.push("hsla(" + hues[i] + ", " + saturations[i] + "%," + lightnesses[i] + "%, 0.5)");
+		console.log(colors[i]);
+	}
+	
+
 	
 }
 
@@ -168,7 +273,9 @@ on_csv_load = function(event)
 	fr.onload = function(e)
 	{
 		//console.log(e.target.result);
-		var row_strings = e.target.result.split('\n');
+		//var row_strings = e.target.result.split('\n');
+		//var row_strings = e.target.result.replace(",\n", "\n").split("\n");
+		var row_strings = e.target.result.replace(/[ \t\r]/g, "").replace(/,\n/g, "\n").split("\n");
 		// read header and define our filtering
 		var column_defs = row_strings[0].split(",");
 		var column_names = row_strings[1].split(",");
@@ -189,7 +296,7 @@ on_csv_load = function(event)
 			case "Class":
 				class_name = pair[1];
 			// these are used to filter
-			case "String":
+			case "Category":
 				categories.push(pair[1]);
 				heading_types.push(RowType.Category);
 				master_list[pair[1]] = new Array();
@@ -266,7 +373,7 @@ on_csv_load = function(event)
 			var select = document.createElement("select");
 			select.setAttribute("multiple", "true");
 			select.setAttribute("id", heading_names[j]);
-			select.setAttribute("size", "5");
+			select.setAttribute("size", "6");
 			
 			master_list[heading_names[j]].sort();
 			
@@ -355,7 +462,7 @@ draw_plots = function()
 		series: 
 		{ 
 			//lines: {show: false},
-			points: {show: true, fill: false, radius: 1.5, lineWidth: 3}, 
+			points: {show: true, fill: false, radius: 2, lineWidth: 4}, 
 			color: "rgba(0,128,255,0.1)", 
 			shadowSize: 0
 		},
@@ -373,7 +480,7 @@ draw_plots = function()
 		},
 		grid:
 		{
-			backgroundColor: "rgb(196,196,196)"
+			backgroundColor: "rgb(64,64,64)"
 		}
 	}
 
