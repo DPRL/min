@@ -52,119 +52,245 @@ clamp = function(val, min, max)
 
 generate_colors = function (color_count)
 {
+	// maximize mean distance between points
+	/*
 	colors = new Array();
-	var hue = 1;
-	var sat = 2;
-	var light = 3;
 	
-	var hues = new Array();
-	var saturations = new Array();
-	var lightnesses = new Array();
+	var r = 1;
+	var g = 2;
+	var b = 3;
 	
+	var reds = new Array();
+	var greens = new Array();
+	var blues = new Array();
+	
+	var delta_red = new Array();
+	var delta_green = new Array();
+	var delta_blue = new Array();
+	
+	// generate initial colors
 	for(var k = 0; k < color_count; k++)
 	{
-		hue = ((16807 * hue) % 0xFFFFFFFF);
-		sat = ((16807 * sat) % 0xFFFFFFFF);
-		light = ((16807 * light) % 0xFFFFFFFF);
+		r = ((16807 * r) % 0xFFFFFFFF);
+		g = ((16807 * g) % 0xFFFFFFFF);
+		b = ((16807 * b) % 0xFFFFFFFF);
 		
-		hues.push(hue % 360);
-		saturations.push(sat % 25 + 75);
-		lightnesses.push(light % 20 + 30);
+		reds.push(r % 255);
+		blues.push(b % 255);
+		greens.push(g % 255);
 	}
-
-	hues.push(0);
-	saturations.push(0);
-	lightnesses.push(25);
 	
-	// gradient descent method, try to maximize distance between points
+	// background color
+	reds.push(96);
+	blues.push(96);
+	greens.push(96);
 	
-	var d_hue = new Array();
-	var d_sat = new Array();
-	var d_light = new Array();
-	var step_size = 10;
-	for(var k = 0; k < 50; k++)
+	var step_size = 10.0;
+	// maximize average 
+	for(var k = 0; k < 150; k++)
 	{
-		// calculate error and derivatives
-		var distance = 0;
+		// calculate distance and derivatives
+		var square_distance = 0.0;
 		for(var i = 0; i < color_count; i++)
 		{
-			d_hue[i] = 0;
-			d_sat[i] = 0;
-			d_light[i] = 0;
-			
-			var min_distance = Number.POSITIVE_INFINITY;
-			var distance = 0;
-			// color count + 1 for the base color which isn't used for points, but which the points shuld also be far away from
-			for(var j = i + 1; j < color_count+1; j++)
+			delta_red[i] = delta_green[i] = delta_blue[i] = 0.0;
+			for(var j = i+1; j < color_count + 1; j++)
 			{
-				// error
+				var rmean = (reds[i] + reds[j]) / 2.0;
+				var delta_r = reds[i] - reds[j];
+				var delta_g = greens[i] - greens[j];
+				var delta_b = blues[i] - blues[j];
+				var delta_rm = (2 + rmean/256.0);
+				var delta_gm = 4;
+				var delta_bm = (2 + (255 - rmean)/256);
+				// this metric from http://www.compuphase.com/cmetric.htm
+				square_distance +=  distance_ij;
+				var distance_ij = (delta_rm*delta_r*delta_r) + (delta_gm* delta_g* delta_g) +  (delta_bm*delta_b*delta_b);
 				
-				var hue_diff = hues[i] - hues[j];
-				if(hue_diff > 180)
-					hue_diff -= 360;
-				else if(hue_diff < -180)
-					hue_diff += 360;
-				
-				var diff = [hue_diff, saturations[i] - saturations[j], lightnesses[i] - lightnesses[j]];
-				var temp_distance = (diff[0] * diff[0])  + (diff[1] * diff[1]) + (diff[2] * diff[2]) ;
-				
-				//distance += temp_distance;
-				
-				if(temp_distance < min_distance)
-				{
-					min_distance = temp_distance;
-					// partial derivatives
-					d_hue[i] = (2 * (hue_diff) ) ;
-					d_sat[i] = (2 * (saturations[i] - saturations[j]) );
-					d_light[i] = (2 * (lightnesses[i] - lightnesses[j]) );
-				}
+				delta_red[i] += 2 * delta_rm * delta_r * 1.0 / distance_ij;
+				delta_green[i] += 2 * delta_gm * delta_g * 1.0 / distance_ij;
+				delta_blue[i] += 2 * delta_bm * delta_b * 1.0 / distance_ij;
 			}
-			
-			
-			
-			if(isFinite(min_distance)) distance += min_distance;
 		}
-		console.log("Distance: " + distance);
-
 		
-		// normalize derivative parameters
 		var factor = 0.0;
 		for(var i = 0; i < color_count; i++)
-			factor += d_hue[i] * d_hue[i] + d_sat[i] * d_sat[i] + d_light[i] * d_light[i];
+			factor += delta_red[i] * delta_red[i] + delta_green[i] * delta_green[i] + delta_blue[i] * delta_blue[i];
 		factor = Math.sqrt(factor);
-		for(var i = 0; i < color_count; i++)
-		{
-			d_hue[i] /= factor;
-			d_sat[i] /= factor;
-			d_light[i] /= factor;
-		}
-		console.log("Factor: " + factor);
-		console.log(d_hue[0]);
-		console.log(d_sat[0]);
-		console.log(d_light[0]);
-				
 		
-		// now increment
+			
 		for(var i = 0; i < color_count; i++)
 		{
-			console.log(hues[i]);
-			hues[i] = (hues[i] + 20 * step_size * d_hue[i]) % 360;
-			console.log(hues[i]);
-			console.log("...");
-			while(hues[i] < 0) hues[i] += 360;
-			saturations[i] = clamp(saturations[i] + step_size * d_sat[i], 75, 100);
-			lightnesses[i] = clamp(lightnesses[i] + step_size * d_light[i], 30, 50);
+			console.log(reds[i] + "," + greens[i] + "," + blues[i]);
+			reds[i] = clamp(reds[i] + step_size * delta_red[i] / factor, 0, 255);
+			greens[i] = clamp(greens[i] + step_size * delta_green[i] / factor, 0, 255);
+			blues[i] = clamp(blues[i] + step_size * delta_blue[i] / factor, 0, 255);
 		}
+		console.log("...");
 	}
 	
 	for(var i = 0; i < color_count; i++)
 	{
-		colors.push("hsla(" + hues[i] + ", " + saturations[i] + "%," + lightnesses[i] + "%, 0.5)");
+		colors.push("rgba(" + Math.floor(reds[i]) + "," + Math.floor(greens[i]) + "," + Math.floor(blues[i]) + ",0.15)");
 		console.log(colors[i]);
 	}
+	*/
 	
+	// this uses an inverse gravity approach
+	colors = new Array();
+	
+	var r = 1;
+	var g = 2;
+	var b = 3;
+	
+	var reds = new Array();
+	var greens = new Array();
+	var blues = new Array();
+	
+	var red_speed = new Array();
+	var green_speed = new Array();
+	var blue_speed = new Array();
+	
+	
+	var red_accel = new Array();
+	var green_accel = new Array();
+	var blue_accel = new Array();
+	
+	// generate initial colors
+	for(var k = 0; k < color_count; k++)
+	{
+		r = ((16807 * r) % 0xFFFFFFFF);
+		g = ((16807 * g) % 0xFFFFFFFF);
+		b = ((16807 * b) % 0xFFFFFFFF);
+		
+		reds.push(r % 255);
+		blues.push(b % 255);
+		greens.push(g % 255);
+		
+		red_speed[k] = green_speed[k] = blue_speed[k] = 0;
+	}
+	
+	// background color
+	reds.push(96);
+	blues.push(96);
+	greens.push(96);
+	
+	var dt = 5;
+	
+	var mean_speed = 0;
+	
+	//for(var k = 0; k < 1000; k++)
+	for(var k = 0; k < 1000; k++)
+	{
+		mean_speed = 0;
+		for(var i = 0; i < color_count; i++)
+			red_accel[i] = green_accel[i] = blue_accel[i] = 0;
+		for(var i = 0; i < color_count; i++)
+		{
+			// calculate accelerations
+			for(var j = i + 1; j <= color_count; j++)
+			{
+				var rmean = (reds[i] + reds[j]) / 2.0;
+				var delta_r = reds[i] - reds[j];
+				var delta_g = greens[i] - greens[j];
+				var delta_b = blues[i] - blues[j];
+				var delta_rm = (2 + rmean/256.0);
+				var delta_gm = 4;
+				var delta_bm = (2 + (255 - rmean)/256);
+				
+				var square_distance_ij = (delta_rm*delta_r*delta_r) + (delta_gm* delta_g* delta_g) +  (delta_bm*delta_b*delta_b);
+				
+				
+				// vector from j to i
+				var red_ji = Math.sqrt(delta_rm) * delta_r;
+				var green_ji = Math.sqrt(delta_gm) * delta_g;
+				var blue_ji = Math.sqrt(delta_bm) * delta_b;
+				// normalize j to i
+				var norm = Math.sqrt(square_distance_ij);
+				
 
+				
+				
+				red_ji /= norm;
+				green_ji /= norm;
+				blue_ji /= norm;
+				var force = 1.0 / square_distance_ij;
+				/*
+				if(i == 0 && (j == 5 || j == 7))
+				{
+					console.log(i);
+					console.log(j);
+					console.log(" norm: " + norm);
+					console.log(" rmean: " + rmean);
+					console.log(" delta r: " + delta_r);
+					console.log(" delta g: " + delta_g);
+					console.log(" delta b: " + delta_b);
+					console.log(" force: " + force);
+				}
+				*/
+				// push in opposite direction for j
+				// ignore background color
+				if(j != color_count)
+				{
+					red_accel[j] -= force * red_ji;
+					green_accel[j] -= force * green_ji;
+					blue_accel[j] -= force * blue_ji;
+				}
+				else	// really keep points away from background color
+				{
+					force *= 8;
+				}
+				
+				red_accel[i] += force * red_ji;
+				green_accel[i] += force * green_ji;
+				blue_accel[i] += force * blue_ji;
+				
+
+			}
+		}
+		
+		
+		
+		// update speeds and positions
+		for(var i = 0; i < color_count; i++)
+		{
+			//console.log(red_accel[i] + " " + red_speed[i] + " " + reds[i]);
+		
+			red_speed[i] = red_speed[i]  + red_accel[i] * dt;
+			green_speed[i] = green_speed[i]  + green_accel[i] * dt;
+			blue_speed[i] =  blue_speed[i]  + blue_accel[i] * dt;
+			
+			reds[i] += red_speed[i] * dt;
+			greens[i] += green_speed[i] * dt;
+			blues[i] += blue_speed[i] * dt;
+			
+			// now clamp (and update speeds)
+			if(reds[i] < 0 || reds[i] > 255)
+			{
+				reds[i] = clamp(reds[i], 0, 255);
+				red_speed[i] = 0;
+			}
+			if(greens[i] < 0 || greens[i] > 255)
+			{
+				greens[i] = clamp(greens[i], 0, 255);
+				green_speed[i] = 0;
+			}
+			if(blues[i] < 0 || blues[i] > 255)
+			{
+				blues[i] = clamp(blues[i], 0, 255);
+				blue_speed[i] = 0;
+			}
+			mean_speed += Math.sqrt(red_speed[i]*red_speed[i] + green_speed[i]*green_speed[i] + blue_speed[i]*blue_speed[i]);
+		}
+		mean_speed /= color_count;
+		console.log("mean speed: " + mean_speed);
+	}
 	
+	for(var i = 0; i < color_count; i++)
+	{
+		colors.push("rgba(" + Math.floor(reds[i]) + "," + Math.floor(greens[i]) + "," + Math.floor(blues[i]) + ",0.15)");
+		console.log(colors[i]);
+	}
 }
 
 filter_data = function(event)
@@ -480,7 +606,7 @@ draw_plots = function()
 		},
 		grid:
 		{
-			backgroundColor: "rgb(64,64,64)"
+			backgroundColor: "rgb(96,96,96)"
 		}
 	}
 
