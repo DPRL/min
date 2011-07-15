@@ -432,6 +432,17 @@
 				z-index: 15;
 			}
 			
+			div#infobar {
+				height: 25px;
+				line-height: 25px;
+				font-size: 11px;
+				background-color: #d3d3d3;
+				color: #333;
+				padding: 0 10px;
+				border-bottom: 1px solid #888;
+				border-top: 1px solid #888;
+			}
+			
 		</style>
 	</head>
 
@@ -516,6 +527,9 @@
 					<div class="toolbar_group_label">Export</div>
 				</div>
 			</div>
+			
+			<div id="infobar"></div>
+			
 			<!-- holds everything but the toolbar-->
 			<div id="equation_canvas" class="equation_canvas" tabindex="0" >
 				<div id="relabel_menu" style="visibility: hidden;" >

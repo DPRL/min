@@ -100,14 +100,37 @@ RenderManager.render_tools_layer = function()
 
 RenderManager.render = function()
 {	
+	var setid = -1;
+	var all_same_setid = true;
+	var infobar = document.getElementById( "infobar" );
+	
 	for(var k = 0; k < Editor.segments.length; k++)
 	{
-		var seg = Editor.segments[k];
-		if(Editor.segment_selected(seg))
+		var seg = Editor.segments[k];		
+		
+		if(Editor.segment_selected(seg)) {
+			if ( setid == -1 ) {
+				setid = seg.set_id;
+			} else if ( seg.set_id != setid ) {
+				all_same_setid = false;
+			}
 			seg.render_selected();
-		else
+		} else {
 			seg.render();
+		}
 	}
+	
+	var infobartext = "";
+	if ( setid != -1 ) {
+		if ( all_same_setid ) {
+			var rec = RecognitionManager.getRecognition( setid );
+			for ( var i = 0; i < 5; i++ ) {
+				infobartext += rec.symbols[ i ] + " (" + rec.certainties[ i ] + ")";
+				if ( i != 4 ) infobartext += ", ";
+			}
+		}
+	}
+	infobar.innerHTML = infobartext;
 	
 	RenderManager.render_tools_layer();
 }
