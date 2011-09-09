@@ -858,10 +858,18 @@ Editor.align = function()
 			// parse response xml
 			var xmldoc = new DOMParser().parseFromString(in_data, "text/xml");
 			var segment_nodes = xmldoc.getElementsByTagName("Segment");
+			var tex_nodes = xmldoc.getElementsByTagName( "TexString" );
+			
 			if(segment_nodes.length == 0)
 			{
 				alert("Received this response from DRACULAE: " + in_data);
 				return;
+			}
+			
+			if ( tex_nodes.length != 0 ) {
+				var tex_string = tex_nodes[ 0 ].textContent;
+				var tex_math = tex_string.split( "$" )[ 1 ].replace( "/\\s*/g", "" ); // get just the math, removing spaces
+				document.getElementById( "tex_result" ).innerHTML = "$" + tex_math + "$";
 			}
 			
 			for(var k = 0; k < segment_nodes.length; k++)

@@ -22,13 +22,15 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 		// removeh over css
 		for(var i = 0; i < document.styleSheets.length; i++)
 		{
-			for(var j = 0; j < document.styleSheets[i].rules.length; j++)
-			{
-				if(document.styleSheets[i].rules[j].cssText.match("hover") != null)
+			if ( document.styleSheets[ i ].rules != null ) {
+				for(var j = 0; j < document.styleSheets[i].rules.length; j++)
 				{
-					document.styleSheets[i].deleteRule(j--);
+					if(document.styleSheets[i].rules[j].cssText.match("hover") != null)
+					{
+						document.styleSheets[i].deleteRule(j--);
+					}
+					//if(document.styleSheets[i].rules[j].mathch
 				}
-				//if(document.styleSheets[i].rules[j].mathch
 			}
 		}
 		
