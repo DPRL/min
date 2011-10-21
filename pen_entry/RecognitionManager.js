@@ -86,13 +86,15 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 	Editor.classifier.classify(segments_in_set, should_segment);
  }
  
- RecognitionManager.classify_queued = function(should_segment)
+ RecognitionManager.classify_queued = function(should_segment, should_assign_setid)
  {
 	console.log("classify queued!");
 	var temp_list = new Array();
 	var new_set_id = Segment.set_count++;
 	
 	var count = Math.min(RecognitionManager.max_segments, RecognitionManager.segment_queue.length);
+	
+	if ( count > 0 && !should_assign_setid ) new_set_id = RecognitionManager.segment_queue[ 0 ].set_id;
 	
 	for(var k = 0; k < count; k++)
 	{
@@ -106,18 +108,16 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
  RecognitionManager.enqueueSegment = function(segment)
  {
 	clearTimeout(RecognitionManager.timeout);
- 
-	
- 
+
 	RecognitionManager.segment_queue.push(segment);
 	if(RecognitionManager.segment_queue.length >= RecognitionManager.max_segments)
 	{
-		RecognitionManager.classify_queued(false);
+		RecognitionManager.classify_queued(false, segment.set_id == -1);
 	}
 	else
 	{
 		console.log("Setting timeouot");
-		RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false);", 1500);
+		RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false," + ( segment.set_id == -1 ? "true" : "false" ) + ";", 1500);
 	}
 	
  }

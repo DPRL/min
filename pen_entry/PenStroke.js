@@ -374,6 +374,11 @@ PenStroke.prototype.line_collides = function(point_a, point_b)
 
 PenStroke.prototype.rectangle_collides = function(in_corner_a, in_corner_b)
 {
+	var e = 0.2;
+
+	var noShift = new Vector2( 0, 0 );
+	var scaleAdjust = new Vector2( e, e );
+	
 	var rect_min = new Vector2();
 	var rect_max = new Vector2();
 	
@@ -382,6 +387,14 @@ PenStroke.prototype.rectangle_collides = function(in_corner_a, in_corner_b)
 	
 	rect_max.x = Math.max(in_corner_a.x, in_corner_b.x);
 	rect_max.y = Math.max(in_corner_a.y, in_corner_b.y);
+	
+	rect_max.transform( noShift, scaleAdjust );
+	
+	// expand fixed amount equal to stroke width
+	rect_min.x -= Editor.stroke_width;
+	rect_min.y -= Editor.stroke_width;
+	rect_max.x += Editor.stroke_width;
+	rect_max.y += Editor.stroke_width;
 	
 	var stroke_min = this.worldMinPosition();
 	var stroke_max = this.worldMaxPosition();
@@ -396,12 +409,27 @@ PenStroke.prototype.rectangle_collides = function(in_corner_a, in_corner_b)
 	if(stroke_min.x > rect_min.x && stroke_max.x < rect_max.x) return true;
 	if(stroke_min.y > rect_min.y && stroke_max.y < rect_max.y) return true;
 	
+	// test points
 	for(var k = 0; k < this.points.length; k++)
 	{
-		var trans_point = this.points[k].transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
+		var p1 = this.points[k].transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
+		if ( p1.x == in_corner_a.x && p1.y == in_corner_a.y
+		     || p1.x == in_corner_b.x && p1.y == in_corner_b.y ) return true;
+	}
+	
+	for(var k = 0; k < this.points.length - 1; k++)
+	{
+		var p1 = this.points[k].transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
+		var p2 = this.points[k+1].transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
 		
-		if(trans_point.x >=rect_min.x && trans_point.x <= rect_max.x && trans_point.y >= rect_min.y && trans_point.y <= rect_max.y)
-			return true;
+		var ra1 = new Vector2();
+		var ra2 = new Vector2();
+		ra1.x = Math.min( p1.x, p2.x );
+		ra1.y = Math.min( p1.y, p2.y );
+		ra2.x = Math.max( p1.x, p2.x );
+		ra2.y = Math.max( p1.y, p2.y );
+		
+		if ( ra1.x < rect_max.x && ra2.x > rect_min.x && ra1.y < rect_max.y && ra2.y > rect_min.y ) return true;
 	}
 	return false;
 }
@@ -452,4 +480,37 @@ PenStroke.prototype.toXML = function()
 	sb.append("\"/>");
 		
 	return sb.toString();
+}
+
+PenStroke.prototype.test_collisions = function() {
+	var collided_segments = new Array();
+	for ( var i = 0; i < this.points.length - 1; i++ ) {
+		var pa = this.points[ i ].transform( this.scale, this.translation );
+		var pb = this.points[ i + 1 ].transform( this.scale, this.translation );
+		
+		for ( var j = 0; j < Editor.segments.length; j++ ) {
+			if ( Editor.segments[ j ].instance_id == this.instance_id ) continue;
+			
+			if ( Editor.segments[ j ].rectangle_collides( pa, pb ) ) {
+				// console.log( Editor.segments[ j ] );
+				if ( !collided_segments.contains( Editor.segments[ j ] ) ) collided_segments.push( Editor.segments[ j ] );
+			}
+		}
+	}
+	
+	if ( collided_segments.length == 1 ) {
+		// if we collided with just one, adopt its setid
+		this.set_id = collided_segments[ 0 ].set_id;
+		//alert( "ONE COLLISION" );
+	} else if ( collided_segments.length > 1 ) {
+		// if we collided with more than one, get new setid
+		//alert( "MORE THAN ONE COLLISION" );
+		var newsetid = Segment.set_count++;
+		this.set_id = newsetid;
+		for ( var i = 0; i < collided_segments.length; i++ ) {
+			collided_segments[ i ].set_id = newsetid;
+		}
+	} else {
+		this.set_id = -1;
+	}
 }

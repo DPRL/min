@@ -57,8 +57,9 @@ Editor.setup_events = function()
 	document.addEventListener("mouseup", Editor.onMouseUp, true);
 	document.addEventListener("touchend", Editor.onMouseUp, true);
 	// jquery event for easy character input handling; otherwise a pain in the butt
-	$('#equation_canvas').keypress(Editor.onKeyPress);
-	$('#equation_canvas').keydown(Editor.preventBackspace);
+	$(document).keypress(Editor.onKeyPress);
+	$(document).keydown(Editor.preventBackspace);
+	window.addEventListener("keydown", Editor.onKeyPress, true);
 	
 	var button_index = 0;
 	
@@ -601,11 +602,13 @@ Editor.onMouseUp = function(e)
 			case EditorState.MiddleOfStroke:
 				Editor.state = EditorState.ReadyToStroke;
 				//RecognitionManager.classify(Editor.current_stroke.set_id, true);
-				if(Editor.current_stroke.finish_stroke())
+				if(Editor.current_stroke.finish_stroke()) {
+					Editor.current_stroke.test_collisions();
 					RecognitionManager.enqueueSegment(Editor.current_stroke);
-				else
+				} else {
 					Editor.segments.pop();
-					
+				}
+				
 				Editor.current_stroke = null;
 				Editor.current_action.buildSegmentXML();
 				break;
@@ -628,13 +631,15 @@ Editor.preventBackspace = function(e)
 		if(navigator.userAgent.indexOf("Opera") == -1)
 		{
 			e.preventDefault();
-			if(navigator.userAgent.indexOf("Firefox") == -1)
-				Editor.onKeyPress(e);
+			//if(navigator.userAgent.indexOf("Firefox") == -1)
+			//	Editor.onKeyPress(e);
 		}
 	}
 	
 	if(e.keyCode == 46)
 		Editor.deleteTool();
+		
+	//Editor.onKeyPress( e );
 }
 
 Editor.onKeyPress = function(e)
@@ -657,6 +662,82 @@ Editor.onKeyPress = function(e)
 			}
 			
 			break;
+		
+		case EditorState.ReadyToRectangleSelect:
+		case EditorState.ReadyToStrokeSelect:
+		case EditorState.SegmentsSelected:
+			if ( Editor.segments.length > 0
+				 && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
+				 
+				if ( Editor.selected_segments.length == 0 ) {
+					var seg_to_add = Editor.segments[ Editor.segments.length - 1 ];
+					var seg_set_id = seg_to_add.set_id;
+					for ( var i = 0; i < Editor.segments.length; i++ ) {
+						if ( Editor.segments[ i ].set_id == seg_set_id ) Editor.add_selected_segment( Editor.segments[ i ] );
+					}
+					Editor.state = EditorState.SegmentsSelected;
+					Editor.button_states[Buttons.Delete].setEnabled(true);
+					Editor.button_states[Buttons.Group].setEnabled(true);
+					Editor.button_states[Buttons.Label].setEnabled(true);
+					RenderManager.render();					
+				} else {
+
+					var cur_seg = Editor.selected_segments[ 0 ]; // use first for location
+					var cur_seg_loc = new Vector2( ( cur_seg.translation.x + ( cur_seg.translation.x + cur_seg.size.x ) ) / 2, ( cur_seg.translation.y + ( cur_seg.translation.y + cur_seg.size.y ) ) / 2 );
+					var filter;
+					
+					switch ( e.keyCode ) {
+						case 37: // left
+							filter = function( s ) { return s.translation.x <= cur_seg.translation.x; };
+							break;
+							
+						case 38: // up
+							filter = function( s ) { return s.translation.y <= cur_seg.translation.y; };
+							break;
+							
+						case 39: // right
+							filter = function( s ) { return s.translation.x >= cur_seg.translation.x; };
+							break;
+							
+						case 40: // down
+							filter = function( s ) { return s.translation.y >= cur_seg.translation.y; };
+							break;
+							
+						default:
+							break;
+					}
+					
+					var min_dist = -1;
+					var min_dist_index = -1;
+					
+					for ( var n = 0; n < Editor.segments.length; n++ ) {
+						var seg = Editor.segments[ n ];
+						if ( seg.set_id == cur_seg.set_id || !filter( seg ) ) continue;
+						
+						var seg_loc = new Vector2(( seg.translation.x + seg.translation.x + seg.size.x ) / 2, ( seg.translation.y + seg.translation.y + seg.size.y ) / 2);
+						
+						var dist = Vector2.Distance( seg_loc, cur_seg_loc );
+						if ( min_dist == -1 || dist < min_dist ) {
+							min_dist = dist;
+							min_dist_index = n;
+						}
+					}
+				
+					if ( min_dist_index == -1 ) break; // min_dist_index = Editor.segments.length - 1;
+					
+					Editor.clear_selected_segments();
+					
+					var seg_to_add = Editor.segments[ min_dist_index ];
+					var seg_set_id = seg_to_add.set_id;
+					for ( var i = 0; i < Editor.segments.length; i++ ) {
+						if ( Editor.segments[ i ].set_id == seg_set_id ) Editor.add_selected_segment( Editor.segments[ i ] );
+					}
+					
+					RenderManager.render();
+				}
+			}
+			break;
+			
 	}
 }
 
@@ -755,6 +836,7 @@ Editor.rectangleSelectionTool = function()
 			RenderManager.render_layer(2);
 			break;
 	}
+	
 	if(Editor.selected_segments.length == 0)
 		Editor.state = EditorState.ReadyToRectangleSelect;
 	else
@@ -868,8 +950,8 @@ Editor.align = function()
 			
 			if ( tex_nodes.length != 0 ) {
 				var tex_string = tex_nodes[ 0 ].textContent;
-				var tex_math = tex_string.split( "$" )[ 1 ].replace( "/\\s*/g", "" ); // get just the math, removing spaces
-				document.getElementById( "tex_result" ).innerHTML = "$" + tex_math + "$";
+				var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" ); // get just the math, removing spaces
+				document.getElementById( "tex_result" ).value = "$" + tex_math + "$";
 			}
 			
 			for(var k = 0; k < segment_nodes.length; k++)
