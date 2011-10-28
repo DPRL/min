@@ -251,18 +251,18 @@
 				background: #F6F5F2; /* old browsers */
 				background: -moz-linear-gradient(top, #F6F5F2 0%, #EDEAE3 37%, #DCD7C8 100%); /* firefox */
 
-				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#F6F5F2), color-stop(37%,#EDEAE3), color-stop(100%,#DCD7C8)); /* webkit */
+				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#999999), color-stop(37%,#888888), color-stop(100%,#777777)); /* webkit */
 
 				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#F6F5F2', endColorstr='#DCD7C8',GradientType=0 ); /* ie */
 
-				background: -o-linear-gradient(top, #F6F5F2 0%,#EDEAE3 37%,#DCD7C8 100%); /* opera *
+				background: -o-linear-gradient(top, #F6F5F2 0%,#EDEAE3 37%,#DCD7C8 100%); /* opera */
 				
 				/*background-color: #BBBB90;*/
 				
 				
 				left: 0px;
 				top: 0px;
-				height: 120px;
+				height: 70px;
 				width: 100%;
 				overflow: hidden;
 				border-bottom-style: solid;
@@ -288,8 +288,9 @@
 				width: 100%;
 				text-align: center;
 				font-size: 14px;
-				height: 16px;
+				/*height: 16px;*/
 				font-height: 16px;
+				display: none;
 			}
 			
 			div.toolbar_group_divider
@@ -297,7 +298,7 @@
 				top: 0px;
 				width: 2px;
 				height: inherit;
-				background-color:  #D3C9BC;
+				background-color:  #666666;
 				float:left;
 				margin-left: 3px;
 				margin-right: 3px;
@@ -328,8 +329,9 @@
 				border-style:inset;
 				border-width:1px;
 				border-radius: 2px;			
-				border-color: #CE8D42;
-				background-color: rgba(206,141,66,0.4);
+				border-color: #333333;
+				/*background-color: rgba(206,141,66,0.4);*/
+				background-color: rgba(0,0,0,0.4);
 			}
 			
 			div.toolbar_button_enabled:hover
@@ -343,11 +345,11 @@
 			
 			div.toolbar_button_disabled
 			{
-				border-style:inset;
+				/*border-style:inset;
 				border-width:1px;
 				border-radius: 2px;				
-				border-color:#BBB;
-				background-color: rgba(96,96,96,0.2);
+				border-color:#BBB;*/
+				background-color: rgba(96,96,96,0.7);
 			}
 			
 			div.toolbar_button_touched
@@ -361,10 +363,11 @@
 			
 			div.toolbar_button_icon
 			{
-				width: 64px;
-				height: 64px;
+				width: 50px;
+				height: 50px;
 				background-color: #111;
 				margin: 5px;
+				/*padding: 5px;*/
 			}
 			
 			div.toolbar_button_label
@@ -373,6 +376,7 @@
 				width: 100%;
 				text-align: center;
 				font-size: 12px;
+				display: none;
 			}
 			
 
@@ -467,7 +471,7 @@
 			
 			div#logobar-wrapper {
 				position: absolute;
-				bottom: 170px;
+				bottom: 120px;
 				height: 100px;
 				width: 100%;
 			}
@@ -499,7 +503,7 @@
 			<div id="toolbar" class="toolbar">
 				<div class="toolbar_group">
 					<div class="toolbar_button button" id="pen">
-						<div class="toolbar_button_icon"></div>
+						<div class="toolbar_button_icon"><img src="img/min_pen.png" alt="Pen" style="height: 50px; width: 50px;" /></div>
 						<div class="toolbar_button_label">Pen</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
@@ -507,12 +511,12 @@
 				<div class="toolbar_group_divider"></div>
 				<div class="toolbar_group">
 					<div class="toolbar_button" id="rectangle_select">
-						<div class="toolbar_button_icon"></div>	
+						<div class="toolbar_button_icon"><img src="img/min_segselect.png" alt="Rectangle Select" style="height: 50px; width: 50px;" /></div>	
 						<div class="toolbar_button_label">Box</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>				
 					<div class="toolbar_button button" id="stroke_select">
-						<div class="toolbar_button_icon"></div>			
+						<div class="toolbar_button_icon"><img src="img/min_strokeselect.png" alt="Stroke Select" style="height: 50px; width: 50px;" /></div>			
 						<div class="toolbar_button_label">Stroke</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
@@ -522,22 +526,22 @@
 				<div class="toolbar_group_divider"></div>
 				<div class="toolbar_group">	
 					<div class="toolbar_button button" id="delete">
-						<div class="toolbar_button_icon"></div>		
+						<div class="toolbar_button_icon"><img src="img/min_delete.png" alt="Delete" style="height: 50px; width: 50px;" /></div>		
 						<div class="toolbar_button_label">Delete</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
 					<div class="toolbar_button button" id="align">
-						<div class="toolbar_button_icon"></div>		
+						<div class="toolbar_button_icon"><img src="img/min_align.png" alt="Align" style="height: 50px; width: 50px;" /></div>		
 						<div class="toolbar_button_label">Align</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
 					<div class="toolbar_button button" id="undo">
-						<div class="toolbar_button_icon"></div>
+						<div class="toolbar_button_icon"><img src="img/min_undo.png" alt="Undo" style="height: 50px; width: 50px;" /></div>
 						<div class="toolbar_button_label">Undo</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
 					<div class="toolbar_button button" id="redo">
-						<div class="toolbar_button_icon"></div>		
+						<div class="toolbar_button_icon"><img src="img/min_redo.png" alt="Redo" style="height: 50px; width: 50px;" /></div>		
 						<div class="toolbar_button_label">Redo</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
@@ -546,12 +550,12 @@
 				<div class="toolbar_group_divider"></div>
 				<div class="toolbar_group">
 					<div class="toolbar_button button" id="group">
-						<div class="toolbar_button_icon"></div>		
+						<div class="toolbar_button_icon"><img src="img/min_group.png" alt="Group" style="height: 50px; width: 50px;" /></div>		
 						<div class="toolbar_button_label">Group</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
 					<div class="toolbar_button button" id="relabel">
-						<div class="toolbar_button_icon"></div>		
+						<div class="toolbar_button_icon"><img src="img/min_label.png" alt="Label" style="height: 50px; width: 50px;" /></div>		
 						<div class="toolbar_button_label">Label</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
@@ -560,7 +564,7 @@
 				<div class="toolbar_group_divider"></div>
 				<div class="toolbar_group">
 					<div class="toolbar_button button" id="clear">
-						<div class="toolbar_button_icon"></div>
+						<div class="toolbar_button_icon"><img src="img/min_clear.png" alt="Clear" style="height: 50px; width: 50px;" /></div>
 						<div class="toolbar_button_label">Clear</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
@@ -568,7 +572,7 @@
 				<div class="toolbar_group_divider"></div>
 				<div class="toolbar_group">
 					<div class="toolbar_button button" id="getInkML">
-						<div class="toolbar_button_icon"></div>
+						<div class="toolbar_button_icon"><img src="img/min_inkml.png" alt="Get InkML" style="height: 50px; width: 50px;" /></div>
 						<div class="toolbar_button_label" id="getInkMLbutton" >Get InkML</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>

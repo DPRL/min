@@ -663,6 +663,14 @@ Editor.onKeyPress = function(e)
 			
 			break;
 		
+		case EditorState.ReadyToStroke:
+			if ( Editor.segments.length > 0
+				 && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
+				Editor.rectangleSelectionTool();
+			} else {
+				break;
+			}
+		
 		case EditorState.ReadyToRectangleSelect:
 		case EditorState.ReadyToStrokeSelect:
 		case EditorState.SegmentsSelected:
@@ -734,6 +742,20 @@ Editor.onKeyPress = function(e)
 					}
 					
 					RenderManager.render();
+				}
+			} else {
+				switch ( e.keyCode ) {
+					case 71: // 'g'
+						Editor.groupTool();
+						break;
+					case 76: // 'l'
+						Editor.relabel();
+						break;
+					case 80: // 'p'
+						Editor.selectPenTool();
+						break;
+					default:
+						console.log( e.keyCode );
 				}
 			}
 			break;
