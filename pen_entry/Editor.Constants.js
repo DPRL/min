@@ -26,9 +26,8 @@ Editor.symbol_tree = "example_tree_icdar.xml";
 /** Asthetics **/
 
 // colors assumed to be 3 byte hex (ie no rgba() bs)
-Editor.segment_color = "#111111"; 
-//Editor.selected_segment_color = "#4FBFDB";
-Editor.selected_segment_color = "#FF0000";
+Editor.segment_color = "#BBBBBB"; 
+Editor.selected_segment_color = "#BBBBBB";
 Editor.selection_box_color = "#303030";
 Editor.segment_set_box_color = "#FF8020";
 Editor.control_point_fill_color = "#FFAA00";
