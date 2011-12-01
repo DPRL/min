@@ -241,7 +241,7 @@ RenderManager.render_set_field = function(in_context_id)
 					ss_div.innerHTML = symbol;
 				else
 					ss_div.innerHTML = recognition_result.symbols[0];
-				ss_div.style.fontSize = rect_size.y + "px";
+				ss_div.style.fontSize = (rect_size.y * 1.25) + "px"; // scale font up to fill more of bb
 				ss_div.style.lineHeight = rect_size.y + "px";
 			}
 			else

@@ -1208,14 +1208,12 @@ Editor.clear = function()
 		Editor.data_server_url + sb.toString(),
 		function(data, textStatus, xmlhttp)
 		{
-			window.location.href = Editor.editor_root + "index.xhtml";
+			window.location.reload( true ); // href = Editor.editor_root + "index.xhtml";
 		}
 	);
 	
-	
-	
 	// reset editor
-	//
+	// ?????
 }
 
 Editor.getInkML = function() {
