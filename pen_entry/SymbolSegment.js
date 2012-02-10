@@ -29,6 +29,13 @@ SymbolSegment.type_id = 3;
 	this.world_maxs = new Vector2(in_position.x, in_position.y);
 	
 	this.is_empty = true;
+	
+	this.textDiv = $('<div/>', {
+		class: 'textDiv'
+	});
+
+	this.textDiv.appendTo(Editor.canvas_div);
+	this.render();
  }
  
  SymbolSegment.prototype.addCharacter = function(in_char)
@@ -71,39 +78,44 @@ SymbolSegment.prototype.clear = function(context) {
 }
  
  SymbolSegment.prototype.render_with_color = function(in_context, in_color)
- {
- // render text
-	var total_translation = new Vector2(0,0).transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
-	var total_scale = Vector2.Pointwise(this.scale, this.temp_scale);
+ {	
+	
+	transform = 'translate(' + this.temp_translation.x + 'px,' + this.temp_translation.y + 'px) ';
+	transform += 'scale(' + this.temp_scale.x + ',' + this.temp_scale.y + ') ';
+	transform = 'translate(' + this.translation.x + 'px,' + this.translation.y + 'px) ';
+	transform += 'scale(' + this.scale.x + ',' + this.scale.y + ') ';
+	
+	this.textDiv.css('-webkit-transform', transform);
+	this.textDiv.text(this.text);
  
-	if(this.text != "")
-	{
-		in_context.save();
-		in_context.fillStyle = in_color;
-		in_context.font = "bold 32px sans-serif";
-		this.text_width = in_context.measureText(this.text).width;	
-
-		in_context.translate(total_translation.x, total_translation.y);
-		in_context.scale(total_scale.x, total_scale.y);
-		
-		in_context.textAlign = "left";
-		in_context.textBaseline = "top";
-		//in_context.fillText(this.text, this.position.x, this.position.y);
-		in_context.fillText(this.text, 0, 0);
-		in_context.restore();
-	}
-	// render vertical bar after
-
-	if(Editor.current_text == this)
-	{
-		in_context.lineWidth = 2;
-		in_context.beginPath();
-
-		in_context.moveTo(total_translation.x + this.text_width * total_scale.x + 5, total_translation.y);
-		in_context.lineTo(total_translation.x + this.text_width * total_scale.x + 5, total_translation.y + this.text_height * total_scale.y);
-		
-		in_context.stroke();
-	}
+	// if(this.text != "")
+	// {
+	// 	in_context.save();
+	// 	in_context.fillStyle = in_color;
+	// 	in_context.font = "bold 32px sans-serif";
+	// 	this.text_width = in_context.measureText(this.text).width;	
+	// 
+	// 	in_context.translate(total_translation.x, total_translation.y);
+	// 	in_context.scale(total_scale.x, total_scale.y);
+	// 	
+	// 	in_context.textAlign = "left";
+	// 	in_context.textBaseline = "top";
+	// 	//in_context.fillText(this.text, this.position.x, this.position.y);
+	// 	in_context.fillText(this.text, 0, 0);
+	// 	in_context.restore();
+	// }
+	// // render vertical bar after
+	// 
+	// if(Editor.current_text == this)
+	// {
+	// 	in_context.lineWidth = 2;
+	// 	in_context.beginPath();
+	// 
+	// 	in_context.moveTo(total_translation.x + this.text_width * total_scale.x + 5, total_translation.y);
+	// 	in_context.lineTo(total_translation.x + this.text_width * total_scale.x + 5, total_translation.y + this.text_height * total_scale.y);
+	// 	
+	// 	in_context.stroke();
+	// }
  }
  
  SymbolSegment.prototype.render = function(in_context)

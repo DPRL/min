@@ -383,6 +383,17 @@ svg.pen_stroke {
 	z-index: 15;
 }
 
+.textDiv {
+	font-size: 32px;
+	color: white;
+	position: absolute;
+	z-index: 15;
+	top: 0;
+	left: 0;
+	min-height: 1em;
+	min-width: 0.5em;
+}
+
 div#infobar-wrapper {
 	height: 25px;
 	line-height: 25px;
