@@ -234,7 +234,7 @@ RenderManager.render_set_field = function(in_context_id)
 			ss_div.style.visibility = "visible";
 			
 			var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
-			if(recognition_result != null)
+			if(recognition_result != null && set_segments[0].constructor != SymbolSegment)
 			{
 				var symbol = RecognitionManager.symbol_name_to_unicode[recognition_result.symbols[0]];
 				if(symbol != undefined)
