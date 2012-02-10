@@ -80,6 +80,8 @@ SymbolSegment.prototype.clear = function(context) {
  SymbolSegment.prototype.render_with_color = function(in_context, in_color)
  {	
 	
+	RecognitionManager.addRecognitionForText(this);
+	
 	transform = 'translate(' + this.temp_translation.x + 'px,' + this.temp_translation.y + 'px) ';
 	transform += 'scale(' + this.temp_scale.x + ',' + this.temp_scale.y + ') ';
 	transform = 'translate(' + this.translation.x + 'px,' + this.translation.y + 'px) ';

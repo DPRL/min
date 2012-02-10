@@ -136,3 +136,16 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 		if( RecognitionManager.result_table[k].set_id == in_set_id)
 			RecognitionManager.result_table.splice(k,1);
  }
+
+RecognitionManager.addRecognitionForText = function(textSegment) {
+	RecognitionManager.removeRecognition(textSegment.set_id);
+	
+	result = new RecognitionResult();
+	result.symbols.push(textSegment.text);
+	result.certainties.push(1);
+	result.results = 1;
+	result.set_id = textSegment.set_id;
+	result.instance_ids.push(textSegment.instance_id);
+	
+	RecognitionManager.result_table.push(result);
+}
