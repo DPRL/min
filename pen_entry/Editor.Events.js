@@ -59,7 +59,7 @@ Editor.setup_events = function()
 	// jquery event for easy character input handling; otherwise a pain in the butt
 	$(document).keypress(Editor.onKeyPress);
 	$(document).keydown(Editor.preventBackspace);
-	window.addEventListener("keydown", Editor.onKeyPress, true);
+	//window.addEventListener("keydown", Editor.onKeyPress, true);
 	
 	var button_index = 0;
 	
@@ -635,8 +635,9 @@ Editor.preventBackspace = function(e)
 		if(navigator.userAgent.indexOf("Opera") == -1)
 		{
 			e.preventDefault();
-			//if(navigator.userAgent.indexOf("Firefox") == -1)
-			//	Editor.onKeyPress(e);
+			if(navigator.userAgent.indexOf("Firefox") == -1) {
+				Editor.onKeyPress(e);
+			}				
 		}
 	}
 	
@@ -657,15 +658,11 @@ Editor.onKeyPress = function(e)
 			{
 				if(e.keyCode == 8) {	// backspace
 					Editor.current_text.popCharacter();
-					console.log(Editor.current_text.text);
 				}
 				else
 				{
 					Editor.current_text.addCharacter(String.fromCharCode(e.which));
-					console.log(Editor.current_text.text);
 				}
-				
-				//RenderManager.render_layer(2);
 			}
 			
 			break;
