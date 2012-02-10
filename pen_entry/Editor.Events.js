@@ -68,7 +68,7 @@ Editor.setup_events = function()
 	// add an equation image to the canvas
 	//if(window.FileReader) document.getElementById("image").addEventListener("change", Editor.onImageLoad, true);
 	// enable typing if not an ipad
-	//if(navigator.userAgent.match(/iPad/i) == null) document.getElementById("text").addEventListener("click", Editor.typeTool, true);
+	if(navigator.userAgent.match(/iPad/i) == null) document.getElementById("text").addEventListener("click", Editor.typeTool, true);
 	
 	// change to stroke selection tool
 	document.getElementById("stroke_select").addEventListener("click", Editor.strokeSelectionTool, true);
@@ -377,7 +377,7 @@ Editor.onMouseDown = function(e)
 				Editor.add_action(new EditText(Editor.current_text));
 			}
 			
-			RenderManager.render_layer(2);
+			//RenderManager.render_layer(2);			
 			Editor.state = EditorState.MiddleOfText;
 			break;
 	}
@@ -482,7 +482,11 @@ Editor.onMouseMove = function(e)
 				var translation = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
 				for(var k = 0; k < Editor.selected_segments.length; k++)
 				{
-						Editor.selected_segments[k].translate(translation);
+					seg = Editor.selected_segments[k];
+					if(seg.clear != undefined) {
+						seg.clear(Editor.contexts[0]);
+					}					
+					seg.translate(translation);
 				}
 				Editor.selected_bb.translate(translation);
 
@@ -651,14 +655,17 @@ Editor.onKeyPress = function(e)
 		case EditorState.MiddleOfText:
 			if(Editor.current_text != null)
 			{
-				if(e.keyCode == 8)	// backspace
+				if(e.keyCode == 8) {	// backspace
 					Editor.current_text.popCharacter();
+					console.log(Editor.current_text.text);
+				}
 				else
 				{
 					Editor.current_text.addCharacter(String.fromCharCode(e.which));
+					console.log(Editor.current_text.text);
 				}
 				
-				RenderManager.render_layer(2);
+				//RenderManager.render_layer(2);
 			}
 			
 			break;
@@ -788,7 +795,7 @@ Editor.selectPenTool = function()
 			else if(Editor.current_action.toString() == "AddSegments")
 				Editor.current_action.buildSegmentXML();
 			Editor.current_text = null;
-			RenderManager.render_layer(2);
+			//RenderManager.render_layer(2);			
 			break;
 	}
 
@@ -820,8 +827,7 @@ Editor.strokeSelectionTool = function()
 			else if(Editor.current_action.toString() == "AddSegments")
 				Editor.current_action.buildSegmentXML();				
 			Editor.current_text = null;
-			RenderManager.render_layer(2);
-			break;
+			//RenderManager.render_layer(2);			break;
 	}
 	
 	if(Editor.selected_segments.length == 0)
@@ -855,8 +861,7 @@ Editor.rectangleSelectionTool = function()
 			else if(Editor.current_action.toString() == "AddSegments")
 				Editor.current_action.buildSegmentXML();				
 			Editor.current_text = null;
-			RenderManager.render_layer(2);
-			break;
+			//RenderManager.render_layer(2);			break;
 	}
 	
 	if(Editor.selected_segments.length == 0)
@@ -1152,6 +1157,19 @@ Editor.typeTool = function()
 {
 	Editor.selected_segments.length = 0;
 	Editor.current_stroke = null;
+	
+	
+	
+	Editor.clearButtonOverlays();
+	
+	Editor.button_states[Buttons.Text].setSelected(true);
+	
+	Editor.button_states[Buttons.Delete].setEnabled(false);
+	Editor.button_states[Buttons.Group].setEnabled(false);
+	Editor.button_states[Buttons.Label].setEnabled(false);
+
+	
+	Editor.clear_selected_segments();
 	
 	switch(Editor.state)
 	{

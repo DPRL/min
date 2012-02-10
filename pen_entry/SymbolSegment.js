@@ -34,9 +34,9 @@ SymbolSegment.type_id = 3;
  SymbolSegment.prototype.addCharacter = function(in_char)
  {
 	this.is_empty = false;
- 
 	this.text += in_char;
-	var context = Editor.contexts[2];
+	var context = Editor.contexts[0];
+	this.clear(context)
 	
 	context.fillStyle = "#111111";
 	context.font = "bold 32px sans-serif";
@@ -45,6 +45,7 @@ SymbolSegment.type_id = 3;
 	this.size = new Vector2(this.text_width, this.text_height);
 	
 	this.update_extents();
+	this.render(context);
  }
  
  SymbolSegment.prototype.popCharacter = function()
@@ -52,8 +53,8 @@ SymbolSegment.type_id = 3;
 	if(this.text.length > 0)
 	{
 		this.text = this.text.substring(0, this.text.length - 1);
-		var context = Editor.contexts[2];
-	
+		var context = Editor.contexts[0];
+		this.clear(context)
 		context.fillStyle = "#111111";
 		context.font = "bold 32px sans-serif";
 		this.text_width = context.measureText(this.text).width;	
@@ -61,13 +62,17 @@ SymbolSegment.type_id = 3;
 		this.size = new Vector2(this.text_width, this.text_height);
 		
 		this.update_extents();
+		this.render(context);
 	}
  }
+
+SymbolSegment.prototype.clear = function(context) {
+	context.clearRect(this.world_mins.x, this.world_mins.y, this.world_maxs.x, this.world_maxs.y);
+}
  
  SymbolSegment.prototype.render_with_color = function(in_context, in_color)
  {
  // render text
- 
 	var total_translation = new Vector2(0,0).transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
 	var total_scale = Vector2.Pointwise(this.scale, this.temp_scale);
  
@@ -103,11 +108,17 @@ SymbolSegment.type_id = 3;
  
  SymbolSegment.prototype.render = function(in_context)
  {
+	if(in_context == null) {
+		in_context = Editor.contexts[0];
+	}
 	this.render_with_color(in_context, Editor.segment_color);
  }
  
  SymbolSegment.prototype.render_selected = function(in_context)
  {
+	if(in_context == null) {
+		in_context = Editor.contexts[0];
+	}
 	this.render_with_color(in_context, Editor.selected_segment_color);
  }
  
