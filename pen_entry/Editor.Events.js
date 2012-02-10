@@ -963,6 +963,7 @@ Editor.align = function()
 
 			// parse response xml
 			var xmldoc = new DOMParser().parseFromString(in_data, "text/xml");
+			var xmldoc = in_data;
 			var segment_nodes = xmldoc.getElementsByTagName("Segment");
 			var tex_nodes = xmldoc.getElementsByTagName( "TexString" );
 			

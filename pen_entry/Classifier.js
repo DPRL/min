@@ -26,7 +26,7 @@
 			console.log(data);
 			
 			// build each recognition result from the xml
-			var xmldoc = new DOMParser().parseFromString(data, "text/xml");
+			var xmldoc = data;
 			var result_list = xmldoc.getElementsByTagName("RecognitionResults");
 			for(var k = 0; k < result_list.length; k++)
 			{
