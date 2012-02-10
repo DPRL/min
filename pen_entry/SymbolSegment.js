@@ -49,7 +49,7 @@ SymbolSegment.type_id = 3;
 	context.font = "bold 32px sans-serif";
 	this.text_width = context.measureText(this.text).width;	
 
-	this.size = new Vector2(this.text_width, this.text_height);
+	//this.size = new Vector2(this.text_width, this.text_height);
 	
 	this.update_extents();
 	this.render(context);
@@ -66,7 +66,7 @@ SymbolSegment.type_id = 3;
 		context.font = "bold 32px sans-serif";
 		this.text_width = context.measureText(this.text).width;	
 
-		this.size = new Vector2(this.text_width, this.text_height);
+		//this.size = new Vector2(this.text_width, this.text_height);
 		
 		this.update_extents();
 		this.render(context);
@@ -84,12 +84,15 @@ SymbolSegment.prototype.clear = function(context) {
 	
 	transform = 'translate(' + this.temp_translation.x + 'px,' + this.temp_translation.y + 'px) ';
 	transform += 'scale(' + this.temp_scale.x + ',' + this.temp_scale.y + ') ';
-	transform = 'translate(' + this.translation.x + 'px,' + this.translation.y + 'px) ';
+	transform += 'translate(' + this.translation.x + 'px,' + this.translation.y + 'px) ';
 	transform += 'scale(' + this.scale.x + ',' + this.scale.y + ') ';
 	
 	this.textDiv.css('-webkit-transform', transform);
+	
 	this.textDiv.text(this.text);
- 
+	
+	this.size = new Vector2($(this.textDiv).outerWidth(), $(this.textDiv).outerHeight());
+	 
 	// if(this.text != "")
 	// {
 	// 	in_context.save();
