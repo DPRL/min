@@ -348,6 +348,7 @@ Editor.onMouseDown = function(e)
 			Editor.state = EditorState.MiddleOfStroke;
 			break;
 		case EditorState.MiddleOfText:
+			Editor.current_text.finishEntry();
 			if(Editor.current_action.toString() == "EditText")
 				Editor.current_action.set_current_text(Editor.current_text.text);
 			else if(Editor.current_action.toString() == "AddSegments")
@@ -787,6 +788,7 @@ Editor.selectPenTool = function()
 	switch(Editor.state)
 	{
 		case EditorState.MiddleOfText:
+			Editor.current_text.finishEntry();
 			if(Editor.current_action.toString() == "EditText")
 				Editor.current_action.set_current_text(Editor.current_text.text);
 			else if(Editor.current_action.toString() == "AddSegments")
@@ -819,6 +821,7 @@ Editor.strokeSelectionTool = function()
 	switch(Editor.state)
 	{
 		case EditorState.MiddleOfText:
+			Editor.current_text.finishEntry();
 			if(Editor.current_action.toString() == "EditText")
 				Editor.current_action.set_current_text(Editor.current_text.text);
 			else if(Editor.current_action.toString() == "AddSegments")
@@ -853,6 +856,7 @@ Editor.rectangleSelectionTool = function()
 	switch(Editor.state)
 	{
 		case EditorState.MiddleOfText:
+			Editor.current_text.finishEntry();
 			if(Editor.current_action.toString() == "EditText")
 				Editor.current_action.set_current_text(Editor.current_text.text);
 			else if(Editor.current_action.toString() == "AddSegments")
@@ -962,7 +966,6 @@ Editor.align = function()
 			var new_dimensions = new Array();
 
 			// parse response xml
-			var xmldoc = new DOMParser().parseFromString(in_data, "text/xml");
 			var xmldoc = in_data;
 			var segment_nodes = xmldoc.getElementsByTagName("Segment");
 			var tex_nodes = xmldoc.getElementsByTagName( "TexString" );

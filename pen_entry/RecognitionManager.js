@@ -58,8 +58,8 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 	RecognitionManager.segment_queue = new Array();
 	RecognitionManager.timeout = null;
 	RecognitionManager.max_segments = 1;
-	RecognitionManager.symbol_name_to_unicode = new Array();
-	RecognitionManager.unicode_to_symbol_name = new Array();
+	RecognitionManager.symbol_name_to_unicode = {};
+	RecognitionManager.unicode_to_symbol_name = {};
  }
  
  RecognitionManager.classify = function(in_set_id, should_segment)
@@ -141,7 +141,11 @@ RecognitionManager.addRecognitionForText = function(textSegment) {
 	RecognitionManager.removeRecognition(textSegment.set_id);
 	
 	result = new RecognitionResult();
-	result.symbols.push(textSegment.text);
+	symbol = this.unicode_to_symbol_name[textSegment.text];
+	if (symbol === undefined) {
+		symbol = textSegment.text;
+	}
+	result.symbols.push(symbol);
 	result.certainties.push(1);
 	result.results = 1;
 	result.set_id = textSegment.set_id;

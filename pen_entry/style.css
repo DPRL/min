@@ -385,7 +385,7 @@ svg.pen_stroke {
 
 .textDiv {
 	-webkit-transform-origin: 0 0;
-	font-size: 32px;
+	font-size: 48px;
 	color: white;
 	position: absolute;
 	z-index: 15;
