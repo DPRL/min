@@ -39,3 +39,7 @@ Editor.stroke_width = 3;
 Editor.selected_stroke_width = 4;
 Editor.stroke_select_color = "#44F"
 Editor.stroke_select_width = 1.5;
+
+Editor.ascender_chars = ['b','d','f','h','i','k','l','t'];
+Editor.x_height_chars = ['a','c','e','m','n','o','r','s','u','v','w','x','z'];
+Editor.descender_chars = ['g','j','p','q','y'];

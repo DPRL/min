@@ -911,14 +911,32 @@ Editor.align = function()
 				if(seg_max.y > maxs.y)
 					maxs.y = seg_max.y;
 			}
+			
+			var origMins = mins.clone();
+			var origMaxs = maxs.clone();
 			var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
+			// If it's a text segment, account for the draculae making x's smaller than t's, etc
+			
+			if (set_segments[0].constructor == SymbolSegment) {
+				console.log('char: ' + set_segments[0].text);
+				console.log('before resize: (' + mins.y + ', ' + maxs.y + ')');
+				size = Vector2.Subtract(maxs, mins);
+				if (-1 != $.inArray(set_segments[0].text, Editor.x_height_chars)) {
+					mins.y += size.y / 2;
+				}
+				if (-1 != $.inArray(set_segments[0].text, Editor.descender_chars)) {
+					mins.y += size.y / 2;
+					maxs.y += size.y / 2;
+				}
+				console.log('after resize: (' + mins.y + ', ' + maxs.y + ')');
+			}
 			/*
 			mins.x = Math.floor(mins.x);
 			mins.y = Math.floor(mins.y);
 			maxs.x = Math.floor(maxs.x);
 			maxs.y = Math.floor(maxs.y);
 			*/
-			var tuple = new Tuple(recognition_result, mins, maxs);
+			var tuple = new Tuple(recognition_result, mins, maxs, origMins, origMaxs);
 			data.push(tuple);
 			
 			set_segments.length = 0;
@@ -1014,9 +1032,10 @@ Editor.align = function()
 					continue;
 				
 				var set_id = new_dimensions[k].item1;
+				var segments = Editor.get_segment_by_id(set_id);
 				
-				var min_0 = t.item2;
-				var max_0 = t.item3;
+				var min_0 = t.item4;
+				var max_0 = t.item5;
 				
 				var min_f = new_dimensions[k].item2;
 				var max_f = new_dimensions[k].item3;
@@ -1029,6 +1048,18 @@ Editor.align = function()
 				var size0 = Vector2.Subtract(max_0, min_0);
 				var sizef = Vector2.Subtract(max_f, min_f);
 				
+				// If it's a text segment, account for the draculae making x's smaller than t's, etc
+				if (segments.length == 1 && segments[0].constructor == SymbolSegment) {
+					if (-1 != $.inArray(segments[0].text, Editor.x_height_chars)) {
+						min_f.y -= sizef.y;
+						sizef.y *= 2;
+					}
+					if (-1 != $.inArray(segments[0].text, Editor.descender_chars)) {
+						min_f.y -= sizef.y / 2;
+					}
+				}
+				
+				
 				var scale = new Vector2(sizef.x / size0.x, sizef.y / size0.y);
 				
 				//console.log("scale: " + scale);
@@ -1037,7 +1068,7 @@ Editor.align = function()
 					translation.x = scale.x * min_f.x - min_0.x;
 					translation.y = scale.y * min_f.y - min_0.y;
 				
-				var segments = Editor.get_segment_by_id(set_id);
+				
 				for(var i = 0; i < segments.length; i++)
 				{
 					segments[i].resize(min_0, scale);

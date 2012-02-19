@@ -69,6 +69,8 @@ SymbolSegment.prototype.finishEntry = function() {
 		}
 		var s = new SymbolSegment(origin);
 		s.addCharacter(letters[i]);
+		s.render();
+		s.update_extents();
 		Editor.add_action(new AddSegments(new Array(s)));
 		Editor.add_segment(s);
 		origin.x = s.worldMaxPosition().x + 2;
