@@ -369,6 +369,7 @@ div.segment_set {
 	color: rgba(255, 255, 255, 0.65);
 	font-family: 'Ubuntu', sans-serif;
 	padding: 0;
+	-moz-user-select: none;
 }
 
 div#selection_rectangle {

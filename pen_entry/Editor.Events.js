@@ -188,6 +188,8 @@ Editor.onResize = function(e)
 	Editor.div_position = findPosition(Editor.canvas_div);
 }
 
+Editor.clicks = 0;
+
 Editor.onMouseDown = function(e)
 {
 	// support for both computer mouse and tablet devices
@@ -280,6 +282,18 @@ Editor.onMouseDown = function(e)
 			RenderManager.render();
 			break;
 		case EditorState.SegmentsSelected:
+			Editor.clicks++;
+				if (Editor.clicks == 1) {
+					setTimeout(function(){
+						if(Editor.clicks == 1) {
+							console.log('single click');
+						} else {
+							console.log('double click');
+							Editor.groupTool();
+						}
+						Editor.clicks = 0;
+					}, 300);
+				}
 			var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
 			// check for resizing
 			if(click_edge != -1)
@@ -1145,7 +1159,7 @@ Editor.groupTool = function()
 		console.log("---");
 		*/
 			
-		RenderManager.render();
+		//RenderManager.render();
 		
 		Editor.state = EditorState.SegmentsSelected;
 	}
