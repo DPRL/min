@@ -89,6 +89,7 @@ SymbolSegment.prototype.render = function() {
 	transform += 'scale(' + this.scale.x + ',' + this.scale.y + ') ';
 	
 	this.textDiv.css('-webkit-transform', transform);
+	this.textDiv.css('-moz-transform', transform);
 	
 	this.textDiv.text(this.text);
 	
