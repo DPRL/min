@@ -20,12 +20,12 @@ Buttons.Text = 11;*/
 
 // RLAZ: Button modification.
 Buttons.Pen = 0;
-Buttons.Text = 1;
-Buttons.Rectangle = 2;
-Buttons.Stroke = 3;
-Buttons.Undo = 4;
-Buttons.Redo = 5;
-Buttons.DPRL = 6;
+//Buttons.Text = 1;
+Buttons.Rectangle = 1;
+Buttons.Stroke = 2;
+Buttons.Undo = 3;
+Buttons.Redo = 4;
+Buttons.DPRL = 5;
 
 function ButtonState(button_id)
 {
@@ -124,7 +124,7 @@ Editor.build_buttons = function(in_div_name)
 	
 	Editor.button_states = new Array();
 		Editor.button_states.push(new ButtonState("pen"));
-		Editor.button_states.push(new ButtonState("text"));
+		//Editor.button_states.push(new ButtonState("text"));
 		Editor.button_states.push(new ButtonState("rectangle_select"));
 		Editor.button_states.push(new ButtonState("stroke_select"));
 		Editor.button_states.push(new ButtonState("undo"));

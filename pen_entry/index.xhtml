@@ -16,7 +16,7 @@
 	</head>
 
 	<!-- DEFINE THE INTERFACE OBJECTS -->
-	<body onload="document.getElementById('tex_result').value='';document.getElementById('tex_result').focus();">
+	<body onload="document.getElementById('tex_result').value='';document.getElementById('engine').focus();">
 		<div id="equation_editor_root" class="equation_editor" style="overflow: hidden;">
 			<div id="toolbar" class="toolbar">
 
@@ -29,11 +29,11 @@
 					</div>
 
 					<!-- Keyboard ('Text') -->
-					<div class="toolbar_button button" id="text">
+					<!-- <div class="toolbar_button button" id="text">
 						<div class="toolbar_button_text"><span>T</span></div>
 						<div class="toolbar_button_label">Text</div>
 						<div class="toolbar_button_overlay"></div>
-					</div>
+					</div> -->
 
 	
 					<!-- Rectangle/Squiggle selection modes -->
@@ -83,7 +83,7 @@
 
 				<div class="toolbar_group_divider"></div>
 				<div id="texwrapper" style="padding: 5px;">
-					<input type="text" id="tex_result" style="background-color: #dddddd; height:16px;width:250px;font-size:16px;"/></div>
+					<input type="text" id="tex_result" style="height:16px;width:250px;font-size:16px;"/></div>
 
 				<div id="engine">
 					<select id="engineSelector" name="engineType" style="font-size: 14px;" value="NIST DLMF">
@@ -102,7 +102,7 @@
 
 				<div style="padding-top:6px;padding-left:25px;float: right;font-size:14px;">
 					<form id="radio">
-						<input type="checkbox" name="layers" checked="true" onclick="RenderManager.render()" /> symbols<br />
+						<input type="checkbox" name="layers" checked="true" onclick="RenderManager.render()" /> Show OCR<br />
 					</form>
 				</div>
 

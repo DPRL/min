@@ -218,7 +218,7 @@ div.toolbar {
 	background: #888888; /* old browsers */
 	background: -moz-linear-gradient(top, #BBBBBB 0%, #AAAAAA 37%, #999999 100%); /* firefox */
 
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#BBBBBB), color-stop(37%,#AAAAAA), color-stop(100%,#999999)); /* webkit */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#BBBBBB), color-stop(37%,#AAAAAA), color-stop(100%,#787878)); /* webkit */
 
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#777777',GradientType=0 ); /* ie */
 
@@ -354,7 +354,9 @@ div.toolbar_button_label {
 }
 
 li.toolbar_button:hover {
-	background-color: #AAAA90;
+/*background-color: #AAAA90;*/
+
+	background-color: rgba(50, 50, 120, 0.8); 
 }
 
 input.image_upload {
@@ -390,7 +392,7 @@ div.segment_set {
 	position: absolute;
 	/*background-color: rgba(50, 50, 50, 0.6); */
 	color: rgba(255, 255, 255, 0.7);
-	background-color: rgba(50, 50, 100, 0.7); 
+	background-color: rgba(50, 50, 120, 0.7); 
 	z-index: 999;
 	text-align: center;
 	font-family: 'Ubuntu', sans-serif;

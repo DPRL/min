@@ -166,7 +166,7 @@ RenderManager.render_set_field = function(in_context_id)
 
 	Editor.segments.push(null);	// add null pointer so we can easily render last set in list
 	var set_index = 0;
-	for(var k = 1; k < Editor.segments.length; k++)
+	for(var k = 0; k < Editor.segments.length; k++)
 	{
 		var seg = Editor.segments[k];
 		if(set_segments.length == 0) {

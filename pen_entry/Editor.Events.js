@@ -53,10 +53,9 @@ Editor.setup_events = function()
 	//Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
 	//Editor.canvas_div.setAttribute("ontouchstart", "event.preventDefault();");	
 
-	document.getElementById("text").addEventListener("click", Editor.typeTool, true);
+	//document.getElementById("text").addEventListener("click", Editor.typeTool, true);
 	document.getElementById("stroke_select").addEventListener("click", Editor.strokeSelectionTool, true);
-	document.getElementById("rectangle_select").addEventListener("click", 
-			Editor.rectangleSelectionTool, true);
+	document.getElementById("rectangle_select").addEventListener("click", Editor.rectangleSelectionTool, true);
 	document.getElementById("undo").addEventListener("click", Editor.undo, true);
 	document.getElementById("redo").addEventListener("click", Editor.redo, true);
 	document.getElementById("dprl").addEventListener("click", Editor.goDPRL, true);
@@ -309,6 +308,34 @@ Editor.onMouseDown = function(e)
 			}
 			
 			break;
+
+		case EditorState.MiddleOfText:
+			Editor.current_text.finishEntry();
+			if(Editor.current_action.toString() == "EditText")
+				Editor.current_action.set_current_text(Editor.current_text.text);
+			else if(Editor.current_action.toString() == "AddSegments")
+				Editor.current_action.buildSegmentXML();				
+
+			// Modification: reset to drawing.
+			// But only switch to draw mode if we click on the canvas.
+			var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
+			var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
+
+			if (! (e.pageY > toolbarDims.bottom && e.pageY < canvasDims.bottom) &&
+					(e.pageX > 0 && e.pageX < canvasDims.right )) {
+				break; 
+			} else {
+				// If we're on the canvas, switch to pen mode.
+				Editor.selectPenTool;
+				// build a new stroke object and save reference so we can add new points
+				Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+				Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+				Editor.add_segment(Editor.current_stroke);			
+			
+				Editor.state = EditorState.MiddleOfStroke;
+			}
+			break;
+
 		case EditorState.ReadyToStroke:
 			// build a new stroke object and save reference so we can add new points
 			Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
@@ -318,12 +345,6 @@ Editor.onMouseDown = function(e)
 			Editor.state = EditorState.MiddleOfStroke;
 			break;
 
-		case EditorState.MiddleOfText:
-			Editor.current_text.finishEntry();
-			if(Editor.current_action.toString() == "EditText")
-				Editor.current_action.set_current_text(Editor.current_text.text);
-			else if(Editor.current_action.toString() == "AddSegments")
-				Editor.current_action.buildSegmentXML();				
 			
 		case EditorState.ReadyForText:
 			Editor.current_text = null;
@@ -586,8 +607,6 @@ Editor.mapCanvasBackspace = function(e)
 {
 	if(e.keyCode == 8)
 	{
-		console.log('BACKSPACE');
-
 		// Check whether the text box has focus.
 		textBox = document.getElementById("tex_result");
 		if (document.querySelector(":focus") == textBox) {
@@ -633,20 +652,56 @@ Editor.onKeyPress = function(e)
 		case EditorState.MiddleOfText:
 			textBox = document.getElementById("tex_result");
 			if (document.querySelector(":focus") != textBox &&
-					Editor.current_text != null)
+					Editor.current_text != null) {
 				Editor.current_text.addCharacter(String.fromCharCode(e.which));
+				console.log('1: CHARACTER PRESSED');
+			}
 			break;
 		
+		case EditorState.ReadyToRectangleSelect:
+		case EditorState.ReadyToStrokeSelect:
 		case EditorState.ReadyToStroke:
+			textBox = document.getElementById("tex_result");
+			if (document.querySelector(":focus") != textBox) {
+				Editor.typeTool();
+
+				// Shift immediately to place text, without a tap/click.
+				var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
+				for(var k = 0; k < clicked_points.length; k++)
+				{
+					if(clicked_points[k].type_id == SymbolSegment.type_id)
+					{
+						Editor.current_text = clicked_points[k];
+						break;
+					}
+				}
+			}
+			
+			if(Editor.current_text == null)
+			{
+				var s = new SymbolSegment(Editor.mouse_position);
+				Editor.current_text = s;
+			} else {
+				Editor.add_action(new EditText(Editor.current_text));
+			}
+			
+			Editor.current_text.addCharacter(String.fromCharCode(e.which));
+			console.log('2: CHARACTER PRESSED');
+
+			Editor.state = EditorState.MiddleOfText;
+			break;
+
+		
+		/*case EditorState.ReadyToStroke:
 			if ( Editor.segments.length > 0
 				 && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
 				Editor.rectangleSelectionTool();
 			} else {
 				break;
-			}
+			}*/
 		
-		case EditorState.ReadyToRectangleSelect:
-		case EditorState.ReadyToStrokeSelect:
+		//case EditorState.ReadyToRectangleSelect:
+		//case EditorState.ReadyToStrokeSelect:
 		case EditorState.SegmentsSelected:
 			if ( Editor.segments.length > 0
 				 && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
@@ -723,7 +778,7 @@ Editor.onKeyPress = function(e)
 						Editor.relabel();
 						break;
 					case 80: // 'p'
-						Editor.selectPenTool();
+						Editor.selectPenTool;
 						break;
 					default:
 						console.log( e.keyCode );
@@ -734,14 +789,14 @@ Editor.onKeyPress = function(e)
 	}
 }
 
-Editor.selectPenTool = function()
+Editor.selectPenTool = function(draw_now)
 {
-	if(Editor.button_states[Buttons.Pen].enabled == false)
-		return;
+	console.log('HEERE');
+	//if(Editor.button_states[Buttons.Pen].enabled == false)
+	//	return;
 	Editor.clearButtonOverlays();
 	
 	Editor.button_states[Buttons.Pen].setSelected(true);
-	
 	Editor.clear_selected_segments();
 	Editor.current_stroke = null;
 	
@@ -797,8 +852,7 @@ Editor.rectangleSelectionTool = function()
 
 	Editor.clearButtonOverlays();
 	Editor.button_states[Buttons.Rectangle].setSelected(true);
-	//Editor.align();
-	
+
 	switch(Editor.state)
 	{
 		case EditorState.MiddleOfText:
@@ -1120,7 +1174,10 @@ Editor.typeTool = function()
 	Editor.current_stroke = null;
 	Editor.clearButtonOverlays();
 	
-	Editor.button_states[Buttons.Text].setSelected(true);
+	//Editor.button_states[Buttons.Text].setSelected(true);
+	Editor.button_states[Buttons.Pen].setSelected(true);
+	Editor.button_states[Buttons.Rectangle].setSelected(false);
+	Editor.button_states[Buttons.Stroke].setSelected(false);
 	Editor.clear_selected_segments();
 	
 	switch(Editor.state)
