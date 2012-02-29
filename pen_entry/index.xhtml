@@ -2,7 +2,7 @@
 <!DOCTYPE html 
       PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
+	<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:svg="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
 	<head>
@@ -13,119 +13,129 @@
 		<title></title>
 		
 		<link rel="stylesheet" type="text/css" href="style.css" />
-				
-		<script type="text/javascript">
-			function copy_latex() {
-				alert( "COPY LATEX!" );
-			}
-		</script>
 	</head>
 
-	<body ontouchmove="event.preventDefault();" onload="document.getElementById('tex_result').value='';">
+	<!-- DEFINE THE INTERFACE OBJECTS -->
+	<body onload="document.getElementById('tex_result').value='';document.getElementById('tex_result').focus();">
 		<div id="equation_editor_root" class="equation_editor" style="overflow: hidden;">
 			<div id="toolbar" class="toolbar">
+
+				<!-- Pen -->
 				<div class="toolbar_group">
 					<div class="toolbar_button button" id="pen">
-						<div class="toolbar_button_icon"><img src="img/min_pen.png" alt="Pen" style="height: 50px; width: 50px;" /></div>
+						<div class="toolbar_button_icon"><img src="img/min_pen_small_alpha.png" alt="Pen" style="height: 50px; width: 50px;" /></div>
 						<div class="toolbar_button_label">Pen</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
-				</div>
-				<div class="toolbar_group_divider"></div>
-				<div class="toolbar_group">
-					<div class="toolbar_button" id="rectangle_select">
-						<div class="toolbar_button_icon"><img src="img/min_segselect.png" alt="Rectangle Select" style="height: 50px; width: 50px;" /></div>	
-						<div class="toolbar_button_label">Box</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>				
-					<div class="toolbar_button button" id="stroke_select">
-						<div class="toolbar_button_icon"><img src="img/min_strokeselect.png" alt="Stroke Select" style="height: 50px; width: 50px;" /></div>			
-						<div class="toolbar_button_label">Stroke</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					
-					<div class="toolbar_group_label">Select</div>
-				</div>
-				<div class="toolbar_group_divider"></div>
-				<div class="toolbar_group">	
-					<div class="toolbar_button button" id="delete">
-						<div class="toolbar_button_icon"><img src="img/min_delete.png" alt="Delete" style="height: 50px; width: 50px;" /></div>		
-						<div class="toolbar_button_label">Delete</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					<div class="toolbar_button button" id="align">
-						<div class="toolbar_button_icon"><img src="img/min_align.png" alt="Align" style="height: 50px; width: 50px;" /></div>		
-						<div class="toolbar_button_label">Align</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					<div class="toolbar_button button" id="undo">
-						<div class="toolbar_button_icon"><img src="img/min_undo.png" alt="Undo" style="height: 50px; width: 50px;" /></div>
-						<div class="toolbar_button_label">Undo</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					<div class="toolbar_button button" id="redo">
-						<div class="toolbar_button_icon"><img src="img/min_redo.png" alt="Redo" style="height: 50px; width: 50px;" /></div>		
-						<div class="toolbar_button_label">Redo</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					<div class="toolbar_group_label">Edit</div>
-				</div>
-				<div class="toolbar_group_divider"></div>
-				<div class="toolbar_group">
-					<div class="toolbar_button button" id="group">
-						<div class="toolbar_button_icon"><img src="img/min_group.png" alt="Group" style="height: 50px; width: 50px;" /></div>		
-						<div class="toolbar_button_label">Group</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					<div class="toolbar_button button" id="relabel">
-						<div class="toolbar_button_icon"><img src="img/min_label.png" alt="Label" style="height: 50px; width: 50px;" /></div>		
-						<div class="toolbar_button_label">Label</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					<div class="toolbar_group_label">Segment</div>
-				</div>
-				<div class="toolbar_group_divider"></div>
-				<div class="toolbar_group">
-					<div class="toolbar_button button" id="clear">
-						<div class="toolbar_button_icon"><img src="img/min_clear.png" alt="Clear" style="height: 50px; width: 50px;" /></div>
-						<div class="toolbar_button_label">Clear</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-				</div>
-				<div class="toolbar_group_divider"></div>
-				<div class="toolbar_group">
-					<div class="toolbar_button button" id="getInkML">
-						<div class="toolbar_button_icon"><img src="img/min_inkml.png" alt="Get InkML" style="height: 50px; width: 50px;" /></div>
-						<div class="toolbar_button_label" id="getInkMLbutton" >Get InkML</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					
+
+					<!-- Keyboard ('Text') -->
 					<div class="toolbar_button button" id="text">
-						<div class="toolbar_button_icon"><img src="img/min_pen.png" alt="Text" style="height: 50px; width: 50px;" /></div>
+						<div class="toolbar_button_text"><span>T</span></div>
 						<div class="toolbar_button_label">Text</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
-					<div class="toolbar_group_label">Export</div>
+
+	
+					<!-- Rectangle/Squiggle selection modes -->
+					<div class="toolbar_button button" id="rectangle_select">
+						<div class="toolbar_button_icon"><img src="img/min_segselect_small_alpha.png" alt="Rectangle Select" style="padding: 3px;height: 44px; width: 44px;" /></div>	
+						<div class="toolbar_button_label">Rectangle</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>				
+
+					<div class="toolbar_button button" id="stroke_select">
+						<div class="toolbar_button_icon"><img src="img/min_strokeselect_small_alpha.png" alt="Stroke Select" style="padding: 3px;height: 44px; width: 44px;" /></div>			
+						<div class="toolbar_button_label">Stroke</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
 				</div>
+					
+				<div class="toolbar_group_divider"></div>
+
+				<!-- Undo/Redo -->
+				<div class="toolbar_group">	
+					<div class="toolbar_button button" id="undo">
+						<div class="toolbar_button_icon"><img src="img/min_undo_small_alpha.png" alt="Undo" style="height: 50px; width: 50px;" /></div>
+						<div class="toolbar_button_label">Undo</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
+
+					<div class="toolbar_button button" id="redo">
+						<div class="toolbar_button_icon"><img src="img/min_redo_small_alpha.png" alt="Redo" style="height: 50px; width: 50px;" /></div>		
+						<div class="toolbar_button_label">Redo</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
+				</div>
+
+				<div class="toolbar_group_divider"></div>
+
+				<div class="toolbar_button button" id="dprl">
+					<div class="toolbar_button_icon">
+					
+					<img src="img/dprl.png" style="padding-left:0px;padding-top:10px;width:74px;overflow:hidden;padding-right:0px" alt="DPRL logo" />
+					</div>		
+					<div class="toolbar_button_label">Redo</div>
+					<div class="toolbar_button_overlay" style="width:82px"></div>
+				</div>
+
+			<!-- Text boxes, Search button, drop-down fo search engines -->
+			<div class="toolbar_group" id="infobar-wrapper">
+
+				<div class="toolbar_group_divider"></div>
+				<div id="texwrapper" style="padding: 5px;">
+					<input type="text" id="tex_result" style="background-color: #dddddd; height:16px;width:250px;font-size:16px;"/></div>
+
+				<div id="engine">
+					<select id="engineSelector" name="engineType" style="font-size: 14px;" value="NIST DLMF">
+						<option>NIST DLMF</option>
+						<option>LaTeX Search</option>
+						<option>Wolfram Alpha</option>
+						<option>DRR 2012 </option>
+						<option>DRR 2011 </option>
+						<option>ICDAR 2011</option>
+						<option>Google</option>
+					</select>
+				</div>
+
+
 			</div>
-			
-			<div id="infobar-wrapper">
-				<div id="infowrapper"><span style="border: 1px solid #eee; padding: 2px; background-color: #e9e9e9; margin-right: 10px;">Classification</span><span id="infobar"></span></div>
-				<div id="texwrapper"><span style="border: 1px solid #eee; padding: 2px; background-color: #e9e9e9; margin-right: 10px;" onclick="copy_latex()">LaTeX</span><input type="text" id="tex_result" /></div>
-			</div>
-			
-			<!-- holds everything but the toolbar-->
+
+				<div style="padding-top:6px;padding-left:25px;float: right;font-size:14px;">
+					<form id="radio">
+						<input type="checkbox" name="layers" checked="true" onclick="RenderManager.render()" /> symbols<br />
+					</form>
+				</div>
+
+				</div>							
+			<!-- Canvas -->
 			<div id="equation_canvas" class="equation_canvas" tabindex="0" >
-			
+
+				<!-- images at canvas bottom. -->
 				<div id="logobar-wrapper">
-					<div id="logobar-left"><img src="img/rit_logo_inv.png" style="width: 70px; height: 70x;" alt="Rochester Institute of Technology" /></div>
-					<div id="logobar-right"><img src="img/nsf_logo_inv.jpg" style="width: 70px; height: 70px;" alt="National Science Foundation" /></div>
-					<div id="logobar-mid"><img src="img/min_logo_1_inv.png" style="width: 135px; margin-top: -20px;" alt="min" /></div>
+					<div id="logobar-left"><img src="img/rit_logo_inv.png" style="width: 58px; height: 58px;" alt="Rochester Institute of Technology" /></div>
+					<div id="logobar-right"><img src="img/nsf_logo_inv.jpg" style="width: 58px; height: 58px;" alt="National Science Foundation" /></div>
+					<div id="logobar-mid"><img src="img/min_logo_1_inv.png" style="width: 118px; margin-top: -28px;" alt="min" /></div>
+				</div>		
+
+	<!-- bounding box div for seleccted segments-->
+				<div id="bounding_box"  ontouchstart="event.preventDefault();">
+					<div style="left: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="right: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="left: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="right: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>					
+					<div style="left: 50%; margin-left: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="left: 50%; margin-left: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="left: -16px; margin-top: -16px; top: 50%;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="right: -16px; margin-top: -16px; top: 50%;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
 				</div>
-			
+				<!-- selection rectangle for box select -->
+				<div id="selection_rectangle"></div>
+
+
+				<!-- Relabeling menu (hidden initially) -->
 				<div id="relabel_menu" style="visibility: hidden;" >
 					<div id="rr_node_label"></div>
-					<div id="rr_close_button" class="button">X</div>
+					<div id="rr_close_button" class="button">Exit</div>
 					<div id="rr_inner">
 						<!--<div id="rr_up_tree"></div>-->
 						<div id="rr_center">
@@ -139,92 +149,57 @@
 							</div>
 						</div>
 					</div>
-				</div>							
 				
-				<!-- bounding box div for seleccted segments-->
-				<div id="bounding_box"  ontouchstart="event.preventDefault();">
-					<div style="left: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
-					<div style="right: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
-					<div style="left: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
-					<div style="right: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>					
-					<div style="left: 50%; margin-left: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
-					<div style="left: 50%; margin-left: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
-					<div style="left: -16px; margin-top: -16px; top: 50%;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
-					<div style="right: -16px; margin-top: -16px; top: 50%;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
-				</div>
-				<!-- selection rectangle for box select -->
-				<div id="selection_rectangle"></div>
+			
+					
 			</div>
 			
 		</div>
-		
-		<!-- Classifier -->
-		<script type="text/javascript" src="Classifier.js"></script>
-		
-		<!-- Editor components  -->
-		<script type="text/javascript" src="Editor.js"></script>
-		<script type="text/javascript" src="Editor.Events.js"></script>
-		<script type="text/javascript" src="Editor.Buttons.js"></script>
-		<script type="text/javascript" src="Editor.Constants.js"></script>
-		<script type="text/javascript" src="CorrectionMenu.js"></script>
-		<script type="text/javascript" src="CorrectionMenu.SymbolTree.js"></script>
-		<script type="text/javascript" src="RenderManager.js"></script>
-		<script type="text/javascript" src="CollisionManager.js"></script>
-		<script type="text/javascript" src="RecognitionManager.js"></script>
-		
-		<!-- correction menu -->
-		
-		
-		<!-- collision objects -->
-		<script type="text/javascript" src="BoundingBox.js"></script>
-		<!-- our Segment things -->
-		<script type="text/javascript" src="Segment.js"></script>
-		<script type="text/javascript" src="PenStroke.js"></script>
-		<script type="text/javascript" src="ImageBlob.js"></script>
-		<script type="text/javascript" src="SymbolSegment.js"></script>
-		<!-- Undable/Redoable Actions -->
-		<script type="text/javascript" src="Action.AddSegments.js"></script>
-		<script type="text/javascript" src="Action.TransformSegments.js"></script>
-		<script type="text/javascript" src="Action.GroupSegments.js"></script>
-		<script type="text/javascript" src="Action.EditText.js"></script>
-		<script type="text/javascript" src="Action.DeleteSegments.js"></script>
-		<script type="text/javascript" src="Action.Undo.js"></script>
-		<script type="text/javascript" src="Action.Redo.js"></script>
-		<!-- Misc tools -->
-		<script type="text/javascript" src="Utils.js"></script>
-		<!-- JQuery -->
-		<script type="text/javascript" src="jquery.js"></script>
+	</div>
 
-		<!-- Main -->
-		<script type="text/javascript">
-			Editor.initialize("equation_canvas", "toolbar");
-			//var e = new Editor("my_div", "toolbar");
-		</script>
-		<!-- Playground -->
-		<script type="text/javascript">
-			//alert(window.innerWidth + " x " + window.innerHeight);
-			// IPAD: 981 x 661
-		/*
-			var a = new Array();
-			a.push("hello");
-			a.push("world");
-			var b1 = a.contains("hello");
-			var b2 = a.contains("world");
-			var b3 = a.contains("butts");
-			alert(b1 + " " + b2 + " " + b3);
-		*/
-			/*
-			$.ajax({
-				type: "POST",
-				url: "http://129.21.34.104:1000/",
-				dataType: "html",
-				success: function(data, textStatus, xmlrequest)
-				{
-				//	alert(data);
-				}
-			});
-			*/
-		</script>
+	<!-- SCRIPTS -->
+
+	<!-- Classifier -->
+	<script type="text/javascript" src="Classifier.js"></script>
+		
+	<!-- Editor components  -->
+	<script type="text/javascript" src="Editor.js"></script>
+	<script type="text/javascript" src="Editor.Events.js"></script>
+	<script type="text/javascript" src="Editor.Buttons.js"></script>
+	<script type="text/javascript" src="Editor.Constants.js"></script>
+	<script type="text/javascript" src="CorrectionMenu.js"></script>
+	<script type="text/javascript" src="CorrectionMenu.SymbolTree.js"></script>
+	<script type="text/javascript" src="RenderManager.js"></script>
+	<script type="text/javascript" src="CollisionManager.js"></script>
+	<script type="text/javascript" src="RecognitionManager.js"></script>
+	
+	<!-- collision objects -->
+	<script type="text/javascript" src="BoundingBox.js"></script>
+
+	<!-- our Segment things -->
+	<script type="text/javascript" src="Segment.js"></script>
+	<script type="text/javascript" src="PenStroke.js"></script>
+	<script type="text/javascript" src="ImageBlob.js"></script>
+	<script type="text/javascript" src="SymbolSegment.js"></script>
+
+	<!-- Undoable/Redoable Actions -->
+	<script type="text/javascript" src="Action.AddSegments.js"></script>
+	<script type="text/javascript" src="Action.TransformSegments.js"></script>
+	<script type="text/javascript" src="Action.GroupSegments.js"></script>
+	<script type="text/javascript" src="Action.EditText.js"></script>
+	<script type="text/javascript" src="Action.DeleteSegments.js"></script>
+	<script type="text/javascript" src="Action.Undo.js"></script>
+	<script type="text/javascript" src="Action.Redo.js"></script>
+
+	<!-- Misc tools -->
+	<script type="text/javascript" src="Utils.js"></script>
+
+	<!-- JQuery -->
+	<script type="text/javascript" src="jquery.js"></script>
+
+	<!-- Main -->
+	<script type="text/javascript">Editor.initialize("equation_canvas", "toolbar");</script> 
+
 	</body>
 </html>
 

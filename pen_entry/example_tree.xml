@@ -1,5 +1,5 @@
 <SymbolTree>
-	<Category name="Root">
+	<Category name="All">
 		<Category name="Digits">
 			<Symbol name="0" unicode="0"/>
 			<Symbol name="1" unicode="1"/>
@@ -35,7 +35,7 @@
 		<Category name="Special">
 			<Symbol name="infinity" unicode="&#x221E;"/>
 		</Category>
-		<Category name="Latin Letters">
+		<Category name="Letters">
 			<Category name="Lower Case">
 				<Symbol name="a" unicode="a"/>
 				<Symbol name="b" unicode="b"/>

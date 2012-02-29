@@ -5,7 +5,7 @@ function Buttons()
 
 Buttons.COUNT = 0;
 
-Buttons.Pen = 0;
+/*Buttons.Pen = 0;
 Buttons.Stroke = 1;
 Buttons.Box = 2;
 Buttons.Delete = 3;
@@ -16,7 +16,16 @@ Buttons.Group = 7;
 Buttons.Label = 8;
 Buttons.Clear = 9;
 Buttons.GetInkML = 10;
-Buttons.Text = 11;
+Buttons.Text = 11;*/
+
+// RLAZ: Button modification.
+Buttons.Pen = 0;
+Buttons.Text = 1;
+Buttons.Rectangle = 2;
+Buttons.Stroke = 3;
+Buttons.Undo = 4;
+Buttons.Redo = 5;
+Buttons.DPRL = 6;
 
 function ButtonState(button_id)
 {
@@ -115,6 +124,14 @@ Editor.build_buttons = function(in_div_name)
 	
 	Editor.button_states = new Array();
 		Editor.button_states.push(new ButtonState("pen"));
+		Editor.button_states.push(new ButtonState("text"));
+		Editor.button_states.push(new ButtonState("rectangle_select"));
+		Editor.button_states.push(new ButtonState("stroke_select"));
+		Editor.button_states.push(new ButtonState("undo"));
+		Editor.button_states.push(new ButtonState("redo"));
+		Editor.button_states.push(new ButtonState("dprl"));
+
+		/*Editor.button_states.push(new ButtonState("pen"));
 		Editor.button_states.push(new ButtonState("stroke_select"));
 		Editor.button_states.push(new ButtonState("rectangle_select"));
 		Editor.button_states.push(new ButtonState("delete"));
@@ -125,7 +142,7 @@ Editor.build_buttons = function(in_div_name)
 		Editor.button_states.push(new ButtonState("relabel"));
 		Editor.button_states.push(new ButtonState("clear"));
 		Editor.button_states.push(new ButtonState("getInkML"));
-		Editor.button_states.push(new ButtonState("text"));
+		Editor.button_states.push(new ButtonState("text"));*/
 	
 	Editor.clearButtonOverlays();
 	//alert(Editor.toolbar_button_overlay.length);
@@ -134,15 +151,17 @@ Editor.build_buttons = function(in_div_name)
 	// add button names
 	Editor.button_labels.push("Pen");
 	//if(window.FileReader) Editor.button_labels.push("Image");
-	if(navigator.userAgent.match(/iPad/i) == null) Editor.button_labels.push("Text");
-	Editor.button_labels.push("Stroke Select");
+	//if(navigator.userAgent.match(/iPad/i) == null) Editor.button_labels.push("Text");
+	Editor.button_labels.push("Text");
 	Editor.button_labels.push("Rectangle Select");
-	Editor.button_labels.push("Group");
-	Editor.button_labels.push("Delete");
-	Editor.button_labels.push("Align");
+	Editor.button_labels.push("Stroke Select");
+	//Editor.button_labels.push("Group");
+	//Editor.button_labels.push("Delete");
+	//Editor.button_labels.push("Align");
 	Editor.button_labels.push("Undo");
 	Editor.button_labels.push("Redo");
-	Editor.button_labels.push("Relabel");
+	Editor.button_labels.push("DPRL");
+	//Editor.button_labels.push("Relabel");
 	
 	//Editor.button_labels.push("Current State");
 	//Editor.button_labels.push("Print Undo Stack");

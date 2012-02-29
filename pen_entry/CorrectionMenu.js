@@ -69,7 +69,7 @@ CorrectionMenu.initialize = function()
 			console.log(CorrectionMenu.symbol_tree.toString());
 			// add in category for recognition results
 			CorrectionMenu.recognition_node = new CategoryNode();
-				CorrectionMenu.recognition_node.category = "Recognition Results";
+				CorrectionMenu.recognition_node.category = "OCR";
 				CorrectionMenu.recognition_node.children_type = NodeType.Symbol;
 				CorrectionMenu.recognition_node.parent = CorrectionMenu.symbol_tree.root;
 			CorrectionMenu.symbol_tree.root.children.splice(0,0,CorrectionMenu.recognition_node);
@@ -184,26 +184,9 @@ CorrectionMenu.populateSymbolGrid = function(grid_div, node, start_index)
 	}
 }
 
-CorrectionMenu.show = function()
+CorrectionMenu.updateOCRList = function()
 {
-	if(Editor.state != EditorState.SegmentsSelected)
-		return;
-
-	Editor.state = EditorState.Relabeling;
-
-	CorrectionMenu.menu.style.visibility = "visible";
-	if(CorrectionMenu.symbol_tree.current.children_type == NodeType.Symbol)
-	{
-		CorrectionMenu.center_panel.removeChild(CorrectionMenu.current_grid);
-		CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_list);
-	}
-	
-	CorrectionMenu.symbol_tree.current = CorrectionMenu.symbol_tree.root;
-	CorrectionMenu.populateCategoryList(CorrectionMenu.current_list, CorrectionMenu.symbol_tree.current, 0);
-	CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_list);
-
-	// add recognition symbols
-	
+	// Produce OCR result correction menu data, if selected objects are a single segment.
 	var segment_set = Editor.selected_segments[0].set_id;
 	var all_same = true;
 	for(var k = 1; k < Editor.selected_segments.length; k++)
@@ -214,7 +197,7 @@ CorrectionMenu.show = function()
 			break;
 		}
 	}
-	
+	// BUG (?) : if we have mutliple segments, we shouldn't provide OCR results.
 	if(all_same)
 	{
 		var rec_result = RecognitionManager.getRecognition(segment_set);
@@ -231,6 +214,37 @@ CorrectionMenu.show = function()
 			CorrectionMenu.recognition_node.children.push(symbol_node);
 		}
 	}
+}
+
+CorrectionMenu.show = function()
+{
+	if(Editor.state != EditorState.SegmentsSelected)
+		return;
+
+	// Change state, make menu visible.
+	Editor.state = EditorState.Relabeling;
+	CorrectionMenu.menu.style.visibility = "visible";
+
+	// DEBUG: uncomment and fix the following code if we want to try and
+	// restore the current menu state (e.g. to go back to the menu where a correction was
+	// made.
+	// Removes list of symbols from the current menu, if we selected a symbol last time.
+	//if(CorrectionMenu.symbol_tree.current.children_type == NodeType.Symbol)
+	//{
+		// Comment out: maintains current menu state.
+	//	CorrectionMenu.center_panel.removeChild(CorrectionMenu.current_grid);
+	//	CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_list);
+	//} else {
+		// Produce top-level list.
+		CorrectionMenu.symbol_tree.current = CorrectionMenu.symbol_tree.root;
+		CorrectionMenu.populateCategoryList(CorrectionMenu.current_list, CorrectionMenu.symbol_tree.current, 0);
+
+		// Produce OCR results, place in the panel.
+		CorrectionMenu.updateOCRList();
+		CorrectionMenu.symbol_tree.current = CorrectionMenu.recognition_node;
+		CorrectionMenu.populateSymbolGrid(CorrectionMenu.current_grid, CorrectionMenu.recognition_node, 0);
+		CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_grid);
+	//}
 }
 
 CorrectionMenu.select_category = function(e)

@@ -1,3 +1,5 @@
+// NOTE: this is the class for characters.
+
 SymbolSegment.count = 0;
 SymbolSegment.type_id = 3;
 
@@ -41,48 +43,64 @@ function SymbolSegment(in_position) {
 SymbolSegment.prototype.addCharacter = function(in_char) {
 	this.is_empty = false;
 	this.text += in_char;
-
-	//this.size = new Vector2(this.text_width, this.text_height);
-	
 	this.update_extents();
+
+	// Render is required.
 	this.render();
+};
+
+
+SymbolSegment.prototype.addSpace = function() {
+	this.is_empty = false;
+	this.text += '-';
+	this.update_extents();
+
+	// Render is required.
+	this.render();
+	this.textDiv.text(' ');
 };
 
 SymbolSegment.prototype.popCharacter = function() {
 	if(this.text.length > 0) {
 		this.text = this.text.substring(0, this.text.length - 1);
-
-		//this.size = new Vector2(this.text_width, this.text_height);
-		
 		this.update_extents();
 		this.render();
 	}
 };
 
-// called when the text entry loses focus
+// This method converts the individual characters in the current
+// object to a list of individual characters on the canvas,
+// when the user clicks elsewhere (focus is lost).
 SymbolSegment.prototype.finishEntry = function() {
 	letters = this.text.split("");
-	origin = this.worldMinPosition();
-	for(var i = 0; i < letters.length; i++) {
-		if (/^\s*$/.test(letters[i])) {
-			continue;
-		}
-		var s = new SymbolSegment(origin);
-		s.addCharacter(letters[i]);
-		s.render();
-		s.update_extents();
-		Editor.add_action(new AddSegments(new Array(s)));
-		Editor.add_segment(s);
-		origin.x = s.worldMaxPosition().x + 2;
-	}
+
+	// Don't record the temporary text object.
 	var action = new DeleteSegments(new Array(this));
 	action.Apply();
-	Editor.add_action(action);
+
+	console.log(letters);
+	origin = this.worldMinPosition();
+	for(var i = 0; i < letters.length; i++) {
+		var s = new SymbolSegment(origin);
+
+		if (letters[i] == " ") {
+			s.addSpace();
+		} else {
+			s.addCharacter(letters[i]);
+			Editor.add_action(new AddSegments(new Array(s)));
+			Editor.add_segment(s);
+
+			RecognitionManager.addRecognitionForText(s);
+		}
+
+		s.update_extents();
+		origin.x = s.worldMaxPosition().x + 2;
+	}
+
 };
 
 SymbolSegment.prototype.render = function() {		
-	RecognitionManager.addRecognitionForText(this);
-	
+
 	transform = 'translate(' + this.temp_translation.x + 'px,' + this.temp_translation.y + 'px) ';
 	transform += 'scale(' + this.temp_scale.x + ',' + this.temp_scale.y + ') ';
 	transform += 'translate(' + this.translation.x + 'px,' + this.translation.y + 'px) ';

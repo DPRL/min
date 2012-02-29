@@ -16,6 +16,8 @@
 		sb.append("&segment=false");
 	
  
+	// BUG: classification of objects with multiple types currently
+	// not handled.
 	$.get
 	(
 		Editor.classifier_server_url + sb.toString(), 

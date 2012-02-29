@@ -1,3 +1,10 @@
+/* IMPORTANT!
+ *
+ * See also the file Editor.Constants.js, where a number of other color attributes
+ * are defined. URLs for recognition services are also defined there.
+ *
+ * (rlaz)
+ */
 body {
 	background-color: #BBBBBB;
 	overflow: hidden;
@@ -28,7 +35,7 @@ div.equation_editor {
 	position: absolute;
 	left: 0px;
 	top: 0px;
-	font-family: Tahoma, Geneva, sans-serif;
+	font-family: 'Ubuntu', sans-serif;
 	
 }
 /* used for any buttons to change mouse cursor*/
@@ -40,27 +47,24 @@ div.equation_editor {
 div#relabel_menu {
 	position: relative;
 	top: 20px;
-	background-color: rgba(1,1,1,0);
-	//overflow: hidden;
+	overflow: hidden;
 	width: 600px;
 	height: 400px;
-	z-index: 1000;
 	margin: 0px auto;
-	opacity: 0.8;
-	border:10px solid #DDDDDD;
-	border-radius: 5px;
+	opacity: 0.6;
+	border:8px solid #444444; /*#EEEEEF; /*DDDDDD;*/
+	border-radius: 2px;
 	-moz-box-shadow:  10px 10px 10px rgba(64,64,64,0.5);
 	-webkit-box-shadow: 10px 10px 10px rgba(64,64,64,0.5);
+	z-index: 1002;
 }
-
-
 
 div#rr_node_label {
 	position: absolute;
 	width: 100%;
-	top: -8px;
+	top: -2px;
 	bottom: 93%;
-	4background-color: #DDDDDD;
+	background-color: #CCCCCC; /*DDDDDD;*/
 	font-size: 20px;
 	font-height: 30px;
 	font-effect: outline;
@@ -68,25 +72,25 @@ div#rr_node_label {
 
 div#rr_close_button {
 	position: absolute;
-	width: 9%;
-	top: -9px;
-	height: 20px;
-	left: 91%;
+	width: 12%;
+	border:1px;
+	top: -2px;
+	height: 26px;
+	bottom: 93%;
+	left: 87%;
 
 	/* Text */
 	text-align: center;
 	font-size: 18px;
-	font-height: 20px;
-	font-weight: 900;
-	color: #EEE;
+	/*color: #FFF; /*color: #FFE;*/
 	 -webkit-text-stroke: 0.75px #000;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Ubuntu', sans-serif;
 	
 	/* gradient */
 	background: #FF5C49; /* old browsers */
 	background: -moz-linear-gradient(top, #FF5C49 0%, #E89F99 29%, #FF5C49 94%); /* firefox */
 
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF5C49), color-stop(29%,#E89F99), color-stop(94%,#FF5C49)); /* webkit */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF5C49), color-stop(35%,#E99F99), color-stop(100%,#FF6C49)); /* webkit */
 
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF5C49', endColorstr='#FF5C49',GradientType=0 ); /* ie */
 
@@ -97,7 +101,7 @@ div#rr_close_button {
 	border-style: groove;
 	border-bottom-right-radius: 4px;
 	border-bottom-left-radius: 4px;				
-	border-width: 0px 2px 2px 2px;
+	border-width: 2px 2px 2px 2px;
 	border-color: #888;
 	
 }
@@ -105,7 +109,7 @@ div#rr_close_button:hover {
 	background: #FF4732; /* old browsers */
 	background: -moz-linear-gradient(top, #FF4732 0%, #F97C75 29%, #FF4935 94%); /* firefox */
 
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF4732), color-stop(29%,#F97C75), color-stop(94%,#FF4935)); /* webkit */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF4732), color-stop(50%,#F97C75), color-stop(100%,#FF4945)); /* webkit */
 
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF4732', endColorstr='#FF4935',GradientType=0 ); /* ie */
 
@@ -171,7 +175,6 @@ div.symbol_cell {
 	float: left;
 	background-color: rgba(196,196,196, 1);
 	text-align: center;
-	ont-size: 40px;
 	border-style: solid;
 	border-width: 0px 1px 1px 0px;
 	font-size: 40px;
@@ -200,22 +203,22 @@ div.category_row {
 div.equation_canvas {
 	display: block;
 	background-color: #111111;
-	position: relative;
+	position: absolute;
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-}			
-/* toolbar stuff */
+}
 
+/* toolbar stuff */
 div.toolbar {
 	position: relative;
-	display: block;
+	display: block; 
 	
 	/** background color **/
 	background: #888888; /* old browsers */
-	background: -moz-linear-gradient(top, #999999 0%, #888888 37%, #777777 100%); /* firefox */
+	background: -moz-linear-gradient(top, #BBBBBB 0%, #AAAAAA 37%, #999999 100%); /* firefox */
 
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#999999), color-stop(37%,#888888), color-stop(100%,#777777)); /* webkit */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#BBBBBB), color-stop(37%,#AAAAAA), color-stop(100%,#999999)); /* webkit */
 
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#777777',GradientType=0 ); /* ie */
 
@@ -226,7 +229,7 @@ div.toolbar {
 	
 	left: 0px;
 	top: 0px;
-	height: 70px;
+	height: 65px;
 	width: 100%;
 	overflow: hidden;
 	border-bottom-style: solid;
@@ -266,11 +269,10 @@ div.toolbar_group_divider {
 }
 
 div.toolbar_button {
-	margin-top: 2px;
+	margin-top: 1px;
 	margin-right: 2px;
 	margin-left: 2px;
 	position: relative;
-	
 	float: left;
 }
 
@@ -289,7 +291,7 @@ div.toolbar_button_selected {
 	border-radius: 2px;			
 	border-color: #333333;
 	/*background-color: rgba(206,141,66,0.4);*/
-	background-color: rgba(0,0,0,0.4);
+	background-color: rgba(80,80,80,0.4);
 }
 
 div.toolbar_button_enabled:hover {
@@ -316,26 +318,45 @@ div.toolbar_button_touched {
 	background-color: rgba(255,255,0,0.2);
 }
 
-div.toolbar_button_icon {
+div.toolbar_button_type {
 	width: 50px;
 	height: 50px;
 	background-color: #111;
 	margin: 5px;
+	font-size: 20px;
+}
+
+div.toolbar_button_text {
+	width: 50px;
+	height: 50px;
+	/* background-color: #111; */
+	margin: 5px;
+	text-align: center;
+	font-size: 40px;
+	color: #333; /*CCC;*/
+}
+
+div.toolbar_button_icon {
+	width: 50px;
+	height: 50px;
+	/* background-color: #111; */
+	margin: 5px;
 	/*padding: 5px;*/
 }
 
+/* Labels the buttons. */
 div.toolbar_button_label {
 	margin-bottom: 5px;
 	width: 100%;
 	text-align: center;
-	font-size: 12px;
+	font-size: 8px;
 	display: none;
 }
-
 
 li.toolbar_button:hover {
 	background-color: #AAAA90;
 }
+
 input.image_upload {
 	top: 0;
 	right: 0;
@@ -345,28 +366,46 @@ input.image_upload {
 	opacity: 0.5;
 }
 
+/* MISNAMED: This is actually the selection rectangle. */
 div#bounding_box {
 	position: absolute;
-	//outline: #303030 dashed 1px;
-	border: 1px dashed #333;
+	/*outline: #303030 dashed 1px;*/
+	border: 2px dashed #22D; /*dashed #333;*/
+	padding: 1px
 }
 div.bb_handle {
+	cursor: pointer;
 	visibility: inherit;
 	position: absolute;
-	width: 15px;
-	height: 15px;
-	border: 2px solid #444;
+	width: 18px;
+	height: 18px;
+	border: 2px solid #666;
 	border-radius: 15px;
-	background-color: #222;
-	z-index: 20;
+	background-color: #227;
+	z-index: 1001;
 }
 
+/* This controls the appearance of overlaid recognition results. */
 div.segment_set {
 	position: absolute;
-	background-color: rgba(50, 50, 50, 0.6);
+	/*background-color: rgba(50, 50, 50, 0.6); */
+	color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(50, 50, 100, 0.7); 
 	z-index: 999;
 	text-align: center;
-	color: rgba(255, 255, 255, 0.65);
+	font-family: 'Ubuntu', sans-serif;
+	padding: 0;
+	-moz-user-select: none;
+}
+
+/* This controls the appearance of overlaid recognition results. */
+div.text_segment {
+	position: absolute;
+	/*background-color: rgba(50, 50, 50, 0.6); */
+	color: rgba(255, 255, 255, 0.7);
+	/*background-color: rgba(50, 50, 100, 0.7); */
+	z-index: 999;
+	text-align: center;
 	font-family: 'Ubuntu', sans-serif;
 	padding: 0;
 	-moz-user-select: none;
@@ -374,9 +413,8 @@ div.segment_set {
 
 div#selection_rectangle {
 	position: absolute;
-	border: 1.75px solid #44F;				
-	z-index: 100;
-	
+	border: 2px solid #54F;				
+	z-index: 998;
 }
 
 svg.pen_stroke {
@@ -395,42 +433,39 @@ svg.pen_stroke {
 	left: 0;
 }
 
+
+/* Text bars and search */
 div#infobar-wrapper {
-	height: 25px;
+	position: relative;
+	float: right;
+	padding-left: 2px;
+	padding-right: 10px;
 	line-height: 25px;
-	font-size: 11px;
-	background-color: #d3d3d3;
-	color: #333;
-	border-bottom: 1px solid #888;
-	border-top: 1px solid #888;
-	padding-left: 5px;
+	font-size: 14px;
+	background-color: 111000;/*#d3d3d3;*/
+	color: #111; /*#333; */
+}
+
+div#texwrapper {
+	float: right;
+}
+
+div#tex_result {
+	width: 100%;
+	padding-left: 2px;
 	padding-right: 5px;
-}
-
-div#infowrapper {
-	height: 25px;
-	float: left;
-	width: 50%;
-	border-right: 1px solid #d3d3d3;
-}
-
-div #texwrapper {
-	height: 25px;
-	margin-left: 50%;				
-	padding-left: 10px;
-}
-
-#tex_result {
 	border: 1px solid #d3d3d3;
-	background-color: #eaeaea;
-	font-size: 12px;
-	font-family: 'Ubuntu', Tahoma, Geneva, sans-serif;
-	padding: 1px;
+	font-family: 'Ubuntu', sans-serif;
 }
 
+div#engineSelector {
+	float: bottom;
+}
+
+/* Logos */
 div#logobar-wrapper {
 	position: absolute;
-	bottom: 90px;
+	bottom: 35px;
 	height: 100px;
 	width: 100%;
 }
