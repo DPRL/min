@@ -5,6 +5,7 @@ var EditorState =
 	"StrokeSelecting" : 1,
 	"ReadyToRectangleSelect" : 2,
 	"RectangleSelecting" : 3,
+
 	
 	// pen states
 	"ReadyToStroke" : 4, 
@@ -21,7 +22,10 @@ var EditorState =
 	"Relabeling" : 11,
 
 	// Editing text box.
-	"InTextBox" : 12
+	"InTextBox" : 12,
+
+	// New: moving a symbol in edit mode.
+	"PenMovingSegments" : 13
 };
 
 Editor.clicks = 0;
@@ -43,6 +47,7 @@ Editor.setup_events = function()
 	// Canvas bindings.
 	Editor.canvas_div.addEventListener("mousedown", Editor.onMouseDown, true);
 	Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
+	Editor.canvas_div.addEventListener("dblclick", Editor.onDoubleClick, true);
 
 	Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
 	Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
@@ -159,6 +164,77 @@ Editor.onResize = function(e)
 	Editor.div_position = findPosition(Editor.canvas_div);
 }
 
+Editor.onDoubleClick = function(e)
+{
+
+	console.log("DOUBLE CLICK");
+	console.log(Editor.state);
+	switch (Editor.state)
+	{
+		case EditorState.ReadyToStroke:
+			var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+			if(click_result.length > 0)
+			{
+				// Select all primitives belonging to the selected segment.
+				var segment = click_result.pop();
+				for(var k = 0; k < Editor.segments.length; k++)
+					if(Editor.segments[k].set_id == segment.set_id)
+						Editor.add_selected_segment(Editor.segments[k]);
+		
+				//Editor.add_action(new TransformSegments(Editor.selected_segments));
+				// DEBUG: need to be in this state.
+				Editor.state = EditorState.SegmentsSelected;
+				RenderManager.colorOCRbbs(false);
+
+				Editor.relabel();
+				//Editor.state = EditorState.ReadyToStroke;
+				//Editor.selectPenTool();
+			}
+			break;
+
+		case EditorState.SegmentsSelected:
+			// RLAZ: allow relabeling and resegmenting using double tap.
+
+			// Check for identical segment identifiers (relabel in that case)
+			var singleObject = 0;
+			if (Editor.selected_segments.length > 0) {
+				var allSame = 1;
+				var segmentId = Editor.selected_segments[0].set_id;
+				console.log(Editor.selected_segments[0].set_id);
+
+				// All selected objects belong to the same segment (id)
+				for(var i = 1; i < Editor.selected_segments.length; i++) {
+					console.log(Editor.selected_segments[i].set_id);
+					if (Editor.selected_segments[i].set_id != segmentId ) {
+						allSame = 0;
+					}
+				}
+				// All objects in the segmented have been selected.
+				if (allSame > 0) {
+					var totalInSegment = 0;
+					for(var i = 0; i < Editor.segments.length; i++)
+					{
+						console.log(Editor.segments[i].set_id);
+						if (Editor.segments[i].set_id == segmentId) {
+							totalInSegment++
+						}
+					}
+					if(totalInSegment == Editor.selected_segments.length) {
+						singleObject = 1;
+					}
+				}
+			}
+
+			// Depending on selection, relabel or re-segment.
+			if (singleObject > 0) {
+				Editor.relabel();
+			} else {
+				Editor.groupTool();
+			}
+			break;
+	}
+}
+
 Editor.onMouseDown = function(e)
 {
 	// support for both computer mouse and tablet devices
@@ -235,61 +311,6 @@ Editor.onMouseDown = function(e)
 			break;
 
 		case EditorState.SegmentsSelected:
-			Editor.clicks++;
-				if (Editor.clicks == 1) {
-					setTimeout(function(){
-						if(Editor.clicks == 1) {
-							console.log('single click');
-						} else {
-							// RLAZ: allow relabeling and resegmenting using double tap.
-							console.log('double click');
-							console.log('Selected (primitives): ' + Editor.selected_segments.length);
-							console.log('Segments (primitives): ' + Editor.segments.length);
-
-							// Check for identical segment identifiers (relabel in that case)
-							var singleObject = 0;
-							if (Editor.selected_segments.length > 0) {
-								var allSame = 1;
-								var segmentId = Editor.selected_segments[0].set_id;
-								console.log("Editor.selected_segments[0]");
-								console.log(Editor.selected_segments[0].set_id);
-
-								// All selected objects belong to the same segment (id)
-								for(var i = 1; i < Editor.selected_segments.length; i++) {
-									console.log("Editor.selected_segments[i]");
-									console.log(Editor.selected_segments[i].set_id);
-									if (Editor.selected_segments[i].set_id != segmentId ) {
-										allSame = 0;
-									}
-								}
-								// All objects in the segmented have been selected.
-								if (allSame > 0) {
-									var totalInSegment = 0;
-									for(var i = 0; i < Editor.segments.length; i++)
-									{
-											console.log("Editor.segments[i]");
-											console.log(Editor.segments[i].set_id);
-										if (Editor.segments[i].set_id == segmentId) {
-											totalInSegment++
-											console.log('Total in segment: ' + totalInSegment);
-										}
-									}
-									if(totalInSegment == Editor.selected_segments.length) {
-										singleObject = 1;
-									}
-								}
-							}
-
-							// Depending on selection, relabel or re-segment.
-							if (singleObject > 0) {
-								Editor.relabel();
-							} else {
-								Editor.groupTool();
-							}
-						}
-						Editor.clicks = 0;
-					}, 400);
-				}
 			var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
 			// check for resizing
 			if(click_edge != -1)
@@ -362,7 +383,7 @@ Editor.onMouseDown = function(e)
 				break; 
 			} else {
 				// If we're on the canvas, switch to pen mode.
-				Editor.selectPenTool;
+				//Editor.selectPenTool();
 				// build a new stroke object and save reference so we can add new points
 				Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
 				Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
@@ -396,13 +417,31 @@ Editor.onMouseDown = function(e)
 
 
 		case EditorState.ReadyToStroke:
-			// build a new stroke object and save reference so we can add new points
-			Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-			Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-			Editor.add_segment(Editor.current_stroke);			
-			
-			Editor.state = EditorState.MiddleOfStroke;
+			// RLAZ: allow symbols to be moved (but not multiply selected or resized)
+			// in drawing mode.
+			var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+			if(click_result.length > 0)
+			{
+				var segment = click_result.pop();
+				for(var k = 0; k < Editor.segments.length; k++)
+					if(Editor.segments[k].set_id == segment.set_id)
+						Editor.add_selected_segment(Editor.segments[k]);
+		
+				Editor.add_action(new TransformSegments(Editor.selected_segments));
+				Editor.state = EditorState.PenMovingSegments; //SegmentsSelected;
+			} else
+			{
+				// build a new stroke object and save reference so we can add new points
+				Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+				Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+				Editor.add_segment(Editor.current_stroke);			
+				
+				Editor.state = EditorState.MiddleOfStroke;
+			}
+
+			RenderManager.render();
 			break;
+
 	}
 }
 
@@ -475,6 +514,7 @@ Editor.onMouseMove = function(e)
 				break;
 			case EditorState.SegmentsSelected:
 				Editor.state = EditorState.MovingSegments;
+			case EditorState.PenMovingSegments:
 			case EditorState.MovingSegments:
 				// add the transform action to stack
 				/*
@@ -596,6 +636,7 @@ Editor.onMouseUp = function(e)
 				Editor.start_rect_selection = Editor.end_rect_selection = null;
 				RenderManager.render();
 				break;
+			case EditorState.PenMovingSegments:
 			case EditorState.MovingSegments:
 				// RLAZ: delete strokes if cursor moves out of the window.
 				var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
@@ -605,7 +646,7 @@ Editor.onMouseUp = function(e)
 				var offSet = 0;
 				if(e.type == "touchend") {
 					theEvent = event.changedTouches[0];
-					offSet = 5;  /* arbitrary 'close to edge of screen' value */
+					offSet = 10;  /* arbitrary 'close to edge of screen' value */
 				}
 
 				// iPad: touchend occurs when finger physically leaves the screen.
@@ -614,8 +655,12 @@ Editor.onMouseUp = function(e)
 						theEvent.pageY > canvasDims.height - 2 * offSet) {
 					Editor.deleteTool();
 				} else {
-					Editor.state = EditorState.SegmentsSelected;
-					Editor.current_action.add_new_transforms(Editor.selected_segments);
+					if (Editor.state == EditorState.MovingSegments) {
+						Editor.state = EditorState.SegmentsSelected;
+						Editor.current_action.add_new_transforms(Editor.selected_segments);
+					} else {
+						Editor.selectPenTool();
+					}
 				}
 				break;
 			case EditorState.MiddleOfStroke:
@@ -638,7 +683,7 @@ Editor.onMouseUp = function(e)
 				Editor.current_action.add_new_transforms(Editor.selected_segments);
 				RenderManager.render();
 				Editor.resize_offset = new Vector2(0,0);
-				
+				break;
 		}
 	}
 }

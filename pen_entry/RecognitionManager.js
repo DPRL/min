@@ -108,6 +108,7 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
  RecognitionManager.enqueueSegment = function(segment)
  {
 	clearTimeout(RecognitionManager.timeout);
+	var timeOut = 1500; // milliseconds.
 
 	RecognitionManager.segment_queue.push(segment);
 	if(RecognitionManager.segment_queue.length >= RecognitionManager.max_segments)
@@ -116,8 +117,9 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 	}
 	else
 	{
+		// With 'max_segments = 1,' this will never execute.
 		console.log("Setting timeouot");
-		RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false," + ( segment.set_id == -1 ? "true" : "false" ) + ";", 1500);
+		RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false," + ( segment.set_id == -1 ? "true" : "false" ) + ";", timeOut);
 	}
 	
  }

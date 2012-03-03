@@ -10,10 +10,9 @@ Editor.control_point_line_width = 1.5;
 Editor.recognition_result_color = "#111111";
 
 Editor.stroke_width = 4;
-
 Editor.selected_stroke_width = 4;
 Editor.stroke_select_color = "#44F"
-Editor.stroke_select_width = 3;
+Editor.stroke_select_width = 2;
 
 /* Symbol classification and attributes */
 // Hierarchical tree of available symbol classes
