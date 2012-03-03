@@ -50,18 +50,22 @@ RenderManager.initialize = function(in_width, in_height, in_layers)
 RenderManager.render_tools_layer = function()
 {
 
-	if(Editor.selected_bb != null)
-		RenderManager.render_bb(Editor.selected_bb, 4);
-	else
-		RenderManager.bounding_box.style.visibility = "hidden";
 
 	// Find the checked element in the layer radio button form.
+	// Use this to hide/show the background information.
 	if (document.forms[0].layers.checked == false)
 	{
 		RenderManager.unrender_set_field();
 	} else {
 		RenderManager.render_set_field(4);
 	}
+
+	// Show selection bounding box.
+	if(Editor.selected_bb != null)
+		RenderManager.render_bb(Editor.selected_bb, 4);
+	else
+		RenderManager.bounding_box.style.visibility = "hidden";
+
 	
 	// render selection rectangle
 	if(Editor.start_rect_selection != null && Editor.end_rect_selection != null)
@@ -158,6 +162,36 @@ RenderManager.render_bb_control_point = function(in_x, in_y, in_context)
 	in_context.stroke();
 }
 
+RenderManager.editColorOCRbbs = function() {
+	RenderManager.colorOCRbbs(true);
+}
+
+RenderManager.regColorOCRbbs = function() {
+	RenderManager.colorOCRbbs(false);
+}
+
+// RLAZ: New method to colorize the bounding boxes for OCR results
+// based on state.
+RenderManager.colorOCRbbs = function(editing)
+{
+	var classname;
+	if (editing) 
+		classname = "segment_input_set";
+	else
+		classname = "segment_set";
+
+	//console.log('DIVS:');	
+	//console.log(RenderManager.segment_set_divs.length);
+
+	for (var i = 0; i < RenderManager.segment_set_divs.length; i++) {
+		// ** Don't change style for text objects.
+		var segment = RenderManager.segment_set_divs[i];
+		if (segment.className != "text_segment") {
+			console.log(segment.className = classname);
+		}
+	}
+}
+
 RenderManager.render_set_field = function(in_context_id)
 {
 	// Uses fact that primitive are sorted according to set (segment)
@@ -172,14 +206,13 @@ RenderManager.render_set_field = function(in_context_id)
 		if(set_segments.length == 0) {
 			set_segments.push(seg);
 		}
-
 		else if(seg == null || seg.set_id != set_segments[0].set_id)
 		{
-			// render symbols.
+			// We have found the next symbol (primitive segment).
 			var mins = set_segments[0].worldMinDrawPosition();
 			var maxs = set_segments[0].worldMaxDrawPosition();
 			
-			// Find the extent of the symbol.
+			// Find the extent of the symbol (BB)
 			for(var j = 1; j < set_segments.length ; j++)
 			{
 				var seg_min = set_segments[j].worldMinDrawPosition();
@@ -198,24 +231,36 @@ RenderManager.render_set_field = function(in_context_id)
 			var rect_size = Vector2.Subtract(maxs, mins);
 
 
-
-			// context.fillRect(mins.x, mins.y, rect_size.x, rect_size.y);
-			// need to dynamically make these if we run out
-			// incrase number of these divs
+			// Generate divs to represent each symbol.
 			if(RenderManager.segment_set_divs.length == set_index)
 			{
 				var div = document.createElement('div');
 
 				// Chose the div class to obtain desired formatting.
-				if (Editor.segments[k-1].constructor == SymbolSegment) 
+				if (Editor.segments[k-1].constructor == SymbolSegment) {
 					div.className = 'text_segment';
-				else
-					div.className = 'segment_set';
+				}
+				else {
+					switch(Editor.state)
+					{
+						case EditorState.ReadyToStroke:
+						case EditorState.MiddleOfStroke:
+						case EditorState.ReadyForText:
+						case EditorState.MiddleOfText: 
+							div.className = 'segment_input_set';
+							break;
+						default:
+							div.className = 'segment_set';
+							break;
+					}
+				}
 				div.style.visibility='hidden';
 				Editor.canvas_div.appendChild(div);
 				RenderManager.segment_set_divs.push(div);
 			}			
 			
+			// Add the new div to the RenderManager data structures,
+			// set visiblity and BB properties.
 			var ss_div = RenderManager.segment_set_divs[set_index++];
 			ss_div.style.visibility = "visible";
 			ss_div.style.left = mins.x + "px";
@@ -223,7 +268,7 @@ RenderManager.render_set_field = function(in_context_id)
 			ss_div.style.width = rect_size.x + "px";
 			ss_div.style.height = rect_size.y + "px";
 
-			// Assign labels to objects.
+			// Recognition result/label
 			var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
 			if(recognition_result != null && set_segments[0].constructor != SymbolSegment)
 			{
@@ -243,6 +288,8 @@ RenderManager.render_set_field = function(in_context_id)
 				//ss_div.style.lineHeight = rect_size.y + "px";
 			}
 
+			// 'Empty' list of primitives for next object, add current object to list.
+			// Not sure why the length is being set to zero here.
 			set_segments.length = 0;
 			set_segments.push(seg);
 		}

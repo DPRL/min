@@ -38,37 +38,42 @@ Editor.setup_events = function()
 	$(document).keypress(Editor.onKeyPress);
 	$(document).keydown(Editor.mapCanvasBackspace);
 	document.addEventListener("mouseup", Editor.onMouseUp, true);
-	document.addEventListener("touchend", Editor.onMouseUp, true);
+	document.addEventListener("mousedown", Editor.onMouseDown, true);
 
 	// Canvas bindings.
-	// prevent right click menu on canvas
-	Editor.canvas_div.setAttribute("oncontextmenu","return false;");
-	Editor.canvas_div.setAttribute("onselectstart","return false;");
 	Editor.canvas_div.addEventListener("mousedown", Editor.onMouseDown, true);
-	Editor.canvas_div.addEventListener("dblclick", Editor.align, true);
+	Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
 
-	// iPad
 	Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
-	// prevent the screen from moving around when touched on IPad
-	//Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
+	Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
+	
+	// Prevent problem behavior from the iPad canvas.
+	Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
 	//Editor.canvas_div.setAttribute("ontouchstart", "event.preventDefault();");	
 
 	//document.getElementById("text").addEventListener("click", Editor.typeTool, true);
+	// Listeners for buttons.
+	document.getElementById("pen").addEventListener("click", RenderManager.editColorOCRbbs, true);
+	document.getElementById("pen").addEventListener("click", Editor.selectPenTool, true);
+
+	document.getElementById("stroke_select").addEventListener("click", RenderManager.regColorOCRbbs, true);
 	document.getElementById("stroke_select").addEventListener("click", Editor.strokeSelectionTool, true);
+
+	document.getElementById("rectangle_select").addEventListener("click", RenderManager.regColorOCRbbs, true);
 	document.getElementById("rectangle_select").addEventListener("click", Editor.rectangleSelectionTool, true);
+
 	document.getElementById("undo").addEventListener("click", Editor.undo, true);
 	document.getElementById("redo").addEventListener("click", Editor.redo, true);
 	document.getElementById("dprl").addEventListener("click", Editor.goDPRL, true);
-	document.getElementById("pen").addEventListener("click", Editor.selectPenTool, true);
+	document.getElementById("align").addEventListener("click",Editor.align, true);
 	
-	// select the pen tool
-	Editor.button_states[Buttons.Pen].enabled = true;
 
 	// add an equation image to the canvas
 	//if(window.FileReader) document.getElementById("image").addEventListener("change", Editor.onImageLoad, true);
 	// TYPING/TEXT ENTRY: line below will disable text entry for the iPad.
 	//if(navigator.userAgent.match(/iPad/i) == null) document.getElementById("text").addEventListener("click", Editor.typeTool, true);
 
+	// Adds highlighting on pressing buttons.
 	if(Editor.using_ipad)
 	{
 		// undo
@@ -94,11 +99,42 @@ Editor.setup_events = function()
 		{
 			Editor.button_states[Buttons.Redo].setTouched(false);
 		}, true);	
+
+		// align/append
+		document.getElementById("align").addEventListener("touchstart",
+		function(event)
+		{
+			Editor.button_states[Buttons.Align].setTouched(true);
+		}, true);
+		document.getElementById("align").addEventListener("touchend",
+		function(event)
+		{
+			Editor.button_states[Buttons.Align].setTouched(false);
+		}, true);	
 		
 	}
 	
 	// prints the undo stack to console
 	//document.getElementById("print_undo_stack").addEventListener("click", Editor.printUndoStack, true);
+	//
+	// Select the pen tool
+	Editor.button_states[Buttons.Pen].enabled = true;
+
+}
+
+Editor.setStrokeView = function()
+{
+	var show = document.forms[0].strokes.checked;
+	for (var i=0; i < Editor.segments.length; i++) {
+		var nextSegment = Editor.segments[i];
+		if (nextSegment.type_id == PenStroke.type_id) {
+			if (!show)
+				nextSegment.group.setAttribute("style", "fill:none;stroke-linecap:round;visibility:hidden;");
+			else
+				nextSegment.group.setAttribute("style", "fill:none;stroke-linecap:round;visibility:visible;");
+		}
+	}
+	
 }
 
 
@@ -174,9 +210,9 @@ Editor.onMouseDown = function(e)
 			RenderManager.render();
 			break;		
 		case EditorState.ReadyToRectangleSelect:
-
 			// get the segments that are under the mouse click
 			var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+
 			if(click_result.length > 0)
 			{
 				// nothing selected at the moment, add all below mouse click to selected
@@ -336,16 +372,6 @@ Editor.onMouseDown = function(e)
 			}
 			break;
 
-		case EditorState.ReadyToStroke:
-			// build a new stroke object and save reference so we can add new points
-			Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-			Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-			Editor.add_segment(Editor.current_stroke);			
-			
-			Editor.state = EditorState.MiddleOfStroke;
-			break;
-
-			
 		case EditorState.ReadyForText:
 			Editor.current_text = null;
 			var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
@@ -360,16 +386,22 @@ Editor.onMouseDown = function(e)
 			
 			if(Editor.current_text == null)
 			{
-				// HERE
 				var s = new SymbolSegment(Editor.mouse_position);
 				Editor.current_text = s;
-				//Editor.add_action(new AddSegments(new Array(s)));
-				//Editor.add_segment(s);
 			} else {
 				Editor.add_action(new EditText(Editor.current_text));
 			}
-			
 			Editor.state = EditorState.MiddleOfText;
+			break;
+
+
+		case EditorState.ReadyToStroke:
+			// build a new stroke object and save reference so we can add new points
+			Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+			Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+			Editor.add_segment(Editor.current_stroke);			
+			
+			Editor.state = EditorState.MiddleOfStroke;
 			break;
 	}
 }
@@ -569,9 +601,17 @@ Editor.onMouseUp = function(e)
 				var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
 				var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
 
-				if (e.pageX < 0 || e.pageX > canvasDims.right ||
-						e.pageY  < toolbarDims.bottom || 
-						e.pageY > canvasDims.height) {
+				var theEvent = e;
+				var offSet = 0;
+				if(e.type == "touchend") {
+					theEvent = event.changedTouches[0];
+					offSet = 5;  /* arbitrary 'close to edge of screen' value */
+				}
+
+				// iPad: touchend occurs when finger physically leaves the screen.
+				if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
+						theEvent.pageY  < toolbarDims.bottom || 
+						theEvent.pageY > canvasDims.height - 2 * offSet) {
 					Editor.deleteTool();
 				} else {
 					Editor.state = EditorState.SegmentsSelected;
@@ -662,46 +702,21 @@ Editor.onKeyPress = function(e)
 		case EditorState.ReadyToStrokeSelect:
 		case EditorState.ReadyToStroke:
 			textBox = document.getElementById("tex_result");
-			if (document.querySelector(":focus") != textBox) {
-				Editor.typeTool();
+			if (document.querySelector(":focus") == textBox) {
+				break
+			}
 
-				// Shift immediately to place text, without a tap/click.
-				var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
-				for(var k = 0; k < clicked_points.length; k++)
-				{
-					if(clicked_points[k].type_id == SymbolSegment.type_id)
-					{
-						Editor.current_text = clicked_points[k];
-						break;
-					}
-				}
-			}
+			Editor.typeTool();
+			var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
 			
-			if(Editor.current_text == null)
-			{
-				var s = new SymbolSegment(Editor.mouse_position);
-				Editor.current_text = s;
-			} else {
-				Editor.add_action(new EditText(Editor.current_text));
-			}
-			
+			var s = new SymbolSegment(Editor.mouse_position);
+			Editor.current_text = s;
 			Editor.current_text.addCharacter(String.fromCharCode(e.which));
 			console.log('2: CHARACTER PRESSED');
 
 			Editor.state = EditorState.MiddleOfText;
 			break;
 
-		
-		/*case EditorState.ReadyToStroke:
-			if ( Editor.segments.length > 0
-				 && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
-				Editor.rectangleSelectionTool();
-			} else {
-				break;
-			}*/
-		
-		//case EditorState.ReadyToRectangleSelect:
-		//case EditorState.ReadyToStrokeSelect:
 		case EditorState.SegmentsSelected:
 			if ( Editor.segments.length > 0
 				 && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
@@ -791,7 +806,6 @@ Editor.onKeyPress = function(e)
 
 Editor.selectPenTool = function(draw_now)
 {
-	console.log('HEERE');
 	//if(Editor.button_states[Buttons.Pen].enabled == false)
 	//	return;
 	Editor.clearButtonOverlays();
@@ -820,10 +834,8 @@ Editor.strokeSelectionTool = function()
 {
 	if(Editor.button_states[Buttons.Stroke].enabled == false)
 		return;
-
 	Editor.clearButtonOverlays();
 	Editor.button_states[Buttons.Stroke].setSelected(true);
-	//Editor.align();
 	
 	switch(Editor.state)
 	{
@@ -841,7 +853,7 @@ Editor.strokeSelectionTool = function()
 	else
 		Editor.state = EditorState.SegmentsSelected;	
 	RenderManager.render();
-	Editor.selection_method = "Stroke";;
+	Editor.selection_method = "Stroke";
 }
 
 Editor.rectangleSelectionTool = function()
@@ -868,12 +880,25 @@ Editor.rectangleSelectionTool = function()
 		Editor.state = EditorState.ReadyToRectangleSelect;
 	else
 		Editor.state = EditorState.SegmentsSelected;
+
 	RenderManager.render();	
 	Editor.selection_method = "Rectangle";
 }
 
 Editor.align = function()
 {
+	switch(Editor.state)
+	{
+		case EditorState.MiddleOfText:
+			Editor.current_text.finishEntry();
+			if(Editor.current_action.toString() == "EditText")
+				Editor.current_action.set_current_text(Editor.current_text.text);
+			else if(Editor.current_action.toString() == "AddSegments")
+				Editor.current_action.buildSegmentXML();				
+			Editor.current_text = null;
+	}
+
+
 	// an array of tuples
 	// recognition result, min bb, max bb, set id
 	var data = new Array();
@@ -915,8 +940,8 @@ Editor.align = function()
 			// If it's a text segment, account for the draculae making x's smaller than t's, etc
 			
 			if (set_segments[0].constructor == SymbolSegment) {
-				console.log('char: ' + set_segments[0].text);
-				console.log('before resize: (' + mins.y + ', ' + maxs.y + ')');
+				//console.log('char: ' + set_segments[0].text);
+				//console.log('before resize: (' + mins.y + ', ' + maxs.y + ')');
 				size = Vector2.Subtract(maxs, mins);
 				if (-1 != $.inArray(set_segments[0].text, Editor.x_height_chars)) {
 					mins.y += size.y / 2;
@@ -925,7 +950,7 @@ Editor.align = function()
 					mins.y += size.y / 2;
 					maxs.y += size.y / 2;
 				}
-				console.log('after resize: (' + mins.y + ', ' + maxs.y + ')');
+				//console.log('after resize: (' + mins.y + ', ' + maxs.y + ')');
 			}
 			var tuple = new Tuple(recognition_result, mins, maxs, origMins, origMaxs);
 			data.push(tuple);
@@ -962,7 +987,7 @@ Editor.align = function()
 		//console.log(t.item1.symbols[0] + " " + t.item2.toString() + " " + t.item3.toString() + " " + t.item1.set_id);
 	}
 	sb.append("</SegmentList>");
-	console.log(sb.toString());
+	//console.log(sb.toString());
 	
 	//$.get
 	$.ajax
@@ -981,14 +1006,17 @@ Editor.align = function()
 			
 			if(segment_nodes.length == 0)
 			{
-				alert("Received this response from DRACULAE: " + in_data);
+				alert("DRACULAE Error: " + in_data);
 				return;
 			}
 			
+			// Append interpretation to the query box.
 			if ( tex_nodes.length != 0 ) {
 				var tex_string = tex_nodes[ 0 ].textContent;
-				var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" ); // get just the math, removing spaces
-				document.getElementById( "tex_result" ).value = tex_math; //"$" + tex_math + "$";
+				// get just the math, removing spaces
+				var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" );
+				var current = document.getElementById( "tex_result" ).value;
+				document.getElementById( "tex_result" ).value += tex_math;
 			}
 			
 			for(var k = 0; k < segment_nodes.length; k++)
@@ -1075,8 +1103,6 @@ Editor.align = function()
 		}
 		}
 	);
-	
-	
 }
 
 // adds currently selected segments to a single segment group object

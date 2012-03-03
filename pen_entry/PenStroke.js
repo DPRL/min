@@ -184,7 +184,12 @@ PenStroke.prototype.finish_stroke = function()
 		sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
 		
 		this.group.setAttribute("transform", sb.toString());
-		this.group.setAttribute("style", "fill:none;stroke-linecap:round");
+
+		var show = document.forms[0].strokes.checked;
+		if (show)
+			this.group.setAttribute("style", "fill:none;stroke-linecap:round;");
+		else
+			this.group.setAttribute("style", "fill:none;stroke-linecap:round;visibility:hidden");
 	
 		// build polyline
 		

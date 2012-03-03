@@ -46,7 +46,7 @@ div.equation_editor {
 
 div#relabel_menu {
 	position: relative;
-	top: 20px;
+	top: 40px;
 	overflow: hidden;
 	width: 600px;
 	height: 400px;
@@ -75,7 +75,7 @@ div#rr_close_button {
 	width: 12%;
 	border:1px;
 	top: -2px;
-	height: 26px;
+	height: 34px;
 	bottom: 93%;
 	left: 87%;
 
@@ -88,13 +88,13 @@ div#rr_close_button {
 	
 	/* gradient */
 	background: #FF5C49; /* old browsers */
-	background: -moz-linear-gradient(top, #FF5C49 0%, #E89F99 29%, #FF5C49 94%); /* firefox */
+	/*background: -moz-linear-gradient(top, #FF5C49 0%, #E89F99 29%, #FF5C49 94%); /* firefox */
 
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF5C49), color-stop(35%,#E99F99), color-stop(100%,#FF6C49)); /* webkit */
+	/* background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF5C49), color-stop(35%,#E99F99), color-stop(100%,#FF6C49)); /* webkit */
 
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF5C49', endColorstr='#FF5C49',GradientType=0 ); /* ie */
+	/* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF5C49', endColorstr='#FF5C49',GradientType=0 ); /* ie */
 
-	background: -o-linear-gradient(top, #FF5C49 0%,#E89F99 29%,#FF5C49 94%); /* opera */
+	/* background: -o-linear-gradient(top, #FF5C49 0%,#E89F99 29%,#FF5C49 94%); /* opera */
 	/* end gradient */
 	
 	/* border */
@@ -330,9 +330,9 @@ div.toolbar_button_text {
 	width: 50px;
 	height: 50px;
 	/* background-color: #111; */
-	margin: 5px;
+	padding-top:14px;
 	text-align: center;
-	font-size: 40px;
+	font-size: 50px;
 	color: #333; /*CCC;*/
 }
 
@@ -375,12 +375,14 @@ div#bounding_box {
 	border: 2px dashed #22D; /*dashed #333;*/
 	padding: 1px
 }
+
+/* Handles for the selection rectangles */
 div.bb_handle {
 	cursor: pointer;
 	visibility: inherit;
 	position: absolute;
-	width: 18px;
-	height: 18px;
+	width: 22px;
+	height: 22px;
 	border: 2px solid #666;
 	border-radius: 15px;
 	background-color: #227;
@@ -401,10 +403,38 @@ div.segment_set {
 }
 
 /* This controls the appearance of overlaid recognition results. */
-div.text_segment {
+div.segment_set_editing {
 	position: absolute;
 	/*background-color: rgba(50, 50, 50, 0.6); */
 	color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(50, 50, 120, 0.7); 
+	z-index: 999;
+	text-align: center;
+	font-family: 'Ubuntu', sans-serif;
+	padding: 0;
+	-moz-user-select: none;
+}
+
+
+
+/* This controls the appearance of overlaid recognition results. */
+div.text_segment {
+	position: absolute;
+	color: rgba(255, 255, 255, 0.7);
+
+	z-index: 999;
+	text-align: center;
+	font-family: 'Ubuntu', sans-serif;
+	padding: 0;
+	-moz-user-select: none;
+}
+
+/* This controls the appearance of overlaid recognition results. */
+div.segment_input_set {
+	position: absolute;
+
+	color: rgba(255, 255, 255, 0.7);
+	background-color: rgba(50, 50, 50, 0.6); 
 	/*background-color: rgba(50, 50, 100, 0.7); */
 	z-index: 999;
 	text-align: center;
@@ -412,6 +442,7 @@ div.text_segment {
 	padding: 0;
 	-moz-user-select: none;
 }
+
 
 div#selection_rectangle {
 	position: absolute;
@@ -483,5 +514,10 @@ div#logobar-wrapper div#logobar-right {
 }
 
 div#logobar-wrapper div#logobar-mid {
+	text-align: center;
+}
+
+div#logoboar-wrapper div#logobar-text {
+	margin-left: 20px
 	text-align: center;
 }

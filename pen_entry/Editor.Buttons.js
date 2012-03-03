@@ -26,6 +26,7 @@ Buttons.Stroke = 2;
 Buttons.Undo = 3;
 Buttons.Redo = 4;
 Buttons.DPRL = 5;
+Buttons.Align = 6;
 
 function ButtonState(button_id)
 {
@@ -130,12 +131,12 @@ Editor.build_buttons = function(in_div_name)
 		Editor.button_states.push(new ButtonState("undo"));
 		Editor.button_states.push(new ButtonState("redo"));
 		Editor.button_states.push(new ButtonState("dprl"));
+		Editor.button_states.push(new ButtonState("align"));
 
 		/*Editor.button_states.push(new ButtonState("pen"));
 		Editor.button_states.push(new ButtonState("stroke_select"));
 		Editor.button_states.push(new ButtonState("rectangle_select"));
 		Editor.button_states.push(new ButtonState("delete"));
-		Editor.button_states.push(new ButtonState("align"));
 		Editor.button_states.push(new ButtonState("undo"));
 		Editor.button_states.push(new ButtonState("redo"));
 		Editor.button_states.push(new ButtonState("group"));
@@ -157,9 +158,9 @@ Editor.build_buttons = function(in_div_name)
 	Editor.button_labels.push("Stroke Select");
 	//Editor.button_labels.push("Group");
 	//Editor.button_labels.push("Delete");
-	//Editor.button_labels.push("Align");
 	Editor.button_labels.push("Undo");
 	Editor.button_labels.push("Redo");
+	Editor.button_labels.push("Align");
 	Editor.button_labels.push("DPRL");
 	//Editor.button_labels.push("Relabel");
 	

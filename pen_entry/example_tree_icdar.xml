@@ -66,6 +66,7 @@
 				<Symbol name="B_upper" unicode="B"/>
 				<Symbol name="C_upper" unicode="C"/>
 				<Symbol name="F_upper" unicode="F"/>		
+				<Symbol name="X_upper" unicode="X"/>
 			</Category>
 		</Category>
 		<Category name="Greek Letters">
