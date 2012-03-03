@@ -60,12 +60,17 @@ Editor.setup_events = function()
 	// Listeners for buttons.
 	document.getElementById("pen").addEventListener("click", RenderManager.editColorOCRbbs, true);
 	document.getElementById("pen").addEventListener("click", Editor.selectPenTool, true);
+	document.getElementById("pen").addEventListener("click", Editor.setCursor, true);
 
 	document.getElementById("stroke_select").addEventListener("click", RenderManager.regColorOCRbbs, true);
 	document.getElementById("stroke_select").addEventListener("click", Editor.strokeSelectionTool, true);
+	document.getElementById("stroke_select").addEventListener("click", Editor.setCursor, true);
 
 	document.getElementById("rectangle_select").addEventListener("click", RenderManager.regColorOCRbbs, true);
 	document.getElementById("rectangle_select").addEventListener("click", Editor.rectangleSelectionTool, true);
+	document.getElementById("rectangle_select").addEventListener("click", Editor.setCursor, true);
+
+
 
 	document.getElementById("undo").addEventListener("click", Editor.undo, true);
 	document.getElementById("redo").addEventListener("click", Editor.redo, true);
@@ -127,6 +132,24 @@ Editor.setup_events = function()
 
 }
 
+Editor.setCursor = function ()
+{
+	var canvas = document.getElementById("equation_canvas");
+	console.log(Editor.state);
+	switch (Editor.state) 
+	{
+		case EditorState.StrokeSelecting:
+		case EditorState.ReadyToStrokeSelect:
+			canvas.style.cursor = "crosshair";
+			break;
+		default:
+			canvas.style.cursor = "default";
+			break;
+	}
+	console.log("HERE");
+	
+}
+
 Editor.setStrokeView = function()
 {
 	var show = document.forms[0].strokes.checked;
@@ -182,13 +205,12 @@ Editor.onDoubleClick = function(e)
 						Editor.add_selected_segment(Editor.segments[k]);
 		
 				//Editor.add_action(new TransformSegments(Editor.selected_segments));
-				// DEBUG: need to be in this state.
+				// DEBUG: need to be in this SegmentsSelected state.
 				Editor.state = EditorState.SegmentsSelected;
 				RenderManager.colorOCRbbs(false);
-
+				// HACK: the selection box was disappearing.
+				RenderManager.bounding_box.style.visibility = "visible";
 				Editor.relabel();
-				//Editor.state = EditorState.ReadyToStroke;
-				//Editor.selectPenTool();
 			}
 			break;
 
@@ -483,16 +505,6 @@ Editor.onMouseMove = function(e)
 						var segment = stroke_result.pop();
 						Editor.add_selected_segment(segment);
 					}
-				
-					
-				/*
-					if(Editor.selected_segments.length > initial_length)
-					{
-						RenderManager.render();
-					}
-				*/	
-					
-					
 				}
 				Editor.previous_stroke_position = Editor.mouse_position_prev.clone();
 				RenderManager.render();
@@ -942,6 +954,7 @@ Editor.align = function()
 				Editor.current_action.buildSegmentXML();				
 			Editor.current_text = null;
 	}
+	RenderManager.clear_canvas();
 
 
 	// an array of tuples
