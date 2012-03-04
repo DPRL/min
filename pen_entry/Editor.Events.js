@@ -24,15 +24,19 @@ var EditorState =
 	// Editing text box.
 	"InTextBox" : 12,
 
-	// New: moving a symbol in edit mode.
+	// New: moving a symbol in edit mode; touch and hold state.
 	"PenMovingSegments" : 13
 };
 
-Editor.clicks = 0;
+Editor.lastEvent = null;
+Editor.touchAndHoldFlag = 0;
+Editor.touchAndHoldTimeout = 800;
 
 Editor.setup_events = function()
 {
 	var button_index = 0; // Sets default initial state (pen/touch entry)
+	Editor.timeStamp = null;
+	Editor.prevTimeStamp = null;
 
 	window.addEventListener("resize", Editor.fit_to_screen, true);
 	window.addEventListener("orientationchange", Editor.fit_to_screen, false);
@@ -41,8 +45,8 @@ Editor.setup_events = function()
 
 	$(document).keypress(Editor.onKeyPress);
 	$(document).keydown(Editor.mapCanvasBackspace);
-	document.addEventListener("mouseup", Editor.onMouseUp, true);
-	document.addEventListener("mousedown", Editor.onMouseDown, true);
+	//document.addEventListener("mouseup", Editor.onMouseUp, true);
+	//document.addEventListener("mousedown", Editor.onMouseDown, true);
 
 	// Canvas bindings.
 	Editor.canvas_div.addEventListener("mousedown", Editor.onMouseDown, true);
@@ -70,13 +74,10 @@ Editor.setup_events = function()
 	document.getElementById("rectangle_select").addEventListener("click", Editor.rectangleSelectionTool, true);
 	document.getElementById("rectangle_select").addEventListener("click", Editor.setCursor, true);
 
-
-
 	document.getElementById("undo").addEventListener("click", Editor.undo, true);
 	document.getElementById("redo").addEventListener("click", Editor.redo, true);
 	document.getElementById("dprl").addEventListener("click", Editor.goDPRL, true);
 	document.getElementById("align").addEventListener("click",Editor.align, true);
-	
 
 	// add an equation image to the canvas
 	//if(window.FileReader) document.getElementById("image").addEventListener("change", Editor.onImageLoad, true);
@@ -135,7 +136,7 @@ Editor.setup_events = function()
 Editor.setCursor = function ()
 {
 	var canvas = document.getElementById("equation_canvas");
-	console.log(Editor.state);
+
 	switch (Editor.state) 
 	{
 		case EditorState.StrokeSelecting:
@@ -146,9 +147,8 @@ Editor.setCursor = function ()
 			canvas.style.cursor = "default";
 			break;
 	}
-	console.log("HERE");
-	
 }
+
 
 Editor.setStrokeView = function()
 {
@@ -162,7 +162,6 @@ Editor.setStrokeView = function()
 				nextSegment.group.setAttribute("style", "fill:none;stroke-linecap:round;visibility:visible;");
 		}
 	}
-	
 }
 
 
@@ -187,33 +186,55 @@ Editor.onResize = function(e)
 	Editor.div_position = findPosition(Editor.canvas_div);
 }
 
+//--------------------------------------------------
+// 
+// User Input Events
+//   - touchAndHold (called using timeout)
+//   - onDoubleClick (called on touchAndHold as well)
+//
+//   - onMouseDown
+//   - onMouseMove
+//   - onMouseUp
+//   - onKeyPress
+//-------------------------------------------------- 
+Editor.touchAndHold = function(e)
+{
+	// Only execute if we haven't moved, and haven't raised our finger/mouse.
+	if (Editor.lastEvent == e && Editor.lastEvent != null) {
+		Editor.touchAndHoldFlag = 1;
+		console.log("Touch and hold");
+		Editor.onDoubleClick(e);
+	}
+}
+
+
 Editor.onDoubleClick = function(e)
 {
-
-	console.log("DOUBLE CLICK");
-	console.log(Editor.state);
+	console.log("Double click");
 	switch (Editor.state)
 	{
+		case EditorState.PenMovingSegments:
 		case EditorState.ReadyToStroke:
-			var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
-			if(click_result.length > 0)
-			{
-				// Select all primitives belonging to the selected segment.
+			// DEBUG: we have to re-detect the selection for double click vs. touch-and-hold.
+			if (Editor.touchAndHoldFlag == 0) {
+				var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+				if(click_result.length == 0)
+					break;
+
 				var segment = click_result.pop();
 				for(var k = 0; k < Editor.segments.length; k++)
 					if(Editor.segments[k].set_id == segment.set_id)
 						Editor.add_selected_segment(Editor.segments[k]);
-		
-				//Editor.add_action(new TransformSegments(Editor.selected_segments));
-				// DEBUG: need to be in this SegmentsSelected state.
-				Editor.state = EditorState.SegmentsSelected;
-				RenderManager.colorOCRbbs(false);
-				// HACK: the selection box was disappearing.
-				RenderManager.bounding_box.style.visibility = "visible";
-				Editor.relabel();
 			}
+		
+			//Editor.add_action(new TransformSegments(Editor.selected_segments));
+			RenderManager.colorOCRbbs(false);
+			RenderManager.bounding_box.style.visibility = "visible";
+			Editor.state = EditorState.SegmentsSelected;
+			Editor.relabel();
 			break;
 
+		case EditorState.MovingSegments:
 		case EditorState.SegmentsSelected:
 			// RLAZ: allow relabeling and resegmenting using double tap.
 
@@ -222,11 +243,9 @@ Editor.onDoubleClick = function(e)
 			if (Editor.selected_segments.length > 0) {
 				var allSame = 1;
 				var segmentId = Editor.selected_segments[0].set_id;
-				console.log(Editor.selected_segments[0].set_id);
 
 				// All selected objects belong to the same segment (id)
 				for(var i = 1; i < Editor.selected_segments.length; i++) {
-					console.log(Editor.selected_segments[i].set_id);
 					if (Editor.selected_segments[i].set_id != segmentId ) {
 						allSame = 0;
 					}
@@ -236,7 +255,6 @@ Editor.onDoubleClick = function(e)
 					var totalInSegment = 0;
 					for(var i = 0; i < Editor.segments.length; i++)
 					{
-						console.log(Editor.segments[i].set_id);
 						if (Editor.segments[i].set_id == segmentId) {
 							totalInSegment++
 						}
@@ -248,6 +266,7 @@ Editor.onDoubleClick = function(e)
 			}
 
 			// Depending on selection, relabel or re-segment.
+			Editor.state = EditorState.SegmentsSelected;
 			if (singleObject > 0) {
 				Editor.relabel();
 			} else {
@@ -259,9 +278,13 @@ Editor.onDoubleClick = function(e)
 
 Editor.onMouseDown = function(e)
 {
+	console.log(e.type);
+	Editor.lastEvent = e;
+	Editor.touchAndHoldFlag = 0;
+
 	// support for both computer mouse and tablet devices
 	// gets the mouse position and states
-	if(e.type == "mousedown")
+	if(e.type == "mousedown" && ! Editor.using_ipad)
 	{
 		// we only care about left click
 		if(e.button == 0)
@@ -277,8 +300,10 @@ Editor.onMouseDown = function(e)
 		Editor.mouse_position_prev = Editor.mouse_position;
 		Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
 	}
-	else
+	else {
+		console.log("HEEERE");
 		return;
+	}	
 
 	Editor.mouse1_down = true;
 
@@ -299,6 +324,8 @@ Editor.onMouseDown = function(e)
 						
 				Editor.add_action(new TransformSegments(Editor.selected_segments));
 				Editor.state = EditorState.SegmentsSelected;
+
+				//setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
 			} else
 			{
 				Editor.state = EditorState.StrokeSelecting;
@@ -322,6 +349,8 @@ Editor.onMouseDown = function(e)
 		
 				Editor.add_action(new TransformSegments(Editor.selected_segments));
 				Editor.state = EditorState.SegmentsSelected;
+
+				setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
 			}
 			else
 			{
@@ -340,7 +369,6 @@ Editor.onMouseDown = function(e)
 				Editor.add_action(new TransformSegments(Editor.selected_segments));
 				Editor.state = EditorState.Resizing;
 				Editor.grabbed_edge = click_edge;
-				//console.log(Editor.grabbed_edge);					
 				Editor.resize_offset = new Vector2(0,0);
 				Editor.original_bb = Editor.selected_bb.clone();
 			}
@@ -351,6 +379,8 @@ Editor.onMouseDown = function(e)
 				{
 					Editor.add_action(new TransformSegments(Editor.selected_segments));
 					Editor.state = EditorState.MovingSegments;
+
+					setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
 				}
 				// reselect
 				else
@@ -366,6 +396,9 @@ Editor.onMouseDown = function(e)
 							Editor.add_selected_segment(segment);
 						}
 						Editor.state = EditorState.SegmentsSelected;
+
+
+						setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
 					}
 					// selecting none
 					else
@@ -450,7 +483,11 @@ Editor.onMouseDown = function(e)
 						Editor.add_selected_segment(Editor.segments[k]);
 		
 				Editor.add_action(new TransformSegments(Editor.selected_segments));
-				Editor.state = EditorState.PenMovingSegments; //SegmentsSelected;
+				Editor.state = EditorState.PenMovingSegments; 
+
+				// DEBUG: callback function needs to be defined in an abstract function;
+				// apparently the first argument is evaluated.
+				setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
 			} else
 			{
 				// build a new stroke object and save reference so we can add new points
@@ -469,6 +506,11 @@ Editor.onMouseDown = function(e)
 
 Editor.onMouseMove = function(e)
 {	
+	Editor.lastEvent = e;
+
+	if (Editor.touchAndHoldFlag == 1)
+		return;
+
 	// support for both IPad and Mouse
 	if(e.type == "mousemove")
 	{
@@ -626,10 +668,20 @@ Editor.onMouseMove = function(e)
 
 Editor.onMouseUp = function(e)
 {
-	
-	if(e.button == 0 || e.type ==  "touchend")
+	Editor.lastEvent = e;
+
+	if(e.button == 0 && !Editor.using_ipad || e.type == "touchend")
 	{
 		Editor.mouse1_down = false;
+
+		// For touch-and-hold: reset state and return.
+		console.log("MOUSE UP - FLAG:");
+		console.log(e.type);
+		console.log(Editor.touchAndHoldFlag);
+		if (Editor.touchAndHoldFlag == 1) {
+			Editor.touchAndHoldFlag = 0;
+			return;
+		}
 		
 		switch(Editor.state)
 		{
@@ -734,6 +786,12 @@ Editor.mapCanvasBackspace = function(e)
 
 Editor.onKeyPress = function(e)
 {
+	// For touch-and-hold
+	Editor.lastEvent = e;
+
+	if (Editor.touchAndHoldFlag == 1)
+		return;
+
 	// RLAZ: map enter to issuing the search.
 	if(e.keyCode == 13) {
 		Editor.search();
@@ -751,7 +809,6 @@ Editor.onKeyPress = function(e)
 			if (document.querySelector(":focus") != textBox &&
 					Editor.current_text != null) {
 				Editor.current_text.addCharacter(String.fromCharCode(e.which));
-				console.log('1: CHARACTER PRESSED');
 			}
 			break;
 		
@@ -769,7 +826,6 @@ Editor.onKeyPress = function(e)
 			var s = new SymbolSegment(Editor.mouse_position);
 			Editor.current_text = s;
 			Editor.current_text.addCharacter(String.fromCharCode(e.which));
-			console.log('2: CHARACTER PRESSED');
 
 			Editor.state = EditorState.MiddleOfText;
 			break;
@@ -853,7 +909,7 @@ Editor.onKeyPress = function(e)
 						Editor.selectPenTool;
 						break;
 					default:
-						console.log( e.keyCode );
+						//console.log( e.keyCode );
 				}
 			}
 			break;
@@ -861,6 +917,11 @@ Editor.onKeyPress = function(e)
 	}
 }
 
+//--------------------------------------------------
+// 
+// Editing modes/states
+// 
+//-------------------------------------------------- 
 Editor.selectPenTool = function(draw_now)
 {
 	//if(Editor.button_states[Buttons.Pen].enabled == false)
@@ -1312,8 +1373,8 @@ Editor.clear = function()
 		sb.append(Editor.action_list[k].toXML());
 	}
 	sb.append("</ActionList>");
-	console.log("Sending");
-	console.log(sb.toString());
+	//console.log("Sending");
+	//console.log(sb.toString());
 	$.get
 	(
 		Editor.data_server_url + sb.toString(),
@@ -1552,7 +1613,7 @@ Editor.onImageLoad = function(e)
 				//CollisionManager.add_segment(segment_group);
 			}
 			
-			console.log("eh oh!");
+			//console.log("eh oh!");
 			Editor.add_action(new AddSegments(added_segments));
 			
 			// set the result of the image load to the image object
@@ -1571,7 +1632,7 @@ Editor.onImageLoad = function(e)
 
 Editor.prevent_default = function(event)
 {
-	console.log("default prevented");
+	//console.log("default prevented");
 	event.preventDefault();
 }
 
@@ -1588,7 +1649,7 @@ Editor.search = function()
 		// REMOVED
 		//+ " " + document.getElementById("infobar").value;
 
-	console.log(engineType);
+	//console.log(engineType);
 
 	/* INCOMPLETE */
 	switch (engineType)

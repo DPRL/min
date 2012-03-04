@@ -19,16 +19,8 @@ CorrectionMenu.initialize = function()
 	CorrectionMenu.touch_moving = false;
 	
 	CorrectionMenu.menu = document.getElementById("relabel_menu");
-	//CorrectionMenu.menu.addEventListener("touchstart", Editor.prevent_default, true);
-	
 	CorrectionMenu.offset = 0;
-	
-	//document.getElementById("rr_up_tree").addEventListener("click", CorrectionMenu.up, true);
-	//document.getElementById("rr_right_node").addEventListener("click", CorrectionMenu.next, true);
-	//document.getElementById("rr_left_node").addEventListener("click", CorrectionMenu.prev, true);
 	CorrectionMenu.label = document.getElementById("rr_node_label");
-	//CorrectionMenu.up = document.getElementById("rr_up_tree");
-	
 	CorrectionMenu.current_list = document.getElementById("rr_category_list");
 	CorrectionMenu.current_grid = document.getElementById("rr_symbol_grid");
 	
@@ -53,20 +45,20 @@ CorrectionMenu.initialize = function()
 	
 	/** Get the SymbolTree we are goin to use **/
 	var url = Editor.editor_root + Editor.symbol_tree;
-	console.log(url);
+	//console.log(url);
 	
 	$.get
 	(
 		Editor.symbol_tree,
 		function(data, textStatus, xmlhttp)
 		{
-			console.log("url: " + url);
-			console.log("data: " + data);
-			console.log("textStatus: " + textStatus);
-			console.log("xmlhttp: " + xmlhttp.toString());
+			//console.log("url: " + url);
+			//console.log("data: " + data);
+			//console.log("textStatus: " + textStatus);
+			//console.log("xmlhttp: " + xmlhttp.toString());
 			// parse received XML and build symbol tree
 			CorrectionMenu.symbol_tree = SymbolTree.parseXml(data);
-			console.log(CorrectionMenu.symbol_tree.toString());
+			//console.log(CorrectionMenu.symbol_tree.toString());
 			// add in category for recognition results
 			CorrectionMenu.recognition_node = new CategoryNode();
 				CorrectionMenu.recognition_node.category = "OCR";
@@ -106,7 +98,7 @@ CorrectionMenu.build_title_html = function()
 
 	}
 	
-	console.log(sb.toString());
+	//console.log(sb.toString());
 	return sb.toString();
 }
 
@@ -163,11 +155,11 @@ CorrectionMenu.populateSymbolGrid = function(grid_div, node, start_index)
 			var div = document.createElement("div");
 			div.className = "symbol_cell button";
 			
-			console.log(child_nodes[k].symbol);
+			//console.log(child_nodes[k].symbol);
 			
 			div.innerHTML = child_nodes[k].symbol;
 			
-			console.log(child_nodes[k].symbol);
+			//console.log(child_nodes[k].symbol);
 			div.addEventListener("click", CorrectionMenu.select_symbol, true);
 			div.style.lineHeight = CorrectionMenu.center_panel.clientHeight / 3 + "px";
 			CorrectionMenu.current_grid.appendChild(div);
@@ -206,11 +198,11 @@ CorrectionMenu.updateOCRList = function()
 		{
 			var symbol_node = new SymbolNode();
 				symbol_node.name = rec_result.symbols[k];
-				console.log("name: " + symbol_node.name);
+				//console.log("name: " + symbol_node.name);
 				symbol_node.symbol = RecognitionManager.symbol_name_to_unicode[symbol_node.name];
 				if(typeof(symbol_node.symbol) == "undefined")
 					symbol_node.symbol = symbol_node.name;
-				console.log("symbol: " + symbol_node.symbol);
+				//console.log("symbol: " + symbol_node.symbol);
 			CorrectionMenu.recognition_node.children.push(symbol_node);
 		}
 	}
@@ -249,12 +241,12 @@ CorrectionMenu.show = function()
 
 CorrectionMenu.select_category = function(e)
 {
-	console.log("selecting category");
+	//console.log("selecting category");
 	if(CorrectionMenu.touch_moving == true)
 		return;
 
 	var category = e.currentTarget.innerHTML;
-	console.log(category);
+	//console.log(category);
 	// figure out new current
 	for(var k = 0; k < CorrectionMenu.symbol_tree.current.children.length; k++)
 	{
@@ -284,13 +276,13 @@ CorrectionMenu.select_category = function(e)
 	{	
 		var new_recognition = null;
 			
-		console.log("Selected: " + symbol);
+		//console.log("Selected: " + symbol);
 		var set_id = Segment.set_count++;
 		for(var k = 0; k < Editor.selected_segments.length; k++)
 		{
 			if ( new_recognition == null ) new_recognition = RecognitionManager.getRecognition( Editor.selected_segments[ k ].set_id );
 			
-			console.log("Removing: " + Editor.selected_segments[k].set_id);
+			//console.log("Removing: " + Editor.selected_segments[k].set_id);
 			RecognitionManager.removeRecognition(Editor.selected_segments[k].set_id);
 			
 			Editor.selected_segments[k].set_id = set_id;

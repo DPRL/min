@@ -184,10 +184,9 @@ RenderManager.colorOCRbbs = function(editing)
 	//console.log(RenderManager.segment_set_divs.length);
 
 	for (var i = 0; i < RenderManager.segment_set_divs.length; i++) {
-		// ** Don't change style for text objects.
 		var segment = RenderManager.segment_set_divs[i];
 		if (segment.className != "text_segment") {
-			console.log(segment.className = classname);
+			segment.className = classname;
 		}
 	}
 }

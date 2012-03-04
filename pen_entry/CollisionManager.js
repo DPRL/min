@@ -18,7 +18,7 @@ CollisionManager.get_point_collides_bb = function(click_point)
 	for(var k = 0; k < Editor.segments.length; k++)
 	{
 		var segment = Editor.segments[k]
-		console.log(segment.set_id);
+		//console.log(segment.set_id);
 		
 		// do a check to make suer we don't do same check multiple times
 		if(already_examined[segment.set_id] != true)

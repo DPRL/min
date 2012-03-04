@@ -26,7 +26,7 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 			this.instance_ids.push(parseInt(instance_ids[k]));
 		}
 		
-		console.log(this.instance_ids);
+		//console.log(this.instance_ids);
 	}
 	
 	var result_nodes = in_xml_element.getElementsByTagName("Result");
@@ -88,7 +88,7 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
  
  RecognitionManager.classify_queued = function(should_segment, should_assign_setid)
  {
-	console.log("classify queued!");
+	//console.log("classify queued!");
 	var temp_list = new Array();
 	var new_set_id = Segment.set_count++;
 	
@@ -118,7 +118,7 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
 	else
 	{
 		// With 'max_segments = 1,' this will never execute.
-		console.log("Setting timeouot");
+		//console.log("Setting timeouot");
 		RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false," + ( segment.set_id == -1 ? "true" : "false" ) + ";", timeOut);
 	}
 	
