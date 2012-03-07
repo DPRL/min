@@ -227,6 +227,8 @@ div.toolbar {
 	position: relative;
 	display: block; 
 	
+	margin-left: 2px;
+	
 	/** background color **/
 	background: #888888; /* old browsers */
 	background: -moz-linear-gradient(top, #BBBBBB 0%, #AAAAAA 37%, #999999 100%); /* firefox */
@@ -237,17 +239,17 @@ div.toolbar {
 
 	background: -o-linear-gradient(top, #999999 0%,#888888 37%,#777777 100%); /* opera */
 	
-	/*background-color: #BBBB90;*/
-	
-	
 	left: 0px;
 	top: 0px;
 	height: 65px;
 	width: 100%;
 	overflow: hidden;
+	
+
 	border-bottom-style: solid;
 	border-bottom-width: 1px;
-	border-bottom-color: #D3C9BC;
+	border-top-width: 1px;
+	border-bottom-color: #787878; 
 	
 }
 
@@ -282,9 +284,10 @@ div.toolbar_group_divider {
 }
 
 div.toolbar_button {
-	margin-top: 1px;
+	margin-top: 4px;
 	margin-right: 2px;
 	margin-left: 2px;
+	margin-bottom: 2px;
 	position: relative;
 	float: left;
 }
@@ -299,28 +302,30 @@ div.toolbar_button_overlay {
 }
 
 div.toolbar_button_selected {
-	border-style:inset;
-	border-width:1px;
-	border-radius: 2px;			
-	border-color: #333333;
-	/*background-color: rgba(206,141,66,0.4);*/
-	background-color: rgba(80,80,80,0.4);
+	border-radius: 7px;			
+	background-color: rgba(255,128,0,0.4);
+	box-shadow: 0px 0px 2px #666 inset;
 }
 
+/* mouseover */
 div.toolbar_button_enabled:hover {
-	border-style:outset;
-	border-width:1px;
-	border-radius: 2px;			
-	border-color: #D3C9BC;
-	background-color: rgba(125,125,255,0.2);
+	border-radius: 7px;			
+	border-color: #000;
+	background-color: rgba(43,43,213,0.15);
+	box-shadow: 0px 0px 5px #8080D5;
+}
+/* mousedown */
+div.toolbar_button_enabled:active {
+	border-style:none;
+	border-radius: 7px;			
+	background-color: rgba(255,128,0,0.4);
+	box-shadow: 0px 0px 4px #444 inset;
 }
 
 div.toolbar_button_disabled {
-	/*border-style:inset;
-	border-width:1px;
-	border-radius: 2px;				
-	border-color:#BBB;*/
-	background-color: rgba(96,96,96,0.7);
+	border-radius: 7px;				
+	background-color: rgba(128,96,96,0.4);
+	box-shadow: 0px 0px 2px #000 inset;
 }
 
 div.toolbar_button_touched {
