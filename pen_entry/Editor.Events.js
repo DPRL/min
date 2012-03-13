@@ -280,7 +280,13 @@ Editor.onMouseDown = function(e)
 {
 	console.log(e.type);
 	Editor.lastEvent = e;
-	Editor.touchAndHoldFlag = 0;
+	if (Editor.touchAndHoldFlag == 1 && Editor.using_ipad) {
+		Editor.touchAndHoldFlag = 2;
+		return
+	}
+	else {
+		Editor.touchAndHoldFlag = 0;
+	}
 
 	// support for both computer mouse and tablet devices
 	// gets the mouse position and states
@@ -677,7 +683,6 @@ Editor.onMouseUp = function(e)
 		console.log(e.type);
 		console.log(Editor.touchAndHoldFlag);
 		if (Editor.touchAndHoldFlag == 1) {
-			Editor.touchAndHoldFlag = 0;
 			return;
 		}
 		

@@ -270,6 +270,10 @@ CorrectionMenu.select_category = function(e)
  {
 	if(CorrectionMenu.touch_moving == true)
 		return;
+		
+	if (Editor.touchAndHoldFlag != 0) {
+		return;
+	}
  
 	var symbol = RecognitionManager.unicode_to_symbol_name[e.currentTarget.innerHTML];
 	if(symbol != "")
@@ -413,7 +417,6 @@ CorrectionMenu.hide = function()
 
 CorrectionMenu.touchend = function(e)
 {
-	
 	CorrectionMenu.div_moving = true;
 	CorrectionMenu.touchend_time = (new Date()).getTime();
 	setTimeout(CorrectionMenu.animate);
