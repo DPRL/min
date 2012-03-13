@@ -300,10 +300,8 @@ Editor.onMouseDown = function(e)
 		Editor.mouse_position_prev = Editor.mouse_position;
 		Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
 	}
-	else {
-		console.log("HEEERE");
+	else 
 		return;
-	}	
 
 	Editor.mouse1_down = true;
 
