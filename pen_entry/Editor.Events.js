@@ -48,6 +48,9 @@ Editor.setup_events = function()
 	//document.addEventListener("mouseup", Editor.onMouseUp, true);
 	//document.addEventListener("mousedown", Editor.onMouseDown, true);
 
+	// DEBUG: Toolbar binding for mouse-up (allow delete to operate uniformly)
+	Editor.toolbar_div.addEventListener("mouseup", Editor.onMouseUp, true);
+
 	// Canvas bindings.
 	Editor.canvas_div.addEventListener("mousedown", Editor.onMouseDown, true);
 	Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
@@ -710,17 +713,18 @@ Editor.onMouseUp = function(e)
 				var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
 
 				var theEvent = e;
-				var offSet = 0;
+				var offSet = 10;
 				if(e.type == "touchend") {
 					theEvent = event.changedTouches[0];
-					offSet = 10;  /* arbitrary 'close to edge of screen' value */
 				}
 
 				// iPad: touchend occurs when finger physically leaves the screen.
 				if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
 						theEvent.pageY  < toolbarDims.bottom || 
-						theEvent.pageY > canvasDims.height - 2 * offSet) {
+						theEvent.pageY > canvasDims.height - 2 * offSet ) {
+					console.log("HERE");
 					Editor.deleteTool();
+					Editor.selectPenTool();  // DEBUG.
 				} else {
 					if (Editor.state == EditorState.MovingSegments) {
 						Editor.state = EditorState.SegmentsSelected;
@@ -1138,7 +1142,9 @@ Editor.align = function()
 				// get just the math, removing spaces
 				var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" );
 				var current = document.getElementById( "tex_result" ).value;
-				document.getElementById( "tex_result" ).value += tex_math;
+				// Inserting an expression clears the textbox, adds 
+				// expression to it.
+				document.getElementById( "tex_result" ).value = tex_math;
 			}
 			
 			for(var k = 0; k < segment_nodes.length; k++)

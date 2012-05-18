@@ -2,12 +2,14 @@
  {
 	this.segments = new Array();
 	this.previous_set = new Array();
+	this.previous_classes = new Array();
 	this.new_set_id = in_new_set_id;
 	
 	for(var k = 0; k < in_segments.length; k++)
 	{
 		var segment = in_segments[k];
 		this.segments.push(segment);
+		this.previous_classes.push(segment.type_id);
 		this.previous_set.push(segment.set_id);
 	}
  }
@@ -17,6 +19,8 @@
 	for(var k = 0; k < this.segments.length; k++)
 	{
 		this.segments[k].set_id = this.previous_set[k];
+		this.segments[k].type_id = this.previous_classes[k];
+		console(this.segments[k].type_id);
 	}
  }
  

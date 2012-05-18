@@ -107,13 +107,13 @@ div#rr_close_button {
 }
 div#rr_close_button:hover {
 	background: #FF4732; /* old browsers */
-	background: -moz-linear-gradient(top, #FF4732 0%, #F97C75 29%, #FF4935 94%); /* firefox */
+	/* background: -moz-linear-gradient(top, #FF4732 0%, #F97C75 29%, #FF4935 94%); /* firefox */
 
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF4732), color-stop(50%,#F97C75), color-stop(100%,#FF4945)); /* webkit */
+	/*background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF4732), color-stop(50%,#F97C75), color-stop(100%,#FF4945)); /* webkit */
 
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF4732', endColorstr='#FF4935',GradientType=0 ); /* ie */
+	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF4732', endColorstr='#FF4935',GradientType=0 ); /* ie */
 
-	background: -o-linear-gradient(top, #FF4732 0%,#F97C75 29%,#FF4935 94%); /* opera */
+	/* background: -o-linear-gradient(top, #FF4732 0%,#F97C75 29%,#FF4935 94%); /* opera */
 }
 
 span.rr_node {
@@ -527,6 +527,6 @@ div#logobar-wrapper div#logobar-mid {
 }
 
 div#logoboar-wrapper div#logobar-text {
-	margin-left: 20px
+	margin-left: 20px;
 	text-align: center;
 }

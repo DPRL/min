@@ -20,7 +20,7 @@
 			<Symbol name="greater_than" unicode="&#x3E;"/>
 			<Symbol name="less_than_or_equal" unicode="&#x2264;"/>
 			<!-- FIX THIS-->
-			<!--<Symbol name="less_than" unicode="<"/>-->
+			<Symbol name="less_than" unicode="^003C"/>-->
 			<Symbol name="integral" unicode="&#x222B;"/>
 			<Symbol name="product" unicode="&#x3A0;"/>
 			<Symbol name="summation" unicode="&#x3A3;"/>
