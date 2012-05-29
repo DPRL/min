@@ -1,0 +1,3 @@
+There are two methods of editor for saving and restoring the state of the canvas that are not wired to any UI actions.  They are Editor.save_state() and Editor.restore_state(), respectively.  The former returns a json string that encodes the state, and the latter takes such a string as the only paramter.  These functions are in Editor.js.
+
+Subclasses of Segment (that is, PenStroke and SymbolSegment) have methods of the same name that get called by the Editor methods.  If you run the functions (ie run Editor.save_state() from the console and Editor.restore_state() with that output, you'll see that it mostly works but the bounding box gets messed up.  Enjoy.

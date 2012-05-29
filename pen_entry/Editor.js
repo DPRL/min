@@ -119,6 +119,36 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 	Editor.selectPenTool();
 }
 
+Editor.save_state = function()
+{
+	var state = {
+		segments: []
+	};
+	for (var i = 0; i < Editor.segments.length; i++) {
+		var seg = Editor.segments[i];
+		state.segments.push(seg.save_state());
+	}
+	return JSON.stringify(state);
+}
+
+Editor.restore_state = function(json_string)
+{
+	var state = JSON.parse(json_string);
+	for (var i = 0; i < state.segments.length; i++) {
+		seg_state = state.segments[i];
+		var seg;
+		switch(seg_state.type_id) {
+			case PenStroke.type_id:
+				seg = PenStroke.restore_state(seg_state);
+				break;
+			case SymbolSegment.type_id:
+				seg = SymbolSegment.restore_state(seg_state);
+				break;
+		}
+		Editor.add_segment(seg);
+	}
+}
+
 // determines if the given segment is in the selected list
 Editor.segment_selected = function(in_segment)
 {

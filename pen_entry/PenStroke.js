@@ -487,6 +487,40 @@ PenStroke.prototype.toXML = function()
 	return sb.toString();
 }
 
+PenStroke.prototype.save_state = function() 
+{
+	var state = {
+		instance_id: this.instance_id,
+		type_id: this.type_id,
+		set_id: this.set_id,
+		points: this.points,
+		scale: this.scale,
+		translation: this.translation,
+		temp_scale: this.temp_scale,
+		temp_translation: this.temp_translation,
+		world_mins: this.world_mins,
+		world_maxs: this.world_maxs
+	};
+	return state;
+}
+
+PenStroke.restore_state = function(state) {
+	seg = new PenStroke(0, 0, 6);
+	seg.instance_id = state.instance_id;
+	seg.set_id = state.set_id;
+	seg.scale = new Vector2(state.scale.x, state.scale.y);
+	seg.translation = new Vector2(state.translation.x, state.translation.y);
+	seg.temp_scale = new Vector2(state.temp_scale.x, state.temp_scale.y);
+	seg.temp_translation = new Vector2(state.temp_translation.x, state.temp_translation.y);
+	seg.world_mins = new Vector2(state.world_mins.x, state.world_mins.y);
+	seg.world_maxs = new Vector2(state.world_maxs.x, state.world_maxs.y);
+	seg.points = state.points.map(function(coords) {
+		return Vector2.Add(new Vector2(coords.x, coords.y), seg.world_mins);
+	});
+	seg.finish_stroke();
+	return seg;
+}
+
 PenStroke.prototype.test_collisions = function() {
 	var collided_segments = new Array();
 	for ( var i = 0; i < this.points.length - 1; i++ ) {

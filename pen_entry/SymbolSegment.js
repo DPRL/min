@@ -233,6 +233,34 @@ SymbolSegment.prototype.isEmpty = function() {
 	return this.is_empty;
 };
 
+SymbolSegment.prototype.save_state = function() {
+	var state = {
+		instance_id: this.instance_id,
+		type_id: this.type_id,
+		set_id: this.set_id,
+		text: this.text,
+		scale: this.scale,
+		translation: this.translation,
+		temp_scale: this.temp_scale,
+		temp_translation: this.temp_translation
+	};
+	return state;
+}
+
+SymbolSegment.restore_state = function(state) {
+	seg = new SymbolSegment(0,0);
+	seg.instance_id = state.instance_id;
+	seg.set_id = state.set_id;
+	seg.text = state.text;
+	seg.scale = new Vector2(state.scale.x, state.scale.y);
+	seg.translation = new Vector2(state.translation.x, state.translation.y);
+	seg.temp_scale = new Vector2(state.temp_scale.x, state.temp_scale.y);
+	seg.temp_translation = new Vector2(state.temp_translation.x, state.temp_translation.y);
+	seg.render();
+	seg.update_extents();
+	return seg;
+}
+
 SymbolSegment.prototype.toXML = function() {
 	var sb = new StringBuilder();
 	sb.append("<Segment type=\"symbol\" instanceID=\"");
