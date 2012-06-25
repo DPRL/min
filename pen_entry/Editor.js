@@ -39,11 +39,9 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 	}
 	
 	Editor.canvas_div = document.getElementById(String(in_equation_canvas_name));
-	Editor.toolbar_div = document.getElementById("toolbar");
+        Editor.toolbar_div = document.getElementById(String(in_toolbar_name));
 
 	// canvas size beneath
-	//Editor.canvas_width = Editor.canvas_div.offsetWidth;
-	//Editor.canvas_height = Editor.canvas_div.offsetHeight;
 	Editor.fit_to_screen();
 
 	// array of div elements
@@ -117,6 +115,7 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 	Editor.current_action = null;
 	
 	Editor.selectPenTool();
+    Editor.FileReader = FileReader;
 }
 
 Editor.save_state = function()

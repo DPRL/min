@@ -133,40 +133,16 @@ Editor.build_buttons = function(in_div_name)
 		Editor.button_states.push(new ButtonState("dprl"));
 		Editor.button_states.push(new ButtonState("align"));
 
-		/*Editor.button_states.push(new ButtonState("pen"));
-		Editor.button_states.push(new ButtonState("stroke_select"));
-		Editor.button_states.push(new ButtonState("rectangle_select"));
-		Editor.button_states.push(new ButtonState("delete"));
-		Editor.button_states.push(new ButtonState("undo"));
-		Editor.button_states.push(new ButtonState("redo"));
-		Editor.button_states.push(new ButtonState("group"));
-		Editor.button_states.push(new ButtonState("relabel"));
-		Editor.button_states.push(new ButtonState("clear"));
-		Editor.button_states.push(new ButtonState("getInkML"));
-		Editor.button_states.push(new ButtonState("text"));*/
-	
 	Editor.clearButtonOverlays();
-	//alert(Editor.toolbar_button_overlay.length);
 
-	return;
-	// add button names
-	Editor.button_labels.push("Pen");
-	//if(window.FileReader) Editor.button_labels.push("Image");
-	//if(navigator.userAgent.match(/iPad/i) == null) Editor.button_labels.push("Text");
-	Editor.button_labels.push("Text");
-	Editor.button_labels.push("Rectangle Select");
-	Editor.button_labels.push("Stroke Select");
-	//Editor.button_labels.push("Group");
-	//Editor.button_labels.push("Delete");
-	Editor.button_labels.push("Undo");
-	Editor.button_labels.push("Redo");
-	Editor.button_labels.push("Align");
-	Editor.button_labels.push("DPRL");
-	//Editor.button_labels.push("Relabel");
-	
-	//Editor.button_labels.push("Current State");
-	//Editor.button_labels.push("Print Undo Stack");
-	
+    // This is transitional code, the "Image" label will be replaced
+    // with a proper button after I get image loading and unloading
+    // working add button names
+    // TRANSITIONAL CODE BEGIN
+    Editor.button_labels = new Array();
+
+	if(window.FileReader)
+            Editor.button_labels.push("Image");
 	
 	// convert button name to class
 	Editor.button_classes = new Array();
@@ -206,18 +182,18 @@ Editor.build_buttons = function(in_div_name)
 		Editor.toolbar_buttons.push(button_li);
 	}
 
-	/*
+	
 	// if we support the file reader, add in the file input tag for image uploading
 	if(window.FileReader)
 	{
 		var form = document.createElement("form");
 			form.setAttribute("id", "image_form");
-		Editor.toolbar_buttons[1].appendChild(form);
+		Editor.toolbar_buttons[0].appendChild(form);
 		var file_input = document.createElement("input");
 			file_input.type = "file";
 			file_input.id = "image";
-			file_input.style.width = "100%";
-			file_input.style.height = "100%";
+			file_input.style.width = "50%";
+			file_input.style.height = "50%";
 			file_input.style.opacity = 0.5;
 			file_input.style.position = "absolute";
 			file_input.style.top = "0px";
@@ -227,5 +203,5 @@ Editor.build_buttons = function(in_div_name)
 			file_input.style.zIndex = 0;
 		form.appendChild(file_input);
 	}
-	*/
+    // TRANSITIONAL CODE END
 }

@@ -56,6 +56,7 @@ Editor.setup_events = function()
 	Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
 	Editor.canvas_div.addEventListener("dblclick", Editor.onDoubleClick, true);
 
+        // Touch events for tablet interfaces
 	Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
 	Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
 	
@@ -83,7 +84,7 @@ Editor.setup_events = function()
 	document.getElementById("align").addEventListener("click",Editor.align, true);
 
 	// add an equation image to the canvas
-	//if(window.FileReader) document.getElementById("image").addEventListener("change", Editor.onImageLoad, true);
+	if(window.FileReader) document.getElementById("image").addEventListener("change", Editor.onImageLoad, true);
 	// TYPING/TEXT ENTRY: line below will disable text entry for the iPad.
 	//if(navigator.userAgent.match(/iPad/i) == null) document.getElementById("text").addEventListener("click", Editor.typeTool, true);
 
@@ -1519,7 +1520,7 @@ Editor.onImageLoad = function(e)
 				// now we build our request
 				// we pass our image in as a parameter 
 				var vals = dataUrl.split(",");
-				var parameter = "?image=" + vals[0] + "," + encodeURIComponent(vals[1]);
+			        var parameter = "?image=" + vals[0] + "," + encodeURIComponent(vals[1]);
 				
 				//var segment_group = new SegmentGroup();
 				

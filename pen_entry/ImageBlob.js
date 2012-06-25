@@ -64,35 +64,37 @@ function ImageBlob(in_image, in_inverse_image, original_width, original_height, 
 }
 
 // just draw using the given context
-ImageBlob.prototype.render = function(in_context)
+ImageBlob.prototype.render = function()
 {
-	in_context.save();
+        var context = Editor.contexts[0];
+	context.save();
 	
 	// build our transforms
 	var total_translation = new Vector2(0,0).transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
 	var total_scale = Vector2.Pointwise(this.scale, this.temp_scale);
 
-	in_context.translate(total_translation.x, total_translation.y);
-	in_context.scale(total_scale.x, total_scale.y);
+	context.translate(total_translation.x, total_translation.y);
+	context.scale(total_scale.x, total_scale.y);
 
-	in_context.drawImage(this.image, 0, 0);
-	in_context.restore();
+	context.drawImage(this.image, 0, 0);
+	context.restore();
 }
 
-ImageBlob.prototype.render_selected = function(in_context)
+ImageBlob.prototype.render_selected = function()
 {
-	in_context.save();
+        var context = Editor.contexts[0];
+	context.save();
 
 	// build our transforms
 	var total_translation = new Vector2(0,0).transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
 	var total_scale = Vector2.Pointwise(this.scale, this.temp_scale);
 
-	in_context.translate(total_translation.x, total_translation.y);
-	in_context.scale(total_scale.x, total_scale.y);
+	context.translate(total_translation.x, total_translation.y);
+	context.scale(total_scale.x, total_scale.y);
 
-	in_context.drawImage(this.inverse_image, 0, 0);
+	context.drawImage(this.inverse_image, 0, 0);
 	
-	in_context.restore();
+	context.restore();
 }
 
 // determine if the passed in point (screen space) collides with our geometery
