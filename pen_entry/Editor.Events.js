@@ -1570,7 +1570,7 @@ Editor.onImageLoad = function(e)
 								
 								
 								image_list[k].onload = function(e)
-								{;
+								{
 									var my_k = parseInt(this.name);
 									// create inverse image
 									var temp_canvas = document.createElement("canvas");

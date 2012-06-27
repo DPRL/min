@@ -12,8 +12,10 @@ function ImageBlob(in_image, in_inverse_image, original_width, original_height, 
 	// the layer we are in, 0 is bottom N is top
 	this.layer = 1;
 	// a javascript image object
-	this.image = (in_image);
+        this.image = (in_image);
 	this.inverse_image = in_inverse_image;
+        this.element = this.image; // For compatability with functions expecting Penstrokes like Action.DeleteSegments.Apply
+    
 	// transform info
 	this.scale = new Vector2(1.0, 1.0);
 	this.translation = new Vector2((Editor.canvas_width  - original_width) / 2 + x, (Editor.canvas_height - original_height) / 2 + y);
