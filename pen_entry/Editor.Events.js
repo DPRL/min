@@ -1556,8 +1556,7 @@ Editor.onImageLoad = function(e)
 							var position_list = new Array(image_nodes.length);
 							
 							// change our state
-							Editor.selection_method = "Stroke";
-							Editor.state = EditorState.SegmentsSelected;
+                                                        Editor.strokeSelectionTool();
 							
 							for(var k = 0; k < image_nodes.length; k++)
 							{

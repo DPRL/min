@@ -25,7 +25,8 @@ function ImageBlob(in_image, in_inverse_image, original_width, original_height, 
 	
 	this.world_mins = this.translation.clone();
 	this.world_maxs = Vector2.Add(this.translation, this.size);
-/*	
+    
+/*	I think that this is dead
 	// canvas is needed to get inverse image data perform collision checks
 	this.canvas = document.createElement("canvas");
 	this.canvas.width = this.size.x;
@@ -157,6 +158,7 @@ ImageBlob.prototype.translate = function(in_offset)
 	
 	this.update_extents();
 }
+
 ImageBlob.prototype.update_extents  = function()
  {
 	// because scale can be negative, this gives us opposing corners, not mins and maxs

@@ -57,42 +57,6 @@ function PenStroke(in_x, in_y, in_line_width)
 PenStroke.prototype.update_extents = function()
 {
 	return;
-	this.prev_draw_min = this.worldMinDrawPosition();
-	this.prev_draw_max = this.worldMaxDrawPosition();
-	// because scale can be negative, this gives us opposing corners, not mins and maxs
-	var corner_a = new Vector2(0,0).transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
-	var corner_b = Vector2.Add(corner_a, Vector2.Pointwise(Vector2.Pointwise(this.size, this.scale), this.temp_scale));
-	
-	// figure out the actual mins and maxs based on absolute position
-	if(corner_a.x < corner_b.x)
-	{
-		this.world_mins.x = corner_a.x;
-		this.world_maxs.x = corner_b.x;
-	}
-	else
-	{
-		this.world_mins.x = corner_b.x;
-		this.world_maxs.x = corner_a.x;
-	}
-	
-	if(corner_a.y < corner_b.y)
-	{
-		this.world_mins.y = corner_a.y;
-		this.world_maxs.y = corner_b.y;
-	}
-	else
-	{
-		this.world_mins.y = corner_b.y;
-		this.world_maxs.y = corner_a.y;
-	}
-/*
-	// offset the line width
-	this.world_mins.x -= this.line_half_width;
-	this.world_mins.y -= this.line_half_width;
-	
-	this.world_maxs.x += this.line_half_width;
-	this.world_maxs.y += this.line_half_width;
-*/
 }
 
 PenStroke.prototype.worldMinPosition = function()

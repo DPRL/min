@@ -50,7 +50,6 @@ RenderManager.initialize = function(in_width, in_height, in_layers)
 RenderManager.render_tools_layer = function()
 {
 
-
 	// Find the checked element in the layer radio button form.
 	// Use this to hide/show the background information.
 	if (document.forms[0].layers.checked == false)
