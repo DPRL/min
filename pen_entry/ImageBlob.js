@@ -218,7 +218,11 @@ ImageBlob.prototype.update_extents  = function()
 	
 	this.update_extents();
  }
- 
+
+ImageBlob.prototype.clear = function(in_context){
+    RenderManager.clear_canvas();
+}
+
 ImageBlob.prototype.freeze_transform = function()
 {
 	// here we move the temp transform info to the final transform

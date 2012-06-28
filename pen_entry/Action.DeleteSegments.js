@@ -25,11 +25,13 @@ DeleteSegments.prototype.Apply = function()
 {
 	for(var k = 0; k < this.segments.length; k++)
 	{
-		this.segments[k].element.style.visibility = "hidden";
-		Editor.remove_segment(this.segments[k]);
+	    if(this.segments[k].clear != undefined)
+                this.segments[k].clear()
+            else
+                this.segments[k].element.style.visibility = "hidden";
+
+            Editor.remove_segment(this.segments[k]);
 	}
-        //Make sure any images from image upload associated with a segment are also removed.
-        RenderManager.clear_canvas(); 
 }
 
 DeleteSegments.prototype.toXML = function()
