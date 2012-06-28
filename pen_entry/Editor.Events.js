@@ -1067,17 +1067,14 @@ Editor.align = function()
 			// If it's a text segment, account for the draculae making x's smaller than t's, etc
 			
 			if (set_segments[0].constructor == SymbolSegment) {
-				//console.log('char: ' + set_segments[0].text);
-				//console.log('before resize: (' + mins.y + ', ' + maxs.y + ')');
-				size = Vector2.Subtract(maxs, mins);
+			        size = Vector2.Subtract(maxs, mins);
 				if (-1 != $.inArray(set_segments[0].text, Editor.x_height_chars)) {
 					mins.y += size.y / 2;
 				}
 				if (-1 != $.inArray(set_segments[0].text, Editor.descender_chars)) {
 					mins.y += size.y / 2;
 					maxs.y += size.y / 2;
-				}
-				//console.log('after resize: (' + mins.y + ', ' + maxs.y + ')');
+				} 
 			}
 			var tuple = new Tuple(recognition_result, mins, maxs, origMins, origMaxs);
 			data.push(tuple);
@@ -1111,12 +1108,9 @@ Editor.align = function()
 		sb.append(new Vector2(Math.floor(t.item2.x), Math.floor(t.item2.y)).toString()).append("\" max=\"");
 		sb.append(new Vector2(Math.floor(t.item3.x), Math.floor(t.item3.y)).toString()).append("\" id=\"");
 		sb.append(t.item1.set_id).append("\"/>");
-		//console.log(t.item1.symbols[0] + " " + t.item2.toString() + " " + t.item3.toString() + " " + t.item1.set_id);
 	}
 	sb.append("</SegmentList>");
-	//console.log(sb.toString());
 	
-	//$.get
 	$.ajax
 	(
 		{
@@ -1156,7 +1150,7 @@ Editor.align = function()
 				t.item2 = parseVector2(attributes.getNamedItem("min").value);
 				t.item3 = parseVector2(attributes.getNamedItem("max").value)
 				new_dimensions.push(t);
-				//console.log(t.item1 + " " + t.item2.toString() + " " + t.item3.toString());
+
 			}
 			
 			// foreach segment set
@@ -1277,12 +1271,6 @@ Editor.groupTool = function()
 		
 		
 		//RecognitionManager.classify(set_id, false);
-		
-		/*
-		for(var k = 0; k < Editor.segments.length; k++)
-			console.log(Editor.segments[k].set_id);
-		console.log("---");
-		*/
 			
 		//RenderManager.render();
 		
@@ -1352,9 +1340,6 @@ Editor.typeTool = function()
 
 Editor.relabel = function()
 {
-	/* if(Editor.button_states[Buttons.Label].enabled == false)
-		return; */
-
 	if(Editor.state == EditorState.SegmentsSelected)
 	{
 		CorrectionMenu.show();
@@ -1367,7 +1352,7 @@ Editor.relabel = function()
 // clears all the data and sends action list to server for storage
 Editor.clear = function()
 {
-	// get ri of last one if it' a bugger
+	// get rid of last one if it' a bugger
 	if(Editor.action_list.length > 0)
 	{
 		var prev_action = Editor.action_list.pop();
@@ -1383,8 +1368,6 @@ Editor.clear = function()
 		sb.append(Editor.action_list[k].toXML());
 	}
 	sb.append("</ActionList>");
-	//console.log("Sending");
-	//console.log(sb.toString());
 	$.get
 	(
 		Editor.data_server_url + sb.toString(),
@@ -1399,7 +1382,6 @@ Editor.clear = function()
 }
 
 Editor.getInkML = function() {
-	// alert( "getInkML" );
 	var inkml = "<ink xmlns=\"http://www.w3.org/2003/InkML\">";
 	var segments = new Array();
 	var segarray = Editor.segments.slice( 0 );
@@ -1622,7 +1604,6 @@ Editor.onImageLoad = function(e)
 				//CollisionManager.add_segment(segment_group);
 			}
 			
-			//console.log("eh oh!");
 			Editor.add_action(new AddSegments(added_segments));
 			
 			// set the result of the image load to the image object
@@ -1641,7 +1622,6 @@ Editor.onImageLoad = function(e)
 
 Editor.prevent_default = function(event)
 {
-	//console.log("default prevented");
 	event.preventDefault();
 }
 
@@ -1658,7 +1638,7 @@ Editor.search = function()
 		// REMOVED
 		//+ " " + document.getElementById("infobar").value;
 
-	//console.log(engineType);
+
 
 	/* INCOMPLETE */
 	switch (engineType)
