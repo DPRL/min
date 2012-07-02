@@ -698,6 +698,7 @@ Editor.onMouseUp = function(e)
 				else
 					Editor.state = EditorState.ReadyToStrokeSelect;
 				RenderManager.clear_canvas();
+                                RenderManager.render();
 				break;
 			case EditorState.RectangleSelecting:
 				if(Editor.selected_segments.length > 0)
@@ -1583,7 +1584,7 @@ Editor.onImageLoad = function(e)
 									inverse_image.onload = function()
 									{
 										var my_k =  parseInt(this.name);
-										var b = new ImageBlob(image_list[my_k], this, loaded_image.width, loaded_image.height, position_list[my_k][0], position_list[my_k][1]);
+										var b = new ImageBlob(image_list[my_k], this, loaded_image.width, loaded_image.height, position_list[my_k][0], position_list[my_k][1]); 
 										
 										//RenderManager.add_segment(b, 1);
 										Editor.add_segment(b);
