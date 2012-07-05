@@ -16,7 +16,7 @@ function ImageBlob(in_image, in_inverse_image, x, y)
     this.inverse_image = in_inverse_image;
     
     // transform info
-    this.scale = new Vector2(1.0, 1.0);38
+    this.scale = new Vector2(1.0, 1.0);
     this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
     
     this.temp_scale = new Vector2(1.0, 1.0);
@@ -34,6 +34,7 @@ function ImageBlob(in_image, in_inverse_image, x, y)
     this.svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     this.svg.setAttribute("width", "100%");
     this.svg.setAttribute("height", "100%");
+    this.element = this.svg; // Compatibility with code that expects this object to have an 'element' member
 
     this.svg_image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     this.svg_image.setAttribute('width', this.image.width);
@@ -55,9 +56,10 @@ function ImageBlob(in_image, in_inverse_image, x, y)
 /*  This method expects an image element which can be placed in an svg element as shown in the
     constructor */  
 ImageBlob.prototype.private_render = function(image) {    
-    var transform = "translate(" + this.translation.x + "," + this.translation.y + ")";
-    console.log(transform);  
-    image.setAttribute("transform", transform);
+    var transform = new StringBuilder();
+    transform.append("translate(").append(this.translation.x).append(",").append(this.translation.y + ")").append(
+        " scale(").append(this.scale.x).append(", ").append(this.scale.y + ")");
+    image.setAttribute("transform", transform.toString());
 
     if(this.svg.children[0] != image){ 
         this.svg.removeChild(this.svg.children[0]);

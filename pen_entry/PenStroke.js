@@ -35,9 +35,6 @@ function PenStroke(in_x, in_y, in_line_width)
     // used to determine extents
     this.size = new Vector2(0.0, 0.0);
     
-    //this.world_mins = new Vector2(in_x - this.line_half_width, in_y - this.line_half_width);
-    //this.world_maxs = new Vector2(in_x + this.line_half_width, in_y + this.line_half_width);
-    
     this.world_mins = new Vector2(in_x,in_y);
     this.world_maxs = new Vector2(in_x,in_y);
     
