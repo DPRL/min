@@ -26,7 +26,9 @@ function ImageBlob(in_image, in_inverse_image, x, y)
     
     this.world_mins = this.translation.clone();
     this.world_maxs = Vector2.Add(this.translation, this.size);
-
+    
+    this.dirty_flag = true; // Need to update the SVG on the screen
+    
     // Create an SVG element with the image embedded within it, this is what will actually be displayed on the page
     this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     this.svg.setAttribute("xmlns", "http://www.w3.org/2000/svg"); 
@@ -39,15 +41,12 @@ function ImageBlob(in_image, in_inverse_image, x, y)
     this.svg_image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     this.svg_image.setAttribute('width', this.image.width);
     this.svg_image.setAttribute('height', this.image.height);
-    // svg_image.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src);
-    this.svg_image.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', "img/upload_icon.png");
+    this.svg_image.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.image.src);
 
     this.svg_image_inverse = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-    //this.svg_image_inverse.setAttribute("class", "pen_stroke"); 
     this.svg_image_inverse.setAttribute('width', this.inverse_image.width);
     this.svg_image_inverse.setAttribute('height', this.inverse_image.height);
-    // svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src);
-    this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', "img/upload_icon.png");
+    this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src); 
     this.svg.appendChild(this.svg_image);
 
     Editor.canvas_div.appendChild(this.svg);
@@ -55,7 +54,11 @@ function ImageBlob(in_image, in_inverse_image, x, y)
 
 /*  This method expects an image element which can be placed in an svg element as shown in the
     constructor */  
-ImageBlob.prototype.private_render = function(image) {    
+ImageBlob.prototype.private_render = function(image) {
+    if(this.dirty_flag == false)
+        return;
+    this.dirty_flag = false;
+    
     var transform = new StringBuilder();
     transform.append("translate(").append(this.translation.x).append(",").append(this.translation.y + ")").append(
         " scale(").append(this.scale.x).append(", ").append(this.scale.y + ")");
@@ -65,7 +68,6 @@ ImageBlob.prototype.private_render = function(image) {
         this.svg.removeChild(this.svg.children[0]);
         this.svg.appendChild(image);
     }
-    
 
 }
 
@@ -136,7 +138,7 @@ ImageBlob.prototype.rectangle_collides = function(in_corner_a, in_corner_b)
 ImageBlob.prototype.translate = function(in_offset)
 {
     this.translation.Add(in_offset);
-    
+    this.dirty_flag = true;
     this.update_extents();
 }
 
@@ -194,7 +196,6 @@ ImageBlob.prototype.resize = function(in_origin, in_scale)
 {
     this.temp_scale = new Vector2(in_scale.x, in_scale.y);
     this.temp_translation = Vector2.Subtract(in_origin, Vector2.Pointwise(in_origin, in_scale));
-    
     this.update_extents();
 }
 
@@ -205,9 +206,9 @@ ImageBlob.prototype.freeze_transform = function()
     this.scale = Vector2.Pointwise(this.scale, this.temp_scale);
 
     this.temp_scale = new Vector2(1,1);
-    this.temp_translation = new Vector2(0,0);
-    
+    this.temp_translation = new Vector2(0,0); 
     this.update_extents();
+    this.dirty_flag = true;
 }
 
 ImageBlob.prototype.toXML = function()
