@@ -14,7 +14,7 @@
  // called by Editor when new action is added to see if the previous action should be discarded
  Action.prototype.shouldKeep = function()
  {
-	return false;
+    return false;
  }
  
  //this method will apply the given action
@@ -26,20 +26,20 @@
  // this method will convert an action to appropriate XML
  // schema will be like this:
  /*
-	<Action type="action_type" attribute="one"/>
+    <Action type="action_type" attribute="one"/>
  */
  Action.prototype.toXML = function()
  {
-	return "<Action type=\"default\"/>";
+    return "<Action type=\"default\"/>";
  }
  
  // this static method parses an xml string and returns an appropriate action
  Action.parseAction = function(in_xml)
  {
-	return new Action();
+    return new Action();
  }
  
  Action.prototype.toString = function()
  {
-	return "Action";
+    return "Action";
  }

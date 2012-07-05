@@ -5,27 +5,27 @@ Segment.set_count = 0;
 
 function Segment()
 {
-	// identifiers to build unique id
-	this.type_id;	// unique per class
-	this.instance_id; // unique per object
-	this.set_id;	// unique per 'set' of segments
-	
-	
-	// position information
-	// top left hand corner of segment
-	this.position;
-	// width and height
-	this.size;
-	// the layer we are in, 0 is bottom N is top
-	this.layer;
-	// our axis aligned bounding box
-	this.aabb;
+    // identifiers to build unique id
+    this.type_id;    // unique per class
+    this.instance_id; // unique per object
+    this.set_id;    // unique per 'set' of segments
+    
+    
+    // position information
+    // top left hand corner of segment
+    this.position;
+    // width and height
+    this.size;
+    // the layer we are in, 0 is bottom N is top
+    this.layer;
+    // our axis aligned bounding box
+    this.aabb;
 }
 
 // just draw to canvas using the given context
 Segment.prototype.render = function(in_context)
 {
-	
+    
 }
 
 // clears this segment
@@ -43,12 +43,12 @@ Segment.prototype.render_selected = function(in_context)
 // determine if the passed in point (screen space) collides with our geometery
 Segment.prototype.point_collides = function(in_position)
 {
-	return false;
+    return false;
 }
 
 Segment.prototype.line_collides = function(point_a, point_b)
 {
-	return false;
+    return false;
 }
 
 // translate by this amount (Vector2)
@@ -72,18 +72,18 @@ Segment.prototype.freeze_transform = function()
 
 Segment.unique_id = function(in_Segment)
 {
-	// type id will fill the top 8 bits, instance id will fill bottom 24
-	if(in_Segment == null)
-		return -1;
-	return ((in_Segment.type_id << 24) + in_Segment.instance_id);
+    // type id will fill the top 8 bits, instance id will fill bottom 24
+    if(in_Segment == null)
+        return -1;
+    return ((in_Segment.type_id << 24) + in_Segment.instance_id);
 }
 
 Segment.toXML = function()
 {
-	return "<Segment type=\"default\"/>";
+    return "<Segment type=\"default\"/>";
 }
 
 Segment.parseXML = function(in_xml)
 {
-	
+    
 }
