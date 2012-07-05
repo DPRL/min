@@ -2,7 +2,7 @@
 ImageBlob.count = 0;
 ImageBlob.type_id = 4;	// unique per class
 
-function ImageBlob(in_image, in_inverse_image, original_width, original_height, x, y)
+function ImageBlob(in_image, in_inverse_image, x, y)
 {
 	// identifiers to build unique id
 	this.instance_id = Segment.count++; // unique per object
@@ -14,11 +14,10 @@ function ImageBlob(in_image, in_inverse_image, original_width, original_height, 
 	// a javascript image object
         this.image = (in_image);
 	this.inverse_image = in_inverse_image;
-        this.element = this.image; // For compatability with functions expecting Penstrokes like Action.DeleteSegments.Apply
     
 	// transform info
-	this.scale = new Vector2(1.0, 1.0);
-	this.translation = new Vector2((Editor.canvas_width  - original_width) / 2 + x, (Editor.canvas_height - original_height) / 2 + y);
+	this.scale = new Vector2(1.0, 1.0);38
+	this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
 	
 	this.temp_scale = new Vector2(1.0, 1.0);
 	this.temp_translation = new Vector2(0.0, 0.0);
@@ -27,77 +26,55 @@ function ImageBlob(in_image, in_inverse_image, original_width, original_height, 
 	
 	this.world_mins = this.translation.clone();
 	this.world_maxs = Vector2.Add(this.translation, this.size);
-    
-/*	I think that this is dead
-	// canvas is needed to get inverse image data perform collision checks
-	this.canvas = document.createElement("canvas");
-	this.canvas.width = this.size.x;
-	this.canvas.height = this.size.y;
-	this.context = this.canvas.getContext("2d");
-	this.context.drawImage(this.image, 0, 0);
-	
-	// used for selection
-	this.inverse_image_data = this.context.getImageData(0, 0, this.size.x, this.size.y);
-	var pix = this.inverse_image_data.data;
-	
-	var rgb = RGB.parseRGB(Editor.selected_segment_color);
-	for (var i = 0, n = pix.length; i < n; i += 4) 
-	{
-		var brightness = (pix[i] * 0.299 +  pix[i+1] * 0.587 + pix[i+2] * 0.114) / 255.0;
-		if(brightness < 0.5)
-		{
-			pix[i] = rgb.red;
-			pix[i+1] = rgb.green;
-			pix[i+2] = rgb.blue;
-		}
-	}
-	
-	this.context.putImageData(this.inverse_image_data, 0, 0);
-	
-	this.inverse_image = new Image();
-	this.inverse_image.src = this.canvas.toDataURL();
-	// busy wait until the image is loaded
-	var this_ptr = this;
-	this.inverse_image.onload = function(e)
-	{
-		var the_context = RenderManager.contexts[1];
-		this_ptr.render_selected(the_context);
-	}
-*/		
+
+    // Create an SVG element with the image embedded within it, this is what will actually be displayed on the page
+    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.svg.setAttribute("xmlns", "http://www.w3.org/2000/svg"); 
+    this.svg.setAttribute('name', parseInt(this.image.name));
+    this.svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
+    this.svg.setAttribute("width", "100%");
+    this.svg.setAttribute("height", "100%");
+
+    this.svg_image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    this.svg_image.setAttribute('width', this.image.width);
+    this.svg_image.setAttribute('height', this.image.height);
+    // svg_image.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src);
+    this.svg_image.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', "img/upload_icon.png");
+
+    this.svg_image_inverse = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+    //this.svg_image_inverse.setAttribute("class", "pen_stroke"); 
+    this.svg_image_inverse.setAttribute('width', this.inverse_image.width);
+    this.svg_image_inverse.setAttribute('height', this.inverse_image.height);
+    // svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src);
+    this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', "img/upload_icon.png");
+    this.svg.appendChild(this.svg_image);
+
+    Editor.canvas_div.appendChild(this.svg);
 }
 
-// just draw using the given context
+/*  This method expects an image element which can be placed in an svg element as shown in the
+    constructor */  
+ImageBlob.prototype.private_render = function(image) {    
+    var transform = "translate(" + this.translation.x + "," + this.translation.y + ")";
+    console.log(transform);  
+    image.setAttribute("transform", transform);
+
+    if(this.svg.children[0] != image){ 
+        this.svg.removeChild(this.svg.children[0]);
+        this.svg.appendChild(image);
+    }
+    
+
+}
+
 ImageBlob.prototype.render = function()
 {
-        var context = Editor.contexts[0];
-	context.save();
-	
-	// build our transforms
-	var total_translation = new Vector2(0,0).transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
-	var total_scale = Vector2.Pointwise(this.scale, this.temp_scale);
-
-	context.translate(total_translation.x, total_translation.y);
-	context.scale(total_scale.x, total_scale.y);
-
-	context.drawImage(this.image, 0, 0);
-	context.restore();
+    this.private_render(this.svg_image);
 }
 
 ImageBlob.prototype.render_selected = function()
 {
-        var context = Editor.contexts[0];
-	context.save();
-
-	// build our transforms
-	var total_translation = new Vector2(0,0).transform(this.scale, this.translation).transform(this.temp_scale, this.temp_translation);
-	var total_scale = Vector2.Pointwise(this.scale, this.temp_scale);
-
-	context.translate(total_translation.x, total_translation.y);
-	context.scale(total_scale.x, total_scale.y);
-
-	context.drawImage(this.inverse_image, 0, 0);
-	
-	context.restore();
+    this.private_render(this.svg_image_inverse);
 }
 
 // determine if the passed in point (screen space) collides with our geometery
@@ -113,7 +90,7 @@ ImageBlob.prototype.point_collides = function(in_position)
 
 ImageBlob.prototype.line_collides = function(point_a, point_b)
 {
-	if(this.point_collides(point_a) || this.point_collides(point_b))
+        if(this.point_collides(point_a) || this.point_collides(point_b))
 		return true;
 	return false;
 }
@@ -218,10 +195,6 @@ ImageBlob.prototype.update_extents  = function()
 	
 	this.update_extents();
  }
-
-ImageBlob.prototype.clear = function(in_context){
-    RenderManager.clear_canvas();
-}
 
 ImageBlob.prototype.freeze_transform = function()
 {

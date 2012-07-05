@@ -198,7 +198,6 @@ PenStroke.prototype.private_render = function(in_color, in_width)
 
 	// scale factor to give illusion of scale independent line width
 	var mean_scale = (Math.abs(this.scale.x * this.temp_scale.x) + Math.abs(this.scale.y * this.temp_scale.y)) / 2.0;
-	//console.log(this.stroke_width);
 	this.polyline.setAttribute("style", "stroke:" + this.color + ";stroke-width:" + (this.stroke_width / mean_scale));
 	
 }

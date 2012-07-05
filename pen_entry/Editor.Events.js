@@ -698,7 +698,6 @@ Editor.onMouseUp = function(e)
 				else
 					Editor.state = EditorState.ReadyToStrokeSelect;
 				RenderManager.clear_canvas();
-                                RenderManager.render();
 				break;
 			case EditorState.RectangleSelecting:
 				if(Editor.selected_segments.length > 0)
@@ -1476,11 +1475,11 @@ Editor.getInkML = function() {
 
 Editor.onImageLoad = function(e)
 {
-	var file_list = e.target.files;
-	var file = file_list[0];
-	if(file)
-	{
-		var r = new FileReader();
+    var file_list = e.target.files;
+    var file = file_list[0];
+    if(file)
+    {
+	var r = new FileReader();
 		r.onload = function(e)
 		{
 			var loaded_image = new Image();
@@ -1550,10 +1549,10 @@ Editor.onImageLoad = function(e)
 								image_list[k].name = String(k);
 
 								position_list[k] = [parseInt(position[0]), parseInt(position[1])];
-								
-								
-								image_list[k].onload = function(e)
-								{
+
+                                                                image_list[k].src = img_data; // This triggers the following event
+							        image_list[k].onload = function(e)
+							        {
 									var my_k = parseInt(this.name);
 									// create inverse image
 									var temp_canvas = document.createElement("canvas");
@@ -1583,9 +1582,9 @@ Editor.onImageLoad = function(e)
 									// once it loads, add the image blob to they system
 									inverse_image.onload = function()
 									{
-										var my_k =  parseInt(this.name);
-										var b = new ImageBlob(image_list[my_k], this, loaded_image.width, loaded_image.height, position_list[my_k][0], position_list[my_k][1]); 
-										
+                                                                            
+									    var b = new ImageBlob(image_list[my_k], this, position_list[my_k][0], position_list[my_k][1]); 
+									    
 										//RenderManager.add_segment(b, 1);
 										Editor.add_segment(b);
 										Editor.add_selected_segment(b);
@@ -1595,7 +1594,6 @@ Editor.onImageLoad = function(e)
 										RenderManager.render();
 									}
 								}
-								image_list[k].src = img_data;
 							}
 						}
 					}

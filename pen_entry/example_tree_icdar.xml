@@ -23,8 +23,8 @@
 			<Symbol name="leq" unicode="&#x2264;"/>
 			<Symbol name="int" unicode="&#x222B;"/>
 			<!-- <Symbol name="times" unicode="&#x2A09;"/> -->
-			<!-- <Symbol name="times" unicode="x"/> --> <!-- &#x00D7;"/> -->
-                        <Symbol name="times" unicode="&#x00D7;"/>
+			<Symbol name="times" unicode="x"/> <!-- &#x00D7;"/> -->
+                        <!-- <Symbol name="times" unicode="&#x00D7;"/> -->
 			<Symbol name="sum" unicode="&#x3A3;"/>
 			<Symbol name="sqrt" unicode="&#x221A;"/>
 			<Symbol name="lim" unicode="lim"/>
