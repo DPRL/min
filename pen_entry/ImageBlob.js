@@ -197,6 +197,7 @@ ImageBlob.prototype.resize = function(in_origin, in_scale)
     this.temp_scale = new Vector2(in_scale.x, in_scale.y);
     this.temp_translation = Vector2.Subtract(in_origin, Vector2.Pointwise(in_origin, in_scale));
     this.update_extents();
+    this.dirty_flag = true;
 }
 
 ImageBlob.prototype.freeze_transform = function()
