@@ -29,9 +29,8 @@ Editor.classifier = new Classifier();
 Editor.editor_root = "http://129.21.34.109:";
 
 /* Recognition servers and ports */
-// NOTE: CC runs on a different machine.
-Editor.connected_components_server_url = "http://129.21.34.104:2000";
 var saskatoon = "http://129.21.34.109:";
+Editor.connected_components_server_url = saskatoon + "20000";
 Editor.classifier_server_url = saskatoon + "1504"; // Use part 2 (ICDAR 2011)
 Editor.align_server_url = saskatoon + "1000";
 Editor.data_server_url = saskatoon + "500"
