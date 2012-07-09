@@ -60,10 +60,13 @@ ImageBlob.prototype.private_render = function(image) {
     this.dirty_flag = false;
     
     var transform = new StringBuilder();
-    transform.append("translate(").append(this.translation.x).append(",").append(this.translation.y + ")").append(
-        " scale(").append(this.scale.x).append(", ").append(this.scale.y + ")");
+    transform.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
+    transform.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
+    transform.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
+    transform.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
     image.setAttribute("transform", transform.toString());
 
+    console.log(transform.toString());
     if(this.svg.children[0] != image){ 
         this.svg.removeChild(this.svg.children[0]);
         this.svg.appendChild(image);
