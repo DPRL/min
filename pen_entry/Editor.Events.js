@@ -1242,7 +1242,6 @@ Editor.groupTool = function()
         var set_id = Segment.set_count++;
         Editor.add_action(new GroupSegments(Editor.selected_segments, set_id));
         
-        
         var to_classify = new Array();
         for(var k = 0; k < Editor.selected_segments.length; k++)
         {
@@ -1262,13 +1261,11 @@ Editor.groupTool = function()
             Editor.segments[j+1] = value;
         }
         
-        
         // RLAZ: restored this code, so that all modified objects are
         // reclassified.
         to_classify.push(set_id);
         for(var k = 0; k < to_classify.length; k++)
             RecognitionManager.classify(to_classify[k]);
-        
         
         //RecognitionManager.classify(set_id, false);
             
@@ -1479,7 +1476,7 @@ Editor.onImageLoad = function(e)
     var file = file_list[0];
     if(file)
     {
-    var r = new FileReader();
+        var r = new FileReader();
         r.onload = function(e)
         {
             var loaded_image = new Image();
@@ -1502,7 +1499,7 @@ Editor.onImageLoad = function(e)
                 // now we build our request
                 // we pass our image in as a parameter 
                 var vals = dataUrl.split(",");
-            var parameter = "?image=" + vals[0] + "," + encodeURIComponent(vals[1]);
+                var parameter = "?image=" + vals[0] + "," + encodeURIComponent(vals[1]);
                 
                 //var segment_group = new SegmentGroup();
                 
@@ -1517,13 +1514,13 @@ Editor.onImageLoad = function(e)
                         var xml_document = xmlhttp.responseXML;
                         var root_node = xml_document.firstChild;
                         /*
-                            Expects a response in this format
-                            <ConnectedComponents>
-                                <Component x="10" y="20">
-                                    data:image/PNG;base64,ASOIUROIJDLAKJSDLFJOEURABRDLJFKLDSetc
-                                </Component>
-                                <Component...
-                            </ConnectedComponents>
+                          Expects a response in this format
+                          <ConnectedComponents>
+                          <Component x="10" y="20">
+                          data:image/PNG;base64,ASOIUROIJDLAKJSDLFJOEURABRDLJFKLDSetc
+                          </Component>
+                          <Component...
+                          </ConnectedComponents>
                         */
                         if(root_node.nodeName != "ConnectedComponents")
                         {
@@ -1538,7 +1535,7 @@ Editor.onImageLoad = function(e)
                             var position_list = new Array(image_nodes.length);
                             
                             // change our state
-                                                        Editor.strokeSelectionTool();
+                            Editor.strokeSelectionTool();
                             
                             for(var k = 0; k < image_nodes.length; k++)
                             {
@@ -1550,9 +1547,9 @@ Editor.onImageLoad = function(e)
 
                                 position_list[k] = [parseInt(position[0]), parseInt(position[1])];
 
-                                                                image_list[k].src = img_data; // This triggers the following event
-                            image_list[k].onload = function(e)
-                            {
+                                image_list[k].src = img_data; // This triggers the following event
+                                image_list[k].onload = function(e)
+                                {
                                     var my_k = parseInt(this.name);
                                     // create inverse image
                                     var temp_canvas = document.createElement("canvas");
@@ -1582,10 +1579,9 @@ Editor.onImageLoad = function(e)
                                     // once it loads, add the image blob to they system
                                     inverse_image.onload = function()
                                     {
-                                                                            
-                                    var b = new ImageBlob(image_list[my_k], this, position_list[my_k][0], position_list[my_k][1]); 
-                                    
-                                        //RenderManager.add_segment(b, 1);
+                                        
+                                        var b = new ImageBlob(image_list[my_k], this, position_list[my_k][0], position_list[my_k][1]); 
+                                        
                                         Editor.add_segment(b);
                                         Editor.add_selected_segment(b);
                                         added_segments.push(b);
