@@ -73,7 +73,7 @@ ImageBlob.prototype.private_render = function(image) {
 }
 
 ImageBlob.prototype.finishImageLoad = function(in_canvas){
-    Editor.canvas_div.appendChild(this.svg);    
+    in_canvas.appendChild(this.svg);
 }
 
 ImageBlob.prototype.render = function()

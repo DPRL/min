@@ -1591,7 +1591,7 @@ Editor.onImageLoad = function(e)
                                         RenderManager.render();
                                         Editor.canvas_div.appendChild(b.svg);
                                         // Now that the tools layer has been added, add the svg image to the canvas
-                                        b.finishImageLoad(Editor.canvas);
+                                        b.finishImageLoad(Editor.canvas_div);
                                     }
                                 }
                             }
