@@ -1580,14 +1580,18 @@ Editor.onImageLoad = function(e)
                                     inverse_image.onload = function()
                                     {
                                         
+                                        
                                         var b = new ImageBlob(image_list[my_k], this, position_list[my_k][0], position_list[my_k][1]); 
                                         
                                         Editor.add_segment(b);
-                                        Editor.add_selected_segment(b);
+                                        Editor.add_selected_segment(b); 
                                         added_segments.push(b);
                                         if(added_segments.length == image_nodes.length)
                                             Editor.current_action.buildSegmentXML();
                                         RenderManager.render();
+                                        Editor.canvas_div.appendChild(b.svg);
+                                        // Now that the tools layer has been added, add the svg image to the canvas
+                                        b.finishImageLoad(Editor.canvas);
                                     }
                                 }
                             }
