@@ -26,7 +26,7 @@ CollisionManager.get_point_collides_bb = function(click_point)
             already_examined[segment.set_id] = true;
             // find extents of entire segment set
             var segment_set = Editor.get_segment_by_id(segment.set_id)
-             var min = segment_set[0].worldMinPosition();
+            var min = segment_set[0].worldMinPosition();
             var max = segment_set[0].worldMaxPosition();
 
             for(var j = 1; j < segment_set.length; j++)
@@ -43,10 +43,10 @@ CollisionManager.get_point_collides_bb = function(click_point)
             
             // do collision check
             if(min.x <= click_point.x && max.x >= click_point.x &&
-                min.y <= click_point.y && max.y >= click_point.y)
-                {
-                    result.push(Editor.segments[k]);
-                }
+               min.y <= click_point.y && max.y >= click_point.y)
+            {
+                result.push(Editor.segments[k]);
+            }
         }
         
     }

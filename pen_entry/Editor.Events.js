@@ -1,32 +1,32 @@
 var EditorState = 
-{
-    // select tool states
-    "ReadyToStrokeSelect" : 0,
-    "StrokeSelecting" : 1,
-    "ReadyToRectangleSelect" : 2,
-    "RectangleSelecting" : 3,
+    {
+        // select tool states
+        "ReadyToStrokeSelect" : 0,
+        "StrokeSelecting" : 1,
+        "ReadyToRectangleSelect" : 2,
+        "RectangleSelecting" : 3,
 
-    
-    // pen states
-    "ReadyToStroke" : 4, 
-    "MiddleOfStroke" : 5,
+        
+        // pen states
+        "ReadyToStroke" : 4, 
+        "MiddleOfStroke" : 5,
 
-    // text tool states
-    "ReadyForText" : 6,
-    "MiddleOfText" : 7,
+        // text tool states
+        "ReadyForText" : 6,
+        "MiddleOfText" : 7,
 
-    // Segment (and primitive) selection, labeling
-    "SegmentsSelected" : 8,
-    "MovingSegments" : 9,
-    "Resizing" : 10,
-    "Relabeling" : 11,
+        // Segment (and primitive) selection, labeling
+        "SegmentsSelected" : 8,
+        "MovingSegments" : 9,
+        "Resizing" : 10,
+        "Relabeling" : 11,
 
-    // Editing text box.
-    "InTextBox" : 12,
+        // Editing text box.
+        "InTextBox" : 12,
 
-    // New: moving a symbol in edit mode; touch and hold state.
-    "PenMovingSegments" : 13
-};
+        // New: moving a symbol in edit mode; touch and hold state.
+        "PenMovingSegments" : 13
+    };
 
 Editor.lastEvent = null;
 Editor.touchAndHoldFlag = 0;
@@ -45,10 +45,6 @@ Editor.setup_events = function()
 
     $(document).keypress(Editor.onKeyPress);
     $(document).keydown(Editor.mapCanvasBackspace);
-    //document.addEventListener("mouseup", Editor.onMouseUp, true);
-    //document.addEventListener("mousedown", Editor.onMouseDown, true);
-
-    // DEBUG: Toolbar binding for mouse-up (allow delete to operate uniformly)
     Editor.toolbar_div.addEventListener("mouseup", Editor.onMouseUp, true);
 
     // Canvas bindings.
@@ -56,7 +52,7 @@ Editor.setup_events = function()
     Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
     Editor.canvas_div.addEventListener("dblclick", Editor.onDoubleClick, true);
 
-        // Touch events for tablet interfaces
+    // Touch events for tablet interfaces
     Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
     Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
     
@@ -129,9 +125,6 @@ Editor.setup_events = function()
         
     }
     
-    // prints the undo stack to console
-    //document.getElementById("print_undo_stack").addEventListener("click", Editor.printUndoStack, true);
-    //
     // Select the pen tool
     Editor.button_states[Buttons.Pen].enabled = true;
 
@@ -230,8 +223,7 @@ Editor.onDoubleClick = function(e)
                     if(Editor.segments[k].set_id == segment.set_id)
                         Editor.add_selected_segment(Editor.segments[k]);
             }
-        
-            //Editor.add_action(new TransformSegments(Editor.selected_segments));
+
             RenderManager.colorOCRbbs(false);
             RenderManager.bounding_box.style.visibility = "visible";
             Editor.state = EditorState.SegmentsSelected;
@@ -578,14 +570,6 @@ Editor.onMouseMove = function(e)
                 Editor.state = EditorState.MovingSegments;
             case EditorState.PenMovingSegments:
             case EditorState.MovingSegments:
-                // add the transform action to stack
-                /*
-                if(Editor.current_action != null)
-                {    
-                    Editor.add_action(Editor.current_action);
-                    Editor.current_action = null;
-                }
-                */
                 var translation = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
                 for(var k = 0; k < Editor.selected_segments.length; k++)
                 {
@@ -737,7 +721,6 @@ Editor.onMouseUp = function(e)
                 break;
             case EditorState.MiddleOfStroke:
                 Editor.state = EditorState.ReadyToStroke;
-                //RecognitionManager.classify(Editor.current_stroke.set_id, true);
                 if(Editor.current_stroke.finish_stroke()) {
                     Editor.current_stroke.test_collisions();
                     RecognitionManager.enqueueSegment(Editor.current_stroke);
@@ -1233,9 +1216,6 @@ Editor.align = function()
 // so no need to remove or re-render
 Editor.groupTool = function()
 {
-    /* if(Editor.button_states[Buttons.Group].enabled == false)
-        return;*/
-
     if(Editor.selected_segments.length > 0 && Editor.state == EditorState.SegmentsSelected)
     {
         // get a new uid for this set
@@ -1267,10 +1247,6 @@ Editor.groupTool = function()
         for(var k = 0; k < to_classify.length; k++)
             RecognitionManager.classify(to_classify[k]);
         
-        //RecognitionManager.classify(set_id, false);
-            
-        //RenderManager.render();
-        
         Editor.state = EditorState.SegmentsSelected;
     }
 }
@@ -1290,15 +1266,6 @@ Editor.deleteTool = function()
     var action = new DeleteSegments(Editor.selected_segments)
     action.Apply();
     Editor.add_action(action);
-/*
-    // remove selected component
-    while(Editor.selected_segments.length > 0)
-    {
-        var segment = Editor.selected_segments.pop();
-        Editor.remove_segment(segment);
-        
-    }
-*/
     Editor.clear_selected_segments();    
     RenderManager.render();
     
@@ -1313,8 +1280,7 @@ Editor.typeTool = function()
     Editor.selected_segments.length = 0;
     Editor.current_stroke = null;
     Editor.clearButtonOverlays();
-    
-    //Editor.button_states[Buttons.Text].setSelected(true);
+
     Editor.button_states[Buttons.Pen].setSelected(true);
     Editor.button_states[Buttons.Rectangle].setSelected(false);
     Editor.button_states[Buttons.Stroke].setSelected(false);
@@ -1599,8 +1565,6 @@ Editor.onImageLoad = function(e)
                     }
                 });
                 
-                //RenderManager.add_segment(segment_group, -1);
-                //CollisionManager.add_segment(segment_group);
             }
             
             Editor.add_action(new AddSegments(added_segments));
@@ -1634,28 +1598,28 @@ Editor.search = function()
     var searchString = "";
     var engineType = document.getElementById("engineSelector").value;
     var searchString = document.getElementById("tex_result").value 
-        // REMOVED
-        //+ " " + document.getElementById("infobar").value;
+    // REMOVED
+    //+ " " + document.getElementById("infobar").value;
 
 
 
     /* INCOMPLETE */
     switch (engineType)
     {
-        case 'LaTeX Search':
-            url = 'http://latexsearch.com/latexFacets.do?searchInput=';
-            searchString = searchString + '&stype=exact';
-            break;
-        case 'Wolfram Alpha':
-            url='http://www.wolframalpha.com/input/?i=';
-            break;
-        case 'Google':
-            url='http://www.google.com/search?q=';
-            break;
-        default:
-            /* Currently NIST DLMF is the default (first list item) */
-            url = 'http://dlmf.nist.gov/search/search?q=';
-            break
+    case 'LaTeX Search':
+        url = 'http://latexsearch.com/latexFacets.do?searchInput=';
+        searchString = searchString + '&stype=exact';
+        break;
+    case 'Wolfram Alpha':
+        url='http://www.wolframalpha.com/input/?i=';
+        break;
+    case 'Google':
+        url='http://www.google.com/search?q=';
+        break;
+    default:
+        /* Currently NIST DLMF is the default (first list item) */
+        url = 'http://dlmf.nist.gov/search/search?q=';
+        break
     }
     window.location = url + searchString;
 }

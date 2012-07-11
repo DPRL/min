@@ -1,10 +1,10 @@
- function Classifier()
- {
- 
- }
- 
- Classifier.prototype.classify = function(in_segments, should_segment)
- {
+function Classifier()
+{
+    
+}
+
+Classifier.prototype.classify = function(in_segments, should_segment)
+{
     var sb = new StringBuilder();
     sb.append("?segmentList=<SegmentList>");
     for(var k = 0; k < in_segments.length; k++)
@@ -15,7 +15,7 @@
     else
         sb.append("&segment=false");
     
- 
+    
     // BUG: classification of objects with multiple types currently
     // not handled.
     $.get
@@ -47,7 +47,7 @@
                     }
                 }
                 RecognitionManager.result_table.push(recognition);    
-            
+                
             }
             
             
@@ -58,4 +58,4 @@
         }
     );
     // change this to an asynchronous thing later
- }
+}

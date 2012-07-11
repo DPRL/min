@@ -4,8 +4,8 @@ function CorrectionMenu()
 {
     
 }
- 
- // sets up the correction menu
+
+// sets up the correction menu
 CorrectionMenu.initialize = function()
 {
     CorrectionMenu.close_button = document.getElementById("rr_close_button");
@@ -61,9 +61,9 @@ CorrectionMenu.initialize = function()
             //console.log(CorrectionMenu.symbol_tree.toString());
             // add in category for recognition results
             CorrectionMenu.recognition_node = new CategoryNode();
-                CorrectionMenu.recognition_node.category = "OCR";
-                CorrectionMenu.recognition_node.children_type = NodeType.Symbol;
-                CorrectionMenu.recognition_node.parent = CorrectionMenu.symbol_tree.root;
+            CorrectionMenu.recognition_node.category = "OCR";
+            CorrectionMenu.recognition_node.children_type = NodeType.Symbol;
+            CorrectionMenu.recognition_node.parent = CorrectionMenu.symbol_tree.root;
             CorrectionMenu.symbol_tree.root.children.splice(0,0,CorrectionMenu.recognition_node);
             
             // populate root panel node
@@ -111,7 +111,7 @@ CorrectionMenu.populateCategoryList = function(list_div, node, start_index)
         var child_divs = list_div.childNodes;
         while(child_divs.length > 0)
             list_div.removeChild(child_divs.item(0));
-    
+        
         // add each category node
         for(var k = 0; k < child_nodes.length; k++)
         {
@@ -164,7 +164,7 @@ CorrectionMenu.populateSymbolGrid = function(grid_div, node, start_index)
             div.style.lineHeight = CorrectionMenu.center_panel.clientHeight / 3 + "px";
             CorrectionMenu.current_grid.appendChild(div);
         }
-            
+        
         CorrectionMenu.label.innerHTML = CorrectionMenu.build_title_html();
         if(CorrectionMenu.symbol_tree.current != CorrectionMenu.symbol_tree.root)
             CorrectionMenu.up.innerHTML = "Up (" + CorrectionMenu.symbol_tree.current.parent.category + ")";
@@ -197,12 +197,12 @@ CorrectionMenu.updateOCRList = function()
         for(var k = 0; k < rec_result.results; k++)
         {
             var symbol_node = new SymbolNode();
-                symbol_node.name = rec_result.symbols[k];
-                //console.log("name: " + symbol_node.name);
-                symbol_node.symbol = RecognitionManager.symbol_name_to_unicode[symbol_node.name];
-                if(typeof(symbol_node.symbol) == "undefined")
-                    symbol_node.symbol = symbol_node.name;
-                //console.log("symbol: " + symbol_node.symbol);
+            symbol_node.name = rec_result.symbols[k];
+            //console.log("name: " + symbol_node.name);
+            symbol_node.symbol = RecognitionManager.symbol_name_to_unicode[symbol_node.name];
+            if(typeof(symbol_node.symbol) == "undefined")
+                symbol_node.symbol = symbol_node.name;
+            //console.log("symbol: " + symbol_node.symbol);
             CorrectionMenu.recognition_node.children.push(symbol_node);
         }
     }
@@ -223,19 +223,19 @@ CorrectionMenu.show = function()
     // Removes list of symbols from the current menu, if we selected a symbol last time.
     //if(CorrectionMenu.symbol_tree.current.children_type == NodeType.Symbol)
     //{
-        // Comment out: maintains current menu state.
+    // Comment out: maintains current menu state.
     //    CorrectionMenu.center_panel.removeChild(CorrectionMenu.current_grid);
     //    CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_list);
     //} else {
-        // Produce top-level list.
-        CorrectionMenu.symbol_tree.current = CorrectionMenu.symbol_tree.root;
-        CorrectionMenu.populateCategoryList(CorrectionMenu.current_list, CorrectionMenu.symbol_tree.current, 0);
+    // Produce top-level list.
+    CorrectionMenu.symbol_tree.current = CorrectionMenu.symbol_tree.root;
+    CorrectionMenu.populateCategoryList(CorrectionMenu.current_list, CorrectionMenu.symbol_tree.current, 0);
 
-        // Produce OCR results, place in the panel.
-        CorrectionMenu.updateOCRList();
-        CorrectionMenu.symbol_tree.current = CorrectionMenu.recognition_node;
-        CorrectionMenu.populateSymbolGrid(CorrectionMenu.current_grid, CorrectionMenu.recognition_node, 0);
-        CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_grid);
+    // Produce OCR results, place in the panel.
+    CorrectionMenu.updateOCRList();
+    CorrectionMenu.symbol_tree.current = CorrectionMenu.recognition_node;
+    CorrectionMenu.populateSymbolGrid(CorrectionMenu.current_grid, CorrectionMenu.recognition_node, 0);
+    CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_grid);
     //}
 }
 
@@ -266,20 +266,20 @@ CorrectionMenu.select_category = function(e)
     }
 }
 
- CorrectionMenu.select_symbol = function(e)
- {
+CorrectionMenu.select_symbol = function(e)
+{
     if(CorrectionMenu.touch_moving == true)
         return;
-        
+    
     if (Editor.touchAndHoldFlag != 0) {
         return;
     }
- 
+    
     var symbol = RecognitionManager.unicode_to_symbol_name[e.currentTarget.innerHTML];
     if(symbol != "")
     {    
         var new_recognition = null;
-            
+        
         //console.log("Selected: " + symbol);
         var set_id = Segment.set_count++;
         for(var k = 0; k < Editor.selected_segments.length; k++)
@@ -313,7 +313,7 @@ CorrectionMenu.select_category = function(e)
         
         CorrectionMenu.hide();
     }
- }
+}
 
 CorrectionMenu_up = function(node_count)
 {
@@ -332,7 +332,7 @@ CorrectionMenu_up = function(node_count)
     }
     CorrectionMenu.populateCategoryList(CorrectionMenu.current_list, CorrectionMenu.symbol_tree.current, 0);
 }
- 
+
 CorrectionMenu.up = function(node_count)
 {
     if(CorrectionMenu.symbol_tree.current.parent != null)
@@ -361,17 +361,17 @@ CorrectionMenu.hide = function()
     CorrectionMenu.menu.style.visibility = "hidden";
     
 }
- 
- CorrectionMenu.touchstart = function(e)
- {
+
+CorrectionMenu.touchstart = function(e)
+{
     CorrectionMenu.touch_start_position = new Vector2(e.touches[0].clientX, e.touches[0].clientY);
     CorrectionMenu.div_moving = true;
     CorrectionMenu.div_speed = 0;
     CorrectionMenu.touch_moving = false;
- }
- 
- CorrectionMenu.touchmove = function(e)
- {
+}
+
+CorrectionMenu.touchmove = function(e)
+{
     CorrectionMenu.touch_moving = true;
     var to_move = null;
     var to_move_height;

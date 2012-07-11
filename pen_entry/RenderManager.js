@@ -6,13 +6,13 @@
 // (rlaz)
 
 /*
-5 layers:
+  5 layers:
 
-0 pen strokes
-1 equation image blobs
-2 typed text
-3 math recognition layer
-4 tools layer
+  0 pen strokes
+  1 equation image blobs
+  2 typed text
+  3 math recognition layer
+  4 tools layer
 */
 
 function RenderManager()
@@ -28,21 +28,12 @@ RenderManager.initialize = function(in_width, in_height, in_layers)
     RenderManager.segments = new Array();
     
     RenderManager.bounding_box = document.getElementById("bounding_box");
-        RenderManager.bounding_box.style.visibility = "hidden";
+    RenderManager.bounding_box.style.visibility = "hidden";
     RenderManager.selection_box = document.getElementById("selection_rectangle");
-        RenderManager.selection_box.style.visibility = "hidden";
-        
+    RenderManager.selection_box.style.visibility = "hidden";
+    
     //  build a set of divs we can use for segment sets
     RenderManager.segment_set_divs = new Array();
-    /*for(var k = 0; k < 4; k++)
-    {
-        var div = document.createElement('div');
-        div.className = 'segment_set';
-        div.style.visibility='hidden';
-        div.setAttribute("ontouchstart", "event.preventDefault();");
-        Editor.canvas_div.appendChild(div);
-        RenderManager.segment_set_divs.push(div);
-    }*/
 }
 
 
@@ -89,8 +80,8 @@ RenderManager.render_tools_layer = function()
         
         
         context.beginPath();
-            context.moveTo(point_a.x, point_a.y);
-            context.lineTo(point_b.x, point_b.y);
+        context.moveTo(point_a.x, point_a.y);
+        context.lineTo(point_b.x, point_b.y);
         context.stroke();
         context.closePath();
     }
@@ -215,12 +206,12 @@ RenderManager.render_set_field = function(in_context_id)
             {
                 var seg_min = set_segments[j].worldMinDrawPosition();
                 var seg_max = set_segments[j].worldMaxDrawPosition();
-            
+                
                 if(seg_min.x < mins.x)
                     mins.x = seg_min.x;
                 if(seg_min.y < mins.y)
                     mins.y = seg_min.y;
-                    
+                
                 if(seg_max.x > maxs.x)
                     maxs.x = seg_max.x;
                 if(seg_max.y > maxs.y)
@@ -241,15 +232,15 @@ RenderManager.render_set_field = function(in_context_id)
                 else {
                     switch(Editor.state)
                     {
-                        case EditorState.ReadyToStroke:
-                        case EditorState.MiddleOfStroke:
-                        case EditorState.ReadyForText:
-                        case EditorState.MiddleOfText: 
-                            div.className = 'segment_input_set';
-                            break;
-                        default:
-                            div.className = 'segment_set';
-                            break;
+                    case EditorState.ReadyToStroke:
+                    case EditorState.MiddleOfStroke:
+                    case EditorState.ReadyForText:
+                    case EditorState.MiddleOfText: 
+                        div.className = 'segment_input_set';
+                        break;
+                    default:
+                        div.className = 'segment_set';
+                        break;
                     }
                 }
                 div.style.visibility='hidden';
@@ -276,8 +267,8 @@ RenderManager.render_set_field = function(in_context_id)
                     ss_div.innerHTML = symbol;
                 else
                     ss_div.innerHTML = recognition_result.symbols[0];
-                    ss_div.style.fontSize = (rect_size.y * 1.25) + "px"; // scale font up to fill more of bb
-                    ss_div.style.lineHeight = rect_size.y + "px";
+                ss_div.style.fontSize = (rect_size.y * 1.25) + "px"; // scale font up to fill more of bb
+                ss_div.style.lineHeight = rect_size.y + "px";
             }
             else {
                 // Typed characters ('SymbolSegments')
@@ -310,28 +301,6 @@ RenderManager.unrender_set_field = function()
         RenderManager.segment_set_divs[k].style.visibility = "hidden";
     }
 }
-
-/*
-RenderManager.add_segment = function(in_segment)
-{
-    return;
-    RenderManager.segments.push(in_segment);
-}
-
-RenderManager.remove_segment = function(in_segment)
-{
-    if(in_segment == null) return;
-    
-    for(var k = 0; k < RenderManager.segments.length; k++)
-    {
-        if(RenderManager.segments[k] == in_segment)
-        {
-            RenderManager.segments.splice(k,1);
-            return;
-        }
-    }
-}
-*/
 
 RenderManager.clear_canvas = function()
 {

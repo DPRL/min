@@ -82,35 +82,35 @@ SymbolTree.prototype.toString = function()
 }
 
 /** Example xml schema:
-<SymbolTree>
+    <SymbolTree>
     <Category name="Root">
-        <Category name="Digits">
-            <Symbol>0</Symbol>
-            <Symbol>1</Symbol>
-            <Symbol>2</Symbol>
-            <Symbol>3</Symbol>
-            <Symbol>4</Symbol>
-            <Symbol>5</Symbol>
-            <Symbol>6</Symbol>
-            <Symbol>7</Symbol>
-            <Symbol>8</Symbol>
-            <Symbol>9</Symbol>
-        </Category>
-        <Category name="Operators">
-            <Symbol>+</Symbol>
-            <Symbol>-</Symbol>
-            <Symbol>*</Symbol>
-            <Symbol>/</Symbol>
-            <Symbol>%</Symbol>
-        </Category>
-        <Category name="Punctuation">
-            <Symbol>.</Symbol>
-            <Symbol>,</Symbol>
-            <Symbol>!</Symbol>
-            <Symbol>?</Symbol>
-        </Category>
+    <Category name="Digits">
+    <Symbol>0</Symbol>
+    <Symbol>1</Symbol>
+    <Symbol>2</Symbol>
+    <Symbol>3</Symbol>
+    <Symbol>4</Symbol>
+    <Symbol>5</Symbol>
+    <Symbol>6</Symbol>
+    <Symbol>7</Symbol>
+    <Symbol>8</Symbol>
+    <Symbol>9</Symbol>
     </Category>
-</SymbolTree>    
+    <Category name="Operators">
+    <Symbol>+</Symbol>
+    <Symbol>-</Symbol>
+    <Symbol>*</Symbol>
+    <Symbol>/</Symbol>
+    <Symbol>%</Symbol>
+    </Category>
+    <Category name="Punctuation">
+    <Symbol>.</Symbol>
+    <Symbol>,</Symbol>
+    <Symbol>!</Symbol>
+    <Symbol>?</Symbol>
+    </Category>
+    </Category>
+    </SymbolTree>    
 **/
 
 SymbolTree.parseXml = function(in_xml)
@@ -157,7 +157,7 @@ SymbolTree.parseXml = function(in_xml)
                 {
                     var category_nodes = false;
                     var symbol_nodes = false;
-                
+                    
                     for(var k = 0; k < child_elements.length; k++)
                     {
                         if(child_elements[k].nodeName == "Category")
@@ -214,7 +214,7 @@ SymbolTree.parseXml = function(in_xml)
                     console.log("Error: Unknown node type: " + xml_node.nodeName);
                     return null;
                 }
-                    
+                
             }
             result.current = result.root;
             return result;

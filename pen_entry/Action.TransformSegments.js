@@ -1,16 +1,12 @@
 
 TransformSegments.animation_length = 0.25;
 
- function TransformSegments(in_segments)
- {
+function TransformSegments(in_segments)
+{
     this.segments = new Array();
-//    this.backup_temp_scale = new Array();
-//    this.backup_temp_traslation = new Array();
     this.backup_scale = new Array();
     this.backup_translation = new Array();
     
-//    this.new_temp_scale = new Array();
-//    this.new_temp_translation = new Array();
     this.new_scale = new Array();
     this.new_translation = new Array();
     
@@ -18,8 +14,6 @@ TransformSegments.animation_length = 0.25;
     {
         var segment = in_segments[k];
         this.segments.push(segment);
-//        this.backup_temp_scale.push(segment.temp_scale.clone());
-//        this.backup_temp_translation.push(segment.temp_translation.clone());
         this.backup_scale.push(segment.scale.clone());
         this.backup_translation.push(segment.translation.clone());
     }
@@ -29,8 +23,8 @@ TransformSegments.animation_length = 0.25;
     this.undoing = true;
     
     this.should_keep = false;
- }
- 
+}
+
 // need to call this to get the new values for each transform
 TransformSegments.prototype.add_new_transforms = function(in_segments)
 {
@@ -38,53 +32,17 @@ TransformSegments.prototype.add_new_transforms = function(in_segments)
         alert("ERROR in TransformSegments.prototype.add_new_transforms");
 
     this.should_keep = true;
-        
+    
     for(var k = 0; k < in_segments.length; k++)
     {
         var segment = in_segments[k];
-//        this.new_temp_scale.push(segment.temp_scale.clone());
-//        this.new_temp_translation.push(segment.temp_translation.clone());
+        
         this.new_scale.push(segment.scale.clone());
         this.new_translation.push(segment.translation.clone());
     }
 }
 
 TransformSegments.current;
-
-
-/*
-TransformSegments.prototype.rescale = function(k)
-{
-    if(k == 0)
-        TransformSegments.current = this;
-    if(k == 16)
-    {
-        TransformSegments.current = null;
-        return;
-    }
-
-    var fraction = 1.0;
-    if(k < 15)
-        var fraction = (k+1) * 0.0625;
-    
-    //console.log(fraction);
-    for(var j = 0; j < this.segments.length; j++)
-    {
-        var segment = this.segments[j];    
-        segment.scale.Set(Vector2.Add(this.new_scale[j],Vector2.Multiply(fraction, Vector2.Subtract(this.backup_scale[j], this.new_scale[j]))));
-        segment.translation.Set(Vector2.Add(this.new_translation[j],Vector2.Multiply(fraction, Vector2.Subtract(this.backup_translation[j], this.new_translation[j]))));
-        segment.update_extents();
-    }
-    
-    Editor.update_selected_bb();
-    RenderManager.render();
-    
-    var sb = new StringBuilder();
-    sb.append("TransformSegments.current.rescale(").append(String(k+1)).append(");");
-    
-    setTimeout(sb.toString(), 10);
-}
-*/
 
 TransformSegments.prototype.rescale = function(elapsed, utc_ms)
 {
@@ -156,11 +114,11 @@ TransformSegments.prototype.Undo = function()
     this.undoing = true;
     this.rescale(0.0, this.start_time);
 }
- 
- TransformSegments.prototype.shouldKeep = function()
- {
+
+TransformSegments.prototype.shouldKeep = function()
+{
     return this.should_keep;
- 
+    
     for(var k = 0; k < this.segments.length; k++)
     {
         var segment = this.segments[k];
@@ -170,9 +128,9 @@ TransformSegments.prototype.Undo = function()
             return true;
     }
     return false;
- }
- 
- 
+}
+
+
 TransformSegments.prototype.Apply = function()
 {
     this.framerate = 0.0;
@@ -180,19 +138,8 @@ TransformSegments.prototype.Apply = function()
     this.start_time = (new Date()).getTime();
     this.undoing = false;
     this.rescale(0.0, this.start_time);
-/*
-    for(var k = 0; k < this.segments.length; k++)
-    {
-        var segment = this.segments[k];
-//        segment.temp_scale = this.new_temp_scale[k].clone();
-//        segment.temp_translation = this.new_temp_translation[k].clone();
-        segment.scale = this.new_scale[k].clone();
-        segment.translation = this.new_translation[k].clone();
-        segment.update_extents();
-    }
-*/
- }
- 
+}
+
 TransformSegments.prototype.toXML = function()
 {
     var sb = new StringBuilder();
@@ -208,9 +155,9 @@ TransformSegments.prototype.toXML = function()
     sb.append("</Action>");
     return sb.toString();
 }
- 
- 
- TransformSegments.prototype.toString = function()
- {
+
+
+TransformSegments.prototype.toString = function()
+{
     return "TransformSegments";
- }
+}

@@ -8,10 +8,6 @@ function SymbolSegment(in_position) {
     this.type_id = SymbolSegment.type_id;
     this.set_id = Segment.set_count++;
     
-//    this.position = new Vector2(in_position.x,in_position.y);
-    
-    //this.size = new Vector2(50,50);
-    
     this.layer = 2;
     
     this.text = "";

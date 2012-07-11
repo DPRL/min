@@ -6,17 +6,17 @@ function Buttons()
 Buttons.COUNT = 0;
 
 /*Buttons.Pen = 0;
-Buttons.Stroke = 1;
-Buttons.Box = 2;
-Buttons.Delete = 3;
-Buttons.Align = 4;
-Buttons.Undo = 5;
-Buttons.Redo = 6;
-Buttons.Group = 7;
-Buttons.Label = 8;
-Buttons.Clear = 9;
-Buttons.GetInkML = 10;
-Buttons.Text = 11;*/
+  Buttons.Stroke = 1;
+  Buttons.Box = 2;
+  Buttons.Delete = 3;
+  Buttons.Align = 4;
+  Buttons.Undo = 5;
+  Buttons.Redo = 6;
+  Buttons.Group = 7;
+  Buttons.Label = 8;
+  Buttons.Clear = 9;
+  Buttons.GetInkML = 10;
+  Buttons.Text = 11;*/
 
 // RLAZ: Button modification.
 Buttons.Pen = 0;
@@ -75,46 +75,46 @@ Editor.clearButtonOverlays = function()
     }
 }
 /*
-Editor.clear_button_overlays = function()
-{
-    for(var k = 0; k < Editor.toolbar_button_overlay.length; k++)
-        Editor.toolbar_button_overlay.item(k).className = "toolbar_button_overlay toolbar_button_enabled";
-}
+  Editor.clear_button_overlays = function()
+  {
+  for(var k = 0; k < Editor.toolbar_button_overlay.length; k++)
+  Editor.toolbar_button_overlay.item(k).className = "toolbar_button_overlay toolbar_button_enabled";
+  }
 
-Editor.set_button_class = function(button_id, button_class)
-{
-    var button = document.getElementById(button_id);
-    var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
-    button_overlay.className = "toolbar_button_overlay " + button_class;
-}
+  Editor.set_button_class = function(button_id, button_class)
+  {
+  var button = document.getElementById(button_id);
+  var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
+  button_overlay.className = "toolbar_button_overlay " + button_class;
+  }
 
-Editor.set_button_selected = function(button_id)
-{
-    var button = document.getElementById(button_id);
-    var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
-    button_overlay.className = "toolbar_button_overlay toolbar_button_selected";
-}
+  Editor.set_button_selected = function(button_id)
+  {
+  var button = document.getElementById(button_id);
+  var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
+  button_overlay.className = "toolbar_button_overlay toolbar_button_selected";
+  }
 
-Editor.set_button_disabled = function(button_id)
-{
-    var button = document.getElementById(button_id);
-    var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
-    button_overlay.className = "toolbar_button_overlay toolbar_button_disabled";
-}
+  Editor.set_button_disabled = function(button_id)
+  {
+  var button = document.getElementById(button_id);
+  var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
+  button_overlay.className = "toolbar_button_overlay toolbar_button_disabled";
+  }
 
-Editor.set_button_touched = function(button_id)
-{
-    var button = document.getElementById(button_id);
-    var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
-    button_overlay.className = "toolbar_button_overlay toolbar_button_touched";
-}
+  Editor.set_button_touched = function(button_id)
+  {
+  var button = document.getElementById(button_id);
+  var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
+  button_overlay.className = "toolbar_button_overlay toolbar_button_touched";
+  }
 
-Editor.set_button_enabled = function(button_id)
-{
-    var button = document.getElementById(button_id);
-    var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
-    button_overlay.className = "toolbar_button_overlay toolbar_button_enabled";
-}
+  Editor.set_button_enabled = function(button_id)
+  {
+  var button = document.getElementById(button_id);
+  var button_overlay = button.getElementsByClassName("toolbar_button_overlay").item(0);
+  button_overlay.className = "toolbar_button_overlay toolbar_button_enabled";
+  }
 
 */
 
@@ -124,14 +124,14 @@ Editor.build_buttons = function(in_div_name)
     Editor.toolbar_button_overlay = Editor.toolbar_div.getElementsByClassName('toolbar_button_overlay');
     
     Editor.button_states = new Array();
-        Editor.button_states.push(new ButtonState("pen"));
-        //Editor.button_states.push(new ButtonState("text"));
-        Editor.button_states.push(new ButtonState("rectangle_select"));
-        Editor.button_states.push(new ButtonState("stroke_select"));
-        Editor.button_states.push(new ButtonState("undo"));
-        Editor.button_states.push(new ButtonState("redo"));
-        Editor.button_states.push(new ButtonState("dprl"));
-        Editor.button_states.push(new ButtonState("align"));
+    Editor.button_states.push(new ButtonState("pen"));
+    //Editor.button_states.push(new ButtonState("text"));
+    Editor.button_states.push(new ButtonState("rectangle_select"));
+    Editor.button_states.push(new ButtonState("stroke_select"));
+    Editor.button_states.push(new ButtonState("undo"));
+    Editor.button_states.push(new ButtonState("redo"));
+    Editor.button_states.push(new ButtonState("dprl"));
+    Editor.button_states.push(new ButtonState("align"));
 
     Editor.clearButtonOverlays();
 
@@ -142,7 +142,7 @@ Editor.build_buttons = function(in_div_name)
     Editor.button_labels = new Array();
 
     if(window.FileReader)
-            Editor.button_labels.push("Image");
+        Editor.button_labels.push("Image");
     
     // convert button name to class
     Editor.button_classes = new Array();
@@ -172,13 +172,13 @@ Editor.build_buttons = function(in_div_name)
     {
         var button_li = document.createElement("li");
         button_li.setAttribute("onselectstart","return false;")
-    
+        
         button_li.innerHTML = Editor.button_labels[k];
         button_li.className="toolbar_button";
         button_li.id = Editor.button_classes[k];
-    
+        
         toolbar_ul.appendChild(button_li);
-    
+        
         Editor.toolbar_buttons.push(button_li);
     }
 
@@ -187,20 +187,20 @@ Editor.build_buttons = function(in_div_name)
     if(window.FileReader)
     {
         var form = document.createElement("form");
-            form.setAttribute("id", "image_form");
+        form.setAttribute("id", "image_form");
         Editor.toolbar_buttons[0].appendChild(form);
         var file_input = document.createElement("input");
-            file_input.type = "file";
-            file_input.id = "image";
-            file_input.style.width = "50%";
-            file_input.style.height = "50%";
-            file_input.style.opacity = 0.5;
-            file_input.style.position = "absolute";
-            file_input.style.top = "0px";
-            file_input.style.left = "0px";
-            file_input.style.opacity = 0.0;
-            file_input.style.fontSize = "10em";
-            file_input.style.zIndex = 0;
+        file_input.type = "file";
+        file_input.id = "image";
+        file_input.style.width = "50%";
+        file_input.style.height = "50%";
+        file_input.style.opacity = 0.5;
+        file_input.style.position = "absolute";
+        file_input.style.top = "0px";
+        file_input.style.left = "0px";
+        file_input.style.opacity = 0.0;
+        file_input.style.fontSize = "10em";
+        file_input.style.zIndex = 0;
         form.appendChild(file_input);
     }
     // TRANSITIONAL CODE END

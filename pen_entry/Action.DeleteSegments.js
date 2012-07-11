@@ -25,17 +25,17 @@ DeleteSegments.prototype.Apply = function()
 {
     for(var k = 0; k < this.segments.length; k++)
     {
-    if(this.segments[k].clear != undefined)
-                this.segments[k].clear()
-            else
-                this.segments[k].element.style.visibility = "hidden";
+        if(this.segments[k].clear != undefined)
+            this.segments[k].clear()
+        else
+            this.segments[k].element.style.visibility = "hidden";
 
-            Editor.remove_segment(this.segments[k]);
+        Editor.remove_segment(this.segments[k]);
     }
 }
 
 DeleteSegments.prototype.toXML = function()
- {
+{
     var sb = new StringBuilder();
     sb.append("<Action type=\"delete_segments\" instanceIDs=\"");
     sb.append(String(this.segments[0].instance_id));
@@ -44,7 +44,7 @@ DeleteSegments.prototype.toXML = function()
     sb.append("\"/>");
 
     return sb.toString();
- }
+}
 
 DeleteSegments.prototype.toString = function()
 {
