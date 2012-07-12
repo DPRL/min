@@ -10,7 +10,6 @@ function Segment()
     this.instance_id; // unique per object
     this.set_id;    // unique per 'set' of segments
     
-    
     // position information
     // top left hand corner of segment
     this.position;
@@ -20,6 +19,8 @@ function Segment()
     this.layer;
     // our axis aligned bounding box
     this.aabb;
+    // the element this object contains, e.g. for Penstrokes and ImageBlobs this is an SVG.
+    this.element;
 }
 
 // just draw to canvas using the given context

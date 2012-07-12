@@ -170,9 +170,6 @@ RenderManager.colorOCRbbs = function(editing)
     else
         classname = "segment_set";
 
-    //console.log('DIVS:');    
-    //console.log(RenderManager.segment_set_divs.length);
-
     for (var i = 0; i < RenderManager.segment_set_divs.length; i++) {
         var segment = RenderManager.segment_set_divs[i];
         if (segment.className != "text_segment") {
@@ -219,7 +216,6 @@ RenderManager.render_set_field = function(in_context_id)
             }
             var rect_size = Vector2.Subtract(maxs, mins);
 
-
             // Generate divs to represent each symbol.
             if(RenderManager.segment_set_divs.length == set_index)
             {
@@ -244,10 +240,32 @@ RenderManager.render_set_field = function(in_context_id)
                     }
                 }
                 div.style.visibility='hidden';
+                
                 Editor.canvas_div.appendChild(div);
                 RenderManager.segment_set_divs.push(div);
-            }            
-            
+
+                // Add hammer events for this div if we're using an iPad
+                if(Editor.using_ipad){
+                    div.hammer = new Hammer(div, {
+                        transform: true
+                    });
+                    
+                    div.hammer.ontransform = function(e) {
+                        console.log("Transform");
+                        var touch_segment = CollisionManager.get_point_collides_bb(Editor.mouse_position)[0];
+                        Editor.add_selected_segment(touch_segment);
+                        var prev_state = Editor.state;
+                        Editor.state = EditorState.Resizing;
+                        
+                        Editor.onMouseUp(e.originalEvent);
+                        // Problem: Box stays selected after a transform in Pen mode
+                        if(prev_state == EditorState.ReadyToStroke)
+                            Editor.selectPenTool(); 
+                    }
+                } 
+            }
+
+
             // Add the new div to the RenderManager data structures,
             // set visiblity and BB properties.
             var ss_div = RenderManager.segment_set_divs[set_index++];

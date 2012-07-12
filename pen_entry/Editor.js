@@ -115,7 +115,7 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     Editor.current_action = null;
     
     Editor.selectPenTool();
-    Editor.FileReader = FileReader;
+    Editor.FileReader = true;
 }
 
 Editor.save_state = function()
