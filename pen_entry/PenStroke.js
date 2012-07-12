@@ -137,7 +137,7 @@ PenStroke.prototype.finish_stroke = function()
         this.translation = this.world_mins.clone();
         
         this.group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
+
         var sb = new StringBuilder();
         sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
         sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
@@ -165,11 +165,10 @@ PenStroke.prototype.finish_stroke = function()
         
         this.polyline.setAttribute("points", sb.toString());
         this.polyline.setAttribute("style", "stroke:" + this.color + ";stroke-width:" + this.stroke_width);
-    
+
     this.group.appendChild(this.polyline);
     this.root_svg.appendChild(this.group);
     Editor.canvas_div.appendChild(this.root_svg);
-    //this.update_extents();
     this.element = this.root_svg
     
     // clear the canvas

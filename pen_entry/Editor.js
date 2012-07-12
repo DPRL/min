@@ -39,7 +39,7 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     }
     
     Editor.canvas_div = document.getElementById(String(in_equation_canvas_name));
-        Editor.toolbar_div = document.getElementById(String(in_toolbar_name));
+    Editor.toolbar_div = document.getElementById(String(in_toolbar_name));
 
     // canvas size beneath
     Editor.fit_to_screen();

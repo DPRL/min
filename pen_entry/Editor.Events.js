@@ -650,7 +650,6 @@ Editor.onMouseMove = function(e)
                         Editor.selected_segments[k].resize(anchor, scale);
                     Editor.update_selected_bb();
                     RenderManager.render();
-                    
                 }
                 break;
             
@@ -915,8 +914,6 @@ Editor.onKeyPress = function(e)
 //-------------------------------------------------- 
 Editor.selectPenTool = function(draw_now)
 {
-    //if(Editor.button_states[Buttons.Pen].enabled == false)
-    //    return;
     Editor.clearButtonOverlays();
     
     Editor.button_states[Buttons.Pen].setSelected(true);
