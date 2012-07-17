@@ -250,14 +250,16 @@ RenderManager.render_set_field = function(in_context_id)
                         transform: true
                     });
                     
-                    div.hammer.ontransform = function(e) {
+                    div.hammer.ontransform = function(e) { // e is a Hammer.js event
                         //e.originalEvent.stopPropagation();
+                        var pinch_reduce_scale = .5, pinch_enlarge_scale = 1.5, pinch_pivot = 1.0;
                         console.log("TRANSFORM: ");
                         
                         var anchor = new Vector2(e.position.x, e.position.y);
                         console.log("POSITION: " + e.position.x + " " + e.position.y);
-                        
-                        var scale = (e.scale < 1.0) ? new Vector2(.5, .5) : new Vector2(1.5, 1.5);
+
+                        // If e.scale is < pivot then it is a pinch to reduce, otherwise enlarge
+                        var scale = (e.scale < pivot) ? new Vector2(pinch_reduce_scale, pinch_reduce_scale) : new Vector2(pinch_enlarge_scale, pinch_enlarge_scale);
                         console.log("SCALE: " + e.scale);
                                                  
                         //Editor.state = EditorState.Resizing; // Might need to change this back somewhere
