@@ -259,7 +259,7 @@ RenderManager.render_set_field = function(in_context_id)
                         console.log("POSITION: " + e.position.x + " " + e.position.y);
 
                         // If e.scale is < pivot then it is a pinch to reduce, otherwise enlarge
-                        var scale = (e.scale < pivot) ? new Vector2(pinch_reduce_scale, pinch_reduce_scale) : new Vector2(pinch_enlarge_scale, pinch_enlarge_scale);
+                        var scale = (e.scale < pinch_pivot) ? new Vector2(pinch_reduce_scale, pinch_reduce_scale) : new Vector2(pinch_enlarge_scale, pinch_enlarge_scale);
                         console.log("SCALE: " + e.scale);
                                                  
                         //Editor.state = EditorState.Resizing; // Might need to change this back somewhere
