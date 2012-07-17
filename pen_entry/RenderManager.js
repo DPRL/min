@@ -251,16 +251,24 @@ RenderManager.render_set_field = function(in_context_id)
                     });
                     
                     div.hammer.ontransform = function(e) {
-                        console.log("Transform");
-                        var touch_segment = CollisionManager.get_point_collides_bb(Editor.mouse_position)[0];
-                        Editor.add_selected_segment(touch_segment);
-                        var prev_state = Editor.state;
-                        Editor.state = EditorState.Resizing;
+                        //e.originalEvent.stopPropagation();
+                        console.log("TRANSFORM: ");
                         
-                        Editor.onMouseUp(e.originalEvent);
-                        // Problem: Box stays selected after a transform in Pen mode
-                        if(prev_state == EditorState.ReadyToStroke)
-                            Editor.selectPenTool(); 
+                        var anchor = new Vector2(e.position.x, e.position.y);
+                        console.log("POSITION: " + e.position.x + " " + e.position.y);
+                        
+                        var scale = (e.scale < 1.0) ? new Vector2(.5, .5) : new Vector2(1.5, 1.5);
+                        console.log("SCALE: " + e.scale);
+                                                 
+                        //Editor.state = EditorState.Resizing; // Might need to change this back somewhere
+                        var bb = Editor.selected_bb;
+                        for(var n = 0; n < Editor.selected_segments.length; n++){
+                            console.log("segment: " + n);
+                            Editor.selected_segments[n].resize(anchor, scale);
+                            Editor.update_selected_bb();
+                            RenderManager.render();
+                        }
+
                     }
                 } 
             }

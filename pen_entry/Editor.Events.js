@@ -788,7 +788,7 @@ Editor.onKeyPress = function(e)
         return;
     } 
 
-    // RLAZ: skip deletes and backspaces, handled in mapCanvasBackspace()
+    // RLAZ: skip deletes (46) and backspaces (8), handled in mapCanvasBackspace()
     if(e.keyCode == 8 || e.keyCode == 46)
         return;
 

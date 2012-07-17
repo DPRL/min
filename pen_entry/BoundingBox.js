@@ -117,51 +117,6 @@ BoundingBox.prototype.edge_clicked = function(in_point)
     return -1;
 }
 
-/*
-  BoundingBox.prototype.edge_clicked = function(in_point)
-  {
-  var A = this.render_mins;
-  var B = new Vector2(this.render_maxs.x, this.render_mins.y);
-  var C = this.render_maxs;
-  var D = new Vector2(this.render_mins.x, this.render_maxs.y);
-  
-  var result = 0;
-  
-  var margin = 10;
-  
-  if(point_line_segment_distance(A, B, in_point) < margin)    // collides with top line
-  result = result | 1;
-  if(point_line_segment_distance(B, C, in_point) < margin)    // collides with right line
-  result = result | 2;
-  if(point_line_segment_distance(C, D, in_point) < margin)    // collides with bottom line
-  result = result | 4;
-  if(point_line_segment_distance(D, A, in_point) < margin)    // collides with left line
-  result = result | 8;
-  
-  // now we look at the bitmask to determine the state
-  switch(result)
-  {
-  case 1:
-  return 0;
-  case 3:
-  return 1;
-  case 2:
-  return 2;
-  case 6:
-  return 3;
-  case 4:
-  return 4;
-  case 12:
-  return 5;
-  case 8:
-  return 6;
-  case 9:
-  return 7;
-  }
-  return -1;
-  }
-*/
-
 point_line_segment_distance = function(A, B, C)
 {
     var AB = Vector2.Subtract(B, A);
