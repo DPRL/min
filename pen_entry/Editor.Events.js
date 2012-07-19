@@ -28,8 +28,14 @@ var EditorState =
         "PenMovingSegments" : 13
     };
 
+var TouchAndHoldState = {
+    "NoTouchAndHold": 0,
+    "MouseDownAndStationary": 1,
+    "FingerDownAndStationary": 2 // same as the above state, but happening on a touchscreen
+};
+
 Editor.lastEvent = null;
-Editor.touchAndHoldFlag = 0;
+Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold;
 Editor.touchAndHoldTimeout = 800;
 
 Editor.setup_events = function()
@@ -198,7 +204,7 @@ Editor.touchAndHold = function(e)
 {
     // Only execute if we haven't moved, and haven't raised our finger/mouse.
     if (Editor.lastEvent == e && Editor.lastEvent != null) {
-        Editor.touchAndHoldFlag = 1;
+        Editor.touchAndHoldFlag = TouchAndHoldState.MouseDownAndStationary;
         console.log("Touch and hold");
         Editor.onDoubleClick(e);
     }
@@ -213,7 +219,7 @@ Editor.onDoubleClick = function(e)
         case EditorState.PenMovingSegments:
         case EditorState.ReadyToStroke:
             // DEBUG: we have to re-detect the selection for double click vs. touch-and-hold.
-            if (Editor.touchAndHoldFlag == 0) {
+            if (Editor.touchAndHoldFlag == TouchAndHoldState.NoTouchAndHold) {
                 var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
                 if(click_result.length == 0)
                     break;
@@ -276,12 +282,12 @@ Editor.onMouseDown = function(e)
 {
     console.log(e.type);
     Editor.lastEvent = e;
-    if (Editor.touchAndHoldFlag == 1 && Editor.using_ipad) {
-        Editor.touchAndHoldFlag = 2;
-        return
+    if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Editor.using_ipad) {
+        Editor.touchAndHoldFlag = TouchAndHoldState.FingerDownAndStationary;
+        return;
     }
     else {
-        Editor.touchAndHoldFlag = 0;
+        Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold; 
     }
 
     // support for both computer mouse and tablet devices
@@ -508,7 +514,7 @@ Editor.onMouseMove = function(e)
 {    
     Editor.lastEvent = e;
 
-    if (Editor.touchAndHoldFlag == 1)
+    if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary)
         return;
 
     // support for both IPad and Mouse
@@ -669,7 +675,7 @@ Editor.onMouseUp = function(e)
         console.log("MOUSE UP - FLAG:");
         console.log(e.type);
         console.log(Editor.touchAndHoldFlag);
-        if (Editor.touchAndHoldFlag == 1) {
+        if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary) {
             return;
         }
         
@@ -779,7 +785,7 @@ Editor.onKeyPress = function(e)
     // For touch-and-hold
     Editor.lastEvent = e;
 
-    if (Editor.touchAndHoldFlag == 1)
+    if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary)
         return;
 
     // RLAZ: map enter to issuing the search.
