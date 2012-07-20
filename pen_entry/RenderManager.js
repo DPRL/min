@@ -249,28 +249,63 @@ RenderManager.render_set_field = function(in_context_id)
                     div.hammer = new Hammer(div, {
                         transform: true
                     });
+
+                    div.hammer.ontransformstart = function(e){
+                        this.startLocation = new Vector2(e.position.x, e.position.y);
+                        this.resize_offset = new Vector2(0, 0);
+                        console.log("transform start");
+                        this.prev_state = Editor.state;
+                        Editor.state = EditorState.resizing;
+                    }
                     
                     div.hammer.ontransform = function(e) { // e is a Hammer.js event
-                        //e.originalEvent.stopPropagation();
-                        var pinch_reduce_scale = .5, pinch_enlarge_scale = 1.5, pinch_pivot = 1.0;
+                        var offset = Vector2.Subtract(this.startLocation, new Vector2(e.position.x, e.position.y));
+                        var bb = Editor.selected_bb;
+                        console.log("bounding box: " + bb);
+                        
+                        // anchor from the upper left corner of the bounding box
+                        offset.x *= -1.0;
+                        offset.y *= -1.0;
+                        var anchor = bb.maxs;
+                        var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
+
+                        this.resize_offset.Add(offset);
+                        
+                        //var pinch_reduce_scale = .5, pinch_enlarge_scale = 1.5, pinch_pivot = 1.0;
                         console.log("TRANSFORM: ");
                         
                         var anchor = new Vector2(e.position.x, e.position.y);
                         console.log("POSITION: " + e.position.x + " " + e.position.y);
 
-                        // If e.scale is < pivot then it is a pinch to reduce, otherwise enlarge
-                        var scale = (e.scale < pinch_pivot) ? new Vector2(pinch_reduce_scale, pinch_reduce_scale) : new Vector2(pinch_enlarge_scale, pinch_enlarge_scale);
                         console.log("SCALE: " + e.scale);
-                                                 
-                        //Editor.state = EditorState.Resizing; // Might need to change this back somewhere
-                        var bb = Editor.selected_bb;
-                        for(var n = 0; n < Editor.selected_segments.length; n++){
-                            console.log("segment: " + n);
-                            Editor.selected_segments[n].resize(anchor, scale);
+                        
+                        var scale = new Vector2((this.resize_offset.x / bb_size.x) + 1.0, (this.resize_offset.y / bb_size.y) + 1.0);
+                        
+                        if((isNaN(scale.x) || isNaN(scale.y)) == false && (scale.x == 0.0 || scale.y == 0) == false)
+                        {
+                            for(var n = 0; n < Editor.selected_segments.length; n++){
+                                Editor.selected_segments[n].resize(anchor, scale);
+                            }
                             Editor.update_selected_bb();
                             RenderManager.render();
                         }
+                        
+                    }
 
+                    div.hammer.ontransformend = function(e){
+                        // End the transform 
+                        for(var n = 0; n < Editor.selected_segments.length; n++){
+                            Editor.selected_segments[n].freeze_transform();
+                        }
+                        RenderManager.render();
+
+                        // Restore the previous state
+                        Editor.resize_offset = new Vector2(0, 0); 
+                        if(this.prev_state == EditorState.ReadyToStroke){
+                            Editor.selectPenTool();
+                        }
+                        else
+                            Editor.state = this.prev_state;
                     }
                 } 
             }
