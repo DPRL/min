@@ -85,7 +85,7 @@ Editor.setup_events = function()
     document.getElementById("dprl").addEventListener("click", Editor.goDPRL, true);
     document.getElementById("align").addEventListener("click",Editor.align, true);
 
-    // add an equation image to the canvas
+    // add an equation image to the canvas if this is supported
     if(window.FileReader){
         var file_input = document.createElement("input");
         var button_div = document.getElementById("upload_image");
@@ -93,11 +93,16 @@ Editor.setup_events = function()
         file_input.type = "file";
         file_input.id = "upload_image_input";
         file_input.style.display = "none";
-        // file_input.addEventListener("
-        button_div.appendChild(file_input);
+        file_input.addEventListener("change", Editor.onImageLoad, true);
 
-        // Pass a click on the button to the invisible file input
-        button_div.addEventListener("click", function(e) {file_input.click();}, true);
+        button_div.appendChild(file_input);
+        
+        // Pass a click on the button div to the invisible file input
+        button_div.addEventListener("mousedown", function(e){
+            var file_input = document.getElementById("upload_image_input");        
+            file_input.click();
+        }, true);
+
     }
     
     // TYPING/TEXT ENTRY: line below will disable text entry for the iPad.
@@ -1587,8 +1592,6 @@ Editor.onImageLoad = function(e)
             
             // set the result of the image load to the image object
             loaded_image.src = e.target.result;
-            // reset the form so we can reload the same image twice if desired
-            document.getElementById("image_form").reset();
         }
         r.readAsDataURL(file);
 
