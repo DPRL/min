@@ -253,6 +253,8 @@ RenderManager.render_set_field = function(in_context_id)
                     div.hammer.ontransformstart = function(e){
                         this.startLocation = new Vector2(e.position.x, e.position.y);
                         this.resize_offset = new Vector2(0, 0);
+                        Editor.add_action(new TransformSegments(Editor.selected_segments));
+                        
                         console.log("transform start");
                         this.prev_state = Editor.state;
                         Editor.state = EditorState.resizing;
@@ -297,6 +299,7 @@ RenderManager.render_set_field = function(in_context_id)
                         for(var n = 0; n < Editor.selected_segments.length; n++){
                             Editor.selected_segments[n].freeze_transform();
                         }
+                        Editor.current_action.add_new_transforms(Editor.selected_segments);
                         RenderManager.render();
 
                         // Restore the previous state
