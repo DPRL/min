@@ -132,76 +132,77 @@ Editor.build_buttons = function(in_div_name)
     Editor.button_states.push(new ButtonState("redo"));
     Editor.button_states.push(new ButtonState("dprl"));
     Editor.button_states.push(new ButtonState("align"));
+    Editor.button_states.push(new ButtonState("upload_image"));
 
     Editor.clearButtonOverlays();
 
-    // This is transitional code, the "Image" label will be replaced
-    // with a proper button after I get image loading and unloading
-    // working add button names
-    // TRANSITIONAL CODE BEGIN
-    Editor.button_labels = new Array();
+    // // This is transitional code, the "Image" label will be replaced
+    // // with a proper button after I get image loading and unloading
+    // // working add button names
+    // // TRANSITIONAL CODE BEGIN
+    // Editor.button_labels = new Array();
 
-    if(window.FileReader)
-        Editor.button_labels.push("Image");
+    // if(window.FileReader)
+    //     Editor.button_labels.push("Image");
     
-    // convert button name to class
-    Editor.button_classes = new Array();
-    for(var k = 0; k < Editor.button_labels.length; k++)
-    {
-        var sb = new StringBuilder();
-        for(var j = 0; j < Editor.button_labels[k].length; j++)
-        {
-            if(Editor.button_labels[k][j] >= 'A' && Editor.button_labels[k][j] <= 'Z')
-                sb.append(Editor.button_labels[k][j].toLowerCase());
-            else if(Editor.button_labels[k][j] == ' ')
-                sb.append('_');
-            else
-                sb.append(Editor.button_labels[k][j]);
-        }
-        Editor.button_classes.push(sb.toString());
-    }
+    // // convert button name to class
+    // Editor.button_classes = new Array();
+    // for(var k = 0; k < Editor.button_labels.length; k++)
+    // {
+    //     var sb = new StringBuilder();
+    //     for(var j = 0; j < Editor.button_labels[k].length; j++)
+    //     {
+    //         if(Editor.button_labels[k][j] >= 'A' && Editor.button_labels[k][j] <= 'Z')
+    //             sb.append(Editor.button_labels[k][j].toLowerCase());
+    //         else if(Editor.button_labels[k][j] == ' ')
+    //             sb.append('_');
+    //         else
+    //             sb.append(Editor.button_labels[k][j]);
+    //     }
+    //     Editor.button_classes.push(sb.toString());
+    // }
     
-    Editor.toolbar_div = document.getElementById(String(in_div_name));
-    Editor.toolbar_div.className="toolbar";
+    // Editor.toolbar_div = document.getElementById(String(in_div_name));
+    // Editor.toolbar_div.className="toolbar";
     
-    var toolbar_ul = document.createElement("ul");
-    toolbar_ul.className = "button_list";
-    Editor.toolbar_div.appendChild(toolbar_ul);
+    // var toolbar_ul = document.createElement("ul");
+    // toolbar_ul.className = "button_list";
+    // Editor.toolbar_div.appendChild(toolbar_ul);
     
-    for(var k = 0; k < Editor.button_labels.length; k++)
-    {
-        var button_li = document.createElement("li");
-        button_li.setAttribute("onselectstart","return false;")
+    // for(var k = 0; k < Editor.button_labels.length; k++)
+    // {
+    //     var button_li = document.createElement("li");
+    //     button_li.setAttribute("onselectstart","return false;")
         
-        button_li.innerHTML = Editor.button_labels[k];
-        button_li.className="toolbar_button";
-        button_li.id = Editor.button_classes[k];
+    //     button_li.innerHTML = Editor.button_labels[k];
+    //     button_li.className="toolbar_button";
+    //     button_li.id = Editor.button_classes[k];
         
-        toolbar_ul.appendChild(button_li);
+    //     toolbar_ul.appendChild(button_li);
         
-        Editor.toolbar_buttons.push(button_li);
-    }
+    //     Editor.toolbar_buttons.push(button_li);
+    // }
 
     
-    // if we support the file reader, add in the file input tag for image uploading
-    if(window.FileReader)
-    {
-        var form = document.createElement("form");
-        form.setAttribute("id", "image_form");
-        Editor.toolbar_buttons[0].appendChild(form);
-        var file_input = document.createElement("input");
-        file_input.type = "file";
-        file_input.id = "image";
-        file_input.style.width = "50%";
-        file_input.style.height = "50%";
-        file_input.style.opacity = 0.5;
-        file_input.style.position = "absolute";
-        file_input.style.top = "0px";
-        file_input.style.left = "0px";
-        file_input.style.opacity = 0.0;
-        file_input.style.fontSize = "10em";
-        file_input.style.zIndex = 0;
-        form.appendChild(file_input);
-    }
-    // TRANSITIONAL CODE END
+    // // if we support the file reader, add in the file input tag for image uploading
+    // if(window.FileReader)
+    // {
+    //     var form = document.createElement("form");
+    //     form.setAttribute("id", "image_form");
+    //     Editor.toolbar_buttons[0].appendChild(form);
+    //     var file_input = document.createElement("input");
+    //     file_input.type = "file";
+    //     file_input.id = "image";
+    //     file_input.style.width = "50%";
+    //     file_input.style.height = "50%";
+    //     file_input.style.opacity = 0.5;
+    //     file_input.style.position = "absolute";
+    //     file_input.style.top = "0px";
+    //     file_input.style.left = "0px";
+    //     file_input.style.opacity = 0.0;
+    //     file_input.style.fontSize = "10em";
+    //     file_input.style.zIndex = 0;
+    //     form.appendChild(file_input);
+    // }
+    // // TRANSITIONAL CODE END
 }

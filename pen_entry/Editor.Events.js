@@ -86,7 +86,20 @@ Editor.setup_events = function()
     document.getElementById("align").addEventListener("click",Editor.align, true);
 
     // add an equation image to the canvas
-    if(window.FileReader) document.getElementById("image").addEventListener("change", Editor.onImageLoad, true);
+    if(window.FileReader){
+        var file_input = document.createElement("input");
+        var button_div = document.getElementById("upload_image");
+        
+        file_input.type = "file";
+        file_input.id = "upload_image_input";
+        file_input.style.display = "none";
+        // file_input.addEventListener("
+        button_div.appendChild(file_input);
+
+        // Pass a click on the button to the invisible file input
+        button_div.addEventListener("click", function(e) {file_input.click();}, true);
+    }
+    
     // TYPING/TEXT ENTRY: line below will disable text entry for the iPad.
     //if(navigator.userAgent.match(/iPad/i) == null) document.getElementById("text").addEventListener("click", Editor.typeTool, true);
 
