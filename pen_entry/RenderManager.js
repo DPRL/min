@@ -247,7 +247,9 @@ RenderManager.render_set_field = function(in_context_id)
                 // Add hammer events for this div if we're using an iPad
                 if(Editor.using_ipad){
                     div.hammer = new Hammer(div, {
-                        transform: true
+                        transform: true,
+                        scale_trheshold: 0,
+                        drag_min_distance: 0
                     });
 
                     div.hammer.ontransformstart = function(e){
@@ -286,7 +288,7 @@ RenderManager.render_set_field = function(in_context_id)
                         if((isNaN(scale.x) || isNaN(scale.y)) == false && (scale.x == 0.0 || scale.y == 0) == false)
                         {
                             for(var n = 0; n < Editor.selected_segments.length; n++){
-                                Editor.selected_segments[n].resize(anchor, scale);
+                                Editor.selected_segments[n].resize(anchor, new Vector2(e.scale, e.scale));
                             }
                             Editor.update_selected_bb();
                             RenderManager.render();
