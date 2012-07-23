@@ -20,12 +20,13 @@ var EditorState =
         "MovingSegments" : 9,
         "Resizing" : 10,
         "Relabeling" : 11,
+        "PinchResizing": 12,
 
         // Editing text box.
-        "InTextBox" : 12,
+        "InTextBox" : 13,
 
         // New: moving a symbol in edit mode; touch and hold state.
-        "PenMovingSegments" : 13
+        "PenMovingSegments" : 14
     };
 
 var TouchAndHoldState = {

@@ -257,7 +257,7 @@ RenderManager.render_set_field = function(in_context_id)
                         
                         console.log("transform start");
                         this.prev_state = Editor.state;
-                        Editor.state = EditorState.resizing;
+                        Editor.state = EditorState.PinchResizing;
                     }
                     
                     div.hammer.ontransform = function(e) { // e is a Hammer.js event
