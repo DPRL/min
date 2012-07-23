@@ -263,12 +263,10 @@ RenderManager.render_set_field = function(in_context_id)
                     div.hammer.ontransform = function(e){ 
                         // anchor from the upper left corner of the bounding box
                         var bb = Editor.selected_bb;
-                        var anchor = bb.maxs;
+                        var anchor = bb.mins;
 
                         console.log("TRANSFORM: ");
 
-                        //var anchor = new Vector2(e.position.x, e.position.y);
-                        
                         console.log("SCALE: " + e.scale);
                         for(var n = 0; n < Editor.selected_segments.length; n++){
                             Editor.selected_segments[n].resize(anchor, new Vector2(e.scale, e.scale));
@@ -284,7 +282,7 @@ RenderManager.render_set_field = function(in_context_id)
                         }
                         Editor.current_action.add_new_transforms(Editor.selected_segments);
                         RenderManager.render();
-
+                        
                         // Restore the previous state
                         if(this.prev_state == EditorState.ReadyToStroke){
                             Editor.selectPenTool();
