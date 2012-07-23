@@ -248,52 +248,33 @@ RenderManager.render_set_field = function(in_context_id)
                 if(Editor.using_ipad){
                     div.hammer = new Hammer(div, {
                         transform: true,
-                        scale_trheshold: 0,
+                        scale_threshold: 0,
                         drag_min_distance: 0
                     });
 
-                    div.hammer.ontransformstart = function(e){
-                        this.startLocation = new Vector2(e.position.x, e.position.y);
-                        this.resize_offset = new Vector2(0, 0);
-                        Editor.add_action(new TransformSegments(Editor.selected_segments));
-                        
+                    div.hammer.ontransformstart = function(e){ // e is a Hammer.js event
                         console.log("transform start");
+                        Editor.add_action(new TransformSegments(Editor.selected_segments));
                         this.prev_state = Editor.state;
                         Editor.state = EditorState.PinchResizing;
                     }
                     
-                    div.hammer.ontransform = function(e) { // e is a Hammer.js event
-                        var offset = Vector2.Subtract(this.startLocation, new Vector2(e.position.x, e.position.y));
-                        var bb = Editor.selected_bb;
-                        console.log("bounding box: " + bb);
-                        
+
+                    div.hammer.ontransform = function(e){ 
                         // anchor from the upper left corner of the bounding box
-                        offset.x *= -1.0;
-                        offset.y *= -1.0;
+                        var bb = Editor.selected_bb;
                         var anchor = bb.maxs;
-                        var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
 
-                        this.resize_offset.Add(offset);
-                        
-                        //var pinch_reduce_scale = .5, pinch_enlarge_scale = 1.5, pinch_pivot = 1.0;
                         console.log("TRANSFORM: ");
-                        
-                        var anchor = new Vector2(e.position.x, e.position.y);
-                        console.log("POSITION: " + e.position.x + " " + e.position.y);
 
+                        //var anchor = new Vector2(e.position.x, e.position.y);
+                        
                         console.log("SCALE: " + e.scale);
-                        
-                        var scale = new Vector2((this.resize_offset.x / bb_size.x) + 1.0, (this.resize_offset.y / bb_size.y) + 1.0);
-                        
-                        if((isNaN(scale.x) || isNaN(scale.y)) == false && (scale.x == 0.0 || scale.y == 0) == false)
-                        {
-                            for(var n = 0; n < Editor.selected_segments.length; n++){
-                                Editor.selected_segments[n].resize(anchor, new Vector2(e.scale, e.scale));
-                            }
-                            Editor.update_selected_bb();
-                            RenderManager.render();
+                        for(var n = 0; n < Editor.selected_segments.length; n++){
+                            Editor.selected_segments[n].resize(anchor, new Vector2(e.scale, e.scale));
                         }
-                        
+                        Editor.update_selected_bb();
+                        RenderManager.render();
                     }
 
                     div.hammer.ontransformend = function(e){
@@ -305,14 +286,13 @@ RenderManager.render_set_field = function(in_context_id)
                         RenderManager.render();
 
                         // Restore the previous state
-                        Editor.resize_offset = new Vector2(0, 0); 
                         if(this.prev_state == EditorState.ReadyToStroke){
                             Editor.selectPenTool();
                         }
                         else
                             Editor.state = this.prev_state;
                     }
-                } 
+                }
             }
 
 
