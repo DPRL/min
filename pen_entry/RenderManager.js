@@ -257,8 +257,9 @@ RenderManager.render_set_field = function(in_context_id)
                         Editor.add_action(new TransformSegments(Editor.selected_segments));
                         this.prev_state = Editor.state;
                         Editor.state = EditorState.PinchResizing;
-
-                        var bb = Editor.selected_bb;
+                        Editor.original_bb = Editor.selected_bb.clone();
+                        
+                        var bb = Editor.original_bb;
 
                         // Store the center of the bounding box as the anchor point for the resize
                         var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
@@ -283,13 +284,9 @@ RenderManager.render_set_field = function(in_context_id)
                         Editor.current_action.add_new_transforms(Editor.selected_segments);
                         Editor.update_selected_bb();
                         RenderManager.render();
-                        
+
                         // Restore the previous state
-                        if(this.prev_state == EditorState.ReadyToStroke){
-                            Editor.selectPenTool();
-                        }
-                        else
-                            Editor.state = this.prev_state;
+                        Editor.changeState(this.prev_state);
                     }
                 }
             }

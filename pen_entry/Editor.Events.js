@@ -1648,3 +1648,23 @@ Editor.goDPRL = function ()
 {
     window.location = "http://www.cs.rit.edu/~dprl"
 }
+
+/*
+  This method takes a state and then performs the necessary operations to switch
+  to that state
+*/
+Editor.changeState = function(state){
+    switch(state){
+    case EditorState.ReadyToStroke:
+        Editor.selectPentool();
+        break;
+    case EditorState.RectangleSelecting:
+        Editor.rectangleSelectionTool();
+        break;
+    case EditorState.StrokeSelecting:
+        Editor.strokeSelectionTool();
+        break;
+    default:
+        Editor.state = state;
+    }
+}
