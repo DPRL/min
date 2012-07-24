@@ -257,20 +257,20 @@ RenderManager.render_set_field = function(in_context_id)
                         Editor.add_action(new TransformSegments(Editor.selected_segments));
                         this.prev_state = Editor.state;
                         Editor.state = EditorState.PinchResizing;
+
+                        var bb = Editor.selected_bb;
+
+                        // Store the center of the bounding box as the anchor point for the resize
+                        var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
+                        this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
                     }
                     
-
                     div.hammer.ontransform = function(e){ 
-                        // anchor from the upper left corner of the bounding box
-                        var bb = Editor.selected_bb;
-                        var anchor = bb.mins;
 
-                        console.log("TRANSFORM: ");
-
-                        console.log("SCALE: " + e.scale);
                         for(var n = 0; n < Editor.selected_segments.length; n++){
-                            Editor.selected_segments[n].resize(anchor, new Vector2(e.scale, e.scale));
+                            Editor.selected_segments[n].resize(this.anchor, new Vector2(e.scale, e.scale));
                         }
+
                         Editor.update_selected_bb();
                         RenderManager.render();
                     }
@@ -281,6 +281,7 @@ RenderManager.render_set_field = function(in_context_id)
                             Editor.selected_segments[n].freeze_transform();
                         }
                         Editor.current_action.add_new_transforms(Editor.selected_segments);
+                        Editor.update_selected_bb();
                         RenderManager.render();
                         
                         // Restore the previous state
