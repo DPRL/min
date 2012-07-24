@@ -218,6 +218,11 @@ Editor.onResize = function(e)
 //   - onMouseMove
 //   - onMouseUp
 //   - onKeyPress
+
+//   Hammer events
+//   - ontransformstart 
+//   - ontransform
+//   - ontransformend
 //-------------------------------------------------- 
 Editor.touchAndHold = function(e)
 {
@@ -930,6 +935,46 @@ Editor.onKeyPress = function(e)
             break;
             
     }
+}
+
+//-----------------
+// Hammer Events
+// ----------------
+Editor.ontransformstart = function(e){ // e is a Hammer.js event
+    console.log("transform start");
+    Editor.add_action(new TransformSegments(Editor.selected_segments));
+    this.prev_state = Editor.state;
+    Editor.state = EditorState.PinchResizing;
+    Editor.original_bb = Editor.selected_bb.clone();
+    
+    var bb = Editor.original_bb;
+
+    // Store the center of the bounding box as the anchor point for the resize
+    var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
+    this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
+}
+
+Editor.ontransform = function(e){ 
+
+    for(var n = 0; n < Editor.selected_segments.length; n++){
+        Editor.selected_segments[n].resize(this.anchor, new Vector2(e.scale, e.scale));
+    }
+
+    Editor.update_selected_bb();
+    RenderManager.render();
+}
+
+Editor.ontransformend = function(e){
+    // End the transform 
+    for(var n = 0; n < Editor.selected_segments.length; n++){
+        Editor.selected_segments[n].freeze_transform();
+    }
+    Editor.current_action.add_new_transforms(Editor.selected_segments);
+    Editor.update_selected_bb();
+    RenderManager.render();
+
+    // Restore the previous state
+    Editor.changeState(this.prev_state);
 }
 
 //--------------------------------------------------

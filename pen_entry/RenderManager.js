@@ -252,42 +252,9 @@ RenderManager.render_set_field = function(in_context_id)
                         drag_min_distance: 0
                     });
 
-                    div.hammer.ontransformstart = function(e){ // e is a Hammer.js event
-                        console.log("transform start");
-                        Editor.add_action(new TransformSegments(Editor.selected_segments));
-                        this.prev_state = Editor.state;
-                        Editor.state = EditorState.PinchResizing;
-                        Editor.original_bb = Editor.selected_bb.clone();
-                        
-                        var bb = Editor.original_bb;
-
-                        // Store the center of the bounding box as the anchor point for the resize
-                        var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
-                        this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
-                    }
-                    
-                    div.hammer.ontransform = function(e){ 
-
-                        for(var n = 0; n < Editor.selected_segments.length; n++){
-                            Editor.selected_segments[n].resize(this.anchor, new Vector2(e.scale, e.scale));
-                        }
-
-                        Editor.update_selected_bb();
-                        RenderManager.render();
-                    }
-
-                    div.hammer.ontransformend = function(e){
-                        // End the transform 
-                        for(var n = 0; n < Editor.selected_segments.length; n++){
-                            Editor.selected_segments[n].freeze_transform();
-                        }
-                        Editor.current_action.add_new_transforms(Editor.selected_segments);
-                        Editor.update_selected_bb();
-                        RenderManager.render();
-
-                        // Restore the previous state
-                        Editor.changeState(this.prev_state);
-                    }
+                    div.hammer.ontransformstart = Editor.ontransformstart;
+                    div.hammer.ontransform = Editor.ontransform;
+                    div.hammer.ontransformend = Editor.ontransformend;
                 }
             }
 
