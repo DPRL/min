@@ -161,9 +161,9 @@ Editor.setup_events = function()
             swipe: false
         });
 
-        bb.hammer.ontransformstart = Editor.ontransformstart;
-        bb.hammer.ontransform = Editor.ontransform;
-        bb.hammer.ontransformend = Editor.ontransformend;
+        bb.hammer.ontransformstart = Editor.onPinchStart;
+        bb.hammer.ontransform = Editor.onPinch;
+        bb.hammer.ontransformend = Editor.onPinchEnd;
     }
     
     // Select the pen tool
@@ -236,9 +236,9 @@ Editor.onResize = function(e)
 //   - onKeyPress
 
 //   Hammer events
-//   - ontransformstart 
-//   - ontransform
-//   - ontransformend
+//   - onPinchStart 
+//   - onPinch
+//   - onPinchEnd
 //-------------------------------------------------- 
 Editor.touchAndHold = function(e)
 {
@@ -956,7 +956,7 @@ Editor.onKeyPress = function(e)
 //-----------------
 // Hammer Events
 // ----------------
-Editor.ontransformstart = function(e){ // e is a Hammer.js event
+Editor.onPinchStart = function(e){ // e is a Hammer.js event
     console.log("transform start");
     Editor.add_action(new TransformSegments(Editor.selected_segments));
     this.prev_state = Editor.state;
@@ -970,7 +970,7 @@ Editor.ontransformstart = function(e){ // e is a Hammer.js event
     this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
 }
 
-Editor.ontransform = function(e){ 
+Editor.onPinch = function(e){ 
 
     for(var n = 0; n < Editor.selected_segments.length; n++){
         Editor.selected_segments[n].resize(this.anchor, new Vector2(e.scale, e.scale));
@@ -980,7 +980,7 @@ Editor.ontransform = function(e){
     RenderManager.render();
 }
 
-Editor.ontransformend = function(e){
+Editor.onPinchEnd = function(e){
     // End the transform 
     for(var n = 0; n < Editor.selected_segments.length; n++){
         Editor.selected_segments[n].freeze_transform();
