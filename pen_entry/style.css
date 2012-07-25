@@ -391,7 +391,8 @@ div#bounding_box {
 	position: absolute;
 	/*outline: #303030 dashed 1px;*/
 	border: 2px dashed #22D; /*dashed #333;*/
-	padding: 1px
+        padding: 1px;
+        z-index: 1001;
 }
 
 /* Handles for the selection rectangles */

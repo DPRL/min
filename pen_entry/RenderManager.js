@@ -243,19 +243,6 @@ RenderManager.render_set_field = function(in_context_id)
                 
                 Editor.canvas_div.appendChild(div);
                 RenderManager.segment_set_divs.push(div);
-
-                // Add hammer events for this div if we're using an iPad
-                if(Editor.using_ipad){
-                    div.hammer = new Hammer(div, {
-                        transform: true,
-                        scale_threshold: 0,
-                        drag_min_distance: 0
-                    });
-
-                    div.hammer.ontransformstart = Editor.ontransformstart;
-                    div.hammer.ontransform = Editor.ontransform;
-                    div.hammer.ontransformend = Editor.ontransformend;
-                }
             }
 
 

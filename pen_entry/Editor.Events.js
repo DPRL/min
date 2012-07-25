@@ -109,7 +109,7 @@ Editor.setup_events = function()
     // TYPING/TEXT ENTRY: line below will disable text entry for the iPad.
     //if(navigator.userAgent.match(/iPad/i) == null) document.getElementById("text").addEventListener("click", Editor.typeTool, true);
 
-    // Adds highlighting on pressing buttons.
+    // Adds highlighting on pressing buttons and pinch-resize functionality
     if(Editor.using_ipad)
     {
         // undo
@@ -147,7 +147,23 @@ Editor.setup_events = function()
         {
             Editor.button_states[Buttons.Align].setTouched(false);
         }, true);    
-        
+
+        // Pinch to resize events
+        var bb = document.getElementById("bounding_box");
+        console.log("applying hammer events");
+        bb.hammer = new Hammer(bb, {
+            transform: true,
+            scale_threshold: .1,
+            drag_min_distance: 0,
+            // These events need to be suppressed because sometimes they would fire during
+            // a transform and prevent ontransformend from being run, leaving the editor in a bad state.
+            drag: false,
+            swipe: false
+        });
+
+        bb.hammer.ontransformstart = Editor.ontransformstart;
+        bb.hammer.ontransform = Editor.ontransform;
+        bb.hammer.ontransformend = Editor.ontransformend;
     }
     
     // Select the pen tool
@@ -945,8 +961,8 @@ Editor.ontransformstart = function(e){ // e is a Hammer.js event
     Editor.add_action(new TransformSegments(Editor.selected_segments));
     this.prev_state = Editor.state;
     Editor.state = EditorState.PinchResizing;
-    Editor.original_bb = Editor.selected_bb.clone();
     
+    Editor.original_bb = Editor.selected_bb.clone();
     var bb = Editor.original_bb;
 
     // Store the center of the bounding box as the anchor point for the resize
