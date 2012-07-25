@@ -1716,8 +1716,9 @@ Editor.goDPRL = function ()
 */
 Editor.changeState = function(state){
     switch(state){
+    case EditorState.PenMovingSegments: 
     case EditorState.ReadyToStroke:
-        Editor.selectPentool();
+        Editor.selectPenTool();
         break;
     case EditorState.RectangleSelecting:
         Editor.rectangleSelectionTool();
