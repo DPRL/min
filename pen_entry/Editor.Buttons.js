@@ -24,9 +24,10 @@ Buttons.Pen = 0;
 Buttons.Rectangle = 1;
 Buttons.Stroke = 2;
 Buttons.Undo = 3;
-Buttons.Redo = 4;
-Buttons.DPRL = 5;
-Buttons.Align = 6;
+Buttons.UploadImage = 4;
+Buttons.Redo = 5;
+Buttons.DPRL = 6;
+Buttons.Align = 7;
 
 function ButtonState(button_id)
 {
@@ -84,12 +85,12 @@ Editor.build_buttons = function(in_div_name)
     Editor.button_states.push(new ButtonState("pen"));
     Editor.button_states.push(new ButtonState("rectangle_select"));
     Editor.button_states.push(new ButtonState("stroke_select"));
+    Editor.button_states.push(new ButtonState("upload_image"));
     Editor.button_states.push(new ButtonState("undo"));
     Editor.button_states.push(new ButtonState("redo"));
     Editor.button_states.push(new ButtonState("dprl"));
     Editor.button_states.push(new ButtonState("align"));
-    Editor.button_states.push(new ButtonState("upload_image"));
-
+    
     Editor.clearButtonOverlays();
 
 }
