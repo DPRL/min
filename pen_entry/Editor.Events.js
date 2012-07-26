@@ -5,7 +5,6 @@ var EditorState =
         "StrokeSelecting" : 1,
         "ReadyToRectangleSelect" : 2,
         "RectangleSelecting" : 3,
-
         
         // pen states
         "ReadyToStroke" : 4, 
@@ -112,6 +111,18 @@ Editor.setup_events = function()
     // Adds highlighting on pressing buttons and pinch-resize functionality
     if(Editor.using_ipad)
     {
+        // Image upload
+        document.getElementById("upload_image").addEventListener("touchstart", 
+        function(event)
+        {
+            Editor.button_states[Buttons.UploadImage].setTouched(true);
+        }, true);
+        document.getElementById("upload_image").addEventListener("touchend", 
+        function(event)
+        {
+            Editor.button_states[Buttons.UploadImage].setTouched(false);
+        }, true);
+        
         // undo
         document.getElementById("undo").addEventListener("touchstart", 
         function(event)

@@ -80,7 +80,11 @@ Editor.build_buttons = function(in_div_name)
 {
     Editor.toolbar_div = document.getElementById(String(in_div_name));
     Editor.toolbar_button_overlay = Editor.toolbar_div.getElementsByClassName('toolbar_button_overlay');
-    
+
+    /*
+    These must be added in the same order as the numbers given at the
+    top of this file.
+    */ 
     Editor.button_states = new Array();
     Editor.button_states.push(new ButtonState("pen"));
     Editor.button_states.push(new ButtonState("rectangle_select"));
