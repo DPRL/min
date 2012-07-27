@@ -264,7 +264,6 @@ Editor.touchAndHold = function(e)
 
 Editor.onDoubleClick = function(e)
 {
-    console.log("Double click");
     switch (Editor.state)
     {
         case EditorState.PenMovingSegments:
@@ -284,13 +283,12 @@ Editor.onDoubleClick = function(e)
             RenderManager.colorOCRbbs(false);
             RenderManager.bounding_box.style.visibility = "visible";
             Editor.state = EditorState.SegmentsSelected;
-            Editor.relabel();
+            Editor.relabel(EditorState.ReadyToStroke);
             break;
 
         case EditorState.MovingSegments:
         case EditorState.SegmentsSelected:
             // RLAZ: allow relabeling and resegmenting using double tap.
-
             // Check for identical segment identifiers (relabel in that case)
             var singleObject = 0;
             if (Editor.selected_segments.length > 0) {
@@ -309,7 +307,7 @@ Editor.onDoubleClick = function(e)
                     for(var i = 0; i < Editor.segments.length; i++)
                     {
                         if (Editor.segments[i].set_id == segmentId) {
-                            totalInSegment++
+                            totalInSegment++;
                         }
                     }
                     if(totalInSegment == Editor.selected_segments.length) {
@@ -319,9 +317,15 @@ Editor.onDoubleClick = function(e)
             }
 
             // Depending on selection, relabel or re-segment.
+        var prev_state;
+        if(Editor.selection_method == "Stroke")
+            prev_state = EditorState.StrokeSelecting;
+        else
+            prev_state = EditorState.RectangleSelecting;
+        
             Editor.state = EditorState.SegmentsSelected;
             if (singleObject > 0) {
-                Editor.relabel();
+                Editor.relabel(prev_state);
             } else {
                 Editor.groupTool();
             }
@@ -950,7 +954,7 @@ Editor.onKeyPress = function(e)
                         Editor.groupTool();
                         break;
                     case 76: // 'l'
-                        Editor.relabel();
+                        Editor.relabel(Editor.state);
                         break;
                     case 80: // 'p'
                         Editor.selectPenTool;
@@ -1030,6 +1034,7 @@ Editor.selectPenTool = function(draw_now)
     }
 
     Editor.state = EditorState.ReadyToStroke;
+    RenderManager.editColorOCRbbs();
     RenderManager.render();
 }
 
@@ -1054,7 +1059,9 @@ Editor.strokeSelectionTool = function()
     if(Editor.selected_segments.length == 0)
         Editor.state = EditorState.ReadyToStrokeSelect;
     else
-        Editor.state = EditorState.SegmentsSelected;    
+        Editor.state = EditorState.SegmentsSelected;
+
+    RenderManager.regColorOCRbbs();
     RenderManager.render();
     Editor.selection_method = "Stroke";
 }
@@ -1084,6 +1091,7 @@ Editor.rectangleSelectionTool = function()
     else
         Editor.state = EditorState.SegmentsSelected;
 
+    RenderManager.regColorOCRbbs();
     RenderManager.render();    
     Editor.selection_method = "Rectangle";
 }
@@ -1395,15 +1403,12 @@ Editor.typeTool = function()
     RenderManager.render();
 }
 
-Editor.relabel = function()
+Editor.relabel = function(return_to)
 {
-    if(Editor.state == EditorState.SegmentsSelected)
-    {
-        CorrectionMenu.show();
+        CorrectionMenu.show(return_to);
         Editor.clearButtonOverlays();
         for(var k = 0; k < Editor.button_states.length; k++)
             Editor.button_states[k].setEnabled(false);
-    }
 }
 
 // clears all the data and sends action list to server for storage

@@ -1,4 +1,6 @@
-
+/*
+  This is the menu that appears to allow the user to manually enter the symbol that they want.
+*/
 
 function CorrectionMenu()
 {
@@ -24,7 +26,6 @@ CorrectionMenu.initialize = function()
     CorrectionMenu.current_list = document.getElementById("rr_category_list");
     CorrectionMenu.current_grid = document.getElementById("rr_symbol_grid");
     
-    
     // lists and grids get added to center panel
     CorrectionMenu.center_panel = document.getElementById("rr_center");
     if(Editor.using_ipad)
@@ -43,7 +44,7 @@ CorrectionMenu.initialize = function()
     CorrectionMenu.center_panel.removeChild(CorrectionMenu.current_grid);
     
     
-    /** Get the SymbolTree we are goin to use **/
+    /** Get the SymbolTree we are going to use **/
     var url = Editor.editor_root + Editor.symbol_tree;
     //console.log(url);
     
@@ -208,12 +209,14 @@ CorrectionMenu.updateOCRList = function()
     }
 }
 
-CorrectionMenu.show = function()
+/*
+  return_to is the state to return to after the user is done with the relabeling
+  menu
+*/
+CorrectionMenu.show = function(return_to)
 {
-    if(Editor.state != EditorState.SegmentsSelected)
-        return;
-
     // Change state, make menu visible.
+    CorrectionMenu.prev_state = return_to;
     Editor.state = EditorState.Relabeling;
     CorrectionMenu.menu.style.visibility = "visible";
 
@@ -308,9 +311,6 @@ CorrectionMenu.select_symbol = function(e)
         }
         
         RenderManager.render();
-        
-        Editor.state = EditorState.SegmentsSelected;
-        
         CorrectionMenu.hide();
     }
 }
@@ -352,12 +352,8 @@ CorrectionMenu.up = function(node_count)
 CorrectionMenu.hide = function()
 {
     Editor.clearButtonOverlays();
-    
-    Editor.state = EditorState.SegmentsSelected;
-    if(Editor.selection_method == "Stroke")
-        Editor.strokeSelectionTool();
-    else
-        Editor.rectangleSelectionTool();
+
+    Editor.changeState(CorrectionMenu.prev_state);
     CorrectionMenu.menu.style.visibility = "hidden";
     
 }
