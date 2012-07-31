@@ -31,10 +31,18 @@ Editor.editor_root = "http://129.21.34.109:";
 /* Recognition servers and ports */
 var saskatoon = "http://129.21.34.109:";
 Editor.connected_components_server_url = saskatoon + "20000";
-Editor.classifier_server_url = saskatoon + "1504"; // Use part 2 (ICDAR 2011)
 Editor.align_server_url = saskatoon + "1000";
 Editor.data_server_url = saskatoon + "500"
 Editor.inkml_save_server_url = saskatoon + "4205"
 
-
+/* Clasification servers */
+/*
+  To add a new type of classifiction, just add the server URL to this
+object and then create a 'classification_server' field on the new
+stroke objects which references the correct URL in this one See
+PenStroke.js for an example.
+*/
+ClassificationServers = {
+    "PenStrokeClassifier": saskatoon + 1504, // Use part 2 (ICDAR 2011)
+};
 

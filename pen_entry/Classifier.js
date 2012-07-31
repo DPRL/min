@@ -3,8 +3,30 @@ function Classifier()
     
 }
 
-Classifier.prototype.classify = function(in_segments, should_segment)
-{
+/*
+  This function takes a list of segments to be classified and organizes them into groups
+  based on which classification server that they use so that the requests can all be sent at once.
+*/
+Classifier.prototype.group_by_server = function(in_segments){
+    var classification_groups = {};
+    for(var k = 0; k < in_segments.length; k++){
+        var classification_server = in_segments[k].classification_server;
+        
+        // If this is a server we haven't encountered yet, add it
+        if(!classification_groups[classification_server])
+            classification_groups[classification_server] = new Array();
+
+        // Add this segment to the list of segments associated with the current classification_server
+        classification_groups[classification_server].push(in_segments[k]);
+    }
+
+    return classification_groups;
+}
+
+Classifier.prototype.request_classification = function(server_url, in_segments, should_segment){
+    // change this to an asynchronous thing later
+
+    // This assumes that each type of object uses the same type of list for segments
     var sb = new StringBuilder();
     sb.append("?segmentList=<SegmentList>");
     for(var k = 0; k < in_segments.length; k++)
@@ -15,12 +37,9 @@ Classifier.prototype.classify = function(in_segments, should_segment)
     else
         sb.append("&segment=false");
     
-    
-    // BUG: classification of objects with multiple types currently
-    // not handled.
     $.get
     (
-        Editor.classifier_server_url + sb.toString(), 
+        server_url + sb.toString(), 
         function(data, textStatus, xmlhttp)
         {
             
@@ -47,15 +66,18 @@ Classifier.prototype.classify = function(in_segments, should_segment)
                     }
                 }
                 RecognitionManager.result_table.push(recognition);    
-                
+                RenderManager.render();
             }
-            
-            
-            
-            RenderManager.render();
-            
-            
+      
         }
     );
-    // change this to an asynchronous thing later
+}
+
+Classifier.prototype.classify = function(in_segments, should_segment)
+{
+    var classification_groups = this.group_by_server(in_segments);
+    var keys = Object.keys(classification_groups);
+    for(var n = 0; n < keys.length; n++){
+        this.request_classification(ClassificationServers[keys[n]], classification_groups[keys], should_segment);
+    }
 }

@@ -49,6 +49,7 @@ function PenStroke(in_x, in_y, in_line_width)
     this.dirty_flag = false;
     
     this.element = null;
+    this.classification_server = "PenStrokeClassifier";
 }
 
 PenStroke.prototype.update_extents = function()
