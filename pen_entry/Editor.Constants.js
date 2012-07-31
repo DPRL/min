@@ -44,5 +44,6 @@ PenStroke.js for an example.
 */
 ClassificationServers = {
     "PenStrokeClassifier": saskatoon + 1504, // Use part 2 (ICDAR 2011)
+    "ImageBlobClassifier": null
 };
 

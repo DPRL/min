@@ -48,7 +48,8 @@ function ImageBlob(in_image, in_inverse_image, x, y)
     this.svg_image_inverse.setAttribute('height', this.inverse_image.height);
     this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src); 
     this.svg.appendChild(this.svg_image);
-
+    
+    this.classification_server = "ImageBlobClassifier";
 }
 
 /*  This method expects an image element which can be placed in an svg element as shown in the
