@@ -1,4 +1,3 @@
-//
 ImageBlob.count = 0;
 ImageBlob.type_id = 4;    // unique per class
 
@@ -304,14 +303,16 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
     var image_list = new Array(image_nodes.length);
     var position_list = new Array(image_nodes.length);
     var added_segments = new Array();
-    
+
     for(var k = 0; k < image_nodes.length; k++){
         var position = image_nodes[k].getAttribute("position").split(',');
+        console.log(image_nodes[k]);
         var img_data = image_nodes[k].textContent;
         var instance_id = parseInt(image_nodes[k].getAttribute("instanceID"));
 
         image_list[k] = new Image();
         image_list[k].name = String(k);
+        image_list[k].instance_id = instance_id;
 
         position_list[k] = [parseInt(position[0]), parseInt(position[1])];
 
@@ -326,7 +327,11 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
             inverse_image.onload = function(){                   
                 var b = new ImageBlob(image_list[my_k], this);
                 b.initialize_blob(position_list[my_k][0], position_list[my_k][1]);
-                b.instance_id = instance_id;
+                // Because we are replacing the original image, set the instance id
+                b.instance_id = image_list[my_k].instance_id;
+                console.log("instance_id " + image_list[my_k].instance_id);
+                Segment.instance_id = instance_id + 1;
+                
                 //b.instance_id--;
                 Editor.add_segment(b);
                 added_segments.push(b);
@@ -344,8 +349,8 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
             inverse_image.src = ImageBlob.generateInverseImage(this);
 
         }
-        image_list[k].src = img_data;
-        return added_segments;
- 
+        image_list[k].src = img_data;       
     }
+    
+    return added_segments;
 }

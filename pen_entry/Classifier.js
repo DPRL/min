@@ -51,7 +51,11 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
 
             var result_list = xmldoc.getElementsByTagName("RecognitionResults");
             console.log("result list length: " + result_list.length);
-            in_segments = ImageBlob.populateCanvasFromCCs(xmldoc); 
+            // Typically classification will be just one type of thing, but this should
+            // probably be changed to avoid clobbering segments in this set.
+            if(xmldoc.getElementsByTagName("ConnectedComponents").length != 0){
+                in_segments = ImageBlob.populateCanvasFromCCs(xmldoc); 
+            }
 
 
             f = function(){
@@ -62,6 +66,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                     recognition.fromXML(result_list[k]);
 
                     // identify which passed in segments belong to which set (based on classifier segmentation)
+                    console.log("in_segments: " + in_segments.length);
                     for(var i = 0; i < in_segments.length; i++)
                     {
                         for(var j = 0; j < recognition.instance_ids.length; j++)
@@ -79,7 +84,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                 }
             }
             
-            setTimeout(f, 300); // Give enough time for images to load, there's probably a better way to do this
+            setTimeout(f, 1000); // Give enough time for images to load, there's probably a better way to do this
       
         }
     );
