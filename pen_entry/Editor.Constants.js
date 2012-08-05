@@ -43,7 +43,7 @@ stroke objects which references the correct URL in this one See
 PenStroke.js for an example.
 */
 ClassificationServers = {
-    "PenStrokeClassifier": saskatoon + 1504, // Use part 2 (ICDAR 2011)
-    "ImageBlobClassifier": null
+    "PenStrokeClassifier": saskatoon + "1504", // Use part 2 (ICDAR 2011)
+    "ImageBlobClassifier": saskatoon + "7006"
 };
 

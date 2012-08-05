@@ -2,7 +2,7 @@
 ImageBlob.count = 0;
 ImageBlob.type_id = 4;    // unique per class
 
-function ImageBlob(in_image, in_inverse_image, x, y)
+function ImageBlob(in_image, in_inverse_image)
 {
     // identifiers to build unique id
     this.instance_id = Segment.count++; // unique per object
@@ -17,18 +17,23 @@ function ImageBlob(in_image, in_inverse_image, x, y)
     
     // transform info
     this.scale = new Vector2(1.0, 1.0);
-    this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
+    //this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
     
     this.temp_scale = new Vector2(1.0, 1.0);
     this.temp_translation = new Vector2(0.0, 0.0);
     
     this.size = new Vector2(in_image.width, in_image.height);
     
-    this.world_mins = this.translation.clone();
-    this.world_maxs = Vector2.Add(this.translation, this.size);
+    //this.world_mins = this.translation.clone();
+    //this.world_maxs = Vector2.Add(this.translation, this.size);
     
-    this.dirty_flag = true; // Need to update the SVG on the screen
-    
+    this.dirty_flag = false; // Need to update the SVG on the screen
+
+    this.classification_server = "ImageBlobClassifier";
+}
+
+
+ImageBlob.prototype.initialize_blob = function(){
     // Create an SVG element with the image embedded within it, this is what will actually be displayed on the page
     this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     this.svg.setAttribute("xmlns", "http://www.w3.org/2000/svg"); 
@@ -48,8 +53,6 @@ function ImageBlob(in_image, in_inverse_image, x, y)
     this.svg_image_inverse.setAttribute('height', this.inverse_image.height);
     this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src); 
     this.svg.appendChild(this.svg_image);
-    
-    this.classification_server = "ImageBlobClassifier";
 }
 
 /*  This method expects an image element which can be placed in an svg element as shown in the
@@ -224,10 +227,10 @@ ImageBlob.prototype.toXML = function()
     //    sb.append("<Segment type=\"image_blob\" instanceID=\"").append(String(this.instance_id)).append("\"/>");
     sb.append("<Segment type=\"image_blob\" instanceID=\"");
     sb.append(String(this.instance_id));
-    sb.append("\" scale=\"");
-    sb.append(this.scale.toString());
-    sb.append("\" translation=\"");
-    sb.append(this.translation.toString());
+    // sb.append("\" scale=\"");
+    // sb.append(this.scale.toString());
+    // sb.append("\" translation=\"");
+    // sb.append(this.translation.toString());
     sb.append("\" image=\"");
     sb.append(this.image.src).append("\"/>");
 

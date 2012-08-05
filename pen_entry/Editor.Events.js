@@ -1334,7 +1334,7 @@ Editor.groupTool = function()
         }
 
         // sort Editor segments by set_id
-        // insertion sort works  best for nearly sorted lists
+        // insertion sort works best for nearly sorted lists
         for(var i = 1; i < Editor.segments.length; i++)
         {
             var value = Editor.segments[i];
@@ -1557,9 +1557,21 @@ Editor.onImageLoad = function(e)
                 
                 var context = canvas.getContext("2d");
                 context.drawImage(loaded_image, 0, 0);
+
                 
                 // a string here
-                var dataUrl = canvas.toDataURL();
+                // var dataUrl = canvas.toDataURL();
+                inverseImage = ImageBlob.generateInverseImage(this);
+                var blob = new ImageBlob(this, inverseImage);
+                Editor.add_segment(blob);
+                RecognitionManager.enqueueSegment(blob);
+                
+                return; // REMOVE THIS
+                
+
+                
+
+                
                 
                 // now we build our request
                 // we pass our image in as a parameter 
@@ -1567,10 +1579,12 @@ Editor.onImageLoad = function(e)
                 var parameter = "?image=" + vals[0] + "," + encodeURIComponent(vals[1]);
                 
                 //var segment_group = new SegmentGroup();
+
+
                 
                 $.ajax({
                     type: "GET",
-                    url: Editor.connected_components_server_url + parameter,
+                    url: "http://saskatoon.cs.rit.edu:7006" + parameter,//Editor.connected_components_server_url + parameter,
                     dataType: "xml",
                     success: function(data, textStatus, xmlhttp)
                     {
