@@ -84,7 +84,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                 }
             }
             
-            setTimeout(f, 1000); // Give enough time for images to load, there's probably a better way to do this
+            setTimeout(f, 300); // Give enough time for images to load, there's probably a better way to do this
       
         }
     );
