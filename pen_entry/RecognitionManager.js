@@ -43,8 +43,9 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
     }
     
     this.results = result_nodes.length;
-    
+    console.log("Segment.set_count " + Segment.set_count);
     this.set_id = Segment.set_count++;
+    console.log("set_id" + this.set_id);
 }
 
 function RecognitionManager()

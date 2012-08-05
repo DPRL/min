@@ -97,8 +97,8 @@ RenderManager.render = function()
     {
         var seg = Editor.segments[k];
         
-        // Delete segment if it's an uninitialized ImageBlob
-        if(seg.initialized == false){
+        // // Delete segment if it's an uninitialized ImageBlob
+        if(seg.initialized == false && !seg.mins){
             Editor.segments.splice(k, 1);
             continue;
         }
@@ -187,6 +187,7 @@ RenderManager.colorOCRbbs = function(editing)
 
 RenderManager.render_set_field = function(in_context_id)
 {
+    console.log("rendering set field");
     // Uses fact that primitive are sorted according to set (segment)
     // identifiers.
     var set_segments = new Array();

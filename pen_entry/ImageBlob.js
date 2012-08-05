@@ -240,6 +240,7 @@ ImageBlob.prototype.toXML = function()
     var sb = new StringBuilder();
     //    sb.append("<Segment type=\"image_blob\" instanceID=\"").append(String(this.instance_id)).append("\"/>");
     sb.append("<Segment type=\"image_blob\" instanceID=\"");
+    // Add 1 since the new segment will occur after this one
     sb.append(String(this.instance_id));
     // sb.append("\" scale=\"");
     // sb.append(this.scale.toString());
@@ -256,6 +257,7 @@ ImageBlob.prototype.toXML = function()
   and then returns it as a dataURL.
 */
 ImageBlob.generateInverseImage = function(image){
+    
     var temp_canvas = document.createElement("canvas");
     temp_canvas.width = image.width;
     temp_canvas.height = image.height;
@@ -280,9 +282,11 @@ ImageBlob.generateInverseImage = function(image){
     return temp_canvas.toDataURL();
 }
 
+/**
+   Add ccs from xml and return the new segment list
+**/
 ImageBlob.populateCanvasFromCCs = function(xmldoc){
     Editor.clear_selected_segments();
-    var set_id = Segment.count++;
     var root_node = xmldoc;
     /*
       Expects a response in this format
@@ -299,15 +303,13 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
     
     var image_list = new Array(image_nodes.length);
     var position_list = new Array(image_nodes.length);
-    
-    // change our state
-    // Editor.strokeSelectionTool();
+    var added_segments = new Array();
     
     for(var k = 0; k < image_nodes.length; k++){
         var position = image_nodes[k].getAttribute("position").split(',');
         var img_data = image_nodes[k].textContent;
-        var added_segments = new Array();
-        
+        var instance_id = parseInt(image_nodes[k].getAttribute("instanceID"));
+
         image_list[k] = new Image();
         image_list[k].name = String(k);
 
@@ -320,25 +322,30 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
             var inverse_image = new Image();
             inverse_image.name = this.name;
 
-            // once it loads, add the image blob to they system
+            // once it loads, add the image blob to the system
             inverse_image.onload = function(){                   
                 var b = new ImageBlob(image_list[my_k], this);
                 b.initialize_blob(position_list[my_k][0], position_list[my_k][1]);
-                
+                b.instance_id = instance_id;
+                //b.instance_id--;
                 Editor.add_segment(b);
                 added_segments.push(b);
                 if(added_segments.length == image_nodes.length)
                     Editor.current_action.buildSegmentXML();
+                
                 RenderManager.render();
                 Editor.canvas_div.appendChild(b.svg);
                 // Now that the tools layer has been added, add the svg image to the canvas
                 b.finishImageLoad(Editor.canvas_div);
+                Editor.add_action(new AddSegments(added_segments));
+                console.log("finished loading everything!");
             }
             
             inverse_image.src = ImageBlob.generateInverseImage(this);
+
         }
-        
-        image_list[k].src = img_data; // This triggers the following event
-        Editor.add_action(new AddSegments(added_segments));
+        image_list[k].src = img_data;
+        return added_segments;
+ 
     }
 }

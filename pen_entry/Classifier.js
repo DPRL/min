@@ -36,7 +36,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
         sb.append("&segment=true");
     else
         sb.append("&segment=false");
-
+    
     $.get
     (
         server_url + sb.toString(), 
@@ -50,30 +50,36 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
             var xmldoc = data;
 
             var result_list = xmldoc.getElementsByTagName("RecognitionResults");
-            ImageBlob.populateCanvasFromCCs(xmldoc);
-            RenderManager.render();
+            console.log("result list length: " + result_list.length);
+            in_segments = ImageBlob.populateCanvasFromCCs(xmldoc); 
 
 
-            
-            for(var k = 0; k < result_list.length; k++)
-            {
-                var recognition = new RecognitionResult();
-                recognition.fromXML(result_list[k]);
-                // identify which passed in segments belong to which set (based on classifier segmentation)
-                for(var i = 0; i < in_segments.length; i++)
+            f = function(){
+                console.log("moving on");
+                for(var k = 0; k < result_list.length; k++)
                 {
-                    for(var j = 0; j < recognition.instance_ids.length; j++)
+                    var recognition = new RecognitionResult();
+                    recognition.fromXML(result_list[k]);
+
+                    // identify which passed in segments belong to which set (based on classifier segmentation)
+                    for(var i = 0; i < in_segments.length; i++)
                     {
-                        if(in_segments[i].instance_id == recognition.instance_ids[j])
+                        for(var j = 0; j < recognition.instance_ids.length; j++)
                         {
-                            in_segments[i].set_id = recognition.set_id;
-                            break;
+
+                            if(in_segments[i].instance_id == recognition.instance_ids[j])
+                            {
+                                in_segments[i].set_id = recognition.set_id;
+                                break;
+                            }
                         }
                     }
+                    RecognitionManager.result_table.push(recognition);    
+                    RenderManager.render();
                 }
-                RecognitionManager.result_table.push(recognition);    
-                RenderManager.render();
             }
+            
+            setTimeout(f, 300); // Give enough time for images to load, there's probably a better way to do this
       
         }
     );
