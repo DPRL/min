@@ -295,7 +295,8 @@ CorrectionMenu.select_symbol = function(e)
             Editor.selected_segments[k].set_id = set_id;
             
         }
-        
+
+        var set_from_symbols_list = false;
         for ( var i = 0; i < new_recognition.symbols.length; i++ ) {
             if ( new_recognition.symbols[ i ] == symbol ) {
                 var sym = symbol;
@@ -306,8 +307,20 @@ CorrectionMenu.select_symbol = function(e)
                 new_recognition.certainties.unshift( cer );
                 new_recognition.set_id = set_id;
                 RecognitionManager.result_table.push( new_recognition );
+                set_from_symbols_list = true;
                 break;
             }
+        }
+        // If no recognition was found in the result list, force the new symbol
+        if(!set_from_symbols_list){
+            var sym = symbol;
+            var cer = 1;
+            new_recognition.symbols.splice( 0, 1 );
+            new_recognition.certainties.splice( 0, 1 );
+            new_recognition.symbols.unshift( sym );
+            new_recognition.certainties.unshift( cer );
+            new_recognition.set_id = set_id;
+            RecognitionManager.result_table.push( new_recognition );
         }
         
         RenderManager.render();
