@@ -1581,10 +1581,10 @@ Editor.onImageLoad = function(e)
                         /*
                           Expects a response in this format
                           <ConnectedComponents>
-                          <Component x="10" y="20">
+                          <Image position="10,20">
                           data:image/PNG;base64,ASOIUROIJDLAKJSDLFJOEURABRDLJFKLDSetc
-                          </Component>
-                          <Component...
+                          </Image>
+                          <Image...
                           </ConnectedComponents>
                         */
                         if(root_node.nodeName != "ConnectedComponents")
