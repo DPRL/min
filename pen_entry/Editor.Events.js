@@ -1632,7 +1632,7 @@ Editor.onImageLoad = function(e)
                                         if(brightness < 0.5)
                                         {
                                             pix[i] = rgb.red;
-                                            pix[i+1] = rgb.green;
+                                            pix[i+1] = rgb.green;
                                             pix[i+2] = rgb.blue;
                                         }
                                     }
@@ -1718,7 +1718,7 @@ Editor.search = function()
         url = 'http://dlmf.nist.gov/search/search?q=';
         break
     }
-    window.location = url + searchString;
+    window.open(url + searchString);
 }
 
 Editor.goDPRL = function ()
