@@ -57,7 +57,6 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                 in_segments = ImageBlob.populateCanvasFromCCs(xmldoc); 
             }
 
-
             f = function(){
                 console.log("moving on");
                 for(var k = 0; k < result_list.length; k++)
@@ -84,7 +83,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                 }
             }
             
-            setTimeout(f, 1000); // Give enough time for images to load, there's probably a better way to do this
+            setTimeout(f, 1); // Give enough time for images to load, there's probably a better way to do this
       
         }
     );
