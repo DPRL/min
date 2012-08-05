@@ -36,7 +36,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
         sb.append("&segment=true");
     else
         sb.append("&segment=false");
-    
+
     $.get
     (
         server_url + sb.toString(), 
@@ -48,7 +48,13 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
             
             // build each recognition result from the xml
             var xmldoc = data;
+
             var result_list = xmldoc.getElementsByTagName("RecognitionResults");
+            ImageBlob.populateCanvasFromCCs(xmldoc);
+            RenderManager.render();
+
+
+            
             for(var k = 0; k < result_list.length; k++)
             {
                 var recognition = new RecognitionResult();

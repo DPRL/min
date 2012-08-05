@@ -17,24 +17,36 @@ function ImageBlob(in_image, in_inverse_image)
     
     // transform info
     this.scale = new Vector2(1.0, 1.0);
-    //this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
-    
+
     this.temp_scale = new Vector2(1.0, 1.0);
     this.temp_translation = new Vector2(0.0, 0.0);
     
     this.size = new Vector2(in_image.width, in_image.height);
     
-    //this.world_mins = this.translation.clone();
-    //this.world_maxs = Vector2.Add(this.translation, this.size);
-    
     this.dirty_flag = false; // Need to update the SVG on the screen
 
     this.classification_server = "ImageBlobClassifier";
+    this.initialized = false;
 }
 
+/*
+  Take connected components from the classifier and display them.
+*/
+ImageBlob.prototype.process_classification = function(xmldoc){
+    var blob_list = xmldoc.getElementsByTagName("Image");
+    console.log(blob_list[1].nodeValue);
+    // for(var k = 0; k < blob_list.length; k++){
+        
+    // }
+    
+}
 
-ImageBlob.prototype.initialize_blob = function(){
+ImageBlob.prototype.initialize_blob = function(x, y){
     // Create an SVG element with the image embedded within it, this is what will actually be displayed on the page
+    this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
+    this.world_mins = this.translation.clone();
+    this.world_maxs = Vector2.Add(this.translation, this.size);
+    
     this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     this.svg.setAttribute("xmlns", "http://www.w3.org/2000/svg"); 
     this.svg.setAttribute('name', parseInt(this.image.name));
@@ -53,6 +65,8 @@ ImageBlob.prototype.initialize_blob = function(){
     this.svg_image_inverse.setAttribute('height', this.inverse_image.height);
     this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src); 
     this.svg.appendChild(this.svg_image);
+    this.dirty_flag = true;
+    this.initialized = true;
 }
 
 /*  This method expects an image element which can be placed in an svg element as shown in the
@@ -82,7 +96,7 @@ ImageBlob.prototype.finishImageLoad = function(in_canvas){
 
 ImageBlob.prototype.render = function()
 {
-    this.private_render(this.svg_image);
+    this.private_render(this.svg_image_inverse);
 }
 
 ImageBlob.prototype.render_selected = function()
@@ -264,4 +278,67 @@ ImageBlob.generateInverseImage = function(image){
     temp_context.putImageData(inverse_image_data, 0, 0);
 
     return temp_canvas.toDataURL();
+}
+
+ImageBlob.populateCanvasFromCCs = function(xmldoc){
+    Editor.clear_selected_segments();
+    var set_id = Segment.count++;
+    var root_node = xmldoc;
+    /*
+      Expects a response in this format
+      <ConnectedComponents>
+      <Image position="10,20">
+      data:image/PNG;base64,ASOIUROIJDLAKJSDLFJOEURABRDLJFKLDSetc
+      </Image>
+      <Image...
+      </ConnectedComponents>
+    */
+
+    //var image_node = root_node.firstChild;
+    var image_nodes = root_node.getElementsByTagName("Image");
+    
+    var image_list = new Array(image_nodes.length);
+    var position_list = new Array(image_nodes.length);
+    
+    // change our state
+    // Editor.strokeSelectionTool();
+    
+    for(var k = 0; k < image_nodes.length; k++){
+        var position = image_nodes[k].getAttribute("position").split(',');
+        var img_data = image_nodes[k].textContent;
+        var added_segments = new Array();
+        
+        image_list[k] = new Image();
+        image_list[k].name = String(k);
+
+        position_list[k] = [parseInt(position[0]), parseInt(position[1])];
+
+        image_list[k].onload = function() {
+            var my_k = parseInt(this.name);
+            // create inverse image
+
+            var inverse_image = new Image();
+            inverse_image.name = this.name;
+
+            // once it loads, add the image blob to they system
+            inverse_image.onload = function(){                   
+                var b = new ImageBlob(image_list[my_k], this);
+                b.initialize_blob(position_list[my_k][0], position_list[my_k][1]);
+                
+                Editor.add_segment(b);
+                added_segments.push(b);
+                if(added_segments.length == image_nodes.length)
+                    Editor.current_action.buildSegmentXML();
+                RenderManager.render();
+                Editor.canvas_div.appendChild(b.svg);
+                // Now that the tools layer has been added, add the svg image to the canvas
+                b.finishImageLoad(Editor.canvas_div);
+            }
+            
+            inverse_image.src = ImageBlob.generateInverseImage(this);
+        }
+        
+        image_list[k].src = img_data; // This triggers the following event
+        Editor.add_action(new AddSegments(added_segments));
+    }
 }

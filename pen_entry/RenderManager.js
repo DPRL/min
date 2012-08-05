@@ -95,7 +95,14 @@ RenderManager.render = function()
     
     for(var k = 0; k < Editor.segments.length; k++)
     {
-        var seg = Editor.segments[k];        
+        var seg = Editor.segments[k];
+        
+        // Delete segment if it's an uninitialized ImageBlob
+        if(seg.initialized == false){
+            Editor.segments.splice(k, 1);
+            continue;
+        }
+            
         
         if(Editor.segment_selected(seg)) {
             if ( setid == -1 ) {
