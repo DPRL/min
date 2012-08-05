@@ -1617,29 +1617,10 @@ Editor.onImageLoad = function(e)
                                 {
                                     var my_k = parseInt(this.name);
                                     // create inverse image
-                                    var temp_canvas = document.createElement("canvas");
-                                    temp_canvas.width = this.width;
-                                    temp_canvas.height = this.height;
-                                    var temp_context = temp_canvas.getContext("2d");
-                                    temp_context.drawImage(this, 0, 0);
-                                    var inverse_image_data = temp_context.getImageData(0,0,this.width, this.height);
-                                    var pix = inverse_image_data.data;
-                                    
-                                    var rgb = RGB.parseRGB(Editor.selected_segment_color);
-                                    for (var i = 0, n = pix.length; i < n; i += 4) 
-                                    {
-                                        var brightness = (pix[i] * 0.299 +  pix[i+1] * 0.587 + pix[i+2] * 0.114) / 255.0;
-                                        if(brightness < 0.5)
-                                        {
-                                            pix[i] = rgb.red;
-                                            pix[i+1] = rgb.green;
-                                            pix[i+2] = rgb.blue;
-                                        }
-                                    }
-                                    temp_context.putImageData(inverse_image_data, 0, 0);
+
                                     var inverse_image = new Image();
                                     inverse_image.name = this.name;
-                                    inverse_image.src = temp_canvas.toDataURL();
+                                    inverse_image.src = ImageBlob.generateInverseImage(this);
                                     
                                     // once it loads, add the image blob to they system
                                     inverse_image.onload = function()

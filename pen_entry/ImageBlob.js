@@ -233,3 +233,32 @@ ImageBlob.prototype.toXML = function()
 
     return sb.toString();
 }
+
+/*
+  This function takes image data and creates an inverse image
+  and then returns it as a dataURL.
+*/
+ImageBlob.generateInverseImage = function(image){
+    var temp_canvas = document.createElement("canvas");
+    temp_canvas.width = image.width;
+    temp_canvas.height = image.height;
+    var temp_context = temp_canvas.getContext("2d");
+    temp_context.drawImage(image, 0, 0);
+    var inverse_image_data = temp_context.getImageData(0,0,image.width, image.height);
+    var pix = inverse_image_data.data;
+    
+    var rgb = RGB.parseRGB(Editor.selected_segment_color);
+    for (var i = 0, n = pix.length; i < n; i += 4) 
+    {
+        var brightness = (pix[i] * 0.299 +  pix[i+1] * 0.587 + pix[i+2] * 0.114) / 255.0;
+        if(brightness < 0.5)
+        {
+            pix[i] = rgb.red;
+            pix[i+1] = rgb.green;
+            pix[i+2] = rgb.blue;
+        }
+    }
+    temp_context.putImageData(inverse_image_data, 0, 0);
+
+    return temp_canvas.toDataURL();
+}
