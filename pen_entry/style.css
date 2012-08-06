@@ -292,6 +292,10 @@ div.toolbar_button {
 	float: left;
 }
 
+div.hidden_toolbar_button {
+    display: none;
+}
+
 div.toolbar_button_overlay {
 	position: absolute;
 	top: -1px;

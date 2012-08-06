@@ -87,6 +87,7 @@ Editor.setup_events = function()
 
     // add an equation image to the canvas if this is supported
     if(window.FileReader){
+        $("#upload_image").removeClass("hidden_toolbar_button");
         var file_input = document.createElement("input");
         var button_div = document.getElementById("upload_image");
         
@@ -102,7 +103,6 @@ Editor.setup_events = function()
             var file_input = document.getElementById("upload_image_input");        
             file_input.click();
         }, true);
-
     }
     
     // TYPING/TEXT ENTRY: line below will disable text entry for the iPad.
