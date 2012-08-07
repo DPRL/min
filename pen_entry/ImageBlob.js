@@ -1,6 +1,11 @@
 ImageBlob.count = 0;
 ImageBlob.type_id = 4;    // unique per class
 
+/*
+  This function creates a barebones ImageBlob object, by storing the parameters of the image
+  it represents. It will not render it to the canvas though, initialize_blob needs to be run
+  for that.
+*/
 function ImageBlob(in_image, in_inverse_image)
 {
     // identifiers to build unique id
@@ -29,17 +34,11 @@ function ImageBlob(in_image, in_inverse_image)
 }
 
 /*
-  Take connected components from the classifier and display them.
+  This function will intialize an ImageBlob and display it at the given point.  This is a separate
+  function because an ImageBlob is first added when the user uploads it, but then it gets broken
+  into multiple connected_components later, and the CCs are the only thing that needs to be
+  displayed.
 */
-ImageBlob.prototype.process_classification = function(xmldoc){
-    var blob_list = xmldoc.getElementsByTagName("Image");
-    console.log(blob_list[1].nodeValue);
-    // for(var k = 0; k < blob_list.length; k++){
-        
-    // }
-    
-}
-
 ImageBlob.prototype.initialize_blob = function(x, y){
     // Create an SVG element with the image embedded within it, this is what will actually be displayed on the page
     this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
@@ -306,7 +305,7 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
 
     for(var k = 0; k < image_nodes.length; k++){
         var position = image_nodes[k].getAttribute("position").split(',');
-        console.log(image_nodes[k]);
+
         var img_data = image_nodes[k].textContent;
         var instance_id = parseInt(image_nodes[k].getAttribute("instanceID"));
 
@@ -329,10 +328,8 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
                 b.initialize_blob(position_list[my_k][0], position_list[my_k][1]);
                 // Because we are replacing the original image, set the instance id
                 b.instance_id = image_list[my_k].instance_id;
-                console.log("instance_id " + image_list[my_k].instance_id);
                 Segment.instance_id = instance_id + 1;
                 
-                //b.instance_id--;
                 Editor.add_segment(b);
                 added_segments.push(b);
                 if(added_segments.length == image_nodes.length)
@@ -343,7 +340,6 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
                 // Now that the tools layer has been added, add the svg image to the canvas
                 b.finishImageLoad(Editor.canvas_div);
                 Editor.add_action(new AddSegments(added_segments));
-                console.log("finished loading everything!");
             }
             
             inverse_image.src = ImageBlob.generateInverseImage(this);

@@ -42,31 +42,25 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
         server_url + sb.toString(), 
         function(data, textStatus, xmlhttp)
         {
-            
-            console.log("received xml: ");
-            console.log(data);
-            
+
             // build each recognition result from the xml
             var xmldoc = data;
 
             var result_list = xmldoc.getElementsByTagName("RecognitionResults");
-            console.log("result list length: " + result_list.length);
-            // Typically classification will be just one type of thing, but this should
-            // probably be changed to avoid clobbering segments in this set.
+
+            // If there are ConnectedComponents coming back, then create ImageBlobs on the canvas
             if(xmldoc.getElementsByTagName("ConnectedComponents").length != 0){
                 in_segments = ImageBlob.populateCanvasFromCCs(xmldoc); 
             }
 
 
             f = function(){
-                console.log("moving on");
                 for(var k = 0; k < result_list.length; k++)
                 {
                     var recognition = new RecognitionResult();
                     recognition.fromXML(result_list[k]);
 
                     // identify which passed in segments belong to which set (based on classifier segmentation)
-                    console.log("in_segments: " + in_segments.length);
                     for(var i = 0; i < in_segments.length; i++)
                     {
                         for(var j = 0; j < recognition.instance_ids.length; j++)

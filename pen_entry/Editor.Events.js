@@ -1557,9 +1557,7 @@ Editor.onImageLoad = function(e)
                 
                 var context = canvas.getContext("2d");
                 context.drawImage(loaded_image, 0, 0);
-
                 
-                // a string here
                 // var dataUrl = canvas.toDataURL();
                 inverseImage = ImageBlob.generateInverseImage(this);
                 var blob = new ImageBlob(this, inverseImage);

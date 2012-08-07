@@ -1,7 +1,5 @@
 // a datastructure representing the top N recognition results
 
-
-
 function RecognitionResult()
 {
     // list of symbols
@@ -25,8 +23,7 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
         {
             this.instance_ids.push(parseInt(instance_ids[k]));
         }
-        
-        //console.log(this.instance_ids);
+
     }
     
     var result_nodes = in_xml_element.getElementsByTagName("Result");
@@ -38,14 +35,10 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
         
         this.certainties.push(parseFloat(s_certainty));
         this.symbols.push(s_symbol);
-        
-        //console.log(s_symbol + " " + s_certainty);
     }
     
     this.results = result_nodes.length;
-    console.log("Segment.set_count " + Segment.set_count);
     this.set_id = Segment.set_count++;
-    console.log("set_id" + this.set_id);
 }
 
 function RecognitionManager()

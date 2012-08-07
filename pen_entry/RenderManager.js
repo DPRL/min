@@ -187,7 +187,6 @@ RenderManager.colorOCRbbs = function(editing)
 
 RenderManager.render_set_field = function(in_context_id)
 {
-    console.log("rendering set field");
     // Uses fact that primitive are sorted according to set (segment)
     // identifiers.
     var set_segments = new Array();
