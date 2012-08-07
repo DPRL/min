@@ -497,9 +497,10 @@ Editor.onMouseDown = function(e)
             Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
             Editor.add_segment(Editor.current_stroke);            
             
-                Editor.state = EditorState.MiddleOfStroke;
-            }
-            break;
+            Editor.state = EditorState.MiddleOfStroke;
+        }
+        RenderManager.render();
+        break;
 
     case EditorState.ReadyForText:
         Editor.current_text = null;

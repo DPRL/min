@@ -76,8 +76,7 @@ SymbolSegment.prototype.finishEntry = function() {
     // Don't record the temporary text object.
     var action = new DeleteSegments(new Array(this));
     action.Apply();
-
-    console.log(letters);
+    
     origin = this.worldMinPosition();
     for(var i = 0; i < letters.length; i++) {
         var s = new SymbolSegment(origin);

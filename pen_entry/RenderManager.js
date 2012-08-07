@@ -228,24 +228,19 @@ RenderManager.render_set_field = function(in_context_id)
             {
                 var div = document.createElement('div');
 
-                // Chose the div class to obtain desired formatting.
-                if (Editor.segments[k-1].constructor == SymbolSegment) {
-                    div.className = 'text_segment';
+                switch(Editor.state)
+                {
+                case EditorState.ReadyToStroke:
+                case EditorState.MiddleOfStroke:
+                case EditorState.ReadyForText:
+                case EditorState.MiddleOfText: 
+                    div.className = 'segment_input_set';
+                    break;
+                default:
+                    div.className = 'segment_set';
+                    break;
                 }
-                else {
-                    switch(Editor.state)
-                    {
-                    case EditorState.ReadyToStroke:
-                    case EditorState.MiddleOfStroke:
-                    case EditorState.ReadyForText:
-                    case EditorState.MiddleOfText: 
-                        div.className = 'segment_input_set';
-                        break;
-                    default:
-                        div.className = 'segment_set';
-                        break;
-                    }
-                }
+
                 div.style.visibility='hidden';
                 
                 Editor.canvas_div.appendChild(div);

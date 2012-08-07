@@ -475,7 +475,7 @@ svg.pen_stroke {
 	line-height:0.85em;
 	color: white;
 	position: absolute;
-	z-index: 15;
+	z-index: 1000;
 	top: 0;
 	left: 0;
 }
