@@ -2,11 +2,14 @@
 
 SymbolSegment.count = 0;
 SymbolSegment.type_id = 3;
+SymbolSegment.chalk_layer = false;
 
 function SymbolSegment(in_position) {
     this.instance_id = Segment.count++;
     this.type_id = SymbolSegment.type_id;
     this.set_id = Segment.set_count++;
+    
+    this.chalk_layer = SymbolSegment.chalk_layer;
     
     this.layer = 2;
     

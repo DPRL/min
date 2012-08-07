@@ -4,12 +4,16 @@
 
 PenStroke.count = 0;
 PenStroke.type_id = 2;
+PenStroke.chalk_layer = true;
+
 function PenStroke(in_x, in_y, in_line_width)
 {
     // identifiers to build unique id
     this.instance_id = Segment.count++;
     this.type_id = PenStroke.type_id;
     this.set_id = Segment.set_count++;
+
+    this.chalk_layer = PenStroke.chalk_layer;
     
     // line width
     this.line_width = in_line_width;
@@ -137,7 +141,7 @@ PenStroke.prototype.finish_stroke = function()
         
         this.translation = this.world_mins.clone();
         
-        this.group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        this.inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
         var sb = new StringBuilder();
         sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
@@ -145,14 +149,8 @@ PenStroke.prototype.finish_stroke = function()
         sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
         sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
         
-        this.group.setAttribute("transform", sb.toString());
+        this.inner_svg.setAttribute("transform", sb.toString());
 
-        var show = document.forms[0].strokes.checked;
-        if (show)
-            this.group.setAttribute("style", "fill:none;stroke-linecap:round;");
-        else
-            this.group.setAttribute("style", "fill:none;stroke-linecap:round;visibility:hidden");
-    
         // build polyline
         
         this.polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
@@ -167,8 +165,8 @@ PenStroke.prototype.finish_stroke = function()
         this.polyline.setAttribute("points", sb.toString());
         this.polyline.setAttribute("style", "stroke:" + this.color + ";stroke-width:" + this.stroke_width);
 
-    this.group.appendChild(this.polyline);
-    this.root_svg.appendChild(this.group);
+    this.inner_svg.appendChild(this.polyline);
+    this.root_svg.appendChild(this.inner_svg);
     Editor.canvas_div.appendChild(this.root_svg);
     this.element = this.root_svg
     
@@ -191,7 +189,7 @@ PenStroke.prototype.private_render = function(in_color, in_width)
     sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
     sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
     
-    this.group.setAttribute("transform", sb.toString());
+    this.inner_svg.setAttribute("transform", sb.toString());
 
     // scale factor to give illusion of scale independent line width
     var mean_scale = (Math.abs(this.scale.x * this.temp_scale.x) + Math.abs(this.scale.y * this.temp_scale.y)) / 2.0;

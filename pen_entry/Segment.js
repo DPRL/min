@@ -2,13 +2,14 @@
 
 Segment.count = 0;
 Segment.set_count = 0;
-
+Segment.chalk_layer = true; // Whether or not this segment belongs to the chalk layer
 function Segment()
 {
     // identifiers to build unique id
     this.type_id;    // unique per class
     this.instance_id; // unique per object
     this.set_id;    // unique per 'set' of segments
+    this.chalk_layer;
     
     // position information
     // top left hand corner of segment

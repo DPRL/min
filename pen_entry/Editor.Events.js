@@ -204,11 +204,11 @@ Editor.setStrokeView = function()
     var show = document.forms[0].strokes.checked;
     for (var i=0; i < Editor.segments.length; i++) {
         var nextSegment = Editor.segments[i];
-        if (nextSegment.type_id == PenStroke.type_id) {
+        if (nextSegment.chalk_layer) {
             if (!show)
-                nextSegment.group.setAttribute("style", "fill:none;stroke-linecap:round;visibility:hidden;");
+                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;visibility:hidden;");
             else
-                nextSegment.group.setAttribute("style", "fill:none;stroke-linecap:round;visibility:visible;");
+                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;visibility:visible;");
         }
     }
 }

@@ -1,5 +1,6 @@
 ImageBlob.count = 0;
 ImageBlob.type_id = 4;    // unique per class
+ImageBlob.chalk_layer = true;
 
 /*
   This function creates a barebones ImageBlob object, by storing the parameters of the image
@@ -12,6 +13,8 @@ function ImageBlob(in_image, in_inverse_image)
     this.instance_id = Segment.count++; // unique per object
     this.type_id = ImageBlob.type_id;
     this.set_id = Segment.set_count++;
+
+    this.chalk_layer = ImageBlob.chalk_layer;
     
     // the layer we are in, 0 is bottom N is top
     this.layer = 1;
@@ -61,8 +64,11 @@ ImageBlob.prototype.initialize_blob = function(x, y){
     this.svg_image_inverse = document.createElementNS('http://www.w3.org/2000/svg', 'image');
     this.svg_image_inverse.setAttribute('width', this.inverse_image.width);
     this.svg_image_inverse.setAttribute('height', this.inverse_image.height);
-    this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src); 
-    this.svg.appendChild(this.svg_image);
+    this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src);
+
+    // This is the current version of the image being displayed
+    this.inner_svg = this.svg_image_inverse;
+    this.svg.appendChild(this.inner_svg);
     this.dirty_flag = true;
     this.initialized = true;
 }
@@ -70,6 +76,7 @@ ImageBlob.prototype.initialize_blob = function(x, y){
 /*  This method expects an image element which can be placed in an svg element as shown in the
     constructor */  
 ImageBlob.prototype.private_render = function(image) {
+    this.inner_svg = image;
     if(this.dirty_flag == false)
         return;
     this.dirty_flag = false;
@@ -79,11 +86,11 @@ ImageBlob.prototype.private_render = function(image) {
     transform.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
     transform.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
     transform.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
-    image.setAttribute("transform", transform.toString());
-    
-    if(this.svg.children[0] != image){ 
+    this.inner_svg.setAttribute("transform", transform.toString());
+
+    if(this.svg.children[0] != this.inner_svg){ 
         this.svg.removeChild(this.svg.children[0]);
-        this.svg.appendChild(image);
+        this.svg.appendChild(this.inner_svg);
     }
 
 }
