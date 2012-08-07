@@ -64,9 +64,7 @@ Editor.setup_events = function()
     
     // Prevent problem behavior from the iPad canvas.
     Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
-    //Editor.canvas_div.setAttribute("ontouchstart", "event.preventDefault();");    
 
-    //document.getElementById("text").addEventListener("click", Editor.typeTool, true);
     // Listeners for buttons.
     document.getElementById("pen").addEventListener("click", RenderManager.editColorOCRbbs, true);
     document.getElementById("pen").addEventListener("click", Editor.selectPenTool, true);
@@ -104,60 +102,57 @@ Editor.setup_events = function()
             file_input.click();
         }, true);
     }
-    
-    // TYPING/TEXT ENTRY: line below will disable text entry for the iPad.
-    //if(navigator.userAgent.match(/iPad/i) == null) document.getElementById("text").addEventListener("click", Editor.typeTool, true);
 
     // Adds highlighting on pressing buttons and pinch-resize functionality
     if(Editor.using_ipad)
     {
         // Image upload
         document.getElementById("upload_image").addEventListener("touchstart", 
-        function(event)
-        {
-            Editor.button_states[Buttons.UploadImage].setTouched(true);
-        }, true);
+                                                                 function(event)
+                                                                 {
+                                                                     Editor.button_states[Buttons.UploadImage].setTouched(true);
+                                                                 }, true);
         document.getElementById("upload_image").addEventListener("touchend", 
-        function(event)
-        {
-            Editor.button_states[Buttons.UploadImage].setTouched(false);
-        }, true);
+                                                                 function(event)
+                                                                 {
+                                                                     Editor.button_states[Buttons.UploadImage].setTouched(false);
+                                                                 }, true);
         
         // undo
         document.getElementById("undo").addEventListener("touchstart", 
-        function(event)
-        {
-            Editor.button_states[Buttons.Undo].setTouched(true);
-        }, true);
+                                                         function(event)
+                                                         {
+                                                             Editor.button_states[Buttons.Undo].setTouched(true);
+                                                         }, true);
         document.getElementById("undo").addEventListener("touchend", 
-        function(event)
-        {
-            Editor.button_states[Buttons.Undo].setTouched(false);
-        }, true);
+                                                         function(event)
+                                                         {
+                                                             Editor.button_states[Buttons.Undo].setTouched(false);
+                                                         }, true);
         
         // redo
         document.getElementById("redo").addEventListener("touchstart",
-        function(event)
-        {
-            Editor.button_states[Buttons.Redo].setTouched(true);
-        }, true);
+                                                         function(event)
+                                                         {
+                                                             Editor.button_states[Buttons.Redo].setTouched(true);
+                                                         }, true);
         document.getElementById("redo").addEventListener("touchend",
-        function(event)
-        {
-            Editor.button_states[Buttons.Redo].setTouched(false);
-        }, true);    
+                                                         function(event)
+                                                         {
+                                                             Editor.button_states[Buttons.Redo].setTouched(false);
+                                                         }, true);    
 
         // align/append
         document.getElementById("align").addEventListener("touchstart",
-        function(event)
-        {
-            Editor.button_states[Buttons.Align].setTouched(true);
-        }, true);
+                                                          function(event)
+                                                          {
+                                                              Editor.button_states[Buttons.Align].setTouched(true);
+                                                          }, true);
         document.getElementById("align").addEventListener("touchend",
-        function(event)
-        {
-            Editor.button_states[Buttons.Align].setTouched(false);
-        }, true);    
+                                                          function(event)
+                                                          {
+                                                              Editor.button_states[Buttons.Align].setTouched(false);
+                                                          }, true);    
 
         // Pinch to resize events
         var bb = document.getElementById("bounding_box");
@@ -188,13 +183,13 @@ Editor.setCursor = function ()
 
     switch (Editor.state) 
     {
-        case EditorState.StrokeSelecting:
-        case EditorState.ReadyToStrokeSelect:
-            canvas.style.cursor = "crosshair";
-            break;
-        default:
-            canvas.style.cursor = "default";
-            break;
+    case EditorState.StrokeSelecting:
+    case EditorState.ReadyToStrokeSelect:
+        canvas.style.cursor = "crosshair";
+        break;
+    default:
+        canvas.style.cursor = "default";
+        break;
     }
 }
 
@@ -212,7 +207,6 @@ Editor.setStrokeView = function()
         }
     }
 }
-
 
 Editor.fit_to_screen = function(event)
 {
@@ -266,70 +260,70 @@ Editor.onDoubleClick = function(e)
 {
     switch (Editor.state)
     {
-        case EditorState.PenMovingSegments:
-        case EditorState.ReadyToStroke:
-            // DEBUG: we have to re-detect the selection for double click vs. touch-and-hold.
-            if (Editor.touchAndHoldFlag == TouchAndHoldState.NoTouchAndHold) {
-                var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
-                if(click_result.length == 0)
-                    break;
+    case EditorState.PenMovingSegments:
+    case EditorState.ReadyToStroke:
+        // DEBUG: we have to re-detect the selection for double click vs. touch-and-hold.
+        if (Editor.touchAndHoldFlag == TouchAndHoldState.NoTouchAndHold) {
+            var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+            if(click_result.length == 0)
+                break;
 
-                var segment = click_result.pop();
-                for(var k = 0; k < Editor.segments.length; k++)
-                    if(Editor.segments[k].set_id == segment.set_id)
-                        Editor.add_selected_segment(Editor.segments[k]);
-            }
+            var segment = click_result.pop();
+            for(var k = 0; k < Editor.segments.length; k++)
+                if(Editor.segments[k].set_id == segment.set_id)
+                    Editor.add_selected_segment(Editor.segments[k]);
+        }
 
-            RenderManager.colorOCRbbs(false);
-            RenderManager.bounding_box.style.visibility = "visible";
-            Editor.state = EditorState.SegmentsSelected;
-            Editor.relabel(EditorState.ReadyToStroke);
-            break;
+        RenderManager.colorOCRbbs(false);
+        RenderManager.bounding_box.style.visibility = "visible";
+        Editor.state = EditorState.SegmentsSelected;
+        Editor.relabel(EditorState.ReadyToStroke);
+        break;
 
-        case EditorState.MovingSegments:
-        case EditorState.SegmentsSelected:
-            // RLAZ: allow relabeling and resegmenting using double tap.
-            // Check for identical segment identifiers (relabel in that case)
-            var singleObject = 0;
-            if (Editor.selected_segments.length > 0) {
-                var allSame = 1;
-                var segmentId = Editor.selected_segments[0].set_id;
+    case EditorState.MovingSegments:
+    case EditorState.SegmentsSelected:
+        // RLAZ: allow relabeling and resegmenting using double tap.
+        // Check for identical segment identifiers (relabel in that case)
+        var singleObject = 0;
+        if (Editor.selected_segments.length > 0) {
+            var allSame = 1;
+            var segmentId = Editor.selected_segments[0].set_id;
 
-                // All selected objects belong to the same segment (id)
-                for(var i = 1; i < Editor.selected_segments.length; i++) {
-                    if (Editor.selected_segments[i].set_id != segmentId ) {
-                        allSame = 0;
-                    }
-                }
-                // All objects in the segmented have been selected.
-                if (allSame > 0) {
-                    var totalInSegment = 0;
-                    for(var i = 0; i < Editor.segments.length; i++)
-                    {
-                        if (Editor.segments[i].set_id == segmentId) {
-                            totalInSegment++;
-                        }
-                    }
-                    if(totalInSegment == Editor.selected_segments.length) {
-                        singleObject = 1;
-                    }
+            // All selected objects belong to the same segment (id)
+            for(var i = 1; i < Editor.selected_segments.length; i++) {
+                if (Editor.selected_segments[i].set_id != segmentId ) {
+                    allSame = 0;
                 }
             }
+            // All objects in the segmented have been selected.
+            if (allSame > 0) {
+                var totalInSegment = 0;
+                for(var i = 0; i < Editor.segments.length; i++)
+                {
+                    if (Editor.segments[i].set_id == segmentId) {
+                        totalInSegment++;
+                    }
+                }
+                if(totalInSegment == Editor.selected_segments.length) {
+                    singleObject = 1;
+                }
+            }
+        }
 
-            // Depending on selection, relabel or re-segment.
+        // Depending on selection, relabel or re-segment.
         var prev_state;
         if(Editor.selection_method == "Stroke")
             prev_state = EditorState.StrokeSelecting;
         else
             prev_state = EditorState.RectangleSelecting;
         
-            Editor.state = EditorState.SegmentsSelected;
-            if (singleObject > 0) {
-                Editor.relabel(prev_state);
-            } else {
-                Editor.groupTool();
-            }
-            break;
+        Editor.state = EditorState.SegmentsSelected;
+        if (singleObject > 0) {
+            Editor.relabel(prev_state);
+        } else {
+            Editor.groupTool();
+        }
+        break;
     }
 }
 
@@ -370,197 +364,195 @@ Editor.onMouseDown = function(e)
 
     switch(Editor.state)
     {
-        case EditorState.ReadyToStrokeSelect:
-            // get the segments that are under the mouse click
-            var click_result = CollisionManager.get_point_collides(Editor.mouse_position);
-            if(click_result.length > 0)
-            {
-                // nothing selected at the moment, add all below mouse click to selected
-                // add the last guy in the list (probably most recently added) to selected set
-                var segment = click_result.pop();
-                for(var k = 0; k < Editor.segments.length; k++)
-                    if(Editor.segments[k].set_id == segment.set_id)
-                        Editor.add_selected_segment(Editor.segments[k]);
-        
-                        
-                Editor.add_action(new TransformSegments(Editor.selected_segments));
-                Editor.state = EditorState.SegmentsSelected;
+    case EditorState.ReadyToStrokeSelect:
+        // get the segments that are under the mouse click
+        var click_result = CollisionManager.get_point_collides(Editor.mouse_position);
+        if(click_result.length > 0)
+        {
+            // nothing selected at the moment, add all below mouse click to selected
+            // add the last guy in the list (probably most recently added) to selected set
+            var segment = click_result.pop();
+            for(var k = 0; k < Editor.segments.length; k++)
+                if(Editor.segments[k].set_id == segment.set_id)
+                    Editor.add_selected_segment(Editor.segments[k]);
+            
+            
+            Editor.add_action(new TransformSegments(Editor.selected_segments));
+            Editor.state = EditorState.SegmentsSelected;
 
-                //setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
-            } else
-            {
-                Editor.state = EditorState.StrokeSelecting;
-                
-            }
-            Editor.previous_stroke_position = Editor.mouse_position.clone();
-            RenderManager.render();
-            break;        
-        case EditorState.ReadyToRectangleSelect:
-            // get the segments that are under the mouse click
-            var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+            //setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+        } else
+        {
+            Editor.state = EditorState.StrokeSelecting;
+            
+        }
+        Editor.previous_stroke_position = Editor.mouse_position.clone();
+        RenderManager.render();
+        break;        
+    case EditorState.ReadyToRectangleSelect:
+        // get the segments that are under the mouse click
+        var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
 
-            if(click_result.length > 0)
+        if(click_result.length > 0)
+        {
+            // nothing selected at the moment, add all below mouse click to selected
+            // add the last guy in the list (probably most recently added) to selected set
+            var segment = click_result.pop();
+            for(var k = 0; k < Editor.segments.length; k++)
+                if(Editor.segments[k].set_id == segment.set_id)
+                    Editor.add_selected_segment(Editor.segments[k]);
+            
+            Editor.add_action(new TransformSegments(Editor.selected_segments));
+            Editor.state = EditorState.SegmentsSelected;
+
+            setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+        }
+        else
+        {
+            Editor.start_rect_selection = Editor.mouse_position.clone();
+            Editor.end_rect_selection  = Editor.mouse_position.clone();
+            Editor.state = EditorState.RectangleSelecting;
+        }
+        RenderManager.render();
+        break;
+
+    case EditorState.SegmentsSelected:
+        var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
+        // check for resizing
+        if(click_edge != -1)
+        {
+            Editor.add_action(new TransformSegments(Editor.selected_segments));
+            Editor.state = EditorState.Resizing;
+            Editor.grabbed_edge = click_edge;
+            Editor.resize_offset = new Vector2(0,0);
+            Editor.original_bb = Editor.selected_bb.clone();
+        }
+        else
+        {
+            // check translate
+            if(Editor.selected_bb.point_collides(Editor.mouse_position))
             {
-                // nothing selected at the moment, add all below mouse click to selected
-                // add the last guy in the list (probably most recently added) to selected set
-                var segment = click_result.pop();
-                for(var k = 0; k < Editor.segments.length; k++)
-                    if(Editor.segments[k].set_id == segment.set_id)
-                        Editor.add_selected_segment(Editor.segments[k]);
-        
                 Editor.add_action(new TransformSegments(Editor.selected_segments));
-                Editor.state = EditorState.SegmentsSelected;
+                Editor.state = EditorState.MovingSegments;
 
                 setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
             }
+            // reselect
             else
             {
-                Editor.start_rect_selection = Editor.mouse_position.clone();
-                Editor.end_rect_selection  = Editor.mouse_position.clone();
-                Editor.state = EditorState.RectangleSelecting;
-            }
-            RenderManager.render();
-            break;
-
-        case EditorState.SegmentsSelected:
-            var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
-            // check for resizing
-            if(click_edge != -1)
-            {
-                Editor.add_action(new TransformSegments(Editor.selected_segments));
-                Editor.state = EditorState.Resizing;
-                Editor.grabbed_edge = click_edge;
-                Editor.resize_offset = new Vector2(0,0);
-                Editor.original_bb = Editor.selected_bb.clone();
-            }
-            else
-            {
-                // check translate
-                if(Editor.selected_bb.point_collides(Editor.mouse_position))
+                Editor.clear_selected_segments();
+                var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
+                // clicking on a new segment
+                if(clicked_points.length > 0)
                 {
-                    Editor.add_action(new TransformSegments(Editor.selected_segments));
-                    Editor.state = EditorState.MovingSegments;
+                    for(var k = 0; k <clicked_points.length; k++)
+                    {
+                        var segment = clicked_points[k];
+                        Editor.add_selected_segment(segment);
+                    }
+                    Editor.state = EditorState.SegmentsSelected;
+
 
                     setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
                 }
-                // reselect
+                // selecting none
                 else
                 {
-                    Editor.clear_selected_segments();
-                    var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
-                    // clicking on a new segment
-                    if(clicked_points.length > 0)
+                    if(Editor.selection_method == "Stroke")
                     {
-                        for(var k = 0; k <clicked_points.length; k++)
-                        {
-                            var segment = clicked_points[k];
-                            Editor.add_selected_segment(segment);
-                        }
-                        Editor.state = EditorState.SegmentsSelected;
-
-
-                        setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+                        Editor.previous_stroke_position = Editor.mouse_position.clone();
+                        Editor.state = EditorState.StrokeSelecting;
                     }
-                    // selecting none
                     else
                     {
-                        if(Editor.selection_method == "Stroke")
-                        {
-                            Editor.previous_stroke_position = Editor.mouse_position.clone();
-                            Editor.state = EditorState.StrokeSelecting;
-                        }
-                        else
-                        {
-                            Editor.start_rect_selection = Editor.mouse_position.clone();
-                            Editor.end_rect_selection  = Editor.mouse_position.clone();
-                            Editor.state = EditorState.RectangleSelecting;    
-                        }
+                        Editor.start_rect_selection = Editor.mouse_position.clone();
+                        Editor.end_rect_selection  = Editor.mouse_position.clone();
+                        Editor.state = EditorState.RectangleSelecting;    
                     }
-                    RenderManager.render();
                 }
+                RenderManager.render();
             }
-            
-            break;
-
-        case EditorState.MiddleOfText:
-            Editor.current_text.finishEntry();
-            if(Editor.current_action.toString() == "EditText")
-                Editor.current_action.set_current_text(Editor.current_text.text);
-            else if(Editor.current_action.toString() == "AddSegments")
-                Editor.current_action.buildSegmentXML();                
-
-            // Modification: reset to drawing.
-            // But only switch to draw mode if we click on the canvas.
-            var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
-            var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
-
-            if (! (e.pageY > toolbarDims.bottom && e.pageY < canvasDims.bottom) &&
-                    (e.pageX > 0 && e.pageX < canvasDims.right )) {
-                break; 
-            } else {
-                // If we're on the canvas, switch to pen mode.
-                //Editor.selectPenTool();
-                // build a new stroke object and save reference so we can add new points
-                Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-                Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-                Editor.add_segment(Editor.current_stroke);            
-            
-                Editor.state = EditorState.MiddleOfStroke;
-            }
-            break;
-
-        case EditorState.ReadyForText:
-            Editor.current_text = null;
-            var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
-            for(var k = 0; k < clicked_points.length; k++)
-            {
-                if(clicked_points[k].type_id == SymbolSegment.type_id)
-                {
-                    Editor.current_text = clicked_points[k];
-                    break;
-                }
-            }
-            
-            if(Editor.current_text == null)
-            {
-                var s = new SymbolSegment(Editor.mouse_position);
-                Editor.current_text = s;
-            } else {
-                Editor.add_action(new EditText(Editor.current_text));
-            }
-            Editor.state = EditorState.MiddleOfText;
-            break;
-
-
-        case EditorState.ReadyToStroke:
-            // RLAZ: allow symbols to be moved (but not multiply selected or resized)
-            // in drawing mode.
-            var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
-            if(click_result.length > 0)
-            {
-                var segment = click_result.pop();
-                for(var k = 0; k < Editor.segments.length; k++)
-                    if(Editor.segments[k].set_id == segment.set_id)
-                        Editor.add_selected_segment(Editor.segments[k]);
+        }
         
-                Editor.add_action(new TransformSegments(Editor.selected_segments));
-                Editor.state = EditorState.PenMovingSegments; 
+        break;
 
-                // DEBUG: callback function needs to be defined in an abstract function;
-                // apparently the first argument is evaluated.
-                setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
-            } else
-            {
-                // build a new stroke object and save reference so we can add new points
-                Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-                Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-                Editor.add_segment(Editor.current_stroke);            
-                
+    case EditorState.MiddleOfText:
+        Editor.current_text.finishEntry();
+        if(Editor.current_action.toString() == "EditText")
+            Editor.current_action.set_current_text(Editor.current_text.text);
+        else if(Editor.current_action.toString() == "AddSegments")
+            Editor.current_action.buildSegmentXML();                
+
+        // Modification: reset to drawing.
+        // But only switch to draw mode if we click on the canvas.
+        var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
+        var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
+
+        if (! (e.pageY > toolbarDims.bottom && e.pageY < canvasDims.bottom) &&
+            (e.pageX > 0 && e.pageX < canvasDims.right )) {
+            break; 
+        } else {
+            // build a new stroke object and save reference so we can add new points
+            Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+            Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+            Editor.add_segment(Editor.current_stroke);            
+            
                 Editor.state = EditorState.MiddleOfStroke;
             }
-
-            RenderManager.render();
             break;
+
+    case EditorState.ReadyForText:
+        Editor.current_text = null;
+        var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
+        for(var k = 0; k < clicked_points.length; k++)
+        {
+            if(clicked_points[k].type_id == SymbolSegment.type_id)
+            {
+                Editor.current_text = clicked_points[k];
+                break;
+            }
+        }
+        
+        if(Editor.current_text == null)
+        {
+            var s = new SymbolSegment(Editor.mouse_position);
+            Editor.current_text = s;
+        } else {
+            Editor.add_action(new EditText(Editor.current_text));
+        }
+        Editor.state = EditorState.MiddleOfText;
+        break;
+
+
+    case EditorState.ReadyToStroke:
+        // RLAZ: allow symbols to be moved (but not multiply selected or resized)
+        // in drawing mode.
+        var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+        if(click_result.length > 0)
+        {
+            var segment = click_result.pop();
+            for(var k = 0; k < Editor.segments.length; k++)
+                if(Editor.segments[k].set_id == segment.set_id)
+                    Editor.add_selected_segment(Editor.segments[k]);
+            
+            Editor.add_action(new TransformSegments(Editor.selected_segments));
+            Editor.state = EditorState.PenMovingSegments; 
+
+            // DEBUG: callback function needs to be defined in an abstract function;
+            // apparently the first argument is evaluated.
+            setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+        } else
+        {
+            // build a new stroke object and save reference so we can add new points
+            Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+            Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+            Editor.add_segment(Editor.current_stroke);            
+            
+            Editor.state = EditorState.MiddleOfStroke;
+        }
+
+        RenderManager.render();
+        break;
 
     }
 }
@@ -593,126 +585,126 @@ Editor.onMouseMove = function(e)
     {
         switch(Editor.state)
         {
-            case EditorState.ReadyToStrokeSelect:
-                // we don't care here
-                break;
-            case EditorState.StrokeSelecting:
-                // see what we stroked through between move events
-                var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
-                // for each segment in result add to selected segments set (if they aren't there already)
-                if(stroke_result.length > 0)
+        case EditorState.ReadyToStrokeSelect:
+            // we don't care here
+            break;
+        case EditorState.StrokeSelecting:
+            // see what we stroked through between move events
+            var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
+            // for each segment in result add to selected segments set (if they aren't there already)
+            if(stroke_result.length > 0)
+            {
+                var initial_length = Editor.selected_segments.length;
+                while(stroke_result.length > 0)
                 {
-                    var initial_length = Editor.selected_segments.length;
-                    while(stroke_result.length > 0)
-                    {
-                        var segment = stroke_result.pop();
-                        Editor.add_selected_segment(segment);
-                    }
+                    var segment = stroke_result.pop();
+                    Editor.add_selected_segment(segment);
                 }
-                Editor.previous_stroke_position = Editor.mouse_position_prev.clone();
-                RenderManager.render();
-                break;
-            case EditorState.RectangleSelecting:
-                Editor.end_rect_selection.Add(mouse_delta);
-                // get list of segments colliding with selection rectangle
-                var rect_selected = CollisionManager.get_rectangle_collides(Editor.start_rect_selection, Editor.end_rect_selection);
-                Editor.clear_selected_segments();
-                // add segment set to seleced list
-                for(var k = 0; k < rect_selected.length; k++)
-                {
-                    var segment_set = Editor.get_segment_by_id(rect_selected[k].set_id);
-                    for(var j = 0; j < segment_set.length; j++)
-                        Editor.add_selected_segment(segment_set[j]);
-                }
-                
-                RenderManager.render();
-                break;
-            case EditorState.SegmentsSelected:
-                Editor.state = EditorState.MovingSegments;
-            case EditorState.PenMovingSegments:
-            case EditorState.MovingSegments:
-                var translation = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
-                for(var k = 0; k < Editor.selected_segments.length; k++)
-                {
-                    seg = Editor.selected_segments[k];
-                    if(seg.clear != undefined) {
-                        seg.clear(Editor.contexts[0]);
-                    }                    
-                    seg.translate(translation);
-                }
-                Editor.selected_bb.translate(translation);
+            }
+            Editor.previous_stroke_position = Editor.mouse_position_prev.clone();
+            RenderManager.render();
+            break;
+        case EditorState.RectangleSelecting:
+            Editor.end_rect_selection.Add(mouse_delta);
+            // get list of segments colliding with selection rectangle
+            var rect_selected = CollisionManager.get_rectangle_collides(Editor.start_rect_selection, Editor.end_rect_selection);
+            Editor.clear_selected_segments();
+            // add segment set to seleced list
+            for(var k = 0; k < rect_selected.length; k++)
+            {
+                var segment_set = Editor.get_segment_by_id(rect_selected[k].set_id);
+                for(var j = 0; j < segment_set.length; j++)
+                    Editor.add_selected_segment(segment_set[j]);
+            }
+            
+            RenderManager.render();
+            break;
+        case EditorState.SegmentsSelected:
+            Editor.state = EditorState.MovingSegments;
+        case EditorState.PenMovingSegments:
+        case EditorState.MovingSegments:
+            var translation = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
+            for(var k = 0; k < Editor.selected_segments.length; k++)
+            {
+                seg = Editor.selected_segments[k];
+                if(seg.clear != undefined) {
+                    seg.clear(Editor.contexts[0]);
+                }                    
+                seg.translate(translation);
+            }
+            Editor.selected_bb.translate(translation);
 
-                // redraw scene
+            // redraw scene
+            RenderManager.render();
+            break;            
+        case EditorState.MiddleOfStroke:
+            // add a new point to this pen stroke
+            // pen automatically draws stroke when point added
+            Editor.current_stroke.add_point(Editor.mouse_position);
+            break;
+        case EditorState.Resizing:
+            var offset = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
+            var bb = Editor.original_bb;
+            var anchor;
+            
+            switch(Editor.grabbed_edge)
+            {
+                // top edge
+            case 0:
+                offset.x = 0.0;
+                offset.y *= -1.0;
+                anchor = new Vector2(bb.mins.x, bb.maxs.y);
+                break;
+                // top right corner
+            case 1:
+                offset.y *= -1.0;
+                anchor = new Vector2(bb.mins.x, bb.maxs.y);
+                break;
+                // right edge
+            case 2:
+                offset.y = 0.0;
+                anchor = bb.mins;
+                break;
+                // bottom right corner
+            case 3:
+                anchor = bb.mins;
+                break;
+                // bottom edge
+            case 4:
+                anchor = new Vector2(bb.maxs.x, bb.mins.y);
+                offset.x = 0.0;
+                break;
+                // bottom left corner
+            case 5:
+                anchor = new Vector2(bb.maxs.x, bb.mins.y);
+                offset.x *= -1.0;
+                break;
+                // left edge
+            case 6:
+                anchor = bb.maxs
+                offset.x *= -1.0;
+                offset.y = 0.0;
+                break;
+                // top left corner
+            case 7:
+                offset.x *= -1.0;
+                offset.y *= -1.0;
+                anchor = bb.maxs
+                break; 
+            }
+            Editor.resize_offset.Add(offset);
+            var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
+            
+            var scale = new Vector2((Editor.resize_offset.x / bb_size.x) + 1.0, (Editor.resize_offset.y / bb_size.y) + 1.0);
+            
+            if((isNaN(scale.x) || isNaN(scale.y)) == false && (scale.x == 0.0 || scale.y == 0) == false)
+            {
+                for(var k = 0; k < Editor.selected_segments.length; k++)
+                    Editor.selected_segments[k].resize(anchor, scale);
+                Editor.update_selected_bb();
                 RenderManager.render();
-                break;            
-            case EditorState.MiddleOfStroke:
-                // add a new point to this pen stroke
-                // pen automatically draws stroke when point added
-                Editor.current_stroke.add_point(Editor.mouse_position);
-                break;
-            case EditorState.Resizing:
-                var offset = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
-                var bb = Editor.original_bb;
-                var anchor;
-            
-                switch(Editor.grabbed_edge)
-                {
-                    // top edge
-                    case 0:
-                        offset.x = 0.0;
-                        offset.y *= -1.0;
-                        anchor = new Vector2(bb.mins.x, bb.maxs.y);
-                        break;
-                    // top right corner
-                    case 1:
-                        offset.y *= -1.0;
-                        anchor = new Vector2(bb.mins.x, bb.maxs.y);
-                        break;
-                    // right edge
-                    case 2:
-                        offset.y = 0.0;
-                        anchor = bb.mins;
-                        break;
-                    // bottom right corner
-                    case 3:
-                        anchor = bb.mins;
-                        break;
-                    // bottom edge
-                    case 4:
-                        anchor = new Vector2(bb.maxs.x, bb.mins.y);
-                        offset.x = 0.0;
-                        break;
-                    // bottom left corner
-                    case 5:
-                        anchor = new Vector2(bb.maxs.x, bb.mins.y);
-                        offset.x *= -1.0;
-                        break;
-                    // left edge
-                    case 6:
-                        anchor = bb.maxs
-                        offset.x *= -1.0;
-                        offset.y = 0.0;
-                        break;
-                    // top left corner
-                    case 7:
-                        offset.x *= -1.0;
-                        offset.y *= -1.0;
-                        anchor = bb.maxs
-                        break; 
-                }
-                Editor.resize_offset.Add(offset);
-                var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
-            
-                var scale = new Vector2((Editor.resize_offset.x / bb_size.x) + 1.0, (Editor.resize_offset.y / bb_size.y) + 1.0);
-                
-                if((isNaN(scale.x) || isNaN(scale.y)) == false && (scale.x == 0.0 || scale.y == 0) == false)
-                {
-                    for(var k = 0; k < Editor.selected_segments.length; k++)
-                        Editor.selected_segments[k].resize(anchor, scale);
-                    Editor.update_selected_bb();
-                    RenderManager.render();
-                }
-                break;
+            }
+            break;
             
         }
     }
@@ -736,69 +728,69 @@ Editor.onMouseUp = function(e)
         
         switch(Editor.state)
         {
-            case EditorState.StrokeSelecting:
-                if(Editor.selected_segments.length > 0)
-                    Editor.state = EditorState.SegmentsSelected;
-                else
-                    Editor.state = EditorState.ReadyToStrokeSelect;
-                RenderManager.clear_canvas();
-                break;
-            case EditorState.RectangleSelecting:
-                if(Editor.selected_segments.length > 0)
-                    Editor.state = EditorState.SegmentsSelected;
-                else
-                    Editor.state = EditorState.ReadyToRectangleSelect;
-                Editor.start_rect_selection = Editor.end_rect_selection = null;
-                RenderManager.render();
-                break;
-            case EditorState.PenMovingSegments:
-            case EditorState.MovingSegments:
-                // RLAZ: delete strokes if cursor moves out of the window.
-                var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
-                var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
-
-                var theEvent = e;
-                var offSet = 10;
-                if(e.type == "touchend") {
-                    theEvent = event.changedTouches[0];
-                }
-
-                // iPad: touchend occurs when finger physically leaves the screen.
-                if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
-                        theEvent.pageY  < toolbarDims.bottom || 
-                        theEvent.pageY > canvasDims.height - 2 * offSet ) {
-                    console.log("HERE");
-                    Editor.deleteTool();
-                    Editor.selectPenTool();  // DEBUG.
-                } else {
-                    if (Editor.state == EditorState.MovingSegments) {
-                        Editor.state = EditorState.SegmentsSelected;
-                        Editor.current_action.add_new_transforms(Editor.selected_segments);
-                    } else {
-                        Editor.selectPenTool();
-                    }
-                }
-                break;
-            case EditorState.MiddleOfStroke:
-                Editor.state = EditorState.ReadyToStroke;
-                if(Editor.current_stroke.finish_stroke()) {
-                    Editor.current_stroke.test_collisions();
-                    RecognitionManager.enqueueSegment(Editor.current_stroke);
-                } else {
-                    Editor.segments.pop();
-                }
-                
-                Editor.current_stroke = null;
-                Editor.current_action.buildSegmentXML();
-                break;
-            case  EditorState.Resizing:
+        case EditorState.StrokeSelecting:
+            if(Editor.selected_segments.length > 0)
                 Editor.state = EditorState.SegmentsSelected;
-                for(var k = 0; k < Editor.selected_segments.length; k++)
-                    Editor.selected_segments[k].freeze_transform();
-                Editor.current_action.add_new_transforms(Editor.selected_segments);
-                RenderManager.render();
-                Editor.resize_offset = new Vector2(0,0);
-                break;
+            else
+                Editor.state = EditorState.ReadyToStrokeSelect;
+            RenderManager.clear_canvas();
+            break;
+        case EditorState.RectangleSelecting:
+            if(Editor.selected_segments.length > 0)
+                Editor.state = EditorState.SegmentsSelected;
+            else
+                Editor.state = EditorState.ReadyToRectangleSelect;
+            Editor.start_rect_selection = Editor.end_rect_selection = null;
+            RenderManager.render();
+            break;
+        case EditorState.PenMovingSegments:
+        case EditorState.MovingSegments:
+            // RLAZ: delete strokes if cursor moves out of the window.
+            var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
+            var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
+
+            var theEvent = e;
+            var offSet = 10;
+            if(e.type == "touchend") {
+                theEvent = event.changedTouches[0];
+            }
+
+            // iPad: touchend occurs when finger physically leaves the screen.
+            if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
+                theEvent.pageY  < toolbarDims.bottom || 
+                theEvent.pageY > canvasDims.height - 2 * offSet ) {
+                console.log("HERE");
+                Editor.deleteTool();
+                Editor.selectPenTool();  // DEBUG.
+            } else {
+                if (Editor.state == EditorState.MovingSegments) {
+                    Editor.state = EditorState.SegmentsSelected;
+                    Editor.current_action.add_new_transforms(Editor.selected_segments);
+                } else {
+                    Editor.selectPenTool();
+                }
+            }
+            break;
+        case EditorState.MiddleOfStroke:
+            Editor.state = EditorState.ReadyToStroke;
+            if(Editor.current_stroke.finish_stroke()) {
+                Editor.current_stroke.test_collisions();
+                RecognitionManager.enqueueSegment(Editor.current_stroke);
+            } else {
+                Editor.segments.pop();
+            }
+            
+            Editor.current_stroke = null;
+            Editor.current_action.buildSegmentXML();
+            break;
+        case  EditorState.Resizing:
+            Editor.state = EditorState.SegmentsSelected;
+            for(var k = 0; k < Editor.selected_segments.length; k++)
+                Editor.selected_segments[k].freeze_transform();
+            Editor.current_action.add_new_transforms(Editor.selected_segments);
+            RenderManager.render();
+            Editor.resize_offset = new Vector2(0,0);
+            break;
         }
     }
 }
@@ -816,15 +808,15 @@ Editor.mapCanvasBackspace = function(e)
             // when we press backspace in Safari and some other browsers.
             switch (Editor.state)
             {
-                case EditorState.MiddleOfText:
-                    e.preventDefault();
-                    Editor.current_text.popCharacter();
-                    break;
-                default:
-                    // Otherwise, delete any selections.
-                    e.preventDefault();
-                    Editor.deleteTool();
-                    break;
+            case EditorState.MiddleOfText:
+                e.preventDefault();
+                Editor.current_text.popCharacter();
+                break;
+            default:
+                // Otherwise, delete any selections.
+                e.preventDefault();
+                Editor.deleteTool();
+                break;
             }
         }
     }
@@ -832,7 +824,7 @@ Editor.mapCanvasBackspace = function(e)
     if(e.keyCode == 46) {
         Editor.deleteTool();
     }
-        
+    
 }
 
 Editor.onKeyPress = function(e)
@@ -855,116 +847,116 @@ Editor.onKeyPress = function(e)
 
     switch(Editor.state)
     {
-        case EditorState.MiddleOfText:
-            textBox = document.getElementById("tex_result");
-            if (document.querySelector(":focus") != textBox &&
-                    Editor.current_text != null) {
-                Editor.current_text.addCharacter(String.fromCharCode(e.which));
-            }
-            break;
-        
-        case EditorState.ReadyToRectangleSelect:
-        case EditorState.ReadyToStrokeSelect:
-        case EditorState.ReadyToStroke:
-            textBox = document.getElementById("tex_result");
-            if (document.querySelector(":focus") == textBox) {
-                break
-            }
-
-            Editor.typeTool();
-            var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
-            
-            var s = new SymbolSegment(Editor.mouse_position);
-            Editor.current_text = s;
+    case EditorState.MiddleOfText:
+        textBox = document.getElementById("tex_result");
+        if (document.querySelector(":focus") != textBox &&
+            Editor.current_text != null) {
             Editor.current_text.addCharacter(String.fromCharCode(e.which));
+        }
+        break;
+        
+    case EditorState.ReadyToRectangleSelect:
+    case EditorState.ReadyToStrokeSelect:
+    case EditorState.ReadyToStroke:
+        textBox = document.getElementById("tex_result");
+        if (document.querySelector(":focus") == textBox) {
+            break
+        }
 
-            Editor.state = EditorState.MiddleOfText;
-            break;
+        Editor.typeTool();
+        var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
+        
+        var s = new SymbolSegment(Editor.mouse_position);
+        Editor.current_text = s;
+        Editor.current_text.addCharacter(String.fromCharCode(e.which));
 
-        case EditorState.SegmentsSelected:
-            if ( Editor.segments.length > 0
-                && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
-                
-                if ( Editor.selected_segments.length == 0 ) {
-                    var seg_to_add = Editor.segments[ Editor.segments.length - 1 ];
-                    var seg_set_id = seg_to_add.set_id;
-                    for ( var i = 0; i < Editor.segments.length; i++ ) {
-                        if ( Editor.segments[ i ].set_id == seg_set_id ) Editor.add_selected_segment( Editor.segments[ i ] );
-                    }
-                    Editor.state = EditorState.SegmentsSelected;
-                    RenderManager.render();                    
-                } else {
+        Editor.state = EditorState.MiddleOfText;
+        break;
 
-                    var cur_seg = Editor.selected_segments[ 0 ]; // use first for location
-                    var cur_seg_loc = new Vector2( ( cur_seg.translation.x + ( cur_seg.translation.x + cur_seg.size.x ) ) / 2, ( cur_seg.translation.y + ( cur_seg.translation.y + cur_seg.size.y ) ) / 2 );
-                    var filter;
-                    
-                    switch ( e.keyCode ) {
-                        case 37: // left
-                            filter = function( s ) { return s.translation.x <= cur_seg.translation.x; };
-                            break;
-                            
-                        case 38: // up
-                            filter = function( s ) { return s.translation.y <= cur_seg.translation.y; };
-                            break;
-                            
-                        case 39: // right
-                            filter = function( s ) { return s.translation.x >= cur_seg.translation.x; };
-                            break;
-                            
-                        case 40: // down
-                            filter = function( s ) { return s.translation.y >= cur_seg.translation.y; };
-                            break;
-                            
-                        default:
-                            break;
-                    }
-                    
-                    var min_dist = -1;
-                    var min_dist_index = -1;
-                    
-                    for ( var n = 0; n < Editor.segments.length; n++ ) {
-                        var seg = Editor.segments[ n ];
-                        if ( seg.set_id == cur_seg.set_id || !filter( seg ) ) continue;
-                        
-                        var seg_loc = new Vector2(( seg.translation.x + seg.translation.x + seg.size.x ) / 2, ( seg.translation.y + seg.translation.y + seg.size.y ) / 2);
-                        
-                        var dist = Vector2.Distance( seg_loc, cur_seg_loc );
-                        if ( min_dist == -1 || dist < min_dist ) {
-                            min_dist = dist;
-                            min_dist_index = n;
-                        }
-                    }
-                
-                    if ( min_dist_index == -1 ) break; // min_dist_index = Editor.segments.length - 1;
-                    
-                    Editor.clear_selected_segments();
-                    
-                    var seg_to_add = Editor.segments[ min_dist_index ];
-                    var seg_set_id = seg_to_add.set_id;
-                    for ( var i = 0; i < Editor.segments.length; i++ ) {
-                        if ( Editor.segments[ i ].set_id == seg_set_id ) Editor.add_selected_segment( Editor.segments[ i ] );
-                    }
-                    
-                    RenderManager.render();
-                }
-            } else {
-                switch ( e.keyCode ) {
-                    case 71: // 'g'
-                        Editor.groupTool();
-                        break;
-                    case 76: // 'l'
-                        Editor.relabel(Editor.state);
-                        break;
-                    case 80: // 'p'
-                        Editor.selectPenTool;
-                        break;
-                    default:
-                        //console.log( e.keyCode );
-                }
-            }
-            break;
+    case EditorState.SegmentsSelected:
+        if ( Editor.segments.length > 0
+             && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
             
+            if ( Editor.selected_segments.length == 0 ) {
+                var seg_to_add = Editor.segments[ Editor.segments.length - 1 ];
+                var seg_set_id = seg_to_add.set_id;
+                for ( var i = 0; i < Editor.segments.length; i++ ) {
+                    if ( Editor.segments[ i ].set_id == seg_set_id ) Editor.add_selected_segment( Editor.segments[ i ] );
+                }
+                Editor.state = EditorState.SegmentsSelected;
+                RenderManager.render();                    
+            } else {
+
+                var cur_seg = Editor.selected_segments[ 0 ]; // use first for location
+                var cur_seg_loc = new Vector2( ( cur_seg.translation.x + ( cur_seg.translation.x + cur_seg.size.x ) ) / 2, ( cur_seg.translation.y + ( cur_seg.translation.y + cur_seg.size.y ) ) / 2 );
+                var filter;
+                
+                switch ( e.keyCode ) {
+                case 37: // left
+                    filter = function( s ) { return s.translation.x <= cur_seg.translation.x; };
+                    break;
+                    
+                case 38: // up
+                    filter = function( s ) { return s.translation.y <= cur_seg.translation.y; };
+                    break;
+                    
+                case 39: // right
+                    filter = function( s ) { return s.translation.x >= cur_seg.translation.x; };
+                    break;
+                    
+                case 40: // down
+                    filter = function( s ) { return s.translation.y >= cur_seg.translation.y; };
+                    break;
+                    
+                default:
+                    break;
+                }
+                
+                var min_dist = -1;
+                var min_dist_index = -1;
+                
+                for ( var n = 0; n < Editor.segments.length; n++ ) {
+                    var seg = Editor.segments[ n ];
+                    if ( seg.set_id == cur_seg.set_id || !filter( seg ) ) continue;
+                    
+                    var seg_loc = new Vector2(( seg.translation.x + seg.translation.x + seg.size.x ) / 2, ( seg.translation.y + seg.translation.y + seg.size.y ) / 2);
+                    
+                    var dist = Vector2.Distance( seg_loc, cur_seg_loc );
+                    if ( min_dist == -1 || dist < min_dist ) {
+                        min_dist = dist;
+                        min_dist_index = n;
+                    }
+                }
+                
+                if ( min_dist_index == -1 ) break; // min_dist_index = Editor.segments.length - 1;
+                
+                Editor.clear_selected_segments();
+                
+                var seg_to_add = Editor.segments[ min_dist_index ];
+                var seg_set_id = seg_to_add.set_id;
+                for ( var i = 0; i < Editor.segments.length; i++ ) {
+                    if ( Editor.segments[ i ].set_id == seg_set_id ) Editor.add_selected_segment( Editor.segments[ i ] );
+                }
+                
+                RenderManager.render();
+            }
+        } else {
+            switch ( e.keyCode ) {
+            case 71: // 'g'
+                Editor.groupTool();
+                break;
+            case 76: // 'l'
+                Editor.relabel(Editor.state);
+                break;
+            case 80: // 'p'
+                Editor.selectPenTool;
+                break;
+            default:
+                //console.log( e.keyCode );
+            }
+        }
+        break;
+        
     }
 }
 
@@ -1023,14 +1015,14 @@ Editor.selectPenTool = function(draw_now)
     
     switch(Editor.state)
     {
-        case EditorState.MiddleOfText:
-            Editor.current_text.finishEntry();
-            if(Editor.current_action.toString() == "EditText")
-                Editor.current_action.set_current_text(Editor.current_text.text);
-            else if(Editor.current_action.toString() == "AddSegments")
-                Editor.current_action.buildSegmentXML();
-            Editor.current_text = null;
-            break;
+    case EditorState.MiddleOfText:
+        Editor.current_text.finishEntry();
+        if(Editor.current_action.toString() == "EditText")
+            Editor.current_action.set_current_text(Editor.current_text.text);
+        else if(Editor.current_action.toString() == "AddSegments")
+            Editor.current_action.buildSegmentXML();
+        Editor.current_text = null;
+        break;
     }
 
     Editor.state = EditorState.ReadyToStroke;
@@ -1047,13 +1039,13 @@ Editor.strokeSelectionTool = function()
     
     switch(Editor.state)
     {
-        case EditorState.MiddleOfText:
-            Editor.current_text.finishEntry();
-            if(Editor.current_action.toString() == "EditText")
-                Editor.current_action.set_current_text(Editor.current_text.text);
-            else if(Editor.current_action.toString() == "AddSegments")
-                Editor.current_action.buildSegmentXML();                
-            Editor.current_text = null;
+    case EditorState.MiddleOfText:
+        Editor.current_text.finishEntry();
+        if(Editor.current_action.toString() == "EditText")
+            Editor.current_action.set_current_text(Editor.current_text.text);
+        else if(Editor.current_action.toString() == "AddSegments")
+            Editor.current_action.buildSegmentXML();                
+        Editor.current_text = null;
     }
     
     if(Editor.selected_segments.length == 0)
@@ -1077,13 +1069,13 @@ Editor.rectangleSelectionTool = function()
 
     switch(Editor.state)
     {
-        case EditorState.MiddleOfText:
-            Editor.current_text.finishEntry();
-            if(Editor.current_action.toString() == "EditText")
-                Editor.current_action.set_current_text(Editor.current_text.text);
-            else if(Editor.current_action.toString() == "AddSegments")
-                Editor.current_action.buildSegmentXML();                
-            Editor.current_text = null;
+    case EditorState.MiddleOfText:
+        Editor.current_text.finishEntry();
+        if(Editor.current_action.toString() == "EditText")
+            Editor.current_action.set_current_text(Editor.current_text.text);
+        else if(Editor.current_action.toString() == "AddSegments")
+            Editor.current_action.buildSegmentXML();                
+        Editor.current_text = null;
     }
     
     if(Editor.selected_segments.length == 0)
@@ -1100,13 +1092,13 @@ Editor.align = function()
 {
     switch(Editor.state)
     {
-        case EditorState.MiddleOfText:
-            Editor.current_text.finishEntry();
-            if(Editor.current_action.toString() == "EditText")
-                Editor.current_action.set_current_text(Editor.current_text.text);
-            else if(Editor.current_action.toString() == "AddSegments")
-                Editor.current_action.buildSegmentXML();                
-            Editor.current_text = null;
+    case EditorState.MiddleOfText:
+        Editor.current_text.finishEntry();
+        if(Editor.current_action.toString() == "EditText")
+            Editor.current_action.set_current_text(Editor.current_text.text);
+        else if(Editor.current_action.toString() == "AddSegments")
+            Editor.current_action.buildSegmentXML();                
+        Editor.current_text = null;
     }
     RenderManager.clear_canvas();
 
@@ -1134,12 +1126,12 @@ Editor.align = function()
             {
                 var seg_min = set_segments[j].worldMinPosition();
                 var seg_max = set_segments[j].worldMaxPosition();
-            
+                
                 if(seg_min.x < mins.x)
                     mins.x = seg_min.x;
                 if(seg_min.y < mins.y)
                     mins.y = seg_min.y;
-                    
+                
                 if(seg_max.x > maxs.x)
                     maxs.x = seg_max.x;
                 if(seg_max.y > maxs.y)
@@ -1152,7 +1144,7 @@ Editor.align = function()
             // If it's a text segment, account for the draculae making x's smaller than t's, etc
             
             if (set_segments[0].constructor == SymbolSegment) {
-            size = Vector2.Subtract(maxs, mins);
+                size = Vector2.Subtract(maxs, mins);
                 if (-1 != $.inArray(set_segments[0].text, Editor.x_height_chars)) {
                     mins.y += size.y / 2;
                 }
@@ -1173,11 +1165,11 @@ Editor.align = function()
     Editor.segments.pop();
     
     /* build XML request here:
-    <SegmentList>
-        <Segment symbol="S" min="0,0" max="10,10" id="24"/>
-    </SegmentList>
-    
-    
+       <SegmentList>
+       <Segment symbol="S" min="0,0" max="10,10" id="24"/>
+       </SegmentList>
+       
+       
     */
     
     var sb = new StringBuilder();
@@ -1199,116 +1191,116 @@ Editor.align = function()
     $.ajax
     (
         {
-        url: Editor.align_server_url + sb.toString(),
-        success: function(in_data, textStatus, xmlhttp)
-        {
-            // parse response here
-            var new_dimensions = new Array();
+            url: Editor.align_server_url + sb.toString(),
+            success: function(in_data, textStatus, xmlhttp)
+            {
+                // parse response here
+                var new_dimensions = new Array();
 
-            // parse response xml
-            var xmldoc = in_data;
-            var segment_nodes = xmldoc.getElementsByTagName("Segment");
-            var tex_nodes = xmldoc.getElementsByTagName( "TexString" );
-            
-            if(segment_nodes.length == 0)
-            {
-                alert("DRACULAE Error: " + in_data);
-                return;
-            }
-            
-            // Append interpretation to the query box.
-            if ( tex_nodes.length != 0 ) {
-                var tex_string = tex_nodes[ 0 ].textContent;
-                // get just the math, removing spaces
-                var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" );
-                var current = document.getElementById( "tex_result" ).value;
-                // Inserting an expression clears the textbox, adds 
-                // expression to it.
-                document.getElementById( "tex_result" ).value = tex_math;
-            }
-            
-            for(var k = 0; k < segment_nodes.length; k++)
-            {
-                var attributes = segment_nodes[k].attributes;
-                var t = new Tuple();
-                t.item1 = parseInt(attributes.getNamedItem("id").value);
-                t.item2 = parseVector2(attributes.getNamedItem("min").value);
-                t.item3 = parseVector2(attributes.getNamedItem("max").value)
-                new_dimensions.push(t);
-
-            }
-            
-            // foreach segment set
-            
-            var transform_action = new TransformSegments(Editor.segments);
-            
-            for(var k = 0; k < new_dimensions.length; k++)
-            {
-                var t = null;
-                // find tuple containing original size of segment
-                for(var j = 0; j < data.length; j++)
+                // parse response xml
+                var xmldoc = in_data;
+                var segment_nodes = xmldoc.getElementsByTagName("Segment");
+                var tex_nodes = xmldoc.getElementsByTagName( "TexString" );
+                
+                if(segment_nodes.length == 0)
                 {
-                    if(data[j].item1.set_id == new_dimensions[k].item1)
-                    {
-                        t = data[j];
-                        break;
-                    }
+                    alert("DRACULAE Error: " + in_data);
+                    return;
                 }
+                
+                // Append interpretation to the query box.
+                if ( tex_nodes.length != 0 ) {
+                    var tex_string = tex_nodes[ 0 ].textContent;
+                    // get just the math, removing spaces
+                    var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" );
+                    var current = document.getElementById( "tex_result" ).value;
+                    // Inserting an expression clears the textbox, adds 
+                    // expression to it.
+                    document.getElementById( "tex_result" ).value = tex_math;
+                }
+                
+                for(var k = 0; k < segment_nodes.length; k++)
+                {
+                    var attributes = segment_nodes[k].attributes;
+                    var t = new Tuple();
+                    t.item1 = parseInt(attributes.getNamedItem("id").value);
+                    t.item2 = parseVector2(attributes.getNamedItem("min").value);
+                    t.item3 = parseVector2(attributes.getNamedItem("max").value)
+                    new_dimensions.push(t);
 
-                if(t == null)
-                    continue;
-                
-                var set_id = new_dimensions[k].item1;
-                var segments = Editor.get_segment_by_id(set_id);
-                
-                var min_0 = t.item4;
-                var max_0 = t.item5;
-                
-                var min_f = new_dimensions[k].item2;
-                var max_f = new_dimensions[k].item3;
-                
-                var size0 = Vector2.Subtract(max_0, min_0);
-                var sizef = Vector2.Subtract(max_f, min_f);
-                
-                // If it's a text segment, account for the draculae making x's smaller than t's, etc
-                if (segments.length == 1 && segments[0].constructor == SymbolSegment) {
-                    if (-1 != $.inArray(segments[0].text, Editor.x_height_chars)) {
-                        min_f.y -= sizef.y;
-                        sizef.y *= 2;
-                    }
-                    if (-1 != $.inArray(segments[0].text, Editor.descender_chars)) {
-                        min_f.y -= sizef.y / 2;
-                    }
                 }
                 
-                var scale = new Vector2(sizef.x / size0.x, sizef.y / size0.y);
+                // foreach segment set
                 
-                var translation = new Vector2();
+                var transform_action = new TransformSegments(Editor.segments);
+                
+                for(var k = 0; k < new_dimensions.length; k++)
+                {
+                    var t = null;
+                    // find tuple containing original size of segment
+                    for(var j = 0; j < data.length; j++)
+                    {
+                        if(data[j].item1.set_id == new_dimensions[k].item1)
+                        {
+                            t = data[j];
+                            break;
+                        }
+                    }
+
+                    if(t == null)
+                        continue;
+                    
+                    var set_id = new_dimensions[k].item1;
+                    var segments = Editor.get_segment_by_id(set_id);
+                    
+                    var min_0 = t.item4;
+                    var max_0 = t.item5;
+                    
+                    var min_f = new_dimensions[k].item2;
+                    var max_f = new_dimensions[k].item3;
+                    
+                    var size0 = Vector2.Subtract(max_0, min_0);
+                    var sizef = Vector2.Subtract(max_f, min_f);
+                    
+                    // If it's a text segment, account for the draculae making x's smaller than t's, etc
+                    if (segments.length == 1 && segments[0].constructor == SymbolSegment) {
+                        if (-1 != $.inArray(segments[0].text, Editor.x_height_chars)) {
+                            min_f.y -= sizef.y;
+                            sizef.y *= 2;
+                        }
+                        if (-1 != $.inArray(segments[0].text, Editor.descender_chars)) {
+                            min_f.y -= sizef.y / 2;
+                        }
+                    }
+                    
+                    var scale = new Vector2(sizef.x / size0.x, sizef.y / size0.y);
+                    
+                    var translation = new Vector2();
                     translation.x = scale.x * min_f.x - min_0.x;
                     translation.y = scale.y * min_f.y - min_0.y;
-                
-                
-                for(var i = 0; i < segments.length; i++)
-                {
-                    segments[i].resize(min_0, scale);
-                    segments[i].freeze_transform();
-                    segments[i].translate(Vector2.Subtract(min_f, min_0));
-                    segments[i].freeze_transform();
+                    
+                    
+                    for(var i = 0; i < segments.length; i++)
+                    {
+                        segments[i].resize(min_0, scale);
+                        segments[i].freeze_transform();
+                        segments[i].translate(Vector2.Subtract(min_f, min_0));
+                        segments[i].freeze_transform();
+                    }
+                    
                 }
                 
+                transform_action.add_new_transforms(Editor.segments);
+                transform_action.Apply();
+                Editor.add_action(transform_action);
+                //RenderManager.render();
+            },
+            error: function(jqXHR, textStatus, errorThrown)
+            {
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
             }
-            
-            transform_action.add_new_transforms(Editor.segments);
-            transform_action.Apply();
-            Editor.add_action(transform_action);
-            //RenderManager.render();
-        },
-        error: function(jqXHR, textStatus, errorThrown)
-        {
-            console.log(jqXHR);
-            console.log(textStatus);
-            console.log(errorThrown);
-        }
         }
     );
 }
@@ -1390,14 +1382,14 @@ Editor.typeTool = function()
     
     switch(Editor.state)
     {
-        case EditorState.SegmentsSelected:
-            Editor.clear_selected_segments();
-            break;
-        case EditorState.MiddleOfText:
-            if(Editor.current_action.toString() == "EditText")
-                Editor.current_action.set_current_text(Editor.current_text.text);
-            Editor.current_text = null;
-            break;
+    case EditorState.SegmentsSelected:
+        Editor.clear_selected_segments();
+        break;
+    case EditorState.MiddleOfText:
+        if(Editor.current_action.toString() == "EditText")
+            Editor.current_action.set_current_text(Editor.current_text.text);
+        Editor.current_text = null;
+        break;
     }
     Editor.state = EditorState.ReadyForText;
     RenderManager.render();
@@ -1405,10 +1397,10 @@ Editor.typeTool = function()
 
 Editor.relabel = function(return_to)
 {
-        CorrectionMenu.show(return_to);
-        Editor.clearButtonOverlays();
-        for(var k = 0; k < Editor.button_states.length; k++)
-            Editor.button_states[k].setEnabled(false);
+    CorrectionMenu.show(return_to);
+    Editor.clearButtonOverlays();
+    for(var k = 0; k < Editor.button_states.length; k++)
+        Editor.button_states[k].setEnabled(false);
 }
 
 // clears all the data and sends action list to server for storage
@@ -1517,7 +1509,7 @@ Editor.getInkML = function() {
         );
         
     } else {
-    
+        
         // save locally
         var datauri = "data:text/inkml," + escape( inkml ); // yes, this is an invalid mime type
         window.open( datauri );
@@ -1526,14 +1518,14 @@ Editor.getInkML = function() {
 }
 
 /*
- This method is complicated so let me explain what's going on:
- FileReader's readAsDataURL method and apparently Image's .src property are
- Asynchrynous, so we need to fire an event to do work instead of doing it sequentially.
- When the file is read as a data url, the first method is called which sets the data url
- as the Image's source.  That doesn't happen immediately, so another event is made
- for when the image's src is finished being set.  When this happens, then we forward
- the image to the render manager and the collision manager.
- */
+  This method is complicated so let me explain what's going on:
+  FileReader's readAsDataURL method and apparently Image's .src property are
+  Asynchrynous, so we need to fire an event to do work instead of doing it sequentially.
+  When the file is read as a data url, the first method is called which sets the data url
+  as the Image's source.  That doesn't happen immediately, so another event is made
+  for when the image's src is finished being set.  When this happens, then we forward
+  the image to the render manager and the collision manager.
+*/
 
 Editor.onImageLoad = function(e)
 {
@@ -1563,7 +1555,7 @@ Editor.onImageLoad = function(e)
                 var blob = new ImageBlob(this, inverseImage);
                 Editor.add_segment(blob);
                 RecognitionManager.enqueueSegment(blob);
-            
+                
             }
             
             Editor.add_action(new AddSegments(added_segments));
