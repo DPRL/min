@@ -163,7 +163,7 @@ PenStroke.prototype.finish_stroke = function()
         }
         
         this.polyline.setAttribute("points", sb.toString());
-        this.polyline.setAttribute("style", "stroke:" + this.color + ";stroke-width:" + this.stroke_width);
+        this.polyline.setAttribute("style", "fill:none; stroke:" + this.color + ";stroke-width:" + this.stroke_width);
 
     this.inner_svg.appendChild(this.polyline);
     this.root_svg.appendChild(this.inner_svg);
