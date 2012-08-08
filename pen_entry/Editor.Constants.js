@@ -23,6 +23,20 @@ Editor.ascender_chars = ['b','d','f','h','i','k','l','t'];
 Editor.x_height_chars = ['a','c','e','m','n','o','r','s','u','v','w','x','z'];
 Editor.descender_chars = ['g','j','p','q','y'];
 
+// List of keycodes, I couldn't find a standard object for this
+KeyCode = {
+    backspace: 8,
+    del: 46,
+    enter: 13,
+    left_arrow: 37,
+    up_arrow: 38,
+    right_arrow: 39,
+    down_arrow: 40,
+    g: 71,
+    l: 76,
+    p: 80,
+}
+
 Editor.classifier = new Classifier();
 
 //Editor.editor_root = "./";

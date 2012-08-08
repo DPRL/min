@@ -168,7 +168,7 @@ PenStroke.prototype.finish_stroke = function()
     this.inner_svg.appendChild(this.polyline);
     this.root_svg.appendChild(this.inner_svg);
     Editor.canvas_div.appendChild(this.root_svg);
-    this.element = this.root_svg
+    this.element = this.root_svg;
     
     // clear the canvas
     RenderManager.clear_canvas();

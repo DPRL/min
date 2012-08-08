@@ -798,7 +798,7 @@ Editor.onMouseUp = function(e)
 
 Editor.mapCanvasBackspace = function(e)
 {
-    if(e.keyCode == 8)
+    if(e.keyCode == KeyCode.backspace)
     {
         // Check whether the text box has focus.
         textBox = document.getElementById("tex_result");
@@ -822,7 +822,7 @@ Editor.mapCanvasBackspace = function(e)
         }
     }
 
-    if(e.keyCode == 46) {
+    if(e.keyCode == KeyCode.del) {
         Editor.deleteTool();
     }
     
@@ -837,13 +837,13 @@ Editor.onKeyPress = function(e)
         return;
 
     // RLAZ: map enter to issuing the search.
-    if(e.keyCode == 13) {
+    if(e.keyCode == KeyCode.enter) {
         Editor.search();
         return;
     } 
 
     // RLAZ: skip deletes (46) and backspaces (8), handled in mapCanvasBackspace()
-    if(e.keyCode == 8 || e.keyCode == 46)
+    if(e.keyCode == KeyCode.backspace || e.keyCode == KeyCode.del)
         return;
 
     switch(Editor.state)
@@ -876,7 +876,8 @@ Editor.onKeyPress = function(e)
 
     case EditorState.SegmentsSelected:
         if ( Editor.segments.length > 0
-             && ( e.keyCode == 37 || e.keyCode == 38 || e.keyCode == 39 || e.keyCode == 40 ) ) {
+             && ( e.keyCode == KeyCode.left_arrow || e.keyCode == KeyCode.up_arrow ||
+                  e.keyCode == KeyCode.right_arrow || e.keyCode == KeyCode.down_arrow ) ) {
             
             if ( Editor.selected_segments.length == 0 ) {
                 var seg_to_add = Editor.segments[ Editor.segments.length - 1 ];
@@ -893,19 +894,19 @@ Editor.onKeyPress = function(e)
                 var filter;
                 
                 switch ( e.keyCode ) {
-                case 37: // left
+                case KeyCode.left_arrow:
                     filter = function( s ) { return s.translation.x <= cur_seg.translation.x; };
                     break;
                     
-                case 38: // up
+                case KeyCode.up_arrow: 
                     filter = function( s ) { return s.translation.y <= cur_seg.translation.y; };
                     break;
                     
-                case 39: // right
+                case KeyCode.right_arrow:
                     filter = function( s ) { return s.translation.x >= cur_seg.translation.x; };
                     break;
                     
-                case 40: // down
+                case KeyCode.down_arrow:
                     filter = function( s ) { return s.translation.y >= cur_seg.translation.y; };
                     break;
                     
@@ -943,17 +944,16 @@ Editor.onKeyPress = function(e)
             }
         } else {
             switch ( e.keyCode ) {
-            case 71: // 'g'
+            case KeyCode.g:
                 Editor.groupTool();
                 break;
-            case 76: // 'l'
+            case KeyCode.l:
                 Editor.relabel(Editor.state);
                 break;
-            case 80: // 'p'
+            case KeyCode.p:
                 Editor.selectPenTool;
                 break;
             default:
-                //console.log( e.keyCode );
             }
         }
         break;
