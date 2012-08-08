@@ -200,10 +200,14 @@ Editor.setStrokeView = function()
     for (var i=0; i < Editor.segments.length; i++) {
         var nextSegment = Editor.segments[i];
         if (nextSegment.chalk_layer) {
-            if (!show)
-                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;visibility:hidden;");
-            else
-                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;visibility:visible;");
+            if (!show){
+                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;");
+                nextSegment.element.style.visibility = "hidden";
+            }
+            else{
+                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;");
+                nextSegment.element.style.visibility = "visible";                
+            }
         }
     }
 }
