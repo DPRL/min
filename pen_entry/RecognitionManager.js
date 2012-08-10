@@ -82,7 +82,6 @@ RecognitionManager.classify = function(in_set_id, should_segment)
 
 RecognitionManager.classify_queued = function(should_segment, should_assign_setid)
 {
-    //console.log("classify queued!");
     var temp_list = new Array();
     var new_set_id = Segment.set_count++;
     
@@ -111,8 +110,6 @@ RecognitionManager.enqueueSegment = function(segment)
     }
     else
     {
-        // With 'max_segments = 1,' this will never execute.
-        //console.log("Setting timeouot");
         RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false," + ( segment.set_id == -1 ? "true" : "false" ) + ";", timeOut);
     }
     

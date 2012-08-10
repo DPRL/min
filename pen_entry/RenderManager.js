@@ -36,7 +36,6 @@ RenderManager.initialize = function(in_width, in_height, in_layers)
     RenderManager.segment_set_divs = new Array();
 }
 
-
 // render the helper grahics (bounding box, segments ets, rectangle select etc)
 RenderManager.render_tools_layer = function()
 {

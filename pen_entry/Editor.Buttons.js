@@ -5,19 +5,6 @@ function Buttons()
 
 Buttons.COUNT = 0;
 
-/*Buttons.Pen = 0;
-  Buttons.Stroke = 1;
-  Buttons.Box = 2;
-  Buttons.Delete = 3;
-  Buttons.Align = 4;
-  Buttons.Undo = 5;
-  Buttons.Redo = 6;
-  Buttons.Group = 7;
-  Buttons.Label = 8;
-  Buttons.Clear = 9;
-  Buttons.GetInkML = 10;
-  Buttons.Text = 11;*/
-
 // RLAZ: Button modification.
 Buttons.Pen = 0;
 //Buttons.Text = 1;

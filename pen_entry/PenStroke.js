@@ -131,39 +131,39 @@ PenStroke.prototype.finish_stroke = function()
 
     // add svg and apply appropriate transform here
     this.root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        this.root_svg.setAttribute("class", "pen_stroke");
-        this.root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-        this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
-        this.root_svg.setAttribute("width", "100%");
-        this.root_svg.setAttribute("height", "100%");
-        
-        // build transform
-        
-        this.translation = this.world_mins.clone();
-        
-        this.inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    this.root_svg.setAttribute("class", "pen_stroke");
+    this.root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
+    this.root_svg.setAttribute("width", "100%");
+    this.root_svg.setAttribute("height", "100%");
+    
+    // build transform
+    
+    this.translation = this.world_mins.clone();
+    
+    this.inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
 
-        var sb = new StringBuilder();
-        sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
-        sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
-        sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
-        sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
-        
-        this.inner_svg.setAttribute("transform", sb.toString());
+    var sb = new StringBuilder();
+    sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
+    sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
+    sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
+    sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
+    
+    this.inner_svg.setAttribute("transform", sb.toString());
 
-        // build polyline
-        
-        this.polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-        
-        sb.clear();
-        for(var k = 0; k < this.points.length; k++)
-        {
-            this.points[k] = Vector2.Subtract(this.points[k], this.world_mins);
-            sb.append(this.points[k].x).append(',').append(this.points[k].y).append(' ');
-        }
-        
-        this.polyline.setAttribute("points", sb.toString());
-        this.polyline.setAttribute("style", "fill:none; stroke:" + this.color + ";stroke-width:" + this.stroke_width);
+    // build polyline
+    
+    this.polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    
+    sb.clear();
+    for(var k = 0; k < this.points.length; k++)
+    {
+        this.points[k] = Vector2.Subtract(this.points[k], this.world_mins);
+        sb.append(this.points[k].x).append(',').append(this.points[k].y).append(' ');
+    }
+    
+    this.polyline.setAttribute("points", sb.toString());
+    this.polyline.setAttribute("style", "fill:none; stroke:" + this.color + ";stroke-width:" + this.stroke_width);
 
     this.inner_svg.appendChild(this.polyline);
     this.root_svg.appendChild(this.inner_svg);
