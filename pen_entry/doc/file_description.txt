@@ -215,3 +215,12 @@ Utils.js:
 
         Contains the Vector2 object which is used to create vectors of length 2 and methods for
         doing math on them. Vector2s are typically used in Min to represent (x,y) coordinates.
+
+        Methods:
+                Pointwise
+                SquareDistance
+                Distance
+                Subtract
+                Multiply
+                transform: Translates and scales a Vector2
+                
