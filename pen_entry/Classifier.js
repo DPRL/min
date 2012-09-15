@@ -49,8 +49,10 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
             var result_list = xmldoc.getElementsByTagName("RecognitionResults");
 
             // If there are ConnectedComponents coming back, then create ImageBlobs on the canvas
+            // assuming that there is just one image blob for classification
             if(xmldoc.getElementsByTagName("ConnectedComponents").length != 0){
-                in_segments = ImageBlob.populateCanvasFromCCs(xmldoc); 
+                in_segments = ImageBlob.populateCanvasFromCCs(xmldoc, new Vector2(in_segments[0].image.width,
+                                                                                  in_segments[0].image.height)); 
             }
 
 

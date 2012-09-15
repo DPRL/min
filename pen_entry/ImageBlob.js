@@ -42,9 +42,10 @@ function ImageBlob(in_image, in_inverse_image)
   into multiple connected_components later, and the CCs are the only thing that needs to be
   displayed.
 */
-ImageBlob.prototype.initialize_blob = function(x, y){
+ImageBlob.prototype.initialize_blob = function(x, y, context_size){
     // Create an SVG element with the image embedded within it, this is what will actually be displayed on the page
-    this.translation = new Vector2((Editor.canvas_width  - this.image.width) / 2 + x, (Editor.canvas_height - this.image.height) / 2 + y);
+    this.translation = new Vector2((Editor.canvas_width / 2) - (context_size.x / 2 - x)
+                                   ,(Editor.canvas_height / 2) - (context_size.y / 2 - y));
     this.world_mins = this.translation.clone();
     this.world_maxs = Vector2.Add(this.translation, this.size);
     
@@ -290,7 +291,7 @@ ImageBlob.generateInverseImage = function(image){
 /**
    Add ccs from xml and return the new segment list
 **/
-ImageBlob.populateCanvasFromCCs = function(xmldoc){
+ImageBlob.populateCanvasFromCCs = function(xmldoc, full_image_size){
     Editor.clear_selected_segments();
     var root_node = xmldoc;
     /*
@@ -302,8 +303,7 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
       <Image...
       </ConnectedComponents>
     */
-
-    //var image_node = root_node.firstChild;
+    
     var image_nodes = root_node.getElementsByTagName("Image");
     
     var image_list = new Array(image_nodes.length);
@@ -332,7 +332,7 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc){
             // once it loads, add the image blob to the system
             inverse_image.onload = function(){                   
                 var b = new ImageBlob(image_list[my_k], this);
-                b.initialize_blob(position_list[my_k][0], position_list[my_k][1]);
+                b.initialize_blob(position_list[my_k][0], position_list[my_k][1], full_image_size);
                 // Because we are replacing the original image, set the instance id
                 b.instance_id = image_list[my_k].instance_id;
                 Segment.instance_id = instance_id + 1;
