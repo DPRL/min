@@ -532,29 +532,30 @@ Editor.onMouseDown = function(e)
     case EditorState.ReadyToStroke:
         // RLAZ: allow symbols to be moved (but not multiply selected or resized)
         // in drawing mode.
-        var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
-        if(click_result.length > 0)
-        {
-            var segment = click_result.pop();
-            for(var k = 0; k < Editor.segments.length; k++)
-                if(Editor.segments[k].set_id == segment.set_id)
-                    Editor.add_selected_segment(Editor.segments[k]);
+        // var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+        // if(click_result.length > 0)
+        // {
+        //     console.log("clicking through stuff");
+        //     var segment = click_result.pop();
+        //     for(var k = 0; k < Editor.segments.length; k++)
+        //         if(Editor.segments[k].set_id == segment.set_id)
+        //             Editor.add_selected_segment(Editor.segments[k]);
             
-            Editor.add_action(new TransformSegments(Editor.selected_segments));
-            Editor.state = EditorState.PenMovingSegments; 
+        //     Editor.add_action(new TransformSegments(Editor.selected_segments));
+        //     Editor.state = EditorState.PenMovingSegments; 
 
-            // DEBUG: callback function needs to be defined in an abstract function;
-            // apparently the first argument is evaluated.
-            setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
-        } else
-        {
+        //     // DEBUG: callback function needs to be defined in an abstract function;
+        //     // apparently the first argument is evaluated.
+        //     setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+        // } else
+        // {
             // build a new stroke object and save reference so we can add new points
-            Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-            Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-            Editor.add_segment(Editor.current_stroke);            
+        Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+        Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+        Editor.add_segment(Editor.current_stroke);            
             
-            Editor.state = EditorState.MiddleOfStroke;
-        }
+        Editor.state = EditorState.MiddleOfStroke;
+        // }
 
         RenderManager.render();
         break;
@@ -766,7 +767,6 @@ Editor.onMouseUp = function(e)
                 theEvent.pageY > canvasDims.height - 2 * offSet ) {
                 console.log("HERE");
                 Editor.deleteTool();
-                Editor.selectPenTool();  // DEBUG.
             } else {
                 if (Editor.state == EditorState.MovingSegments) {
                     Editor.state = EditorState.SegmentsSelected;
@@ -1367,7 +1367,7 @@ Editor.deleteTool = function()
     Editor.add_action(action);
     Editor.clear_selected_segments();    
     RenderManager.render();
-    
+    console.log(Editor.selection_method);
     if(Editor.selection_method == "Stroke")
         Editor.state = EditorState.ReadyToStrokeSelect;
     else if(Editor.selection_method == "Rectangle")
