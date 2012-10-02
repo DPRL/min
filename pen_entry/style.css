@@ -208,6 +208,7 @@ div.equation_canvas {
 	height: 100%;
 	overflow: hidden;
 	cursor: default;
+        -moz-user-select: none;
 }
 
 /* Can we use inheritance to be less redundant here? */
