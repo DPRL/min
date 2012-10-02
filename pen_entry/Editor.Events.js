@@ -1615,6 +1615,7 @@ Editor.search = function()
         url = 'http://dlmf.nist.gov/search/search?q=';
         break
     }
+    searchString = encodeURIComponent(searchString);
     window.open(url + searchString);
 }
 
