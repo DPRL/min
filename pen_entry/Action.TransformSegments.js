@@ -29,7 +29,7 @@ function TransformSegments(in_segments)
 TransformSegments.prototype.add_new_transforms = function(in_segments)
 {
     if(in_segments.length != this.segments.length)
-        alert("ERROR in TransformSegments.prototype.add_new_transforms");
+        console.log("ERROR in TransformSegments.prototype.add_new_transforms");
 
     this.should_keep = true;
     
