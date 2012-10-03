@@ -49,6 +49,9 @@ Editor.setup_events = function()
     window.addEventListener("mousemove", Editor.onMouseMove, true);
     window.addEventListener("touchmove", Editor.onMouseMove, true);
 
+    // $("search_button").bind('click', Editor.search);
+    document.getElementById("search_button").onclick = Editor.search;
+    
     $(document).keypress(Editor.onKeyPress);
     $(document).keydown(Editor.mapCanvasBackspace);
     Editor.toolbar_div.addEventListener("mouseup", Editor.onMouseUp, true);
@@ -1586,7 +1589,7 @@ Editor.prevent_default = function(event)
 ////////////////////////////////////////
 // New methods
 ////////////////////////////////////////
-Editor.search = function() 
+Editor.search = function(e) 
 {
     // NOTE: CURRENTLY EXPERIMENTING WITH ONLY ONE TEXT BOX.
     var searchString = "";
