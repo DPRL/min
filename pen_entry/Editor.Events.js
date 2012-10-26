@@ -1613,6 +1613,10 @@ Editor.search = function(e)
     case 'Google':
         url='http://www.google.com/search?q=';
         break;
+    case 'David\'s Math Search':
+        url = 'http://saskatoon.cs.rit.edu:9001/?query=';
+        break;
+
     default:
         /* Currently NIST DLMF is the default (first list item) */
         url = 'http://dlmf.nist.gov/search/search?q=';
