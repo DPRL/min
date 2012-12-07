@@ -49,8 +49,6 @@ Editor.setup_events = function()
     window.addEventListener("mousemove", Editor.onMouseMove, true);
     window.addEventListener("touchmove", Editor.onMouseMove, true);
 
-    // $("search_button").bind('click', Editor.search);
-    document.getElementById("search_button").onclick = Editor.search;
     
     $(document).keypress(Editor.onKeyPress);
     $(document).keydown(Editor.mapCanvasBackspace);
@@ -83,8 +81,8 @@ Editor.setup_events = function()
 
     document.getElementById("undo").addEventListener("click", Editor.undo, true);
     document.getElementById("redo").addEventListener("click", Editor.redo, true);
-    document.getElementById("dprl").addEventListener("click", Editor.goDPRL, true);
     document.getElementById("align").addEventListener("click",Editor.align, true);
+    document.getElementById("search").addEventListener("click", Editor.search, true);
 
     // add an equation image to the canvas if this is supported
     if(window.FileReader){

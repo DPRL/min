@@ -23,7 +23,7 @@
 				<!-- Pen -->
 				<div class="toolbar_group">
 					<div class="toolbar_button button" id="pen">
-						<div class="toolbar_button_icon"><img src="img/min_pen_small_alpha.png" alt="Pen" style="height: 48px; width: 58px;" /></div>
+						<div class="toolbar_button_icon"><img src="img/pencil@2x.png" alt="Pen" style="height: 48px; width: 48px;" /></div>
 						<div class="toolbar_button_label">Pen</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
@@ -40,23 +40,22 @@
 					<div class="toolbar_button button" id="rectangle_select">
 
 						<!-- <div class="toolbar_button_text"><span>&#9744;</span></div> -->
-						<div class="toolbar_button_icon"><img src="img/min_segselect_small_alpha.png" alt="Rectangle Select" style="padding: 6px;height: 41px;width:41px" /></div>
+						<div class="toolbar_button_icon"><img src="img/rectangle_select@2x.png" alt="Rectangle Select" style="height: 48px;width:48px" /></div>
 						<div class="toolbar_button_label">Rectangle</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>				
 
 					<div class="toolbar_button button" id="stroke_select">
 						<!-- <div class="toolbar_button_text"><span style="font-size: 42px; padding-top: 10px">S</span></div> -->
-						 <div class="toolbar_button_icon"><img src="img/min_strokeselect_small_alpha.png" alt="Stroke Select" style="padding: 4px;height: 41px; width: 41px;" /></div>		
+						 <div class="toolbar_button_icon"><img src="img/stroke_select@2x.png" alt="Stroke Select" style="height: 48px; width: 48px;" /></div>		
 						<div class="toolbar_button_label">Stroke</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
 
 
-                                        <div class="toolbar_button button hidden_toolbar_button" id="upload_image">
-					  <!-- <div class="toolbar_button_text"><span style="font-size: 42px; padding-top: 10px">S</span></div> -->
-					  <div class="toolbar_button_icon"><img src="img/upload_icon_tango.png"
-					                                        alt="Load Image" style="padding: 4px;height: 41px; width: 41px;" /></div>		
+                    <div class="toolbar_button button" id="upload_image">
+					  <div class="toolbar_button_icon"><img src="img/upload@2x.png"
+					                                        alt="Load Image" style="height: 48px; width: 48px;" /></div>		
 					  <div class="toolbar_button_label">Load Image</div>
 					  <div class="toolbar_button_overlay"></div>
 					</div>
@@ -68,13 +67,13 @@
 				<!-- Undo/Redo -->
 				<div class="toolbar_group">	
 					<div class="toolbar_button button" id="undo">
-						<div class="toolbar_button_icon"><img src="img/min_undo_small_alpha.png" alt="Undo" style="height: 54px; width: 50px;" /></div>
+						<div class="toolbar_button_icon"><img src="img/undo@2x.png" alt="Undo" style="height: 48px; width: 48px;" /></div>
 						<div class="toolbar_button_label">Undo</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
 
 					<div class="toolbar_button button" id="redo">
-						<div class="toolbar_button_icon"><img src="img/min_redo_small_alpha.png" alt="Redo" style="height: 54px; width: 50px;" /></div>		
+						<div class="toolbar_button_icon"><img src="img/redo@2x.png" alt="Redo" style="height: 48px; width: 48px;" /></div>		
 						<div class="toolbar_button_label">Redo</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
@@ -83,14 +82,6 @@
 
 				<div class="toolbar_group_divider"></div>
 
-				<div class="toolbar_button button" id="dprl">
-					<div class="toolbar_button_icon">
-					
-					<img src="img/dprl.png" style="padding-left:0px;padding-top:10px;width:74px;overflow:hidden;padding-right:0px" alt="DPRL logo" />
-					</div>		
-					<div class="toolbar_button_label">DPRL</div>
-					<div class="toolbar_button_overlay" style="width:84px"></div>
-				</div>
 
 			<!-- Text boxes, Search button, drop-down fo search engines -->
 			<div class="toolbar_group" id="infobar-wrapper">
@@ -98,35 +89,34 @@
 				<div class="toolbar_group_divider"></div>
 				
 
-				<div id="texwrapper" style="padding: 5px;">
-					<input type="text"
- id="tex_result" style="height:18px;width:250px;font-size:16px;"/>
-
-                                </div>
 				<div class="toolbar_button button" id="align">
-						<!--						<div class="toolbar_button_icon"><img src="img/min_align_small_alpha.png" alt="Align" style="height: 50px; width: 50px;" /></div> -->
-						<div class="toolbar_button_text"><span style="font-size: 38px;">&oplus;</span></div>
-						<div class="toolbar_button_label">Align</div>
-						<div class="toolbar_button_overlay"></div>
+					<div class="toolbar_button_icon"><img src="img/align.png" alt="Align" style="height: 48px; width: 48px;" /></div> 
+					<!--<div class="toolbar_button_text"><span style="font-size: 38px;">&oplus;</span></div>-->
+					<div class="toolbar_button_label">Align</div>
+					<div class="toolbar_button_overlay"></div>
+				</div>
+
+				<div id="texwrapper">
+					<input type="text" id="tex_result" />
+					<div id="engine">
+						<select id="engineSelector" name="engineType" style="font-size: 14px;" value="NIST DLMF">
+						    <option>David's Math Search</option>
+							<option>NIST DLMF</option>
+							<option>LaTeX Search</option>
+							<option>Wolfram Alpha</option>
+							<option>Google</option>
+							<option class="select-dash" disabled="disabled">----</option>
+							<option>DRR 2012 </option>
+							<option>DRR 2011 </option>
+							<option>ICDAR 2011</option>
+						</select>
 					</div>
+				</div>
 
-
-				<div id="engine">
-					<select id="engineSelector" name="engineType" style="font-size: 14px;" value="NIST DLMF">
-                                          <option>David's Math Search</option>
-                                          <option>NIST DLMF</option>
-						<option>LaTeX Search</option>
-						<option>Wolfram Alpha</option>
-						<option>Google</option>
-						<option class="select-dash" disabled="disabled">----</option>
-						<option>DRR 2012 </option>
-						<option>DRR 2011 </option>
-						<option>ICDAR
-						2011</option>
-                                                
-					</select>
-                                       <button id="search_button" >
-                                       Search </button>
+				<div class="toolbar_button button" id="search">
+					<div class="toolbar_button_icon"><img src="img/search@2x.png" alt="Search" style="height: 48px; width: 48px;" /></div>		
+					<div class="toolbar_button_label">search</div>
+					<div class="toolbar_button_overlay"></div>
 				</div>
 
 			</div>
@@ -146,10 +136,10 @@
 
 				<!-- images at canvas bottom. -->
 				<div id="logobar-wrapper">
-					<div id="logobar-left"><img src="img/rit_logo_inv.png" style="width: 58px; height: 58px;" alt="Rochester Institute of Technology" /></div>
-					<div id="logobar-right"><img src="img/nsf_logo_inv.jpg" style="width: 58px; height: 58px;" alt="National Science Foundation" /></div>
+					<div id="logobar-left"><img src="img/rit_logo@2x.png" style="width: 58px; height: 58px;" alt="Rochester Institute of Technology" /></div>
+					<div id="logobar-right"><img src="img/nsf_logo@2x.png" style="width: 58px; height: 58px;" alt="National Science Foundation" /></div>
 					
-					<div id="logobar-mid"><img src="img/min_logo_1_inv.png" style="width: 118px; margin-top: -28px;" alt="min" /></div>
+					<div id="logobar-mid"><img src="img/min_logo@2x.png" style="width: 75px; height: 75px; margin-top: -10px" alt="min" /></div>
 
 					<!-- Text entry widget -->
 					<!--

@@ -202,7 +202,7 @@ div.category_row {
 
 div.equation_canvas {
 	display: block;
-	background-color: #111111;
+	background-color: #ffffff;
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -214,7 +214,7 @@ div.equation_canvas {
 /* Can we use inheritance to be less redundant here? */
 div.equation_canvas_stroke {
 	display: block;
-	background-color: #111111;
+	background-color: #ffffff;
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -228,30 +228,18 @@ div.toolbar {
 	position: relative;
 	display: block; 
 	
-	margin-left: 2px;
 	
 	/** background color **/
-	background: #888888; /* old browsers */
-	background: -moz-linear-gradient(top, #BBBBBB 0%, #AAAAAA 37%, #999999 100%); /* firefox */
-
-	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#BBBBBB), color-stop(37%,#AAAAAA), color-stop(100%,#787878)); /* webkit */
-
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#777777',GradientType=0 ); /* ie */
-
-	background: -o-linear-gradient(top, #999999 0%,#888888 37%,#777777 100%); /* opera */
+	background: #eeeeee; /* old browsers */
 	
 	left: 0px;
 	top: 0px;
-	height: 65px;
+	height: 64px;
 	width: 100%;
 	overflow: hidden;
 	
 
-	border-bottom-style: solid;
-	border-bottom-width: 1px;
-	border-top-width: 1px;
-	border-bottom-color: #787878; 
-	
+	border-bottom: 1px solid #cccccc;	
 }
 
 div.toolbar_group {
@@ -276,20 +264,16 @@ div.toolbar_group_label {
 
 div.toolbar_group_divider {
 	top: 0px;
-	width: 2px;
+	width: 1px;
 	height: inherit;
-	background-color:  #666666;
-	float:left;
 	margin-left: 3px;
-	margin-right: 3px;
+	background-color:  #cccccc;
+	float:left;
 }
 
 div.toolbar_button {
-	margin-top: 4px;
-	margin-right: 2px;
-	margin-left: 2px;
-	margin-bottom: 2px;
 	position: relative;
+	margin: 3px 0 3px 3px;
 	float: left;
 }
 
@@ -299,32 +283,27 @@ div.hidden_toolbar_button {
 
 div.toolbar_button_overlay {
 	position: absolute;
-	top: -1px;
-	left: -1px;
+	top: 0px;
+	left: 0px;
 	height: 100%;
 	width: 100%;
 	float: left;
 }
 
 div.toolbar_button_selected {
-	border-radius: 7px;			
-	background-color: rgba(255,128,0,0.4);
-	box-shadow: 0px 0px 2px #666 inset;
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, 0.15);
 }
 
 /* mouseover */
 div.toolbar_button_enabled:hover {
-	border-radius: 7px;			
-	border-color: #000;
-	background-color: rgba(43,43,213,0.15);
-	box-shadow: 0px 0px 5px #8080D5;
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, 0.05);
 }
 /* mousedown */
 div.toolbar_button_enabled:active {
-	border-style:none;
-	border-radius: 7px;			
-	background-color: rgba(255,128,0,0.4);
-	box-shadow: 0px 0px 4px #444 inset;
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, 0.1);
 }
 
 div.toolbar_button_disabled {
@@ -334,34 +313,31 @@ div.toolbar_button_disabled {
 }
 
 div.toolbar_button_touched {
-	border-style:inset;
-	border-width:1px;
-	border-radius: 2px;				
-	border-color:#BBB;
-	background-color: rgba(255,255,0,0.2);
+	border-radius: 4px;
+	background-color: rgba(0, 0, 0, 0.1);
 }
 
 div.toolbar_button_type {
-	width: 50px;
-	height: 50px;
+	width: 48px;
+	height: 48px;
 	background-color: #111;
 	margin: 5px;
 	font-size: 20px;
 }
 
 div.toolbar_button_text {
-	width: 50px;
-	height: 50px;
+	width: 48px;
+	height: 48px;
 	/* background-color: #111; */
 	padding-top:14px;
 	text-align: center;
-	font-size: 50px;
+	font-size: 48px;
 	color: #333; /*CCC;*/
 }
 
 div.toolbar_button_icon {
-	width: 50px;
-	height: 50px;
+	width: 48px;
+	height: 48px;
 	/* background-color: #111; */
 	margin: 5px;
 	/*padding: 5px;*/
@@ -486,28 +462,34 @@ svg.pen_stroke {
 div#infobar-wrapper {
 	position: relative;
 	float: right;
-	padding-left: 2px;
-	padding-right: 10px;
 	line-height: 25px;
 	font-size: 14px;
 	background-color: 111000;/*#d3d3d3;*/
 	color: #111; /*#333; */
+	margin-right: 3px;
+}
+
+#infobar-wrapper>.toolbar_button {
+	float: left;
 }
 
 div#texwrapper {
-	float: right;
+	float: left;
 }
 
-div#tex_result {
-	width: 100%;
-	padding-left: 2px;
-	padding-right: 5px;
-	border: 1px solid #d3d3d3;
-	font-family: 'Ubuntu', sans-serif;
+#tex_result {
+	width: 250px;
+	font-size: 18px;
+	margin: 5px 0 0 3px;
+	padding: 1px;
+	-webkit-appearance: none;
+	border-radius: 2px;
+	border: 1px solid #cccccc;
 }
 
-div#engineSelector {
-	float: bottom;
+#engineSelector {
+	margin-left: 3px;
+	width: 254px;
 }
 
 /* Logos */

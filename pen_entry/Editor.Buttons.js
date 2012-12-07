@@ -13,8 +13,8 @@ Buttons.Stroke = 2;
 Buttons.UploadImage = 3;
 Buttons.Undo = 4;
 Buttons.Redo = 5;
-Buttons.DPRL = 6;
-Buttons.Align = 7;
+Buttons.Align = 6;
+Buttons.Search = 7;
 
 function ButtonState(button_id)
 {
@@ -79,8 +79,8 @@ Editor.build_buttons = function(in_div_name)
     Editor.button_states.push(new ButtonState("upload_image"));
     Editor.button_states.push(new ButtonState("undo"));
     Editor.button_states.push(new ButtonState("redo"));
-    Editor.button_states.push(new ButtonState("dprl"));
     Editor.button_states.push(new ButtonState("align"));
+    Editor.button_states.push(new ButtonState("search"));
     
     Editor.clearButtonOverlays();
 
