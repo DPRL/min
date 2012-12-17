@@ -118,15 +118,23 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     Editor.FileReader = true;
 }
 
-Editor.save_state = function()
+Editor.save_state = function(clear)
 {
     var state = {
-        segments: []
+        segments: [],
+		recognition_results: []
     };
     for (var i = 0; i < Editor.segments.length; i++) {
         var seg = Editor.segments[i];
         state.segments.push(seg.save_state());
     }
+    for (var i = 0; i < RecognitionManager.result_table.length; i++) {
+        var result = RecognitionManager.result_table[i];
+        state.recognition_results.push(result.save_state());
+    }
+	if (clear) {
+		RecognitionManager.result_table = [];
+	}
     return JSON.stringify(state);
 }
 
@@ -146,6 +154,11 @@ Editor.restore_state = function(json_string)
         }
         Editor.add_segment(seg);
     }
+    for (var i = 0; i < state.recognition_results.length; i++) {
+        result = state.recognition_results[i];
+		RecognitionManager.result_table.push(RecognitionResult.restore_state(result));
+	}
+	RenderManager.render();
 }
 
 // determines if the given segment is in the selected list

@@ -453,6 +453,7 @@ PenStroke.prototype.save_state = function()
         set_id: this.set_id,
         points: this.points,
         scale: this.scale,
+		size: this.size,
         translation: this.translation,
         temp_scale: this.temp_scale,
         temp_translation: this.temp_translation,
@@ -467,6 +468,7 @@ PenStroke.restore_state = function(state) {
     seg.instance_id = state.instance_id;
     seg.set_id = state.set_id;
     seg.scale = new Vector2(state.scale.x, state.scale.y);
+	seg.size = new Vector2(state.size.x, state.size.y);
     seg.translation = new Vector2(state.translation.x, state.translation.y);
     seg.temp_scale = new Vector2(state.temp_scale.x, state.temp_scale.y);
     seg.temp_translation = new Vector2(state.temp_translation.x, state.temp_translation.y);

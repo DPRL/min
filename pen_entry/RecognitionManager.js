@@ -41,6 +41,26 @@ RecognitionResult.prototype.fromXML = function(in_xml_element)
     this.set_id = Segment.set_count++;
 }
 
+RecognitionResult.prototype.save_state = function() {
+	return {
+		symbols: this.symbols,
+		certainties: this.certainties,
+		results: this.results,
+		instance_ids: this.instance_ids,
+		set_id: this.set_id
+	}
+}
+
+RecognitionResult.restore_state = function(state) {
+	result = new RecognitionResult();
+	result.symbols = state.symbols;
+	result.certainties = state.certainties;
+	result.results = state.results;
+	result.instance_ids = state.instance_ids;
+	result.set_id = state.set_id;
+	return result;
+}
+
 function RecognitionManager()
 {
     
