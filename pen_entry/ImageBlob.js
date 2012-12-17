@@ -89,8 +89,8 @@ ImageBlob.prototype.private_render = function(image) {
     transform.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
     this.inner_svg.setAttribute("transform", transform.toString());
 
-    if(this.svg.children[0] != this.inner_svg){ 
-        this.svg.removeChild(this.svg.children[0]);
+    if(this.svg.childNodes[0] != this.inner_svg){ 
+        this.svg.removeChild(this.svg.childNodes[0]);
         this.svg.appendChild(this.inner_svg);
     }
 
