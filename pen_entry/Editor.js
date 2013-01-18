@@ -19,6 +19,7 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     Editor.using_ipad = navigator.userAgent.match(/iPad/i) != null;
     if(Editor.using_ipad == true)
     {
+		$('body').addClass('touch');
         // removeh over css
         for(var i = 0; i < document.styleSheets.length; i++)
         {

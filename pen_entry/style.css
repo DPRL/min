@@ -277,6 +277,23 @@ div.toolbar_button {
 	float: left;
 }
 
+div.toolbar_overlay_button {
+	padding-top: 15px;
+	padding-bottom: 15px;
+	position: relative;
+	float: left;
+	background: #000000;
+	opacity: 0.1;
+}
+
+div.toolbar_overlay_button:hover {
+	opacity: 0.7;
+}
+
+.touch .toolbar_overlay_button {
+	display: none;
+}
+
 div.hidden_toolbar_button {
     display: none;
 }
@@ -341,6 +358,10 @@ div.toolbar_button_icon {
 	/* background-color: #111; */
 	margin: 5px;
 	/*padding: 5px;*/
+}
+
+div.toolbar_overlay_button_icon {
+	margin: 5px;
 }
 
 /* Labels the buttons. */
