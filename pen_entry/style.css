@@ -499,7 +499,7 @@ div#texwrapper {
 }
 
 #tex_result {
-	width: 250px;
+	width: 150px;
 	font-size: 18px;
 	margin: 5px 0 0 3px;
 	padding: 1px;
@@ -510,7 +510,7 @@ div#texwrapper {
 
 #engineSelector {
 	margin-left: 3px;
-	width: 254px;
+	width: 154px;
 }
 
 /* Logos */

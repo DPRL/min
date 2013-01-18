@@ -6,13 +6,14 @@
       xmlns:svg="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink">
 	<head>
-		<link href='http://fonts.googleapis.com/css?family=Ubuntu&amp;subset=cyrillic-ext,latin,greek,greek-ext,latin-ext,cyrillic&amp;v2' rel='stylesheet' type='text/css'/>
+		<link href="http://fonts.googleapis.com/css?family=Ubuntu&amp;subset=cyrillic-ext,latin,greek,greek-ext,latin-ext,cyrillic&amp;v2" rel="stylesheet" type="text/css"/>
 		<meta name="viewport" content="user-scalable=no, maximum-scale=1.0, minimum-scale=1.0"></meta>
 		<meta name="apple-mobile-web-app-capable" content="yes"></meta>
 		<meta name="apple-mobile-web-app-status-bar-style" content="black"></meta>
 		<title></title>
 		
 		<link rel="stylesheet" type="text/css" href="style.css" />
+		<link rel="stylesheet" media="screen" href="third_party/iosSlider/iosSlider.css" />
 	</head>
 
 	<!-- DEFINE THE INTERFACE OBJECTS -->
@@ -89,11 +90,19 @@
 						<div class="toolbar_button_overlay"></div>
 					</div>
 					<div class="toolbar_overlay_button button" id="left">
-						<div class="toolbar_overlay_button_icon"><img src="img/left.png" alt="Left" style="height: 24px; width: 24px;" /></div>
+						<div class="toolbar_overlay_button_icon"><img src="img/left.png" alt="Left" style="height: 24px; width: 13px;" /></div>
 						<div class="toolbar_button_label">Left</div>
 					</div>
+					<div class = "iosSlider">
+						<div class = "slider">
+							<div class = "item"></div>
+						</div>
+						<div class = "selectors">
+							<div class = "item first selected"></div>
+						</div>
+					</div>
 					<div class="toolbar_overlay_button button" id="right">
-						<div class="toolbar_overlay_button_icon"><img src="img/right.png" alt="Right" style="height: 24px; width: 24px;" /></div>
+						<div class="toolbar_overlay_button_icon"><img src="img/right.png" alt="Right" style="height: 24px; width: 13px;" /></div>
 						<div class="toolbar_button_label">Right</div>
 					</div>
 					<div class="toolbar_button button" id="add">
@@ -143,14 +152,6 @@
 
 			</div>
 
-				<div style="padding-top:6px;padding-left:25px;float: right;font-size:14px;">
-					<form id="radio">
-						
-						<input type="checkbox" name="strokes" checked="true" onclick="Editor.setStrokeView();RenderManager.render()" /> Chalk<br />
-						<input type="checkbox" name="layers" checked="true" onclick="RenderManager.render()" /> OCR<br />
-
-					</form>
-				</div>
 
 				</div>							
 			<!-- Canvas -->
@@ -213,6 +214,9 @@
 
 	<!-- SCRIPTS -->
 
+	<!-- JQuery -->
+	<script type="text/javascript" src="third_party/jquery.js"></script>
+
 	<!-- Classifier -->
 	<script type="text/javascript" src="Classifier.js"></script>
 		
@@ -248,13 +252,18 @@
 	<!-- Misc tools -->
 	<script type="text/javascript" src="Utils.js"></script>
 
-	<!-- JQuery -->
-	<script type="text/javascript" src="third_party/jquery.js"></script>
+	<!-- Hammer multitouch library -->
+	<script type="text/javascript" src="third_party/hammer.js"></script>
+	<script type="text/javascript" src="third_party/jquery.hammer.js"></script>
+	<script type="text/javascript" src="third_party/jquery.specialevent.hammer.js"></script>
 
-        <!-- Hammer multitouch library -->
-        <script type="text/javascript" src="third_party/hammer.js"></script>
-        <script type="text/javascript" src="third_party/jquery.hammer.js"></script>
-        <script type="text/javascript" src="third_party/jquery.specialevent.hammer.js"></script>
+	<!-- MathJax -->
+	<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+
+	<!-- iosSlider plugin -->
+	<script type="text/javascript" src="third_party/iosSlider/jquery.easing-1.3.js"></script>
+	<script type="text/javascript" src="third_party/iosSlider/jquery.iosslider.js"></script>
+	<script type="text/javascript" src="Slider.js"></script>
         
 	<!-- Main -->
 	<script type="text/javascript">Editor.initialize("equation_canvas", "toolbar");</script> 

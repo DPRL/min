@@ -65,6 +65,9 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     CollisionManager.initialize();
     RecognitionManager.initialize();
     CorrectionMenu.initialize();
+
+	// initialize slider
+	Editor.slider = new Slider();
     
     // create the mouse 
     Editor.setup_events();

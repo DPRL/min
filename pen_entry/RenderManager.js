@@ -39,15 +39,7 @@ RenderManager.initialize = function(in_width, in_height, in_layers)
 // render the helper grahics (bounding box, segments ets, rectangle select etc)
 RenderManager.render_tools_layer = function()
 {
-
-    // Find the checked element in the layer radio button form.
-    // Use this to hide/show the background information.
-    if (document.forms[0].layers.checked == false)
-    {
-        RenderManager.unrender_set_field();
-    } else {
-        RenderManager.render_set_field(4);
-    }
+	RenderManager.render_set_field(4);
 
     // Show selection bounding box.
     if(Editor.selected_bb != null)

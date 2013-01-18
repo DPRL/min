@@ -83,6 +83,8 @@ Editor.setup_events = function()
     document.getElementById("redo").addEventListener("click", Editor.redo, true);
     document.getElementById("align").addEventListener("click",Editor.align, true);
     document.getElementById("search").addEventListener("click", Editor.search, true);
+    document.getElementById("add").addEventListener("click", function() { Editor.slider.addSlide(); }, true);
+    document.getElementById("remove").addEventListener("click", function() { Editor.slider.removeSlide(); }, true);
 
     // add an equation image to the canvas if this is supported
     if(window.FileReader){
@@ -197,7 +199,7 @@ Editor.setCursor = function ()
 
 Editor.setStrokeView = function()
 {
-    var show = document.forms[0].strokes.checked;
+    var show = true;
     for (var i=0; i < Editor.segments.length; i++) {
         var nextSegment = Editor.segments[i];
         if (nextSegment.chalk_layer) {
@@ -1217,15 +1219,12 @@ Editor.align = function()
                     return;
                 }
                 
-                // Append interpretation to the query box.
+                // Update the current slide with the TeX.
                 if ( tex_nodes.length != 0 ) {
                     var tex_string = tex_nodes[ 0 ].textContent;
                     // get just the math, removing spaces
                     var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" );
-                    var current = document.getElementById( "tex_result" ).value;
-                    // Inserting an expression clears the textbox, adds 
-                    // expression to it.
-                    document.getElementById( "tex_result" ).value = tex_math;
+					Editor.slider.updateSlide(tex_math);
                 }
                 
                 for(var k = 0; k < segment_nodes.length; k++)
@@ -1595,10 +1594,11 @@ Editor.search = function(e)
     // NOTE: CURRENTLY EXPERIMENTING WITH ONLY ONE TEXT BOX.
     var searchString = "";
     var engineType = document.getElementById("engineSelector").value;
-    var searchString = document.getElementById("tex_result").value 
-    // REMOVED
-    //+ " " + document.getElementById("infobar").value;
-
+	var keywords = document.getElementById("tex_result").value;
+    var searchString = Editor.slider.expressions.join(' ');
+	if (keywords) {
+		searchString += ' ' + keywords;
+	}
 
 
     /* INCOMPLETE */

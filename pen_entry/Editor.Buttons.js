@@ -15,6 +15,8 @@ Buttons.Undo = 4;
 Buttons.Redo = 5;
 Buttons.Align = 6;
 Buttons.Search = 7;
+Buttons.AddSlide = 8;
+Buttons.RemoveSlide = 9;
 
 function ButtonState(button_id)
 {
