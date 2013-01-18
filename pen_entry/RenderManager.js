@@ -201,6 +201,7 @@ RenderManager.render_set_field = function(in_context_id)
         else if(seg == null || seg.set_id != set_segments[0].set_id)
         {
             // We have found the next symbol (primitive segment).
+            var is_visible = set_segments[0].expression_id == Editor.current_expression_id;
             var mins = set_segments[0].worldMinDrawPosition();
             var maxs = set_segments[0].worldMaxDrawPosition();
             
@@ -209,6 +210,8 @@ RenderManager.render_set_field = function(in_context_id)
             {
                 var seg_min = set_segments[j].worldMinDrawPosition();
                 var seg_max = set_segments[j].worldMaxDrawPosition();
+
+                is_visible = is_visible && set_segments[j].expression_id == Editor.current_expression_id;
                 
                 if(seg_min.x < mins.x)
                     mins.x = seg_min.x;
@@ -255,6 +258,7 @@ RenderManager.render_set_field = function(in_context_id)
             ss_div.style.top = mins.y + "px";
             ss_div.style.width = rect_size.x + "px";
             ss_div.style.height = rect_size.y + "px";
+            $(ss_div).toggle(is_visible);
 
             // Recognition result/label
             var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);

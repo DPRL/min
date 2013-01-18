@@ -12,6 +12,7 @@ function PenStroke(in_x, in_y, in_line_width)
     this.instance_id = Segment.count++;
     this.type_id = PenStroke.type_id;
     this.set_id = Segment.set_count++;
+    this.expression_id = Editor.current_expression_id;
 
     this.chalk_layer = PenStroke.chalk_layer;
     
@@ -177,8 +178,10 @@ PenStroke.prototype.finish_stroke = function()
 
 PenStroke.prototype.private_render = function(in_color, in_width)
 {
-    if(this.dirty_flag == false && this.color == in_color && this.stroke_width == in_width)
+    $(this.element).toggle(this.expression_id == Editor.current_expression_id);
+    if (this.dirty_flag == false && this.color == in_color && this.stroke_width == in_width) {
         return;
+    }
     this.dirty_flag = false;
     this.color = in_color;
     this.stroke_width = in_width;

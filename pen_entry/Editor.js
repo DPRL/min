@@ -116,6 +116,14 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     
     Editor.selectPenTool();
     Editor.FileReader = true;
+
+    Editor.current_expression_id = 0;
+}
+
+Editor.set_current_expression_id = function(id) {
+    Editor.current_expression_id = id;
+    RenderManager.render();
+    Editor.clear_selected_segments();
 }
 
 Editor.save_state = function(clear)

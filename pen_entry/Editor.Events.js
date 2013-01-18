@@ -615,6 +615,9 @@ Editor.onMouseMove = function(e)
             Editor.end_rect_selection.Add(mouse_delta);
             // get list of segments colliding with selection rectangle
             var rect_selected = CollisionManager.get_rectangle_collides(Editor.start_rect_selection, Editor.end_rect_selection);
+            rect_selected = rect_selected.filter(function(elem) {
+                return elem.expression_id == Editor.current_expression_id;
+            });
             Editor.clear_selected_segments();
             // add segment set to seleced list
             for(var k = 0; k < rect_selected.length; k++)
