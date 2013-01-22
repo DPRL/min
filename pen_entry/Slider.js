@@ -65,16 +65,32 @@ Slider.prototype.removeSlide = function() {
 	}
 }
 
-/**This function calls MathJax and has MathJax rerender the slides and make slides whose width is greater than the view screen smaller**/
-Slider.prototype.mathJaxUpdate = function(div) {
-	var divs = $('.slider .MathJax');
-	var ParentDivWidth = document.getElementsByClassName('iosSlider')[0].offsetWidth;
-	for (var i = 0; i < divs.length; i++){
-		if(divs[i].offsetWidth > ParentDivWidth){
-			var percent = Math.floor( (ParentDivWidth / divs[i].offsetWidth) * 90); // Set the scaling factor
-			divs[i].style.fontSize = percent + "%"; //Changing the font-size of the math expression not the parent div
-			MathJax.Hub.Queue(["Rerender",MathJax.Hub, divs[i]]);
-		}
-		
+/**
+ * Renders the current slide and then called resizeToFit when rendered.
+ */
+Slider.prototype.mathJaxUpdate = function() {
+	var currentSlideNumber = this.slider_div.data('args').currentSlideNumber - 1;
+	var NumberofSlides =  $('.iosSlider').data('args').data.numberOfSlides;
+	var currentSlide  = $('.slider').children()[currentSlideNumber];
+	MathJax.Hub.Queue(["Rerender",MathJax.Hub, currentSlide], [$.proxy(this.resizeToFit, this)]);
+}
+
+/**
+ * Makes the current slide 5% smaller, rerenders, which then calls this function again.
+ */
+Slider.prototype.resizeToFit = function() {
+	var currentSlideNumber = this.slider_div.data('args').currentSlideNumber - 1;
+	var NumberofSlides =  $('.iosSlider').data('args').data.numberOfSlides;
+	var currentSlide  = $('.slider').children()[currentSlideNumber];
+	var slideWidth = currentSlide.getElementsByClassName('MathJax_Display')[0].scrollWidth;
+	var slideHeight = currentSlide.getElementsByClassName('MathJax_Display')[0].scrollHeight;
+	var containerWidth =  $('.slider').width();
+	var containerHeight =  $('.slider').height();
+	var percent = currentSlide.style.fontSize ? parseFloat(currentSlide.style.fontSize) : 100.0;
+	if (percent > 50 && (slideWidth > containerWidth || slideHeight > containerHeight)){ //font size and width
+		var percent = percent - 5;
+		currentSlide.style.fontSize =  percent + "%";
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub, currentSlide], [$.proxy(this.resizeToFit, this)]);
 	}
+
 }
