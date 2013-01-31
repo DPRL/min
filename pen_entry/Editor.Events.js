@@ -85,6 +85,17 @@ Editor.setup_events = function()
     document.getElementById("search").addEventListener("click", Editor.search, true);
     document.getElementById("add").addEventListener("click", function() { Editor.slider.addSlide(); }, true);
     document.getElementById("remove").addEventListener("click", function() { Editor.slider.removeSlide(); }, true);
+	
+	document.getElementById("pen").addEventListener("mouseover",Editor.showToolTip("pen", "Use this to draw on the canvas"), true);
+	document.getElementById("stroke_select").addEventListener("mouseover",Editor.showToolTip("stroke_select","Use this to select/resize images on the canvas"), true);
+	document.getElementById("rectangle_select").addEventListener("mouseover",Editor.showToolTip("rectangle_select","Use this to select images on the canvas"), true);
+	document.getElementById("upload_image").addEventListener("mouseover",Editor.showToolTip("upload_image","Use this to upload images on the canvas"), true);
+	document.getElementById("undo").addEventListener("mouseover",Editor.showToolTip("undo","Undoes an action"), true);
+	document.getElementById("redo").addEventListener("mouseover",Editor.showToolTip("redo","redoes an action"), true);
+	document.getElementById("align").addEventListener("mouseover",Editor.showToolTip("align","aligns items"), true);
+	document.getElementById("search").addEventListener("mouseover",Editor.showToolTip("search","Searches the internet for the expression"), true);
+	document.getElementById("add").addEventListener("mouseover",Editor.showToolTip("add","Creates a new slide for the slider"), true);
+	document.getElementById("remove").addEventListener("mouseover",Editor.showToolTip("remove","Removes a slide from the slider"), true);
 
     // add an equation image to the canvas if this is supported
     if(window.FileReader){
@@ -1651,4 +1662,7 @@ Editor.changeState = function(state){
     default:
         Editor.state = state;
     }
+}
+Editor.showToolTip = function(target, use){
+	$('#' + target).tooltip({content: use, items: '#' + target});
 }
