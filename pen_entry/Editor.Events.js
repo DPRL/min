@@ -1234,7 +1234,7 @@ Editor.align = function()
                 if ( tex_nodes.length != 0 ) {
                     var tex_string = tex_nodes[ 0 ].textContent;
                     // get just the math, removing spaces
-                    var tex_math = tex_string.split( "$" )[ 1 ].replace( /\s*/g, "" );
+                    var tex_math = tex_string.split("$").slice(1,-1).join("").replace( /\s*/g, "" );
 					Editor.slider.updateSlide(tex_math);
                 }
                 
