@@ -810,7 +810,6 @@ Editor.onMouseUp = function(e)
              */
             
             // Continue moving if there is momentum
-            console.log(Editor.moveQueue);
 	    var recent = Editor.moveQueue.slice(-1)[0];
 	    var oldest = Editor.moveQueue.slice(0, 1)[0]
 	    var recent_pos = recent.y;
@@ -824,28 +823,34 @@ Editor.onMouseUp = function(e)
             // velocity in each dimension
             var velocity = new Vector2(Math.max(Math.min(deltas.x/delta_T, 1), -1),
                                        Math.max(Math.min(deltas.y/delta_T, 1), -1));
+            var duration = Math.max(velocity.x, velocity.y) * 2000;
+            velocity = Vector2.Multiply(10, velocity);
+            console.log("duration: " + duration);
+            
             console.log("velocity outside: " + velocity);
             var box_momentum = function(step, duration, velocity, position, lastStepTime){
                 console.log("velocity!" + velocity);
                 console.log("duration: " + duration);
-                if(duration < 0)
+                if(duration < 0 || step < 0)
                     return;
 
                 var now = new Date();
                 var stepDuration = now.getTime() - lastStepTime.getTime();
-                var new_velocity = Vector2.Multiply(step * 1/100, velocity);
+                console.log("stepDuration: " + stepDuration);
+                var new_velocity = Vector2.Multiply(step * 1/10, velocity);
 
                 var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
                 
                 Editor.moveSegments(position, new_pos);
 
                 RenderManager.render();
-                window.setTimeout(box_momentum, 75,step + 1, duration - 100, new_velocity, new_pos, now);
+
+                window.setTimeout(box_momentum, 15, step - 1, duration - stepDuration, new_velocity, new_pos, now);
                 
             }
 
             if(distance > 40)
-                window.setTimeout(box_momentum, 75, 1, 2000, velocity, recent_pos, new Date());
+                window.setTimeout(box_momentum, 15, 10, duration, velocity, recent_pos, new Date());
 
             // ipad: touchend occurs when finger physically leaves the screen.
             if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
