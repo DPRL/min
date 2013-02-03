@@ -608,14 +608,14 @@ Editor.onMouseMove = function(e)
     {
         Editor.mouse_position_prev = Editor.mouse_position;
         Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
-        Editor.mouse_move_distance = Vector2.SquareDistance(Editor.mouse_position, Editor.mouse_position_prev);
+        Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
     }    
     else if(e.type == "touchmove")
     {
         var first = event.changedTouches[0];
         Editor.mouse_position_prev = Editor.mouse_position;
         Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
-        Editor.mouse_move_distance = Vector2.SquareDistance(Editor.mouse_position, Editor.mouse_position_prev);
+        Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
     }
     else 
         return;
@@ -668,7 +668,6 @@ Editor.onMouseMove = function(e)
         case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:
             Editor.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
-
             // redraw scene
             RenderManager.render();
             break;            
@@ -789,7 +788,25 @@ Editor.onMouseUp = function(e)
             if(e.type == "touchend") {
                 theEvent = event.changedTouches[0];
             }
-            
+
+            // Continue moving if there is momentum
+            var new_pos = Editor.mouse_position.clone();
+            while(Editor.mouse_move_distance > 2){
+                console.log("Distance: " + Editor.mouse_move_distance);
+                var difference = Editor.mouse_move_distance * 2;
+                Editor.mouse_move_distance -= (Editor.mouse_move_distance * .2);
+                new_pos.x += difference;
+                new_pos.y += difference;
+                console.log("mouse position" + Editor.mouse_position);
+                console.log("new pos: " + new_pos);
+                
+                Editor.moveSegments(Editor.mouse_position, new_pos);
+                
+                RenderManager.render();
+                Editor.mouse_position = new_pos.clone();
+
+            }
+
             // iPad: touchend occurs when finger physically leaves the screen.
             if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
                 theEvent.pageY  < toolbarDims.bottom || 
