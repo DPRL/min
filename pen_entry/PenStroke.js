@@ -484,6 +484,13 @@ PenStroke.restore_state = function(state) {
     return seg;
 }
 
+/**
+ * Find any segments that intersect with this stroke.
+ * If any are found, create a new set_id and assign each stroke's set_id to it.
+ * If none are found, assign this stroke's set_id to -1.
+ * Return a list of the instance_id and set_id of any stroke that had a change of set_id
+ * (empty list if no changes, this is passed to the undo/redo action).
+ */
 PenStroke.prototype.test_collisions = function() {
     var collided_segments = new Array();
     for ( var i = 0; i < this.points.length - 1; i++ ) {
@@ -500,19 +507,21 @@ PenStroke.prototype.test_collisions = function() {
         }
     }
     
-    if ( collided_segments.length == 1 ) {
-        // if we collided with just one, adopt its setid
-        this.set_id = collided_segments[ 0 ].set_id;
-        //alert( "ONE COLLISION" );
-    } else if ( collided_segments.length > 1 ) {
-        // if we collided with more than one, get new setid
-        //alert( "MORE THAN ONE COLLISION" );
+    // if we collided with any segments, get new setid
+    if ( collided_segments.length >= 1 ) {
+        var set_id_changes = [];
         var newsetid = Segment.set_count++;
         this.set_id = newsetid;
         for ( var i = 0; i < collided_segments.length; i++ ) {
+            set_id_changes.push({
+                instance_id: collided_segments[i].instance_id,
+                old_set_id: collided_segments[i].set_id
+            });
             collided_segments[ i ].set_id = newsetid;
         }
+        return set_id_changes;
     } else {
         this.set_id = -1;
+        return [];
     }
 }

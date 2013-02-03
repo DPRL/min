@@ -892,15 +892,17 @@ Editor.onMouseUp = function(e)
             }
             break;
         case EditorState.MiddleOfStroke:
+            var set_id_changes = [];
             Editor.state = EditorState.ReadyToStroke;
             if(Editor.current_stroke.finish_stroke()) {
-                Editor.current_stroke.test_collisions();
+                set_id_changes = Editor.current_stroke.test_collisions();
                 RecognitionManager.enqueueSegment(Editor.current_stroke);
             } else {
                 Editor.segments.pop();
             }
             
             Editor.current_stroke = null;
+            Editor.current_action.set_id_changes = set_id_changes;
             Editor.current_action.buildSegmentXML();
             break;
         case  EditorState.Resizing:

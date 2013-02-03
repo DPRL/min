@@ -4,6 +4,7 @@ AddSegments = function(in_segments)
 {
     this.segments = in_segments;
     this.segment_xmls = new Array();
+    this.set_id_changes = new Array();
 
 }
 
@@ -24,6 +25,18 @@ AddSegments.prototype.Undo = function()
         Editor.remove_segment(this.segments[k]);
         this.segments[k].element.style.visibility = "hidden";
     }
+
+    // Change all of the collided strokes back to their original sets.
+    for (var k = 0; k < this.set_id_changes.length; k++) {
+        var change = this.set_id_changes[k];
+        for (var j = 0; j < Editor.segments.length; j++) {
+            if (Editor.segments[j].instance_id == change.instance_id) {
+                Editor.segments[j].set_id = change.old_set_id;
+                break;
+            }
+        }
+    }
+
     Editor.update_selected_bb();
 }
 
@@ -53,6 +66,17 @@ AddSegments.prototype.Apply = function()
     {
         Editor.add_segment(this.segments[k]);
         this.segments[k].element.style.visibility = "visible";
+    }
+
+    // Change all of the collided strokes to be in the same set.
+    for (var k = 0; k < this.set_id_changes.length; k++) {
+        var change = this.set_id_changes[k];
+        for (var j = 0; j < Editor.segments.length; j++) {
+            if (Editor.segments[j].instance_id == change.instance_id) {
+                Editor.segments[j].set_id = this.segments[0].set_id;
+                break;
+            }
+        }
     }
 }
 
