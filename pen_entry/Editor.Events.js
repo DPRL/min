@@ -842,9 +842,15 @@ Editor.onMouseUp = function(e)
                 var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
                 
                 Editor.moveSegments(position, new_pos);
-
+                Editor.current_action.add_new_transforms(Editor.selected_segments);
                 RenderManager.render();
-
+                
+                if(new_pos.x > Editor.canvas_width || new_pos.x < 0
+                   || new_pos.y > Editor.canvas_height || new_pos.y < 0){
+                    console.log("Deleting");
+                    Editor.deleteTool();
+                    return;
+                }
                 window.setTimeout(box_momentum, 15, step - 1, duration - stepDuration, new_velocity, new_pos, now);
                 
             }
