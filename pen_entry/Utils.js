@@ -298,3 +298,25 @@ function findPosition(in_obj)
     
     return [left, top];
 }
+
+/* A bounded queue defines a queue which is bounded to some
+   maximum value. Adding an item which would go over the boundary
+   results in the oldest item being removed and the new item being added to the list.
+*/
+BoundedQueue.prototype = new Array();
+function BoundedQueue(upperBound){
+    console.log(upperBound);
+    this.upperBound = upperBound;
+}
+
+BoundedQueue.prototype.enqueue = function(item){
+    if(this.length == this.upperBound){
+        this.shift();
+    }
+    
+    this.push(item);
+}
+
+BoundedQueue.prototype.clear = function(){
+    this.splice(0, this.upperBound);
+}
