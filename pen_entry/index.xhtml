@@ -67,6 +67,13 @@
 
 				<!-- Undo/Redo -->
 				<div class="toolbar_group">	
+					<div class="toolbar_button button" id="align">
+						<div class="toolbar_button_icon"><img src="img/align.png" alt="Align" style="height: 48px; width: 48px;" /></div> 
+						<!--<div class="toolbar_button_text"><span style="font-size: 38px;">&oplus;</span></div>-->
+						<div class="toolbar_button_label">Align</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
+
 					<div class="toolbar_button button" id="undo">
 						<div class="toolbar_button_icon"><img src="img/undo.png" alt="Undo" style="height: 48px; width: 48px;" /></div>
 						<div class="toolbar_button_label">Undo</div>
@@ -78,54 +85,43 @@
 						<div class="toolbar_button_label">Redo</div>
 						<div class="toolbar_button_overlay"></div>
 					</div>
+					
 
 				</div>
 
-				<div class="toolbar_group_divider"></div>
 
-				<div class="toolbar_group">	
-					<div class="toolbar_button button" id="remove">
-						<div class="toolbar_button_icon"><img src="img/remove.png" alt="Remove" style="height: 48px; width: 48px;" /></div>
-						<div class="toolbar_button_label">Remove</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-					<div class="toolbar_overlay_button button" id="left">
-						<div class="toolbar_overlay_button_icon"><img src="img/left.png" alt="Left" style="height: 24px; width: 13px;" /></div>
-						<div class="toolbar_button_label">Left</div>
-					</div>
-					<div class="iosSlider">
-						<div class="slider">
-							<div class="item"></div>
-						</div>
-						<div class="selectors">
-							<div class="item first selected"></div>
-						</div>
-					</div>
-					<div class="toolbar_overlay_button button" id="right">
-						<div class="toolbar_overlay_button_icon"><img src="img/right.png" alt="Right" style="height: 24px; width: 13px;" /></div>
-						<div class="toolbar_button_label">Right</div>
-					</div>
-					<div class="toolbar_button button" id="add">
-						<div class="toolbar_button_icon"><img src="img/add.png" alt="Add" style="height: 48px; width: 48px;" /></div>
-						<div class="toolbar_button_label">Add</div>
-						<div class="toolbar_button_overlay"></div>
-					</div>
-
-				</div>
 
 
 			<!-- Text boxes, Search button, drop-down fo search engines -->
 			<div class="toolbar_group" id="infobar-wrapper">
 
 				<div class="toolbar_group_divider"></div>
-				
-
-				<div class="toolbar_button button" id="align">
-					<div class="toolbar_button_icon"><img src="img/align.png" alt="Align" style="height: 48px; width: 48px;" /></div> 
-					<!--<div class="toolbar_button_text"><span style="font-size: 38px;">&oplus;</span></div>-->
-					<div class="toolbar_button_label">Align</div>
-					<div class="toolbar_button_overlay"></div>
+				<div class="toolbar_button_small button" id="remove">
+					<div class="toolbar_button_icon_small"><img src="img/remove.png" alt="Remove"/></div>
+					<div class="toolbar_button_label">Remove</div>
 				</div>
+				<div class="toolbar_overlay_button button" id="left">
+					<div class="toolbar_overlay_button_icon"><img src="img/left.png" alt="Left" style="height: 24px; width: 13px;" /></div>
+					<div class="toolbar_button_label">Left</div>
+				</div>
+				<div class="iosSlider">
+					<div class="slider">
+						<div class="item"></div>
+					</div>
+					<div class="selectors">
+						<div class="item first selected"></div>
+					</div>
+				</div>
+				<div class="toolbar_overlay_button button" id="right">
+					<div class="toolbar_overlay_button_icon"><img src="img/right.png" alt="Right" style="height: 24px; width: 13px;" /></div>
+					<div class="toolbar_button_label">Right</div>
+				</div>
+
+				<div class="toolbar_button_small button" id="add">
+					<div class="toolbar_button_icon_small"><img src="img/add.png" alt="Add"/></div>
+					<div class="toolbar_button_label">Add</div>
+				</div>
+
 
 				<div id="texwrapper">
 					<input type="text" id="tex_result" />

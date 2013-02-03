@@ -277,6 +277,16 @@ div.toolbar_button {
 	float: left;
 }
 
+div.toolbar_button_small {
+	position: relative;
+	float: left;
+}
+
+.toolbar_button_small img {
+	width: 24px;
+	height: 24px;
+}
+
 div.toolbar_overlay_button {
 	padding-top: 15px;
 	padding-bottom: 15px;
@@ -357,6 +367,14 @@ div.toolbar_button_icon {
 	height: 48px;
 	/* background-color: #111; */
 	margin: 5px;
+	/*padding: 5px;*/
+}
+
+div.toolbar_button_icon_small {
+	width: 24px;
+	height: 24px;
+	/* background-color: #111; */
+	margin: 20px 5px;
 	/*padding: 5px;*/
 }
 
@@ -499,7 +517,7 @@ div#texwrapper {
 }
 
 #tex_result {
-	width: 150px;
+	width: 160px;
 	font-size: 18px;
 	margin: 5px 0 0 3px;
 	padding: 1px;
@@ -510,7 +528,7 @@ div#texwrapper {
 
 #engineSelector {
 	margin-left: 3px;
-	width: 154px;
+	width: 164px;
 }
 
 /* Logos */
