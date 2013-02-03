@@ -454,6 +454,7 @@ Editor.onMouseDown = function(e)
                 Editor.add_action(new TransformSegments(Editor.selected_segments));
                 Editor.state = EditorState.MovingSegments;
 		Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
+                Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
                 setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
             }
             // reselect
@@ -667,9 +668,13 @@ Editor.onMouseMove = function(e)
         case EditorState.SegmentsSelected:
             Editor.state = EditorState.MovingSegments;
 	    Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
+            Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
         case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:
-            Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
+            if(e.timeStamp - Editor.moveQueue[Editor.moveQueue.length - 1].x.timeStamp > 40){
+                Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
+            }
+
             Editor.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
             // redraw scene
             RenderManager.render();
@@ -825,18 +830,14 @@ Editor.onMouseUp = function(e)
                                        Math.max(Math.min(deltas.y/delta_T, 1), -1));
             var duration = Math.max(velocity.x, velocity.y) * 2000;
             velocity = Vector2.Multiply(10, velocity);
-            console.log("duration: " + duration);
-            
+
             console.log("velocity outside: " + velocity);
             var box_momentum = function(step, duration, velocity, position, lastStepTime){
-                console.log("velocity!" + velocity);
-                console.log("duration: " + duration);
                 if(duration < 0 || step < 0)
                     return;
 
                 var now = new Date();
                 var stepDuration = now.getTime() - lastStepTime.getTime();
-                console.log("stepDuration: " + stepDuration);
                 var new_velocity = Vector2.Multiply(step * 1/10, velocity);
 
                 var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
@@ -847,15 +848,13 @@ Editor.onMouseUp = function(e)
                 
                 if(new_pos.x > Editor.canvas_width || new_pos.x < 0
                    || new_pos.y > Editor.canvas_height || new_pos.y < 0){
-                    console.log("Deleting");
                     Editor.deleteTool();
                     return;
                 }
                 window.setTimeout(box_momentum, 15, step - 1, duration - stepDuration, new_velocity, new_pos, now);
                 
             }
-
-            if(distance > 40)
+            if(distance > 100)
                 window.setTimeout(box_momentum, 15, 10, duration, velocity, recent_pos, new Date());
 
             // ipad: touchend occurs when finger physically leaves the screen.

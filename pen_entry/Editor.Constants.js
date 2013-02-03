@@ -19,7 +19,7 @@ Editor.stroke_select_width = 2;
 Editor.symbol_tree = "example_tree_icdar.xml";
 
 // The number of events to store in the event queue for momentum tracking
-Editor.moveQueueLength = 40;
+Editor.moveQueueLength = 2;
 
 // Symbol layout classes (for DRACULAE)
 Editor.ascender_chars = ['b','d','f','h','i','k','l','t'];
