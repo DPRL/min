@@ -35,6 +35,7 @@ var TouchAndHoldState = {
 };
 
 Editor.lastEvent = null;
+Editor.moveQueue = null;
 Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold;
 Editor.touchAndHoldTimeout = 800;
 
@@ -452,7 +453,7 @@ Editor.onMouseDown = function(e)
             {
                 Editor.add_action(new TransformSegments(Editor.selected_segments));
                 Editor.state = EditorState.MovingSegments;
-
+		Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
                 setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
             }
             // reselect
@@ -665,8 +666,10 @@ Editor.onMouseMove = function(e)
             break;
         case EditorState.SegmentsSelected:
             Editor.state = EditorState.MovingSegments;
+	    Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
         case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:
+            Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
             Editor.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
             // redraw scene
             RenderManager.render();

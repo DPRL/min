@@ -18,6 +18,9 @@ Editor.stroke_select_width = 2;
 // Hierarchical tree of available symbol classes
 Editor.symbol_tree = "example_tree_icdar.xml";
 
+// The number of events to store in the event queue for momentum tracking
+Editor.moveQueueLength = 10;
+
 // Symbol layout classes (for DRACULAE)
 Editor.ascender_chars = ['b','d','f','h','i','k','l','t'];
 Editor.x_height_chars = ['a','c','e','m','n','o','r','s','u','v','w','x','z'];
