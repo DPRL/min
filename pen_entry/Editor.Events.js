@@ -848,14 +848,34 @@ Editor.onMouseUp = function(e)
                 
                 if(new_pos.x > Editor.canvas_width || new_pos.x < 0
                    || new_pos.y > Editor.canvas_height || new_pos.y < 0){
-                    Editor.deleteTool();
+                    /*
+                      Users will expect that when they undo, the
+                      object will both be undeleted and move to the
+                      starting position. Use a composite action to
+                      achieve this.
+                    */
+                    console.log("Deleting.");
+                    var action = new CompositeAction();
+
+                    // Delete the segments that were thrown off the screen
+                    var del_action = new DeleteSegments(Editor.selected_segments);
+                    del_action.Apply();
+                    Editor.clearSelectedSegments();
+
+                    // Create a composite object and register it with the Editor
+                    action.add_action(Editor.current_action);
+                    Editor.add_action(action);
+                    action.add_action(del_action);
+
                     return;
                 }
                 window.setTimeout(box_momentum, 15, step - 1, duration - stepDuration, new_velocity, new_pos, now);
                 
             }
-            if(distance > 100)
+            if(distance > 100){
                 window.setTimeout(box_momentum, 15, 10, duration, velocity, recent_pos, new Date());
+                return;
+            }
 
             // ipad: touchend occurs when finger physically leaves the screen.
             if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
@@ -1457,6 +1477,14 @@ Editor.deleteTool = function()
     var action = new DeleteSegments(Editor.selected_segments)
     action.Apply();
     Editor.add_action(action);
+    Editor.clearSelectedSegments();
+}
+
+/**
+   Clear the selected segments from the canvas and then
+   set the editor mode to the proper selection method.
+**/
+Editor.clearSelectedSegments = function(){
     Editor.clear_selected_segments();    
     RenderManager.render();
     console.log(Editor.selection_method);
