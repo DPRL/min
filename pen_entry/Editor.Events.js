@@ -1770,5 +1770,7 @@ Editor.changeState = function(state){
     }
 }
 Editor.showToolTip = function(target, use){
-	$('#' + target).tooltip({content: use, items: '#' + target});
+	if (!Editor.using_ipad) {
+		$('#' + target).tooltip({content: use, items: '#' + target});
+	}
 }
