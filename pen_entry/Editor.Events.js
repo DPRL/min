@@ -792,25 +792,62 @@ Editor.onMouseUp = function(e)
                 theEvent = event.changedTouches[0];
             }
 
-            // Continue moving if there is momentum
-            var new_pos = Editor.mouse_position.clone();
-            while(Editor.mouse_move_distance > 2){
-                console.log("Distance: " + Editor.mouse_move_distance);
-                var difference = Editor.mouse_move_distance * 2;
-                Editor.mouse_move_distance -= (Editor.mouse_move_distance * .2);
-                new_pos.x += difference;
-                new_pos.y += difference;
-                console.log("mouse position" + Editor.mouse_position);
-                console.log("new pos: " + new_pos);
-                
-                Editor.moveSegments(Editor.mouse_position, new_pos);
-                
-                RenderManager.render();
-                Editor.mouse_position = new_pos.clone();
+            /*
+              This momentum code is adapted from code at http://jsfiddle.net/529KH/
 
+              The license information on jsfiddle is as follows:
+              Created and maintained by Piotr and Oskar.
+
+              Hosted by DigitalOcean.
+
+              It wouldn't exist without MooTools community.
+
+              License
+
+              All code belongs to the poster and no license is enforced.
+
+              We are not responsible or liable for any loss or damage of any kind during the usage of provided code.
+             */
+            
+            // Continue moving if there is momentum
+            console.log(Editor.moveQueue);
+	    var recent = Editor.moveQueue.slice(-1)[0];
+	    var oldest = Editor.moveQueue.slice(0, 1)[0]
+	    var recent_pos = recent.y;
+	    var oldest_pos = oldest.y; 
+	    var recent_ts = recent.x.timeStamp;
+	    var oldest_ts = oldest.x.timeStamp;
+            var delta_T = recent_ts - oldest_ts;
+            
+            var deltas = Vector2.Subtract(recent_pos, oldest_pos);
+            var distance = Vector2.Distance(recent_pos, oldest_pos);
+            // velocity in each dimension
+            var velocity = new Vector2(Math.max(Math.min(deltas.x/delta_T, 1), -1),
+                                       Math.max(Math.min(deltas.y/delta_T, 1), -1));
+            console.log("velocity outside: " + velocity);
+            var box_momentum = function(step, duration, velocity, position, lastStepTime){
+                console.log("velocity!" + velocity);
+                console.log("duration: " + duration);
+                if(duration < 0)
+                    return;
+
+                var now = new Date();
+                var stepDuration = now.getTime() - lastStepTime.getTime();
+                var new_velocity = Vector2.Multiply(step * 1/100, velocity);
+
+                var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
+                
+                Editor.moveSegments(position, new_pos);
+
+                RenderManager.render();
+                window.setTimeout(box_momentum, 75,step + 1, duration - 100, new_velocity, new_pos, now);
+                
             }
 
-            // iPad: touchend occurs when finger physically leaves the screen.
+            if(distance > 40)
+                window.setTimeout(box_momentum, 75, 1, 2000, velocity, recent_pos, new Date());
+
+            // ipad: touchend occurs when finger physically leaves the screen.
             if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
                 theEvent.pageY  < toolbarDims.bottom || 
                 theEvent.pageY > canvasDims.height - 2 * offSet ) {
