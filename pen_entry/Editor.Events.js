@@ -577,6 +577,25 @@ Editor.onMouseDown = function(e)
     }
 }
 
+/**
+   Move all selected segments between two positions.
+
+   @param previous A Vector2 of the previous mouse position
+   @param current A Vector2 of the current mouse position
+**/
+Editor.moveSegments = function(previous, current){
+    var translation = Vector2.Subtract(current, previous);
+    for(var k = 0; k < Editor.selected_segments.length; k++)
+    {
+        seg = Editor.selected_segments[k];
+        if(seg.clear != undefined) {
+            seg.clear(Editor.contexts[0]);
+        }                    
+        seg.translate(translation);
+    }
+    Editor.selected_bb.translate(translation);
+}
+
 Editor.onMouseMove = function(e)
 {    
     Editor.lastEvent = e;
@@ -589,12 +608,14 @@ Editor.onMouseMove = function(e)
     {
         Editor.mouse_position_prev = Editor.mouse_position;
         Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+        Editor.mouse_move_distance = Vector2.SquareDistance(Editor.mouse_position, Editor.mouse_position_prev);
     }    
     else if(e.type == "touchmove")
     {
         var first = event.changedTouches[0];
         Editor.mouse_position_prev = Editor.mouse_position;
         Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+        Editor.mouse_move_distance = Vector2.SquareDistance(Editor.mouse_position, Editor.mouse_position_prev);
     }
     else 
         return;
@@ -646,16 +667,7 @@ Editor.onMouseMove = function(e)
             Editor.state = EditorState.MovingSegments;
         case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:
-            var translation = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
-            for(var k = 0; k < Editor.selected_segments.length; k++)
-            {
-                seg = Editor.selected_segments[k];
-                if(seg.clear != undefined) {
-                    seg.clear(Editor.contexts[0]);
-                }                    
-                seg.translate(translation);
-            }
-            Editor.selected_bb.translate(translation);
+            Editor.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
 
             // redraw scene
             RenderManager.render();
@@ -777,12 +789,11 @@ Editor.onMouseUp = function(e)
             if(e.type == "touchend") {
                 theEvent = event.changedTouches[0];
             }
-
+            
             // iPad: touchend occurs when finger physically leaves the screen.
             if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
                 theEvent.pageY  < toolbarDims.bottom || 
                 theEvent.pageY > canvasDims.height - 2 * offSet ) {
-                console.log("HERE");
                 Editor.deleteTool();
             } else {
                 if (Editor.state == EditorState.MovingSegments) {
