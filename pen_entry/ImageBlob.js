@@ -68,7 +68,7 @@ ImageBlob.prototype.initialize_blob = function(x, y, context_size){
     this.svg_image_inverse.setAttributeNS("http://www.w3.org/1999/xlink", 'xlink:href', this.inverse_image.src);
 
     // This is the current version of the image being displayed
-    this.inner_svg = this.svg_image_inverse;
+    this.inner_svg = this.svg_image;
     this.svg.appendChild(this.inner_svg);
     this.dirty_flag = true;
     this.initialized = true;
@@ -102,12 +102,12 @@ ImageBlob.prototype.finishImageLoad = function(in_canvas){
 
 ImageBlob.prototype.render = function()
 {
-    this.private_render(this.svg_image_inverse);
+    this.private_render(this.inner_svg);
 }
 
 ImageBlob.prototype.render_selected = function()
 {
-    this.private_render(this.svg_image_inverse);
+    this.private_render(this.inner_svg);
 }
 
 // determine if the passed in point (screen space) collides with our geometery
@@ -329,7 +329,10 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc, full_image_size){
             var inverse_image = new Image();
             inverse_image.name = this.name;
 
-            // once it loads, add the image blob to the system
+
+
+            // This is for making inverse images, currently we don't use it.
+            // // once it loads, add the image blob to the system
             inverse_image.onload = function(){                   
                 var b = new ImageBlob(image_list[my_k], this);
                 b.initialize_blob(position_list[my_k][0], position_list[my_k][1], full_image_size);
@@ -349,10 +352,13 @@ ImageBlob.populateCanvasFromCCs = function(xmldoc, full_image_size){
                 Editor.add_action(new AddSegments(added_segments));
             }
             
-            inverse_image.src = ImageBlob.generateInverseImage(this);
+            // inverse_image.src = ImageBlob.generateInverseImage(this);
+            // Forego making an inverse_image
+            inverse_image.src = this.src;
+
 
         }
-        image_list[k].src = img_data;       
+        image_list[k].src = img_data;
     }
     
     return added_segments;
