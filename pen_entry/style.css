@@ -489,7 +489,7 @@ svg.pen_stroke {
 	-webkit-transform-origin: 0 0;
 	font-size: 72px;
 	line-height:0.85em;
-	color: white;
+	color: black;
 	position: absolute;
 	z-index: 1000;
 	top: 0;
