@@ -38,6 +38,7 @@ Editor.lastEvent = null;
 Editor.moveQueue = null;
 Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold;
 Editor.touchAndHoldTimeout = 800;
+Editor.minTouchTimeDiff = 100;
 
 Editor.setup_events = function()
 {
@@ -349,6 +350,7 @@ Editor.onDoubleClick = function(e)
 Editor.onMouseDown = function(e)
 {
     console.log(e.type);
+    console.log("Editor state: " + Editor.state);
     var tmpLast = Editor.lastEvent;
     Editor.lastEvent = e;
     if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Editor.using_ipad) {
@@ -373,9 +375,8 @@ Editor.onMouseDown = function(e)
     }    
     else if(e.type == "touchstart")
     {
-        // Don't do anything if a hammer event is firing
-        if(Editor.state == EditorState.PinchResizing){
-            Editor.lastEvent = tmpLast;
+        // Don't do anything if a hammer event is firing or there are two many fingers on the screen
+        if(Editor.state == EditorState.PinchResizing || e.touches.length > 1 || e.timeStamp - tmpLast.timeStamp < Editor.minTouchTimeDiff ){
             return;
         }
         var first = event.changedTouches[0];
@@ -760,10 +761,12 @@ Editor.onMouseMove = function(e)
 
 Editor.onMouseUp = function(e)
 {
-    if(Editor.state == EditorState.PinchResizing)
-        return;
-    
+    var tmpLast = Editor.lastEvent;
     Editor.lastEvent = e;
+    // Don't react if we're in the middle of a transform, or if
+    // there's still something touching the screen
+    if(Editor.state == EditorState.PinchResizing || e.timeStamp - tmpLast.timeStamp < 0)
+        return;
 
     if(e.button == 0 && !Editor.using_ipad || e.type == "touchend")
     {
@@ -882,6 +885,7 @@ Editor.onMouseUp = function(e)
                 
             }
             if(distance > 100){
+                console.log("Editor state: " + Editor.state);
                 window.setTimeout(box_momentum, 15, 10, duration, velocity, recent_pos, new Date());
                 return;
             }
@@ -1095,9 +1099,8 @@ Editor.onKeyPress = function(e)
 // Hammer Events
 // ----------------
 Editor.onPinchStart = function(e){ // e is a Hammer.js event
-    console.log("pinch start");
+    // Need to clear the moveQueue so that there is no velocity at the end of the touch
     Editor.add_action(new TransformSegments(Editor.selected_segments));
-    this.prev_state = Editor.state;
     Editor.state = EditorState.PinchResizing;
     
     Editor.original_bb = Editor.selected_bb.clone();
@@ -1133,7 +1136,8 @@ Editor.onPinchEnd = function(e){
     RenderManager.render();
 
     // Restore the previous state
-    Editor.changeState(this.prev_state);
+    Editor.changeState(EditorState.SegmentsSelected);
+    Editor.moveQueue = null;
 }
 
 //--------------------------------------------------
