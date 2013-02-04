@@ -349,6 +349,7 @@ Editor.onDoubleClick = function(e)
 Editor.onMouseDown = function(e)
 {
     console.log(e.type);
+    var tmpLast = Editor.lastEvent;
     Editor.lastEvent = e;
     if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Editor.using_ipad) {
         Editor.touchAndHoldFlag = TouchAndHoldState.FingerDownAndStationary;
@@ -372,6 +373,11 @@ Editor.onMouseDown = function(e)
     }    
     else if(e.type == "touchstart")
     {
+        // Don't do anything if a hammer event is firing
+        if(Editor.state == EditorState.PinchResizing){
+            Editor.lastEvent = tmpLast;
+            return;
+        }
         var first = event.changedTouches[0];
         Editor.mouse_position_prev = Editor.mouse_position;
         Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
@@ -754,6 +760,9 @@ Editor.onMouseMove = function(e)
 
 Editor.onMouseUp = function(e)
 {
+    if(Editor.state == EditorState.PinchResizing)
+        return;
+    
     Editor.lastEvent = e;
 
     if(e.button == 0 && !Editor.using_ipad || e.type == "touchend")
@@ -1086,7 +1095,7 @@ Editor.onKeyPress = function(e)
 // Hammer Events
 // ----------------
 Editor.onPinchStart = function(e){ // e is a Hammer.js event
-    console.log("transform start");
+    console.log("pinch start");
     Editor.add_action(new TransformSegments(Editor.selected_segments));
     this.prev_state = Editor.state;
     Editor.state = EditorState.PinchResizing;
@@ -1100,7 +1109,11 @@ Editor.onPinchStart = function(e){ // e is a Hammer.js event
 }
 
 Editor.onPinch = function(e){ 
-
+    // For some reason the scale
+    // returns 0 sometimes, this is why the object would suddenly get
+    // tiny
+    if(e.scale == 0)
+        return;
     for(var n = 0; n < Editor.selected_segments.length; n++){
         Editor.selected_segments[n].resize(this.anchor, new Vector2(e.scale, e.scale));
     }
@@ -1110,7 +1123,8 @@ Editor.onPinch = function(e){
 }
 
 Editor.onPinchEnd = function(e){
-    // End the transform 
+    // End the transform
+    console.log("pinch end");
     for(var n = 0; n < Editor.selected_segments.length; n++){
         Editor.selected_segments[n].freeze_transform();
     }
