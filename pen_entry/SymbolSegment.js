@@ -8,6 +8,7 @@ function SymbolSegment(in_position) {
     this.instance_id = Segment.count++;
     this.type_id = SymbolSegment.type_id;
     this.set_id = Segment.set_count++;
+    this.expression_id = Editor.current_expression_id;
     
     this.chalk_layer = SymbolSegment.chalk_layer;
     

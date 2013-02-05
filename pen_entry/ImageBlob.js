@@ -13,6 +13,7 @@ function ImageBlob(in_image, in_inverse_image)
     this.instance_id = Segment.count++; // unique per object
     this.type_id = ImageBlob.type_id;
     this.set_id = Segment.set_count++;
+    this.expression_id = Editor.current_expression_id;
 
     this.chalk_layer = ImageBlob.chalk_layer;
     
@@ -55,6 +56,7 @@ ImageBlob.prototype.initialize_blob = function(x, y, context_size){
     this.svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     this.svg.setAttribute("width", "100%");
     this.svg.setAttribute("height", "100%");
+    this.svg.setAttribute("opacity", "0.3");
     this.element = this.svg; // Compatibility with code that expects this object to have an 'element' member
 
     this.svg_image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
