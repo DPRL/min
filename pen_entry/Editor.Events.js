@@ -209,6 +209,7 @@ Editor.onDoubleClick = function(e)
 
 Editor.onMouseDown = function(e)
 {
+    // TODO: REMOVE THIS BOILERPLATE
     console.log(e.type);
     console.log("Editor state: " + Editor.state);
     var tmpLast = Editor.lastEvent;
@@ -247,33 +248,12 @@ Editor.onMouseDown = function(e)
         return;
 
     Editor.mouse1_down = true;
+    // END BOILERPLATE
 
     switch(Editor.state)
     {
     case EditorState.ReadyToStrokeSelect:
-        // get the segments that are under the mouse click
-        var click_result = CollisionManager.get_point_collides(Editor.mouse_position);
-        if(click_result.length > 0)
-        {
-            // nothing selected at the moment, add all below mouse click to selected
-            // add the last guy in the list (probably most recently added) to selected set
-            var segment = click_result.pop();
-            for(var k = 0; k < Editor.segments.length; k++)
-                if(Editor.segments[k].set_id == segment.set_id)
-                    Editor.add_selected_segment(Editor.segments[k]);
-            
-            
-            Editor.add_action(new TransformSegments(Editor.selected_segments));
-            Editor.state = EditorState.SegmentsSelected;
-
-            //setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
-        } else
-        {
-            Editor.state = EditorState.StrokeSelecting;
-            
-        }
-        Editor.previous_stroke_position = Editor.mouse_position.clone();
-        RenderManager.render();
+        StrokeSelectMode.onMouseDown(e);
         break;        
     case EditorState.ReadyToRectangleSelect:
         // get the segments that are under the mouse click
