@@ -45,32 +45,13 @@ Editor.setup_events = function()
     var button_index = 0; // Sets default initial state (pen/touch entry)
     Editor.timeStamp = null;
     Editor.prevTimeStamp = null;
-
-    window.addEventListener("resize", Editor.fit_to_screen, true);
-    window.addEventListener("orientationchange", Editor.fit_to_screen, false);
-    window.addEventListener("mousemove", Editor.onMouseMove, true);
-    window.addEventListener("touchmove", Editor.onMouseMove, true);
-
     
-    $(document).keypress(Editor.onKeyPress);
-    $(document).keydown(Editor.mapCanvasBackspace);
-    Editor.toolbar_div.addEventListener("mouseup", Editor.onMouseUp, true);
+    PermEvents.setup_window();
 
-    // Canvas bindings.
-    Editor.canvas_div.addEventListener("mousedown", Editor.onMouseDown, true);
-    Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
-    Editor.canvas_div.addEventListener("dblclick", Editor.onDoubleClick, true);
-
-    // Touch events for tablet interfaces
-    Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
-    Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
+    PermEvents.setup_canvas();
+    PermEvents.setup_toolbar();
+    PermEvents.setup_document();
     
-    // Prevent problem behavior from the iPad canvas.
-    Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
-
-    
-    PermEvents.setup_buttons();
-
     // Adds highlighting on pressing buttons and pinch-resize functionality
     if(Editor.using_ipad){
         PermEvents.setup_touch_events();
@@ -131,11 +112,6 @@ Editor.fit_to_screen = function(event)
 }
 
 
-Editor.onResize = function(e)
-{
-    // just update the position of our main div to properly handle mouse events
-    Editor.div_position = findPosition(Editor.canvas_div);
-}
 
 //--------------------------------------------------
 // 

@@ -5,7 +5,7 @@ throughout throughout a run of Min. e.g. buttons
 
 function PermEvents(){}
 
-PermEvents.setup_buttons = function(){
+PermEvents.setup_toolbar = function(){
     document.getElementById("pen").addEventListener("click", RenderManager.editColorOCRbbs, true);
     document.getElementById("pen").addEventListener("click", Editor.selectPenTool, true);
     document.getElementById("pen").addEventListener("click", Editor.setCursor, true);
@@ -36,7 +36,7 @@ PermEvents.setup_buttons = function(){
     document.getElementById("add").addEventListener("mouseover",Editor.showToolTip("add","New expression"), true);
     document.getElementById("remove").addEventListener("mouseover",Editor.showToolTip("remove","Delete expression"), true);
 
-    // add an equation image to the canvas if this is supported
+    // add an upload image button to the canvas if this is supported
     if(window.FileReader){
         $("#upload_image").removeClass("hidden_toolbar_button");
         var file_input = document.createElement("input");
@@ -56,9 +56,14 @@ PermEvents.setup_buttons = function(){
         }, true);
     }
  
+    Editor.toolbar_div.addEventListener("mouseup", Editor.onMouseUp, true);
 }
 
 PermEvents.setup_touch_events = function(){
+    // Touch events for tablet interfaces
+    Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
+    Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
+
     // Image upload
     document.getElementById("upload_image").addEventListener("touchstart", 
                                                              function(event)
@@ -106,6 +111,9 @@ PermEvents.setup_touch_events = function(){
                                                       {
                                                           Editor.button_states[Buttons.Align].setTouched(false);
                                                       }, true);    
+    
+    // Prevent problem behavior from the iPad canvas.
+    Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
 
     // Pinch to resize events
     var bb = document.getElementById("bounding_box");
@@ -124,4 +132,24 @@ PermEvents.setup_touch_events = function(){
     bb.hammer.ontransform = Editor.onPinch;
     bb.hammer.ontransformend = Editor.onPinchEnd;
 
+}
+
+PermEvents.setup_window = function(){
+    window.addEventListener("resize", Editor.fit_to_screen, true);
+    window.addEventListener("orientationchange", Editor.fit_to_screen, false);
+    window.addEventListener("mousemove", Editor.onMouseMove, true);
+    window.addEventListener("touchmove", Editor.onMouseMove, true);
+
+}
+
+PermEvents.setup_document = function(){
+    $(document).keypress(Editor.onKeyPress);
+    $(document).keydown(Editor.mapCanvasBackspace);
+}
+
+PermEvents.setup_canvas = function(){
+    // Canvas bindings.
+    Editor.canvas_div.addEventListener("mousedown", Editor.onMouseDown, true);
+    Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
+    Editor.canvas_div.addEventListener("dblclick", Editor.onDoubleClick, true);
 }
