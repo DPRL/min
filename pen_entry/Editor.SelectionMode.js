@@ -76,3 +76,62 @@ SelectionMode.onPinchEnd = function(e){
     Editor.moveQueue = null;
 }
 
+SelectionMode.mouseDownSegmentsSelected = function(e){    
+    var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
+    // check for resizing
+    if(click_edge != -1)
+    {
+        Editor.add_action(new TransformSegments(Editor.selected_segments));
+        Editor.state = EditorState.Resizing;
+        Editor.grabbed_edge = click_edge;
+        Editor.resize_offset = new Vector2(0,0);
+        Editor.original_bb = Editor.selected_bb.clone();
+    }
+    else
+    {
+        // check translate
+        if(Editor.selected_bb.point_collides(Editor.mouse_position))
+        {
+            Editor.add_action(new TransformSegments(Editor.selected_segments));
+            Editor.state = EditorState.MovingSegments;
+    Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
+            Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
+            setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+        }
+        // reselect
+        else
+        {
+            Editor.clear_selected_segments();
+            var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
+            // clicking on a new segment
+            if(clicked_points.length > 0)
+            {
+                for(var k = 0; k <clicked_points.length; k++)
+                {
+                    var segment = clicked_points[k];
+                    Editor.add_selected_segment(segment);
+                }
+                Editor.state = EditorState.SegmentsSelected;
+
+
+                setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+            }
+            // selecting none
+            else
+            {
+                if(Editor.selection_method == "Stroke")
+                {
+                    Editor.previous_stroke_position = Editor.mouse_position.clone();
+                    Editor.state = EditorState.StrokeSelecting;
+                }
+                else
+                {
+                    Editor.start_rect_selection = Editor.mouse_position.clone();
+                    Editor.end_rect_selection  = Editor.mouse_position.clone();
+                    Editor.state = EditorState.RectangleSelecting;    
+                }
+            }
+            RenderManager.render();
+        }
+    }
+}
