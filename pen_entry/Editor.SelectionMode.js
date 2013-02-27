@@ -4,6 +4,9 @@ of Min
 */
 
 function SelectionMode(){}
+// For now this hierarchy doesn't matter, as we don't make instances
+// of the SelectionMode. This will change.
+SelectionMode.prototype = new EditorMode();
 
 SelectionMode.setup_touch_events = function(){
     // Pinch to resize events
