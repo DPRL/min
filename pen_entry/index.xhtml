@@ -218,6 +218,7 @@
 		
 	<!-- Editor components  -->
 	<script type="text/javascript" src="Editor.js"></script>
+	<script type="text/javascript" src="Editor.PermEvents.js"></script>
 	<script type="text/javascript" src="Editor.Events.js"></script>
 	<script type="text/javascript" src="Editor.Buttons.js"></script>
 	<script type="text/javascript" src="Editor.Constants.js"></script>
@@ -238,7 +239,7 @@
 
 	<!-- Undoable/Redoable Actions -->
         <script type="text/javascript" src="Action.js"></script>
-                <script type="text/javascript" src="Action.CompositeAction.js"></script>
+        <script type="text/javascript" src="Action.CompositeAction.js"></script>
 	<script type="text/javascript" src="Action.AddSegments.js"></script>
 	<script type="text/javascript" src="Action.TransformSegments.js"></script>
 	<script type="text/javascript" src="Action.GroupSegments.js"></script>
@@ -275,7 +276,7 @@
 	<link rel="stylesheet" type="text/css" href="third_party/jquery-ui/css/ui-lightness/jquery-ui-1.10.0.custom.min.css"/>
         
 	<!-- Main -->
-	<script type="text/javascript">Editor.initialize("equation_canvas", "toolbar");</script> 
+	<script type="text/javascript">$(window).load(Editor.initialize("equation_canvas", "toolbar"));</script> 
 
 	</body>
 </html>
