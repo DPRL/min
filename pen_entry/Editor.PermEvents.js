@@ -115,23 +115,6 @@ PermEvents.setup_touch_events = function(){
     // Prevent problem behavior from the iPad canvas.
     Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
 
-    // Pinch to resize events
-    var bb = document.getElementById("bounding_box");
-    console.log("applying hammer events");
-    bb.hammer = new Hammer(bb, {
-        transform: true,
-        scale_threshold: .1,
-        drag_min_distance: 0,
-        // These events need to be suppressed because sometimes they would fire during
-        // a transform and prevent ontransformend from being run, leaving the editor in a bad state.
-        drag: false,
-        swipe: false
-    });
-
-    bb.hammer.ontransformstart = Editor.onPinchStart;
-    bb.hammer.ontransform = Editor.onPinch;
-    bb.hammer.ontransformend = Editor.onPinchEnd;
-
 }
 
 PermEvents.setup_window = function(){
