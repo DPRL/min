@@ -408,11 +408,7 @@ Editor.onMouseUp = function(e)
         switch(Editor.state)
         {
         case EditorState.StrokeSelecting:
-            if(Editor.selected_segments.length > 0)
-                Editor.state = EditorState.SegmentsSelected;
-            else
-                Editor.state = EditorState.ReadyToStrokeSelect;
-            RenderManager.clear_canvas();
+            StrokeSelectMode.onMouseUp(e);
             break;
         case EditorState.RectangleSelecting:
             if(Editor.selected_segments.length > 0)

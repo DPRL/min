@@ -54,3 +54,13 @@ StrokeSelectMode.onMouseMove = function(e){
     Editor.previous_stroke_position = Editor.mouse_position_prev.clone();
     RenderManager.render();
 }
+
+StrokeSelectMode.onMouseUp = function(e){
+    if(Editor.selected_segments.length > 0)
+        Editor.state = EditorState.SegmentsSelected;
+    else
+        Editor.state = EditorState.ReadyToStrokeSelect;
+    RenderManager.clear_canvas();
+
+}
+
