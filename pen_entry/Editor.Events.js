@@ -411,12 +411,7 @@ Editor.onMouseUp = function(e)
             StrokeSelectMode.onMouseUp(e);
             break;
         case EditorState.RectangleSelecting:
-            if(Editor.selected_segments.length > 0)
-                Editor.state = EditorState.SegmentsSelected;
-            else
-                Editor.state = EditorState.ReadyToRectangleSelect;
-            Editor.start_rect_selection = Editor.end_rect_selection = null;
-            RenderManager.render();
+            RectSelectMode.onMouseUp(e);
             break;
         case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:

@@ -55,3 +55,12 @@ RectSelectMode.onMouseMove = function(e){
     RenderManager.render();
 
 }
+
+RectSelectMode.onMouseUp = function(e){
+    if(Editor.selected_segments.length > 0)
+        Editor.state = EditorState.SegmentsSelected;
+    else
+        Editor.state = EditorState.ReadyToRectangleSelect;
+    Editor.start_rect_selection = Editor.end_rect_selection = null;
+    RenderManager.render();
+}
