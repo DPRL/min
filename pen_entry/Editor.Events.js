@@ -364,6 +364,10 @@ Editor.onMouseMove = function(e)
             DrawMode.onMouseMove(e);
             break;
         case EditorState.Resizing:
+            /*
+            TODO: Figure out where to put this and how to recognize when
+            a resize if happening without the EditorState. Event on bb handles?
+            */
             var offset = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
             var bb = Editor.original_bb;
             var anchor;

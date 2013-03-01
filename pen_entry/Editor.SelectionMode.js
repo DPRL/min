@@ -79,6 +79,7 @@ SelectionMode.onPinchEnd = function(e){
 SelectionMode.mouseDownSegmentsSelected = function(e){    
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
     // check for resizing
+    // TODO: make this an event on just the bb handles. 
     if(click_edge != -1)
     {
         Editor.add_action(new TransformSegments(Editor.selected_segments));
