@@ -354,9 +354,7 @@ Editor.onMouseMove = function(e)
             SelectionMode.moveSegmentsFromMouseMove(e);
             break;            
         case EditorState.MiddleOfStroke:
-            // add a new point to this pen stroke
-            // pen automatically draws stroke when point added
-            Editor.current_stroke.add_point(Editor.mouse_position);
+            DrawMode.onMouseMove(e);
             break;
         case EditorState.Resizing:
             var offset = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);

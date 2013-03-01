@@ -48,3 +48,9 @@ DrawMode.onMouseDown = function(e){
 
 }
 
+DrawMode.onMouseMove = function(e){
+    // add a new point to this pen stroke
+    // pen automatically draws stroke when point added
+    Editor.current_stroke.add_point(Editor.mouse_position);
+}
+
