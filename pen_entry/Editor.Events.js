@@ -148,47 +148,7 @@ Editor.onDoubleClick = function(e)
 
     case EditorState.MovingSegments:
     case EditorState.SegmentsSelected:
-        // RLAZ: allow relabeling and resegmenting using double tap.
-        // Check for identical segment identifiers (relabel in that case)
-        var singleObject = 0;
-        if (Editor.selected_segments.length > 0) {
-            var allSame = 1;
-            var segmentId = Editor.selected_segments[0].set_id;
-
-            // All selected objects belong to the same segment (id)
-            for(var i = 1; i < Editor.selected_segments.length; i++) {
-                if (Editor.selected_segments[i].set_id != segmentId ) {
-                    allSame = 0;
-                }
-            }
-            // All objects in the segmented have been selected.
-            if (allSame > 0) {
-                var totalInSegment = 0;
-                for(var i = 0; i < Editor.segments.length; i++)
-                {
-                    if (Editor.segments[i].set_id == segmentId) {
-                        totalInSegment++;
-                    }
-                }
-                if(totalInSegment == Editor.selected_segments.length) {
-                    singleObject = 1;
-                }
-            }
-        }
-
-        // Depending on selection, relabel or re-segment.
-        var prev_state;
-        if(Editor.selection_method == "Stroke")
-            prev_state = EditorState.StrokeSelecting;
-        else
-            prev_state = EditorState.RectangleSelecting;
-        
-        Editor.state = EditorState.SegmentsSelected;
-        if (singleObject > 0) {
-            Editor.relabel(prev_state);
-        } else {
-            Editor.groupTool();
-        }
+        SelectionMode.onDoubleClick(e);
         break;
     }
 }
