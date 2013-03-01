@@ -155,3 +155,13 @@ SelectionMode.moveSegments = function(previous, current){
     Editor.selected_bb.translate(translation);
 }
 
+// Awkward name, try to change this later
+SelectionMode.moveSegmentsFromMouseMove = function(e){
+    if(e.timeStamp - Editor.moveQueue[Editor.moveQueue.length - 1].x.timeStamp > 40){
+                    Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
+    }
+
+    SelectionMode.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
+    // redraw scene
+    RenderManager.render();
+}

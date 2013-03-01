@@ -351,13 +351,7 @@ Editor.onMouseMove = function(e)
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
         case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:
-            if(e.timeStamp - Editor.moveQueue[Editor.moveQueue.length - 1].x.timeStamp > 40){
-                Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
-            }
-
-            SelectionMode.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
-            // redraw scene
-            RenderManager.render();
+            SelectionMode.moveSegmentsFromMouseMove(e);
             break;            
         case EditorState.MiddleOfStroke:
             // add a new point to this pen stroke
