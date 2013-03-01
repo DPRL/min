@@ -40,6 +40,7 @@ KeyCode = {
     pen: "p",
 }
 
+Editor.DPRL_url = "http://www.cs.rit.edu/~dprl";
 Editor.classifier = new Classifier();
 
 //Editor.editor_root = "./";

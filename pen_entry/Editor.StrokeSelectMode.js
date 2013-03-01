@@ -8,6 +8,14 @@ function StrokeSelectMode(){}
 StrokeSelectMode.prototype = new SelectionMode();
 
 
+StrokeSelectMode.prototype.init_mode = function(){
+    canvas.style.cursor = "crosshair";
+}
+
+StrokeSelectMode.prototype.close_mode = function(){
+    canvas.style.cursor = "default";
+}
+
 /*
 Method stub for switching into StrokeSelectMode
 */

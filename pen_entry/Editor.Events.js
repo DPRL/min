@@ -61,7 +61,7 @@ Editor.setup_events = function()
     Editor.button_states[Buttons.Pen].enabled = true;
 
 }
-
+// TODO: delete, as this will be deprecated under the new system
 Editor.setCursor = function ()
 {
     var canvas = document.getElementById("equation_canvas");
@@ -440,6 +440,7 @@ Editor.mapCanvasBackspace = function(e)
         } else {
             // If we're not in the text box, need to avoid going 'back'
             // when we press backspace in Safari and some other browsers.
+            // TODO: These should be subsumed by events in the mode objects
             switch (Editor.state)
             {
             case EditorState.MiddleOfText:
@@ -549,6 +550,8 @@ Editor.onPinchEnd = function(e){
 // Editing modes/states
 // 
 //-------------------------------------------------- 
+
+// TODO: Move to initialization for draw mode
 Editor.selectPenTool = function()
 {
     Editor.clearButtonOverlays();
@@ -574,6 +577,7 @@ Editor.selectPenTool = function()
     RenderManager.render();
 }
 
+// TODO: Move functionality to StrokeSelectionMode (init)
 Editor.strokeSelectionTool = function()
 {
     if(Editor.button_states[Buttons.Stroke].enabled == false)
@@ -602,6 +606,7 @@ Editor.strokeSelectionTool = function()
     Editor.selection_method = "Stroke";
 }
 
+// TODO: Move functionality to RectangleSelectModea (init)
 Editor.rectangleSelectionTool = function()
 {
     // DEBUG: was Buttons.Box -> Buttons.Rectangle
@@ -886,18 +891,9 @@ Editor.groupTool = function()
     }
 }
 
-// will break apart selected segment group objects
-Editor.ungroupTool = function()
-{
-    alert(Editor.state);
-}
-
 // deletes the currently selected segments
 Editor.deleteTool = function()
 {
-    //if(Editor.button_states[Buttons.Delete].enabled == false)
-    //    return;
-    
     var action = new DeleteSegments(Editor.selected_segments)
     action.Apply();
     Editor.add_action(action);
@@ -953,6 +949,8 @@ Editor.relabel = function(return_to)
 }
 
 // clears all the data and sends action list to server for storage
+// CMS: This is never used currently, I assume that it's for saving actions and
+// then reloading them.
 Editor.clear = function()
 {
     // get rid of last one if it' a bugger
@@ -1121,15 +1119,6 @@ Editor.onImageLoad = function(e)
     }
 }
 
-Editor.prevent_default = function(event)
-{
-    event.preventDefault();
-}
-
-
-////////////////////////////////////////
-// New methods
-////////////////////////////////////////
 Editor.search = function(e) 
 {
     // NOTE: CURRENTLY EXPERIMENTING WITH ONLY ONE TEXT BOX.
@@ -1176,6 +1165,7 @@ Editor.goDPRL = function ()
 /*
   This method takes a state and then performs the necessary operations to switch
   to that state
+  CMS: This is from the old/un-refactored version of Min
 */
 Editor.changeState = function(state){
     switch(state){
