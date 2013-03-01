@@ -390,14 +390,14 @@ SelectionMode.onKeyPress = function(e){
     } else {
         // These keycodes seem not to work properly in both the old version 
         // and this one.
-        switch ( e.which) {
-            case KeyCode.g:
+        switch ( String.toLowerCase(String.fromCharCode(e.which))) {
+            case KeyCode.group:
                 Editor.groupTool();
                 break;
-            case KeyCode.l:
+            case KeyCode.relabel:
                 Editor.relabel(Editor.state);
                 break;
-            case KeyCode.p:
+            case KeyCode.pen:
                 Editor.selectPenTool();
                 break;
             default:

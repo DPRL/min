@@ -35,9 +35,9 @@ KeyCode = {
     up_arrow: 38,
     right_arrow: 39,
     down_arrow: 40,
-    g: 71,
-    l: 76,
-    p: 80,
+    group: "g",
+    relabel: "l",
+    pen: "p",
 }
 
 Editor.classifier = new Classifier();
