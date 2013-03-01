@@ -306,6 +306,7 @@ Editor.onMouseDown = function(e)
 
 Editor.onMouseMove = function(e)
 {    
+    // TODO: Remove Boilerplate
     Editor.lastEvent = e;
 
     if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary)
@@ -329,6 +330,7 @@ Editor.onMouseMove = function(e)
         return;
     
     var mouse_delta = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
+    // END BOILERPLATE
     
     if(Editor.mouse1_down == true)
     {
@@ -336,22 +338,10 @@ Editor.onMouseMove = function(e)
         {
         case EditorState.ReadyToStrokeSelect:
             // we don't care here
+            // CMS: This should never happen
             break;
         case EditorState.StrokeSelecting:
-            // see what we stroked through between move events
-            var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
-            // for each segment in result add to selected segments set (if they aren't there already)
-            if(stroke_result.length > 0)
-            {
-                var initial_length = Editor.selected_segments.length;
-                while(stroke_result.length > 0)
-                {
-                    var segment = stroke_result.pop();
-                    Editor.add_selected_segment(segment);
-                }
-            }
-            Editor.previous_stroke_position = Editor.mouse_position_prev.clone();
-            RenderManager.render();
+            StrokeSelectMode.onMouseMove(e);
             break;
         case EditorState.RectangleSelecting:
             Editor.end_rect_selection.Add(mouse_delta);
@@ -381,7 +371,7 @@ Editor.onMouseMove = function(e)
                 Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
             }
 
-            Editor.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
+            SelectionMode.moveSegments(Editor.mouse_position_prev, Editor.mouse_position);
             // redraw scene
             RenderManager.render();
             break;            
@@ -553,7 +543,7 @@ Editor.onMouseUp = function(e)
 
                 var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
                 
-                Editor.moveSegments(position, new_pos);
+                SelectionMode.moveSegments(position, new_pos);
                 Editor.current_action.add_new_transforms(Editor.selected_segments);
                 RenderManager.render();
                 

@@ -37,3 +37,20 @@ StrokeSelectMode.onMouseDown = function(e){
     RenderManager.render();
 
 }
+
+StrokeSelectMode.onMouseMove = function(e){
+    // see what we stroked through between move events
+    var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
+    // for each segment in result add to selected segments set (if they aren't there already)
+    if(stroke_result.length > 0)
+    {
+        var initial_length = Editor.selected_segments.length;
+        while(stroke_result.length > 0)
+        {
+            var segment = stroke_result.pop();
+            Editor.add_selected_segment(segment);
+        }
+    }
+    Editor.previous_stroke_position = Editor.mouse_position_prev.clone();
+    RenderManager.render();
+}
