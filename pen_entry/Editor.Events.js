@@ -1077,15 +1077,15 @@ Editor.onKeyPress = function(e)
                 RenderManager.render();
             }
         } else {
-            switch ( e.keyCode ) {
-            case KeyCode.g:
+            switch ( String.toLowerCase(String.fromCharCode(e.which))) {
+            case KeyCode.group:
                 Editor.groupTool();
                 break;
-            case KeyCode.l:
+            case KeyCode.relabel:
                 Editor.relabel(Editor.state);
                 break;
-            case KeyCode.p:
-                Editor.selectPenTool;
+            case KeyCode.pen:
+                Editor.selectPenTool();
                 break;
             default:
             }
@@ -1145,7 +1145,7 @@ Editor.onPinchEnd = function(e){
 // Editing modes/states
 // 
 //-------------------------------------------------- 
-Editor.selectPenTool = function(draw_now)
+Editor.selectPenTool = function()
 {
     Editor.clearButtonOverlays();
     
