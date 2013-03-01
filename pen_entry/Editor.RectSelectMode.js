@@ -34,3 +34,24 @@ RectSelectMode.onMouseDown = function(e){
     RenderManager.render();
 
 }
+
+RectSelectMode.onMouseMove = function(e){
+    var mouse_delta = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
+    Editor.end_rect_selection.Add(mouse_delta);
+    // get list of segments colliding with selection rectangle
+    var rect_selected = CollisionManager.get_rectangle_collides(Editor.start_rect_selection, Editor.end_rect_selection);
+    rect_selected = rect_selected.filter(function(elem) {
+        return elem.expression_id == Editor.current_expression_id;
+    });
+    Editor.clear_selected_segments();
+    // add segment set to seleced list
+    for(var k = 0; k < rect_selected.length; k++)
+    {
+        var segment_set = Editor.get_segment_by_id(rect_selected[k].set_id);
+        for(var j = 0; j < segment_set.length; j++)
+            Editor.add_selected_segment(segment_set[j]);
+    }
+    
+    RenderManager.render();
+
+}
