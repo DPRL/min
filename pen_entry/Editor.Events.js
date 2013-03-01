@@ -294,34 +294,7 @@ Editor.onMouseDown = function(e)
 
 
     case EditorState.ReadyToStroke:
-        // RLAZ: allow symbols to be moved (but not multiply selected or resized)
-        // in drawing mode.
-        // var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
-        // if(click_result.length > 0)
-        // {
-        //     console.log("clicking through stuff");
-        //     var segment = click_result.pop();
-        //     for(var k = 0; k < Editor.segments.length; k++)
-        //         if(Editor.segments[k].set_id == segment.set_id)
-        //             Editor.add_selected_segment(Editor.segments[k]);
-            
-        //     Editor.add_action(new TransformSegments(Editor.selected_segments));
-        //     Editor.state = EditorState.PenMovingSegments; 
-
-        //     // DEBUG: callback function needs to be defined in an abstract function;
-        //     // apparently the first argument is evaluated.
-        //     setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
-        // } else
-        // {
-            // build a new stroke object and save reference so we can add new points
-        Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-        Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-        Editor.add_segment(Editor.current_stroke);            
-            
-        Editor.state = EditorState.MiddleOfStroke;
-        // }
-
-        RenderManager.render();
+        DrawMode.onMouseDown(e);
         break;
 
     }

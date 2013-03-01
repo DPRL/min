@@ -34,3 +34,17 @@ DrawMode.stopTextInput = function(e){
     RenderManager.render();
 
 }
+
+DrawMode.onMouseDown = function(e){
+    // build a new stroke object and save reference so we can add new points
+    Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+    Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+    Editor.add_segment(Editor.current_stroke);            
+        
+    Editor.state = EditorState.MiddleOfStroke;
+    // }
+
+        RenderManager.render();
+
+}
+
