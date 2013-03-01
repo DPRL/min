@@ -414,20 +414,10 @@ Editor.onMouseUp = function(e)
             SelectionMode.onMouseUp(e);
             break;
         case EditorState.MiddleOfStroke:
-            var set_id_changes = [];
-            Editor.state = EditorState.ReadyToStroke;
-            if(Editor.current_stroke.finish_stroke()) {
-                set_id_changes = Editor.current_stroke.test_collisions();
-                RecognitionManager.enqueueSegment(Editor.current_stroke);
-            } else {
-                Editor.segments.pop();
-            }
-            
-            Editor.current_stroke = null;
-            Editor.current_action.set_id_changes = set_id_changes;
-            Editor.current_action.buildSegmentXML();
+            DrawMode.onMouseUp(e);
             break;
         case  EditorState.Resizing:
+            // TODO: Change this with other resizing code
             Editor.state = EditorState.SegmentsSelected;
             for(var k = 0; k < Editor.selected_segments.length; k++)
                 Editor.selected_segments[k].freeze_transform();
