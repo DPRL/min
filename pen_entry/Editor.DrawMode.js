@@ -89,3 +89,31 @@ DrawMode.onDoubleClick = function(e){
 
 }
 
+DrawMode.onKeyPress = function(e){
+    // TODO: See if there's a better way to do this that would eliminate 
+    // reliance on an Editor state. Local flag?
+    
+    if(Editor.state == EditorState.MiddleOfText){
+        textBox = document.getElementById("tex_result");
+        if (document.querySelector(":focus") != textBox &&
+                Editor.current_text != null) {
+            Editor.current_text.addCharacter(String.fromCharCode(e.which));
+        }
+        return;
+    }
+
+    textBox = document.getElementById("tex_result");
+    if (document.querySelector(":focus") == textBox) {
+        return;
+    }
+
+    Editor.typeTool();
+    var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
+
+    var s = new SymbolSegment(Editor.mouse_position);
+    Editor.current_text = s;
+    Editor.current_text.addCharacter(String.fromCharCode(e.which));
+
+    Editor.state = EditorState.MiddleOfText;
+
+}

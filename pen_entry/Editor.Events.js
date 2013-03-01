@@ -482,29 +482,14 @@ Editor.onKeyPress = function(e)
     switch(Editor.state)
     {
     case EditorState.MiddleOfText:
-        textBox = document.getElementById("tex_result");
-        if (document.querySelector(":focus") != textBox &&
-            Editor.current_text != null) {
-            Editor.current_text.addCharacter(String.fromCharCode(e.which));
-        }
+        DrawMode.onKeyPress(e);
         break;
-        
-    case EditorState.ReadyToRectangleSelect:
-    case EditorState.ReadyToStrokeSelect:
+
+    // CMS: Uncomment to allow adding typed characters in stroke/box select mode
+    // case EditorState.ReadyToRectangleSelect:
+    // case EditorState.ReadyToStrokeSelect:
     case EditorState.ReadyToStroke:
-        textBox = document.getElementById("tex_result");
-        if (document.querySelector(":focus") == textBox) {
-            break
-        }
-
-        Editor.typeTool();
-        var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
-        
-        var s = new SymbolSegment(Editor.mouse_position);
-        Editor.current_text = s;
-        Editor.current_text.addCharacter(String.fromCharCode(e.which));
-
-        Editor.state = EditorState.MiddleOfText;
+        DrawMode.onKeyPress(e);
         break;
 
     case EditorState.SegmentsSelected:
