@@ -135,3 +135,23 @@ SelectionMode.mouseDownSegmentsSelected = function(e){
         }
     }
 }
+
+/**
+   Move all selected segments between two positions.
+
+   @param previous A Vector2 of the previous mouse position
+   @param current A Vector2 of the current mouse position
+**/
+SelectionMode.moveSegments = function(previous, current){
+    var translation = Vector2.Subtract(current, previous);
+    for(var k = 0; k < Editor.selected_segments.length; k++)
+    {
+        seg = Editor.selected_segments[k];
+        if(seg.clear != undefined) {
+            seg.clear(Editor.contexts[0]);
+        }                    
+        seg.translate(translation);
+    }
+    Editor.selected_bb.translate(translation);
+}
+
