@@ -25,7 +25,6 @@ var EditorState =
         "InTextBox" : 13,
 
         // New: moving a symbol in edit mode; touch and hold state.
-        "PenMovingSegments" : 14
     };
 
 var TouchAndHoldState = {
@@ -141,7 +140,6 @@ Editor.onDoubleClick = function(e)
     switch (Editor.state)
     {
     // Remember to refactor in such a way that both these catches are caught
-    case EditorState.PenMovingSegments:
     case EditorState.ReadyToStroke:
         DrawMode.onDoubleClick(e);
         break;
@@ -302,7 +300,6 @@ Editor.onMouseMove = function(e)
             Editor.state = EditorState.MovingSegments;
             Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
-        case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:
             SelectionMode.moveSegmentsFromMouseMove(e);
             break;            
@@ -413,7 +410,6 @@ Editor.onMouseUp = function(e)
         case EditorState.RectangleSelecting:
             RectSelectMode.onMouseUp(e);
             break;
-        case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:
             // RLAZ: delete strokes if cursor moves out of the window.
             var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
@@ -1391,7 +1387,6 @@ Editor.goDPRL = function ()
 */
 Editor.changeState = function(state){
     switch(state){
-    case EditorState.PenMovingSegments: 
     case EditorState.ReadyToStroke:
         Editor.selectPenTool();
         break;
