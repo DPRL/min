@@ -268,6 +268,9 @@ Editor.onMouseDown = function(e)
         break;
 
     case EditorState.ReadyForText:
+        // This is set only from typeTool() which is only called
+        // from one place. The state is immediately set to something else after the call.
+        // This code can never run unless a mouseDown were to fire during a keypress so I think it can be removed.
         Editor.current_text = null;
         var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
         for(var k = 0; k < clicked_points.length; k++)
