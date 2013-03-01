@@ -54,3 +54,22 @@ DrawMode.onMouseMove = function(e){
     Editor.current_stroke.add_point(Editor.mouse_position);
 }
 
+DrawMode.onDoubleClick = function(e){
+    // DEBUG: we have to re-detect the selection for double click vs. touch-and-hold.
+    if (Editor.touchAndHoldFlag == TouchAndHoldState.NoTouchAndHold) {
+        var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
+        if(click_result.length == 0)
+            return;
+
+        var segment = click_result.pop();
+        for(var k = 0; k < Editor.segments.length; k++)
+            if(Editor.segments[k].set_id == segment.set_id)
+                Editor.add_selected_segment(Editor.segments[k]);
+    }
+
+    RenderManager.colorOCRbbs(false);
+    RenderManager.bounding_box.style.visibility = "visible";
+    Editor.state = EditorState.SegmentsSelected;
+        Editor.relabel(EditorState.ReadyToStroke);
+
+}

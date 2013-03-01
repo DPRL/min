@@ -140,24 +140,10 @@ Editor.onDoubleClick = function(e)
 {
     switch (Editor.state)
     {
+    // Remember to refactor in such a way that both these catches are caught
     case EditorState.PenMovingSegments:
     case EditorState.ReadyToStroke:
-        // DEBUG: we have to re-detect the selection for double click vs. touch-and-hold.
-        if (Editor.touchAndHoldFlag == TouchAndHoldState.NoTouchAndHold) {
-            var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
-            if(click_result.length == 0)
-                break;
-
-            var segment = click_result.pop();
-            for(var k = 0; k < Editor.segments.length; k++)
-                if(Editor.segments[k].set_id == segment.set_id)
-                    Editor.add_selected_segment(Editor.segments[k]);
-        }
-
-        RenderManager.colorOCRbbs(false);
-        RenderManager.bounding_box.style.visibility = "visible";
-        Editor.state = EditorState.SegmentsSelected;
-        Editor.relabel(EditorState.ReadyToStroke);
+        DrawMode.onDoubleClick(e);
         break;
 
     case EditorState.MovingSegments:
@@ -437,13 +423,16 @@ Editor.onMouseMove = function(e)
 
 Editor.onMouseUp = function(e)
 {
+    // BOILERPLATE
     var tmpLast = Editor.lastEvent;
     Editor.lastEvent = e;
     // Don't react if we're in the middle of a transform, or if
     // there's still something touching the screen
     if(Editor.state == EditorState.PinchResizing || e.timeStamp - tmpLast.timeStamp < 0)
         return;
+    // END BOILERPLATE 
 
+    // TODO: Find a better way to wrap these checks
     if(e.button == 0 && !Editor.using_ipad || e.type == "touchend")
     {
         Editor.mouse1_down = false;
