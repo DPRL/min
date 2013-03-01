@@ -346,8 +346,15 @@ Editor.onMouseMove = function(e)
             RectSelectMode.onMouseMove(e);
             break;
         case EditorState.SegmentsSelected:
+            /* Initialize the moveQueue
+             This should ultimately be moved to Editor.SelectionMode.
+             Needs to be run on only the first mousemove event
+             Only runs when the mouse is clicked to select then moved
+             with no mouseUp between the click and move, otherwise 
+             initialized in SelectionMode.mouseDownSegmentsSelected.
+            */
             Editor.state = EditorState.MovingSegments;
-	    Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
+            Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
         case EditorState.PenMovingSegments:
         case EditorState.MovingSegments:

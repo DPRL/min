@@ -94,7 +94,7 @@ SelectionMode.mouseDownSegmentsSelected = function(e){
         {
             Editor.add_action(new TransformSegments(Editor.selected_segments));
             Editor.state = EditorState.MovingSegments;
-    Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
+            Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
             setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
         }
