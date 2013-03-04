@@ -6,17 +6,13 @@ throughout throughout a run of Min. e.g. buttons
 function PermEvents(){}
 
 PermEvents.setup_toolbar = function(){
-    // document.getElementById("pen").addEventListener("click", RenderManager.editColorOCRbbs, true);
-    // document.getElementById("pen").addEventListener("click", Editor.selectPenTool, true);
-    // document.getElementById("pen").addEventListener("click", Editor.setCursor, true);
+    $("#pen").click(EditorMode.mkModeSwitchFn(Editor.modes.DrawMode));
 
     document.getElementById("stroke_select").addEventListener("click", RenderManager.regColorOCRbbs, true);
     document.getElementById("stroke_select").addEventListener("click", Editor.strokeSelectionTool, true);
     document.getElementById("stroke_select").addEventListener("click", Editor.setCursor, true);
-
-    document.getElementById("rectangle_select").addEventListener("click", RenderManager.regColorOCRbbs, true);
-    document.getElementById("rectangle_select").addEventListener("click", Editor.rectangleSelectionTool, true);
-    document.getElementById("rectangle_select").addEventListener("click", Editor.setCursor, true);
+    
+    $("#rectangle_select").click(EditorMode.mkModeSwitchFn(Editor.modes.RectSelectMode));
 
     document.getElementById("undo").addEventListener("click", Editor.undo, true);
     document.getElementById("redo").addEventListener("click", Editor.redo, true);

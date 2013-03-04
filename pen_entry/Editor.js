@@ -78,7 +78,7 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 	// initialize slider
 	Editor.slider = new Slider();
     
-    // create the mouse 
+    // create the mouse setup other events
     Editor.setup_events();
     
     // list of segments we deal with
@@ -128,8 +128,8 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     Editor.current_action = null;
 
     Editor.FileReader = true;
-    $("#pen").click(EditorMode.mkModeSwitchFn(Editor.modes.DrawMode));
-    $("#pen").trigger('click'); // When we first start, switch to DrawMode manually
+    // When we first start, switch to DrawMode manually
+    $("#pen").trigger('click'); 
 
     Editor.current_expression_id = 0;
 }

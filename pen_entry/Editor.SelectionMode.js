@@ -8,6 +8,11 @@ function SelectionMode(){}
 // of the SelectionMode. This will change.
 SelectionMode.prototype = new EditorMode();
 
+SelectionMode.prototype.init_mode = function(){
+    console.log("SelectionMode init_mode");
+    RenderManager.regColorOCRbbs();
+}
+
 SelectionMode.setup_touch_events = function(){
     // Pinch to resize events
     var bb = document.getElementById("bounding_box");

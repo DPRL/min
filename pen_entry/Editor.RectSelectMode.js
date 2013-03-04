@@ -3,9 +3,16 @@ This file contains events and information specific to rectangle selection.
 */
 
 function RectSelectMode(){}
+
 // For now this hierarchy doesn't matter, as we don't make instances
 // of the SelectionMode. This will change.
 RectSelectMode.prototype = new SelectionMode();
+
+RectSelectMode.prototype.init_mode = function(){
+    SelectionMode.prototype.init_mode.call(this); 
+    Editor.rectangleSelectionTool();
+    $("#equation_canvas").css("cursor", "default");
+}
 
 RectSelectMode.onMouseDown = function(e){
     // get the segments that are under the mouse click
@@ -32,7 +39,6 @@ RectSelectMode.onMouseDown = function(e){
         Editor.state = EditorState.RectangleSelecting;
     }
     RenderManager.render();
-
 }
 
 RectSelectMode.onMouseMove = function(e){
