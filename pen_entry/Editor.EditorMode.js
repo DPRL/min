@@ -37,3 +37,18 @@ EditorMode.prototype.onDoubleClick = function(e){
     alert("onDoubleClick not implemented!");
 }
 
+/*
+    This function creates another function for switching into
+    a new mode. The returned function can then be bound to a
+    button.
+*/
+    
+EditorMode.mkModeSwitchFn = function(new_mode){
+    return function(e){
+       if(Editor.current_mode != null)
+            Editor.current_mode.close_mode();
+       
+       Editor.current_mode = new_mode;
+       Editor.current_mode.init_mode();
+    };
+}

@@ -14,6 +14,15 @@ function Editor()
     
 Editor.instance = null;
 
+Editor.modes = {
+    "DrawMode": new DrawMode(),
+    "RectSelectMode": new RectSelectMode(),
+    "StrokeSelectMode": new StrokeSelectMode()
+};
+
+// Code for modes/mode switching
+Editor.current_mode = null;
+
 Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 {
     Editor.using_ipad = navigator.userAgent.match(/iPad/i) != null;
@@ -117,9 +126,10 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     Editor.action_list = new Array();
     
     Editor.current_action = null;
-    
-    Editor.selectPenTool();
+
     Editor.FileReader = true;
+    $("#pen").click(EditorMode.mkModeSwitchFn(Editor.modes.DrawMode));
+    $("#pen").trigger('click'); // When we first start, switch to DrawMode manually
 
     Editor.current_expression_id = 0;
 }

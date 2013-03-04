@@ -3,10 +3,27 @@ This file contains event handlers for use in the drawing
 mode of Min.
 */
 
-function DrawMode(){}
 // For now this hierarchy doesn't matter, as we don't make instances
 // of the SelectionMode. This will change.
 DrawMode.prototype = new EditorMode();
+
+function DrawMode(){
+    // Call the super constructor
+    EditorMode.call(this);
+
+    // An example of how to call a super method
+    // DrawMode.prototype.onMouseDown.call(this);
+}
+
+DrawMode.prototype.init_mode = function(){  
+    RenderManager.editColorOCRbbs();
+    Editor.selectPenTool();
+    Editor.setCursor();
+}
+
+DrawMode.prototype.close_mode = function(){
+    
+}
 
 DrawMode.stopTextInput = function(e){
     Editor.current_text.finishEntry();
