@@ -50,7 +50,6 @@ PermEvents.setup_toolbar = function(){
         }, true);
     }
  
-    Editor.toolbar_div.addEventListener("mouseup", Editor.onMouseUp, true);
 }
 
 PermEvents.setup_touch_events = function(){
