@@ -14,7 +14,7 @@ RectSelectMode.prototype.init_mode = function(){
     $("#equation_canvas").css("cursor", "default");
 }
 
-RectSelectMode.onMouseDown = function(e){
+RectSelectMode.onDown = function(e){
     // get the segments that are under the mouse click
     var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
 
@@ -41,7 +41,7 @@ RectSelectMode.onMouseDown = function(e){
     RenderManager.render();
 }
 
-RectSelectMode.onMouseMove = function(e){
+RectSelectMode.onMove = function(e){
     var mouse_delta = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
     Editor.end_rect_selection.Add(mouse_delta);
     // get list of segments colliding with selection rectangle
@@ -62,7 +62,7 @@ RectSelectMode.onMouseMove = function(e){
 
 }
 
-RectSelectMode.onMouseUp = function(e){
+RectSelectMode.onUp = function(e){
     if(Editor.selected_segments.length > 0)
         Editor.state = EditorState.SegmentsSelected;
     else

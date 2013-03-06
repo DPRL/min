@@ -21,16 +21,16 @@ EditorMode.prototype.close_mode = function(){
     alert("close_mode not implemented!");
 }
 
-EditorMode.prototype.onMouseDown = function(e){
-    alert("onMouseDown not implemented!");
+EditorMode.prototype.onDown = function(e){
+    alert("onDown not implemented!");
 }
 
-EditorMode.prototype.onMouseMove = function(e){
-    alert("onMouseMove not implemented!");
+EditorMode.prototype.onMove = function(e){
+    alert("onMove not implemented!");
 }
 
-EditorMode.prototype.onMouseUp = function(e){
-    alert("onMouseUp not implemented!");
+EditorMode.prototype.onUp = function(e){
+    alert("onUp not implemented!");
 }
 
 EditorMode.prototype.onDoubleClick = function(e){

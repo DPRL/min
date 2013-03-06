@@ -216,7 +216,7 @@ SelectionMode.onDoubleClick = function(e){
         }
 }
 
-SelectionMode.onMouseUp = function(e){
+SelectionMode.onUp = function(e){
     // RLAZ: delete strokes if cursor moves out of the window.
     var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
     var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();

@@ -200,10 +200,10 @@ Editor.onMouseDown = function(e)
     switch(Editor.state)
     {
     case EditorState.ReadyToStrokeSelect:
-        StrokeSelectMode.onMouseDown(e);
+        StrokeSelectMode.onDown(e);
         break;        
     case EditorState.ReadyToRectangleSelect:
-        RectSelectMode.onMouseDown(e);
+        RectSelectMode.onDown(e);
         break;
 
     case EditorState.SegmentsSelected:
@@ -243,7 +243,7 @@ Editor.onMouseDown = function(e)
 
     case EditorState.ReadyToStroke:
         console.log("Skipping ReadyToStroke in DrawMode!");
-        //DrawMode.onMouseDown(e);
+        //DrawMode.onDown(e);
         break;
 
     }
@@ -286,10 +286,10 @@ Editor.onMouseMove = function(e)
             // CMS: This should never happen
             break;
         case EditorState.StrokeSelecting:
-            StrokeSelectMode.onMouseMove(e);
+            StrokeSelectMode.onMove(e);
             break;
         case EditorState.RectangleSelecting:
-            RectSelectMode.onMouseMove(e);
+            RectSelectMode.onMove(e);
             break;
         case EditorState.SegmentsSelected:
             /* Initialize the moveQueue
@@ -306,7 +306,7 @@ Editor.onMouseMove = function(e)
             SelectionMode.moveSegmentsFromMouseMove(e);
             break;            
         case EditorState.MiddleOfStroke:
-            //DrawMode.onMouseMove(e);
+            //DrawMode.onMove(e);
             console.log("skipping MiddleOfStroke in draw mode");
             break;
         case EditorState.Resizing:
@@ -408,16 +408,16 @@ Editor.onMouseUp = function(e)
         switch(Editor.state)
         {
         case EditorState.StrokeSelecting:
-            StrokeSelectMode.onMouseUp(e);
+            StrokeSelectMode.onUp(e);
             break;
         case EditorState.RectangleSelecting:
-            RectSelectMode.onMouseUp(e);
+            RectSelectMode.onUp(e);
             break;
         case EditorState.MovingSegments:
-            SelectionMode.onMouseUp(e);
+            SelectionMode.onUp(e);
             break;
         case EditorState.MiddleOfStroke:
-            //DrawMode.onMouseUp(e);
+            //DrawMode.onUp(e);
             console.log("Skipping onMouseUp middle of stroke!");
             break;
         case  EditorState.Resizing:

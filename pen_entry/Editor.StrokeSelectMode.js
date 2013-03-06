@@ -21,7 +21,7 @@ StrokeSelectMode.prototype.close_mode = function(){
 /*
 Method stub for switching into StrokeSelectMode
 */
-StrokeSelectMode.onMouseDown = function(e){
+StrokeSelectMode.onDown = function(e){
     // get the segments that are under the mouse click
     var click_result = CollisionManager.get_point_collides(Editor.mouse_position);
     if(click_result.length > 0)
@@ -48,7 +48,7 @@ StrokeSelectMode.onMouseDown = function(e){
 
 }
 
-StrokeSelectMode.onMouseMove = function(e){
+StrokeSelectMode.onMove = function(e){
     // see what we stroked through between move events
     var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
     // for each segment in result add to selected segments set (if they aren't there already)
@@ -65,7 +65,7 @@ StrokeSelectMode.onMouseMove = function(e){
     RenderManager.render();
 }
 
-StrokeSelectMode.onMouseUp = function(e){
+StrokeSelectMode.onUp = function(e){
     if(Editor.selected_segments.length > 0)
         Editor.state = EditorState.SegmentsSelected;
     else
