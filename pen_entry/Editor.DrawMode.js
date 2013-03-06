@@ -10,6 +10,13 @@ DrawMode.prototype = new EditorMode();
 function DrawMode(){
     // Call the super constructor
     EditorMode.call(this);
+    
+    // Make 'this' refer to this DrawMode object in 
+    // the event handler.
+    this.onDown = $.proxy(DrawMode.onDown, this);
+    this.onUp = $.proxy(DrawMode.onUp, this);
+    this.onMove = $.proxy(DrawMode.onMove, this);
+
     // An example of how to call a super method
     // DrawMode.prototype.onDown.call(this);
 }
@@ -26,13 +33,13 @@ DrawMode.prototype.init_mode = function(){
        Should I have just used something like EditorMode.onDown
        instead of attaching the function to the prototype?
      */
-    $(Editor.canvas_div).on('mousedown', this, this.onDown);
-    $(Editor.canvas_div).on('mouseup', this, this.onUp);
+    $(Editor.canvas_div).on('mousedown touchstart',  this.onDown);
+    $(Editor.canvas_div).on('mouseup touchend',  this.onUp);
 }
 
 DrawMode.prototype.close_mode = function(){
-   $(Editor.canvas_div).off('mousedown', this.onDown); 
-   $(Editor.canvas_div).off('mouseup', this.onUp); 
+   $(Editor.canvas_div).off('mousedown touchstart', this.onDown); 
+   $(Editor.canvas_div).off('mouseup touchend', this.onUp); 
 }
 
 //var saveMouseState = function(){
@@ -67,9 +74,7 @@ DrawMode.stopTextInput = function(e){
 
 }
 
-DrawMode.prototype.onDown = function(e){
-    var dMode = e.data; 
-
+DrawMode.onDown = function(e){
     // build a new stroke object and save reference so we can add new points
     Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
     Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
@@ -79,11 +84,10 @@ DrawMode.prototype.onDown = function(e){
 
     RenderManager.render();
     // Bind this as long as the mouse is down
-    $(Editor.canvas_div).on('mousemove', dMode.onMove);
+    $(Editor.canvas_div).on('mousemove touchmove', this.onMove);
 }
 
-DrawMode.prototype.onUp = function(e){
-    var dMode = e.data; 
+DrawMode.onUp = function(e){
     var set_id_changes = [];
     Editor.state = EditorState.ReadyToStroke;
     if(Editor.current_stroke.finish_stroke()) {
@@ -98,10 +102,10 @@ DrawMode.prototype.onUp = function(e){
     Editor.current_action.buildSegmentXML();
 
     // Unbind the move action
-    $(Editor.canvas_div).off('mousemove', dMode.onMove);
+    $(Editor.canvas_div).off('mousemove touchmove', this.onMove);
 }
 
-DrawMode.prototype.onMove = function(e){
+DrawMode.onMove = function(e){
     // add a new point to this pen stroke
     // pen automatically draws stroke when point added
     Editor.current_stroke.add_point(Editor.mouse_position);
