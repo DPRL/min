@@ -218,30 +218,32 @@ Editor.onMouseDown = function(e)
         // This is set only from typeTool() which is only called
         // from one place. The state is immediately set to something else after the call.
         // This code can never run unless a mouseDown were to fire during a keypress so I think it can be removed.
-        Editor.current_text = null;
-        var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
-        for(var k = 0; k < clicked_points.length; k++)
-        {
-            if(clicked_points[k].type_id == SymbolSegment.type_id)
-            {
-                Editor.current_text = clicked_points[k];
-                break;
-            }
-        }
-        
-        if(Editor.current_text == null)
-        {
-            var s = new SymbolSegment(Editor.mouse_position);
-            Editor.current_text = s;
-        } else {
-            Editor.add_action(new EditText(Editor.current_text));
-        }
-        Editor.state = EditorState.MiddleOfText;
+        // Editor.current_text = null;
+        // var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
+        // for(var k = 0; k < clicked_points.length; k++)
+        // {
+        //     if(clicked_points[k].type_id == SymbolSegment.type_id)
+        //     {
+        //         Editor.current_text = clicked_points[k];
+        //         break;
+        //     }
+        // }
+        // 
+        // if(Editor.current_text == null)
+        // {
+        //     var s = new SymbolSegment(Editor.mouse_position);
+        //     Editor.current_text = s;
+        // } else {
+        //     Editor.add_action(new EditText(Editor.current_text));
+        // }
+        // Editor.state = EditorState.MiddleOfText;
+        console.log("ReadyForText is maybe not useless after all...");
         break;
 
 
     case EditorState.ReadyToStroke:
-        DrawMode.onMouseDown(e);
+        console.log("Skipping ReadyToStroke in DrawMode!");
+        //DrawMode.onMouseDown(e);
         break;
 
     }
@@ -304,7 +306,8 @@ Editor.onMouseMove = function(e)
             SelectionMode.moveSegmentsFromMouseMove(e);
             break;            
         case EditorState.MiddleOfStroke:
-            DrawMode.onMouseMove(e);
+            //DrawMode.onMouseMove(e);
+            console.log("skipping MiddleOfStroke in draw mode");
             break;
         case EditorState.Resizing:
             /*
@@ -414,7 +417,8 @@ Editor.onMouseUp = function(e)
             SelectionMode.onMouseUp(e);
             break;
         case EditorState.MiddleOfStroke:
-            DrawMode.onMouseUp(e);
+            //DrawMode.onMouseUp(e);
+            console.log("Skipping onMouseUp middle of stroke!");
             break;
         case  EditorState.Resizing:
             // TODO: Change this with other resizing code
