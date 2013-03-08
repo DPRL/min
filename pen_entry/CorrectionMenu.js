@@ -28,7 +28,7 @@ CorrectionMenu.initialize = function()
     
     // lists and grids get added to center panel
     CorrectionMenu.center_panel = document.getElementById("rr_center");
-    if(Editor.using_ipad)
+    if(Modernizr.touch)
     {
         CorrectionMenu.current_list.addEventListener("touchstart", CorrectionMenu.touchstart, true);
         CorrectionMenu.current_list.addEventListener("touchmove", CorrectionMenu.touchmove, true);
@@ -132,7 +132,7 @@ CorrectionMenu.populateCategoryList = function(list_div, node, start_index)
         else
             CorrectionMenu.up.innerHTML = "";
 
-        if(Editor.using_ipad)
+        if(Modernizr.touch)
         {
             CorrectionMenu.current_list.style.setProperty('-webkit-transform', 'translate3d(0px,0px,0px)', null);
             CorrectionMenu.current_Y = 0;
@@ -169,7 +169,7 @@ CorrectionMenu.populateSymbolGrid = function(grid_div, node, start_index)
         CorrectionMenu.label.innerHTML = CorrectionMenu.build_title_html();
         if(CorrectionMenu.symbol_tree.current != CorrectionMenu.symbol_tree.root)
             CorrectionMenu.up.innerHTML = "Up (" + CorrectionMenu.symbol_tree.current.parent.category + ")";
-        if(Editor.using_ipad)
+        if(Modernizr.touch)
         {
             CorrectionMenu.current_grid.style.setProperty('-webkit-transform', 'translate3d(0px,0px,0px)', null);
             CorrectionMenu.current_Y = 0;

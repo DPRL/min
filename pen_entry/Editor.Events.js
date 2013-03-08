@@ -52,7 +52,7 @@ Editor.setup_events = function()
     PermEvents.setup_document();
     
     // Adds highlighting on pressing buttons and pinch-resize functionality
-    if(Editor.using_ipad){
+    if(Modernizr.touch){
         PermEvents.setup_touch_events();
         SelectionMode.setup_touch_events();
     }
@@ -158,7 +158,7 @@ Editor.onMouseDown = function(e)
     console.log("Editor state: " + Editor.state);
     var tmpLast = Editor.lastEvent;
     Editor.lastEvent = e;
-    if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Editor.using_ipad) {
+    if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Modernizr.touch) {
         Editor.touchAndHoldFlag = TouchAndHoldState.FingerDownAndStationary;
         return;
     }
@@ -168,7 +168,7 @@ Editor.onMouseDown = function(e)
 
     // support for both computer mouse and tablet devices
     // gets the mouse position and states
-    if(e.type == "mousedown" && ! Editor.using_ipad)
+    if(e.type == "mousedown" && ! Modernizr.touch)
     {
         // we only care about left click
         if(e.button == 0)
@@ -393,7 +393,7 @@ Editor.onMouseUp = function(e)
     // END BOILERPLATE 
 
     // TODO: Find a better way to wrap these checks
-    if(e.button == 0 && !Editor.using_ipad || e.type == "touchend")
+    if(e.button == 0 && !Modernizr.touch || e.type == "touchend")
     {
         Editor.mouse1_down = false;
 
@@ -1033,7 +1033,7 @@ Editor.getInkML = function() {
     }
     inkml += "</ink>";
     
-    if ( Editor.using_ipad ) {
+    if ( Modernizr.touch ) {
         
         // ask for filename
         var fname = prompt( "Enter filename (leave blank for random)." );
@@ -1187,7 +1187,7 @@ Editor.changeState = function(state){
     }
 }
 Editor.showToolTip = function(target, use){
-	if (!Editor.using_ipad) {
+	if (!Modernizr.touch) {
 		$('#' + target).tooltip({content: use, items: '#' + target});
 	}
 }

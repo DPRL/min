@@ -25,8 +25,7 @@ Editor.current_mode = null;
 
 Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 {
-    Editor.using_ipad = navigator.userAgent.match(/iPad/i) != null;
-    if(Editor.using_ipad == true)
+    if(Modernizr.touch == true)
     {
 		$('body').addClass('touch');
         // remove over css
