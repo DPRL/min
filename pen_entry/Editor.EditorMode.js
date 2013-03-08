@@ -3,7 +3,12 @@ This object is the parent of all modes for the editor.
 It defines the interface that an editor mode should have.
 */
 
-function EditorMode(){}
+function EditorMode(){
+    if(Modernizr.touch)
+        this.onDown = EditorMode.onTouchStart;
+    else
+        this.onDown = EditorMode.onMouseDown;
+}
 
 /*
 This function is used for when we first switch into a mode in order
@@ -21,20 +26,40 @@ EditorMode.prototype.close_mode = function(){
     alert("close_mode not implemented!");
 }
 
-EditorMode.prototype.onDown = function(e){
-    alert("onDown not implemented!");
+EditorMode.prototype.allEvents = function(e){
+    this.tmpLast = Editor.lastEvent;
+    Editor.lastEvent = e;
+}
+
+// Code to run for all modes with a mouse 
+EditorMode.onMouseDown = function(e){
+    this.allEvents(e);
+
+    // Possibly find some way to further separate touch/click logic
+    if(e.button == 0){
+        Editor.mouse_position_prev = Editor.mouse_position;
+        Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+    }
+}
+
+// Code to run for all modes with a touch pad
+EditorMode.onTouchStart = function(e){
+    this.allEvents(e);
+    var first = event.changedTouches[0];
+    Editor.mouse_position_prev = Editor.mouse_position;
+    Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
 }
 
 EditorMode.prototype.onMove = function(e){
-    alert("onMove not implemented!");
+    this.allEvents(e);
 }
 
 EditorMode.prototype.onUp = function(e){
-    alert("onUp not implemented!");
+    this.allEvents(e);
 }
 
 EditorMode.prototype.onDoubleClick = function(e){
-    alert("onDoubleClick not implemented!");
+    this.allEvents(e);
 }
 
 /*
@@ -50,5 +75,19 @@ EditorMode.mkModeSwitchFn = function(new_mode){
        
        Editor.current_mode = new_mode;
        Editor.current_mode.init_mode();
+    };
+}
+
+/*
+    This function take an event handler and returns a new one which
+    will ignore multiple touches.
+*/
+EditorMode.mkIgnoreMultipleTouches = function(wrap_fn){
+    return function(e){
+        // originalEvent is because JQuery only copies some event properties
+        if(e.originalEvent.touches.length > 1)
+            return;
+
+        wrap_fn(e);
     };
 }

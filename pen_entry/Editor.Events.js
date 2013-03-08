@@ -61,23 +61,6 @@ Editor.setup_events = function()
     Editor.button_states[Buttons.Pen].enabled = true;
 
 }
-// TODO: delete, as this will be deprecated under the new system
-Editor.setCursor = function ()
-{
-    var canvas = document.getElementById("equation_canvas");
-
-    switch (Editor.state) 
-    {
-    case EditorState.StrokeSelecting:
-    case EditorState.ReadyToStrokeSelect:
-        canvas.style.cursor = "crosshair";
-        break;
-    default:
-        canvas.style.cursor = "default";
-        break;
-    }
-}
-
 
 Editor.setStrokeView = function()
 {
@@ -156,8 +139,8 @@ Editor.onMouseDown = function(e)
     // TODO: REMOVE THIS BOILERPLATE
     console.log(e.type);
     console.log("Editor state: " + Editor.state);
-    var tmpLast = Editor.lastEvent;
-    Editor.lastEvent = e;
+    //var tmpLast = Editor.lastEvent;
+    //Editor.lastEvent = e;
     if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Modernizr.touch) {
         Editor.touchAndHoldFlag = TouchAndHoldState.FingerDownAndStationary;
         return;
@@ -168,28 +151,28 @@ Editor.onMouseDown = function(e)
 
     // support for both computer mouse and tablet devices
     // gets the mouse position and states
-    if(e.type == "mousedown" && ! Modernizr.touch)
-    {
-        // we only care about left click
-        if(e.button == 0)
-        {
-            Editor.mouse_position_prev = Editor.mouse_position;
-            Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
-        }
-        else return;
-    }    
-    else if(e.type == "touchstart")
-    {
-        // Don't do anything if a hammer event is firing or there are two many fingers on the screen
-        if(Editor.state == EditorState.PinchResizing || e.touches.length > 1 || e.timeStamp - tmpLast.timeStamp < Editor.minTouchTimeDiff ){
-            return;
-        }
-        var first = event.changedTouches[0];
-        Editor.mouse_position_prev = Editor.mouse_position;
-        Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
-    }
-    else 
-        return;
+    //if(e.type == "mousedown" && ! Modernizr.touch)
+    //{
+    //    // we only care about left click
+    //    if(e.button == 0)
+    //    {
+    //        //Editor.mouse_position_prev = Editor.mouse_position;
+    //        //Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+    //    }
+    //    else return;
+    //}    
+    //else if(e.type == "touchstart")
+    //{
+    //    // Don't do anything if a hammer event is firing or there are two many fingers on the screen
+    //    if(Editor.state == EditorState.PinchResizing || e.touches.length > 1 || e.timeStamp - tmpLast.timeStamp < Editor.minTouchTimeDiff ){
+    //        return;
+    //    }
+    //    // var first = event.changedTouches[0];
+    //    // Editor.mouse_position_prev = Editor.mouse_position;
+    //    // Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+    //}
+    //else 
+    //    return;
     
     // CMS: This is needed so that the segment doesn't "get stuck" to the mouse
     // TODO: See if there is a way to do the same thing from information 
@@ -384,6 +367,7 @@ Editor.onMouseMove = function(e)
 Editor.onMouseUp = function(e)
 {
     // BOILERPLATE
+    // Tmplast is not needed except in selection modes
     var tmpLast = Editor.lastEvent;
     Editor.lastEvent = e;
     // Don't react if we're in the middle of a transform, or if

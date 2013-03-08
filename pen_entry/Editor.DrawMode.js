@@ -10,21 +10,29 @@ DrawMode.prototype = new EditorMode();
 function DrawMode(){
     // Call the super constructor
     EditorMode.call(this);
-    
+   
     // Make 'this' refer to this DrawMode object in 
     // the event handler.
-    this.onDown = $.proxy(DrawMode.onDown, this);
-    this.onUp = $.proxy(DrawMode.onUp, this);
-    this.onMove = $.proxy(DrawMode.onMove, this);
+    var onDown = $.proxy(DrawMode.onDownBase, this);
+
+    // Check for touch capability, if it exists, block multiple touches
+    if(Modernizr.touch){
+        this.onDown = EditorMode.mkIgnoreMultipleTouches(onDown);;
+    }
+    else
+        this.onDown = onDown;
+
+    this.onUp = $.proxy(DrawMode.onUpBase, this);
+    this.onMove = $.proxy(DrawMode.onMoveBase, this);
 
     // An example of how to call a super method
-    // DrawMode.prototype.onDown.call(this);
+    // DrawMode.prototype.onDown.call(this, e);
 }
 
 DrawMode.prototype.init_mode = function(){  
     RenderManager.editColorOCRbbs();
     Editor.selectPenTool();
-    Editor.setCursor();
+    $("#equation_canvas").css("cursor", "default");
 
     /* The 'this' variable in an event handler points to the element
        that the event fired on, not the DrawMode object. Have
@@ -74,7 +82,10 @@ DrawMode.stopTextInput = function(e){
 
 }
 
-DrawMode.onDown = function(e){
+DrawMode.onDownBase = function(e){
+    console.log(DrawMode.prototype.onDown);
+    console.log(this);
+    DrawMode.prototype.onDown.call(this, e);
     // build a new stroke object and save reference so we can add new points
     Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
     Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
@@ -87,7 +98,8 @@ DrawMode.onDown = function(e){
     $(Editor.canvas_div).on('mousemove touchmove', this.onMove);
 }
 
-DrawMode.onUp = function(e){
+DrawMode.onUpBase = function(e){
+    DrawMode.prototype.onUp.call(this, e);
     var set_id_changes = [];
     Editor.state = EditorState.ReadyToStroke;
     if(Editor.current_stroke.finish_stroke()) {
@@ -105,7 +117,8 @@ DrawMode.onUp = function(e){
     $(Editor.canvas_div).off('mousemove touchmove', this.onMove);
 }
 
-DrawMode.onMove = function(e){
+DrawMode.onMoveBase = function(e){
+    DrawMode.prototype.onMove.call(this, e);
     // add a new point to this pen stroke
     // pen automatically draws stroke when point added
     Editor.current_stroke.add_point(Editor.mouse_position);

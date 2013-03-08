@@ -7,12 +7,10 @@
     // pen
     // select
 
-function Editor()
-{
-
-}
+function Editor() {}
     
 Editor.instance = null;
+
 
 Editor.modes = {
     "DrawMode": new DrawMode(),
