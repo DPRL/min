@@ -195,7 +195,7 @@ Editor.onMouseDown = function(e)
 
     case EditorState.MiddleOfText:
         // TODO: START HERE! This should be moved and bound/rebound properly
-        DrawMode.stopTextInput(e);
+        //DrawMode.stopTextInput(e);
         break;
 
     case EditorState.ReadyForText:

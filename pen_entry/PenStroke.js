@@ -8,6 +8,7 @@ PenStroke.chalk_layer = true;
 
 function PenStroke(in_x, in_y, in_line_width)
 {
+    console.log("creating a pen stroke");
     // identifiers to build unique id
     this.instance_id = Segment.count++;
     this.type_id = PenStroke.type_id;
@@ -127,6 +128,7 @@ PenStroke.prototype.finish_stroke = function()
 {
     if(this.points.length == 1)
     {
+        console.log("points: " + this.points.length);
         return false;
     }
 

@@ -59,36 +59,26 @@ DrawMode.prototype.close_mode = function(){
 //
 //DrawMode.prototype.getPosAndState = 
 
-DrawMode.stopTextInput = function(e){
+DrawMode.prototype.stopTextInput = function(e){
     Editor.current_text.finishEntry();
     if(Editor.current_action.toString() == "EditText")
         Editor.current_action.set_current_text(Editor.current_text.text);
     else if(Editor.current_action.toString() == "AddSegments")
         Editor.current_action.buildSegmentXML();                
 
-    // Modification: reset to drawing.
-    // But only switch to draw mode if we click on the canvas.
-    var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
-    var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
 
-    if (! (e.pageY > toolbarDims.bottom && e.pageY < canvasDims.bottom) &&
-        (e.pageX > 0 && e.pageX < canvasDims.right )) {
-        return;
-    } else {
-        // build a new stroke object and save reference so we can add new points
-        Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-        Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-        Editor.add_segment(Editor.current_stroke);            
+    // build a new stroke object and save reference so we can add new points
+    // Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
+    // Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
+    // Editor.add_segment(Editor.current_stroke);            
         
-        Editor.state = EditorState.MiddleOfStroke;
-    }
+    Editor.state = EditorState.MiddleOfStroke;
+
     RenderManager.render();
 
 }
 
 DrawMode.onDownBase = function(e){
-    console.log(DrawMode.prototype.onDown);
-    console.log(this);
     DrawMode.prototype.onDown.call(this, e);
     // build a new stroke object and save reference so we can add new points
     Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
@@ -110,7 +100,8 @@ DrawMode.onUpBase = function(e){
         set_id_changes = Editor.current_stroke.test_collisions();
         RecognitionManager.enqueueSegment(Editor.current_stroke);
     } else {
-        Editor.segments.pop();
+        // This make sure that we remove the exact element of the array
+        Editor.segments.splice(Editor.segments.indexOf(Editor.current_stroke), 1);
     }
 
     Editor.current_stroke = null;
@@ -175,5 +166,8 @@ DrawMode.onKeyPress = function(e){
     Editor.current_text.addCharacter(String.fromCharCode(e.which));
 
     Editor.state = EditorState.MiddleOfText;
+
+    // Set up this event to fire and stop text input if the mouse goes down
+    $(Editor.canvas_div).one('mousedown touchstart', this.stopTextInput);
 
 }
