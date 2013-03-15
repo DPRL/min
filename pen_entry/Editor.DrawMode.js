@@ -16,15 +16,16 @@ function DrawMode(){
     var onDown = $.proxy(DrawMode.onDownBase, this);
 
     // Check for touch capability, if it exists, block multiple touches
-    if(Modernizr.touch){
-        this.onDown = EditorMode.mkIgnoreMultipleTouches(onDown);;
-    }
+    // TODO: Find out if we need to check for both mouse and touches
+    if(Modernizr.touch)
+        this.onDown = EditorMode.mkIgnoreMultipleTouches(onDown);
     else
         this.onDown = onDown;
 
     this.onUp = $.proxy(DrawMode.onUpBase, this);
     this.onMove = $.proxy(DrawMode.onMoveBase, this);
-
+    this.onKeyPress = $.proxy(DrawMode.onKeyPress, this);
+    
     // An example of how to call a super method
     // DrawMode.prototype.onDown.call(this, e);
 }
@@ -43,11 +44,14 @@ DrawMode.prototype.init_mode = function(){
      */
     $(Editor.canvas_div).on('mousedown touchstart',  this.onDown);
     $(Editor.canvas_div).on('mouseup touchend',  this.onUp);
+    $(document).on('keypress', this.onKeyPress);
+
 }
 
 DrawMode.prototype.close_mode = function(){
    $(Editor.canvas_div).off('mousedown touchstart', this.onDown); 
    $(Editor.canvas_div).off('mouseup touchend', this.onUp); 
+   $(document).off('keypress', this.onKeyPress);
 }
 
 //var saveMouseState = function(){

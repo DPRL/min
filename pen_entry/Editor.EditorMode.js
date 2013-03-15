@@ -78,6 +78,16 @@ EditorMode.mkModeSwitchFn = function(new_mode){
     };
 }
 
+// What do do for every keypress event in a mode
+EditorMode.onKeyPress = function(e){
+    this.allEvents(e);
+    // TODO: This should eventually be uncommented
+    //if(e.keyCode == KeyCode.enter) {
+    //    Editor.search();
+    //    return;
+    //} 
+}
+
 /*
     This function take an event handler and returns a new one which
     will ignore multiple touches.

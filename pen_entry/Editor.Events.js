@@ -194,6 +194,7 @@ Editor.onMouseDown = function(e)
         break;
 
     case EditorState.MiddleOfText:
+        // TODO: START HERE! This should be moved and bound/rebound properly
         DrawMode.stopTextInput(e);
         break;
 
@@ -401,7 +402,6 @@ Editor.onMouseUp = function(e)
             SelectionMode.onUp(e);
             break;
         case EditorState.MiddleOfStroke:
-            //DrawMode.onUp(e);
             console.log("Skipping onMouseUp middle of stroke!");
             break;
         case  EditorState.Resizing:
@@ -419,6 +419,7 @@ Editor.onMouseUp = function(e)
 
 Editor.mapCanvasBackspace = function(e)
 {
+    console.log("map canvas backspace");
     if(e.keyCode == KeyCode.backspace)
     {
         // Check whether the text box has focus.
@@ -450,6 +451,8 @@ Editor.mapCanvasBackspace = function(e)
     
 }
 
+// Eventually change this into something that all events use and
+// move into EditorMode.
 Editor.onKeyPress = function(e)
 {
     // For touch-and-hold
@@ -459,6 +462,7 @@ Editor.onKeyPress = function(e)
         return;
 
     // RLAZ: map enter to issuing the search.
+    // TODO: CMS, this will remain in the every keypress events
     if(e.keyCode == KeyCode.enter) {
         Editor.search();
         return;
@@ -471,14 +475,12 @@ Editor.onKeyPress = function(e)
     switch(Editor.state)
     {
     case EditorState.MiddleOfText:
-        DrawMode.onKeyPress(e);
-        break;
 
     // CMS: Uncomment to allow adding typed characters in stroke/box select mode
     // case EditorState.ReadyToRectangleSelect:
     // case EditorState.ReadyToStrokeSelect:
     case EditorState.ReadyToStroke:
-        DrawMode.onKeyPress(e);
+        console.log("Skipping Editor.onKeyPress!");
         break;
 
     case EditorState.SegmentsSelected:
