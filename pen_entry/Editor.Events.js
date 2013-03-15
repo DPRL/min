@@ -139,8 +139,8 @@ Editor.onMouseDown = function(e)
     // TODO: REMOVE THIS BOILERPLATE
     console.log(e.type);
     console.log("Editor state: " + Editor.state);
-    //var tmpLast = Editor.lastEvent;
-    //Editor.lastEvent = e;
+    var tmpLast = Editor.lastEvent;
+    Editor.lastEvent = e;
     if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Modernizr.touch) {
         Editor.touchAndHoldFlag = TouchAndHoldState.FingerDownAndStationary;
         return;
@@ -151,28 +151,28 @@ Editor.onMouseDown = function(e)
 
     // support for both computer mouse and tablet devices
     // gets the mouse position and states
-    //if(e.type == "mousedown" && ! Modernizr.touch)
-    //{
-    //    // we only care about left click
-    //    if(e.button == 0)
-    //    {
-    //        //Editor.mouse_position_prev = Editor.mouse_position;
-    //        //Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
-    //    }
-    //    else return;
-    //}    
-    //else if(e.type == "touchstart")
-    //{
-    //    // Don't do anything if a hammer event is firing or there are two many fingers on the screen
-    //    if(Editor.state == EditorState.PinchResizing || e.touches.length > 1 || e.timeStamp - tmpLast.timeStamp < Editor.minTouchTimeDiff ){
-    //        return;
-    //    }
-    //    // var first = event.changedTouches[0];
-    //    // Editor.mouse_position_prev = Editor.mouse_position;
-    //    // Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
-    //}
-    //else 
-    //    return;
+    if(e.type == "mousedown" && ! Modernizr.touch)
+    {
+        // we only care about left click
+        if(e.button == 0)
+        {
+            Editor.mouse_position_prev = Editor.mouse_position;
+            Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+        }
+        else return;
+    }    
+    else if(e.type == "touchstart")
+    {
+        // Don't do anything if a hammer event is firing or there are two many fingers on the screen
+        if(Editor.state == EditorState.PinchResizing || e.touches.length > 1 || e.timeStamp - tmpLast.timeStamp < Editor.minTouchTimeDiff ){
+            return;
+        }
+        var first = event.changedTouches[0];
+        Editor.mouse_position_prev = Editor.mouse_position;
+        Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+    }
+    else 
+        return;
     
     // CMS: This is needed so that the segment doesn't "get stuck" to the mouse
     // TODO: See if there is a way to do the same thing from information 
@@ -290,7 +290,7 @@ Editor.onMouseMove = function(e)
             break;            
         case EditorState.MiddleOfStroke:
             //DrawMode.onMove(e);
-            console.log("skipping MiddleOfStroke in draw mode");
+            console.log("skipping MiddleOfStroke in moving draw mode");
             break;
         case EditorState.Resizing:
             /*
