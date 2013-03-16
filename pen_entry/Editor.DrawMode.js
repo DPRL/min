@@ -25,6 +25,7 @@ function DrawMode(){
     this.onUp = $.proxy(DrawMode.onUpBase, this);
     this.onMove = $.proxy(DrawMode.onMoveBase, this);
     this.onKeyPress = $.proxy(DrawMode.onKeyPress, this);
+    this.onDoubleClick = $.proxy(DrawMode.onDoubleClick, this);
     
     // An example of how to call a super method
     // DrawMode.prototype.onDown.call(this, e);
@@ -44,6 +45,7 @@ DrawMode.prototype.init_mode = function(){
      */
     $(Editor.canvas_div).on('mousedown touchstart',  this.onDown);
     $(Editor.canvas_div).on('mouseup touchend',  this.onUp);
+    $(Editor.canvas_div).on('dblclick', this.onDoubleClick);
     $(document).on('keypress', this.onKeyPress);
 
 }
@@ -51,6 +53,7 @@ DrawMode.prototype.init_mode = function(){
 DrawMode.prototype.close_mode = function(){
    $(Editor.canvas_div).off('mousedown touchstart', this.onDown); 
    $(Editor.canvas_div).off('mouseup touchend', this.onUp); 
+   $(Editor.canvas_div).off('doubleclick', this.onDoubleClick);
    $(document).off('keypress', this.onKeyPress);
 }
 
@@ -121,7 +124,9 @@ DrawMode.onMoveBase = function(e){
 }
 
 DrawMode.onDoubleClick = function(e){
-    // DEBUG: we have to re-detect the selection for double click vs. touch-and-hold.
+    // TODO: we have to re-detect the selection for double click vs. touch-and-hold.
+    // TODO: I think there should be a better way to do this than having to check points manually 
+    //       such as using the div of the bounding box
     if (Editor.touchAndHoldFlag == TouchAndHoldState.NoTouchAndHold) {
         var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
         if(click_result.length == 0)
@@ -136,7 +141,7 @@ DrawMode.onDoubleClick = function(e){
     RenderManager.colorOCRbbs(false);
     RenderManager.bounding_box.style.visibility = "visible";
     Editor.state = EditorState.SegmentsSelected;
-        Editor.relabel(EditorState.ReadyToStroke);
+    Editor.relabel(EditorState.ReadyToStroke);
 
 }
 

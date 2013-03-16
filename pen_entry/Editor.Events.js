@@ -124,7 +124,7 @@ Editor.onDoubleClick = function(e)
     {
     // Remember to refactor in such a way that both these catches are caught
     case EditorState.ReadyToStroke:
-        DrawMode.onDoubleClick(e);
+        //DrawMode.onDoubleClick(e);
         break;
 
     case EditorState.MovingSegments:
