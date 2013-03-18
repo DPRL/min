@@ -36,8 +36,6 @@ var TouchAndHoldState = {
 Editor.lastEvent = null;
 Editor.moveQueue = null;
 Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold;
-Editor.touchAndHoldTimeout = 800;
-Editor.minTouchTimeDiff = 100;
 
 Editor.setup_events = function()
 {

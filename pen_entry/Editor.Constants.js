@@ -40,6 +40,9 @@ KeyCode = {
     pen: "p",
 }
 
+Editor.touchAndHoldTimeout = 800;
+Editor.minTouchTimeDiff = 100;
+
 Editor.DPRL_url = "http://www.cs.rit.edu/~dprl";
 Editor.classifier = new Classifier();
 
