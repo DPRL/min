@@ -1,8 +1,11 @@
 /*
 This object is the parent of all modes for the editor.
-It defines the interface that an editor mode should have.
-*/
+It defines the interface that an editor mode should have and also
+contains code to be used by all events descended from it.
 
+This constructor will check if we're on a touch device or a computer
+and then select the appropriate events from that.
+*/
 function EditorMode(){
     if(Modernizr.touch){
         this.onDown = EditorMode.onTouchStart;
@@ -39,14 +42,13 @@ EditorMode.prototype.allEvents = function(e){
 EditorMode.onMouseDown = function(e){
     this.allEvents(e);
 
-    // Possibly find some way to further separate touch/click logic
     if(e.button == 0){
         Editor.mouse_position_prev = Editor.mouse_position;
         Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
     }
 }
 
-// Code to run for all modes with a touch pad
+// Code to run for all modes with a touch pad on touch
 EditorMode.onTouchStart = function(e){
     this.allEvents(e);
     var first = event.changedTouches[0];
@@ -54,6 +56,7 @@ EditorMode.onTouchStart = function(e){
     Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
 }
 
+// Initial actions for a move event with a mouse.
 EditorMode.onMouseMove = function(e){
     this.allEvents(e);
     Editor.mouse_position_prev = Editor.mouse_position;
@@ -61,6 +64,7 @@ EditorMode.onMouseMove = function(e){
     Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
 }
 
+// Initial actions for move with a finger
 EditorMode.onTouchMove = function(e){
     this.allEvents(e);
     var first = event.changedTouches[0];
