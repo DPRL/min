@@ -4,10 +4,14 @@ It defines the interface that an editor mode should have.
 */
 
 function EditorMode(){
-    if(Modernizr.touch)
+    if(Modernizr.touch){
         this.onDown = EditorMode.onTouchStart;
-    else
+        this.onMove = EditorMode.onTouchMove;
+    }
+    else{
         this.onDown = EditorMode.onMouseDown;
+        this.onMove = EditorMode.onMouseMove;
+    }
 }
 
 /*
@@ -50,8 +54,20 @@ EditorMode.onTouchStart = function(e){
     Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
 }
 
-EditorMode.prototype.onMove = function(e){
+EditorMode.onMouseMove = function(e){
     this.allEvents(e);
+    Editor.mouse_position_prev = Editor.mouse_position;
+    Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+    Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
+}
+
+EditorMode.onTouchMove = function(e){
+    this.allEvents(e);
+    var first = event.changedTouches[0];
+    Editor.mouse_position_prev = Editor.mouse_position;
+    Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+    Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
+
 }
 
 EditorMode.prototype.onUp = function(e){
