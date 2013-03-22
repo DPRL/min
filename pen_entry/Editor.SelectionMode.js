@@ -17,7 +17,7 @@ SelectionMode.setup_touch_events = function(){
     // Pinch to resize events
     var bb = document.getElementById("bounding_box");
     console.log("applying hammer events");
-    bb.hammer = new Hammer(bb, {
+    hammer = Hammer(bb, {
         transform: true,
         scale_threshold: .1,
         drag_min_distance: 0,
@@ -26,10 +26,11 @@ SelectionMode.setup_touch_events = function(){
         drag: false,
         swipe: false
     });
-
-    bb.hammer.ontransformstart = SelectionMode.onPinchStart;
-    bb.hammer.ontransform = SelectionMode.onPinch;
-    bb.hammer.ontransformend = SelectionMode.onPinchEnd;
+    
+    // These gesture* events are iOS specific
+    hammer.on("ontransformstart gesturestart", SelectionMode.onPinchStart);
+    hammer.on("ontransform gesturechange", SelectionMode.onPinch);
+    hammer.on("ontransformend gestureend", SelectionMode.onPinchEnd);
 
 }
 
@@ -49,17 +50,23 @@ SelectionMode.onPinchStart = function(e){ // e is a Hammer.js event
 
     // Store the center of the bounding box as the anchor point for the resize
     var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
-    this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
+
+    // TODO: Switch this to 'this.anchor'
+    SelectionMode.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
 }
 
 SelectionMode.onPinch = function(e){ 
     // For some reason the scale
     // returns 0 sometimes, this is why the object would suddenly get
     // tiny
-    if(e.scale == 0)
+
+    // originalEvent in this case is the Hammer event
+    var scale = e.originalEvent.scale;
+    if(scale == 0)
         return;
     for(var n = 0; n < Editor.selected_segments.length; n++){
-        Editor.selected_segments[n].resize(this.anchor, new Vector2(e.scale, e.scale));
+        Editor.selected_segments[n].resize(SelectionMode.anchor, new
+        Vector2(scale, scale));
     }
 
     Editor.update_selected_bb();
@@ -68,7 +75,6 @@ SelectionMode.onPinch = function(e){
 
 SelectionMode.onPinchEnd = function(e){
     // End the transform
-    console.log("pinch end");
     for(var n = 0; n < Editor.selected_segments.length; n++){
         Editor.selected_segments[n].freeze_transform();
     }

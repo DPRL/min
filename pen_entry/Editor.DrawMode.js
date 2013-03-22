@@ -120,7 +120,6 @@ DrawMode.onMoveBase = function(e){
     // add a new point to this pen stroke
     // pen automatically draws stroke when point added
     Editor.current_stroke.add_point(Editor.mouse_position);
-    console.log("Mouse moving!");
 }
 
 DrawMode.onDoubleClick = function(e){
