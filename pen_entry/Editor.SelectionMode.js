@@ -17,7 +17,7 @@ SelectionMode.setup_touch_events = function(){
     // Pinch to resize events
     var bb = document.getElementById("bounding_box");
     console.log("applying hammer events");
-    hammer = Hammer(bb, {
+    $("#bounding_box").hammer({
         transform: true,
         scale_threshold: .1,
         drag_min_distance: 0,
@@ -28,9 +28,9 @@ SelectionMode.setup_touch_events = function(){
     });
     
     // These gesture* events are iOS specific
-    hammer.on("ontransformstart gesturestart", SelectionMode.onPinchStart);
-    hammer.on("ontransform gesturechange", SelectionMode.onPinch);
-    hammer.on("ontransformend gestureend", SelectionMode.onPinchEnd);
+    $("#bounding_box").hammer().on("ontransformstart gesturestart",
+    SelectionMode.onPinchStart).on("ontransform gesturechange",
+    SelectionMode.onPinch).on("ontransformend gestureend", SelectionMode.onPinchEnd);
 
 }
 
