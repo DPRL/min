@@ -54,6 +54,7 @@ PermEvents.setup_toolbar = function(){
 
 PermEvents.setup_touch_events = function(){
     // Touch events for tablet interfaces
+    // TODO: Remove this when all the touchstart/touchend stuff is moved
     Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
     Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
 

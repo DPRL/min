@@ -52,7 +52,6 @@ Editor.setup_events = function()
     // Adds highlighting on pressing buttons and pinch-resize functionality
     if(Modernizr.touch){
         PermEvents.setup_touch_events();
-        SelectionMode.setup_touch_events();
     }
    
     // Select the pen tool

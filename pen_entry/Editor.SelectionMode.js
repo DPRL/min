@@ -3,20 +3,7 @@ This file contains events handlers that are used in Selection modes (Box/Stroke)
 of Min
 */
 
-function SelectionMode(){}
-// For now this hierarchy doesn't matter, as we don't make instances
-// of the SelectionMode. This will change.
-SelectionMode.prototype = new EditorMode();
-
-SelectionMode.prototype.init_mode = function(){
-    console.log("SelectionMode init_mode");
-    RenderManager.regColorOCRbbs();
-}
-
-SelectionMode.setup_touch_events = function(){
-    // Pinch to resize events
-    var bb = document.getElementById("bounding_box");
-    console.log("applying hammer events");
+function SelectionMode(){
     $("#bounding_box").hammer({
         transform: true,
         scale_threshold: .1,
@@ -26,12 +13,26 @@ SelectionMode.setup_touch_events = function(){
         drag: false,
         swipe: false
     });
-    
+}
+
+// For now this hierarchy doesn't matter, as we don't make instances
+// of the SelectionMode. This will change.
+SelectionMode.prototype = new EditorMode();
+
+SelectionMode.prototype.init_mode = function(){
+    console.log("SelectionMode init_mode");
+    RenderManager.regColorOCRbbs();
+
     // These gesture* events are iOS specific
     $("#bounding_box").hammer().on("ontransformstart gesturestart",
     SelectionMode.onPinchStart).on("ontransform gesturechange",
     SelectionMode.onPinch).on("ontransformend gestureend", SelectionMode.onPinchEnd);
+}
 
+SelectionMode.prototype.close_mode = function(){
+    $("#bounding_box").hammer().off("ontransformstart gesturestart",
+    SelectionMode.onPinchStart).off("ontransform gesturechange",
+    SelectionMode.onPinch).off("ontransformend gestureend", SelectionMode.onPinchEnd);
 }
 
 //-----------------
@@ -62,6 +63,8 @@ SelectionMode.onPinch = function(e){
 
     // originalEvent in this case is the Hammer event
     var scale = e.originalEvent.scale;
+    // TODO: See if this can be removed when the other events won't conflict
+    // with it.
     if(scale == 0)
         return;
     for(var n = 0; n < Editor.selected_segments.length; n++){
