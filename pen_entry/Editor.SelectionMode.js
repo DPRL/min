@@ -13,6 +13,10 @@ function SelectionMode(){
         drag: false,
         swipe: false
     });
+
+    this.onPinchStart = $.proxy(SelectionMode.onPinchStart, this);
+    this.onPinch = $.proxy(SelectionMode.onPinch, this);
+    this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
 }
 
 // For now this hierarchy doesn't matter, as we don't make instances
@@ -25,14 +29,14 @@ SelectionMode.prototype.init_mode = function(){
 
     // These gesture* events are iOS specific
     $("#bounding_box").hammer().on("ontransformstart gesturestart",
-    SelectionMode.onPinchStart).on("ontransform gesturechange",
-    SelectionMode.onPinch).on("ontransformend gestureend", SelectionMode.onPinchEnd);
+    this.onPinchStart).on("ontransform gesturechange",
+    this.onPinch).on("ontransformend gestureend", this.onPinchEnd);
 }
 
-SelectionMode.prototype.close_mode = function(){
+this.prototype.close_mode = function(){
     $("#bounding_box").hammer().off("ontransformstart gesturestart",
-    SelectionMode.onPinchStart).off("ontransform gesturechange",
-    SelectionMode.onPinch).off("ontransformend gestureend", SelectionMode.onPinchEnd);
+    this.onPinchStart).off("ontransform gesturechange",
+    this.onPinch).off("ontransformend gestureend", this.onPinchEnd);
 }
 
 //-----------------
@@ -52,8 +56,10 @@ SelectionMode.onPinchStart = function(e){ // e is a Hammer.js event
     // Store the center of the bounding box as the anchor point for the resize
     var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
 
-    // TODO: Switch this to 'this.anchor'
-    SelectionMode.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
+    this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
+    
+    // TODO: Bind/unbind the touchstart function to prevent that behavior from
+    // happening here. Revind in onPinchEnd.
 }
 
 SelectionMode.onPinch = function(e){ 
@@ -68,7 +74,7 @@ SelectionMode.onPinch = function(e){
     if(scale == 0)
         return;
     for(var n = 0; n < Editor.selected_segments.length; n++){
-        Editor.selected_segments[n].resize(SelectionMode.anchor, new
+        Editor.selected_segments[n].resize(this.anchor, new
         Vector2(scale, scale));
     }
 
