@@ -33,7 +33,7 @@ SelectionMode.prototype.init_mode = function(){
     this.onPinch).on("ontransformend gestureend", this.onPinchEnd);
 }
 
-this.prototype.close_mode = function(){
+SelectionMode.prototype.close_mode = function(){
     $("#bounding_box").hammer().off("ontransformstart gesturestart",
     this.onPinchStart).off("ontransform gesturechange",
     this.onPinch).off("ontransformend gestureend", this.onPinchEnd);
@@ -59,7 +59,7 @@ SelectionMode.onPinchStart = function(e){ // e is a Hammer.js event
     this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
     
     // TODO: Bind/unbind the touchstart function to prevent that behavior from
-    // happening here. Revind in onPinchEnd.
+    // happening here. Rebind in onPinchEnd.
 }
 
 SelectionMode.onPinch = function(e){ 
