@@ -11,8 +11,7 @@ var EditorState =
         "MiddleOfStroke" : 5,
 
         // text tool states
-        "ReadyForText" : 6,
-        "MiddleOfText" : 7,
+        "ReadyForText" : 6, "MiddleOfText" : 7,
 
         // Segment (and primitive) selection, labeling
         "SegmentsSelected" : 8,
@@ -179,7 +178,7 @@ Editor.onMouseDown = function(e)
         StrokeSelectMode.onDown(e);
         break;        
     case EditorState.ReadyToRectangleSelect:
-        RectSelectMode.onDown(e);
+        //RectSelectMode.onDown(e);
         break;
 
     case EditorState.SegmentsSelected:

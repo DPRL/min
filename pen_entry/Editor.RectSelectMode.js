@@ -2,7 +2,15 @@
 This file contains events and information specific to rectangle selection.
 */
 
-function RectSelectMode(){}
+function RectSelectMode(){
+    var onDown = $.proxy(RectSelectMode.onDown, this);
+
+    if(Modernizr.touch)
+        onDown = EditorMode.mkIgnoreMultipleTouches(onDown);
+
+    this.onDown = onDown;
+     
+    }
 
 // For now this hierarchy doesn't matter, as we don't make instances
 // of the SelectionMode. This will change.
@@ -12,6 +20,13 @@ RectSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this); 
     Editor.rectangleSelectionTool();
     $("#equation_canvas").css("cursor", "default");
+    $("#equation_canvas").on("touchstart mousedown", this.onDown);
+
+}
+
+RectSelectMode.prototype.close_mode = function(){
+    SelectionMode.prototype.close_mode.call(this);
+    $("#equation_canvas").off("touchstart mousedown", this.onDown);
 }
 
 RectSelectMode.onDown = function(e){
