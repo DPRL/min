@@ -3,14 +3,20 @@ This file contains events and information specific to rectangle selection.
 */
 
 function RectSelectMode(){
-    var onDown = $.proxy(RectSelectMode.onDown, this);
+    var onDown = $.proxy(RectSelectMode.onDownBase, this);
+    var onMove = $.proxy(RectSelectMode.onMove, this);
+    var onUp = $.proxy(RectSelectMode.onUp, this);
 
-    if(Modernizr.touch)
+    if(Modernizr.touch){
         onDown = EditorMode.mkIgnoreMultipleTouches(onDown);
+        onMove = EditorMode.mkIgnoreMultipleTouches(onMove);
+        onUp = EditorMode.mkIgnoreMultipleTouches(onUp);
+    }
 
     this.onDown = onDown;
-     
-    }
+    this.onMove = onMove;
+    this.onUp = onUp;
+}
 
 // For now this hierarchy doesn't matter, as we don't make instances
 // of the SelectionMode. This will change.
@@ -29,7 +35,8 @@ RectSelectMode.prototype.close_mode = function(){
     $("#equation_canvas").off("touchstart mousedown", this.onDown);
 }
 
-RectSelectMode.onDown = function(e){
+RectSelectMode.onDownBase = function(e){
+    SelectionMode.prototype.onDown.call(this, e);
     // get the segments that are under the mouse click
     var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
 
