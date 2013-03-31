@@ -119,10 +119,6 @@ Editor.onDoubleClick = function(e)
 {
     switch (Editor.state)
     {
-    // Remember to refactor in such a way that both these catches are caught
-    case EditorState.ReadyToStroke:
-        //DrawMode.onDoubleClick(e);
-        break;
 
     case EditorState.MovingSegments:
     case EditorState.SegmentsSelected:
@@ -190,43 +186,6 @@ Editor.onMouseDown = function(e)
         SelectionMode.mouseDownSegmentsSelected(e);        
         break;
 
-    case EditorState.MiddleOfText:
-        // TODO: START HERE! This should be moved and bound/rebound properly
-        //DrawMode.stopTextInput(e);
-        break;
-
-    case EditorState.ReadyForText:
-        // This is set only from typeTool() which is only called
-        // from one place. The state is immediately set to something else after the call.
-        // This code can never run unless a mouseDown were to fire during a keypress so I think it can be removed.
-        // Editor.current_text = null;
-        // var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
-        // for(var k = 0; k < clicked_points.length; k++)
-        // {
-        //     if(clicked_points[k].type_id == SymbolSegment.type_id)
-        //     {
-        //         Editor.current_text = clicked_points[k];
-        //         break;
-        //     }
-        // }
-        // 
-        // if(Editor.current_text == null)
-        // {
-        //     var s = new SymbolSegment(Editor.mouse_position);
-        //     Editor.current_text = s;
-        // } else {
-        //     Editor.add_action(new EditText(Editor.current_text));
-        // }
-        // Editor.state = EditorState.MiddleOfText;
-        console.log("ReadyForText is maybe not useless after all...");
-        break;
-
-
-    case EditorState.ReadyToStroke:
-        console.log("Skipping ReadyToStroke in DrawMode!");
-        //DrawMode.onDown(e);
-        break;
-
     }
 }
 
@@ -286,10 +245,6 @@ Editor.onMouseMove = function(e)
         case EditorState.MovingSegments:
             SelectionMode.moveSegmentsFromMouseMove(e);
             break;            
-        case EditorState.MiddleOfStroke:
-            //DrawMode.onMove(e);
-            console.log("skipping MiddleOfStroke in moving draw mode");
-            break;
         case EditorState.Resizing:
             /*
             TODO: Figure out where to put this and how to recognize when
@@ -398,9 +353,6 @@ Editor.onMouseUp = function(e)
         case EditorState.MovingSegments:
             SelectionMode.onUp(e);
             break;
-        case EditorState.MiddleOfStroke:
-            console.log("Skipping onMouseUp middle of stroke!");
-            break;
         case  EditorState.Resizing:
             // TODO: Change this with other resizing code
             Editor.state = EditorState.SegmentsSelected;
@@ -416,7 +368,6 @@ Editor.onMouseUp = function(e)
 
 Editor.mapCanvasBackspace = function(e)
 {
-    console.log("map canvas backspace");
     if(e.keyCode == KeyCode.backspace)
     {
         // Check whether the text box has focus.
@@ -430,8 +381,9 @@ Editor.mapCanvasBackspace = function(e)
             switch (Editor.state)
             {
             case EditorState.MiddleOfText:
-                e.preventDefault();
-                Editor.current_text.popCharacter();
+                // e.preventDefault();
+                // Editor.current_text.popCharacter();
+                // CMS: Moved these actions to DrawModeOnKeyPress
                 break;
             default:
                 // Otherwise, delete any selections.
@@ -476,9 +428,6 @@ Editor.onKeyPress = function(e)
     // CMS: Uncomment to allow adding typed characters in stroke/box select mode
     // case EditorState.ReadyToRectangleSelect:
     // case EditorState.ReadyToStrokeSelect:
-    case EditorState.ReadyToStroke:
-        console.log("Skipping Editor.onKeyPress!");
-        break;
 
     case EditorState.SegmentsSelected:
         SelectionMode.onKeyPress(e);        

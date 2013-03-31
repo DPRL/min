@@ -9,6 +9,7 @@ DrawMode.prototype = new EditorMode();
 
 function DrawMode(){
     // Call the super constructor
+    // CMS: Might not need this
     EditorMode.call(this);
    
     // Make 'this' refer to this DrawMode object in 
@@ -152,7 +153,13 @@ DrawMode.onKeyPress = function(e){
         textBox = document.getElementById("tex_result");
         if (document.querySelector(":focus") != textBox &&
                 Editor.current_text != null) {
-            Editor.current_text.addCharacter(String.fromCharCode(e.which));
+            if(e.keyCode == KeyCode.backspace){
+                e.preventDefault();
+                Editor.current_text.popCharacter();
+            }
+            else
+                Editor.current_text.addCharacter(String.fromCharCode(e.which));
+            
         }
         return;
     }
