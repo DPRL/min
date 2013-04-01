@@ -3,14 +3,14 @@ This file contains events and information specific to rectangle selection.
 */
 
 function RectSelectMode(){
-    this.onDown = $.proxy(RectSelectMode.onDownBase, this);
-    this.onMove = $.proxy(RectSelectMode.onMoveBase, this);
-    this.onUp = $.proxy(RectSelectMode.onUpBase, this);
+    this.onDownNoSelectedSegments = $.proxy(RectSelectMode.onDownNoSelectedSegmentsBase, this);
+    this.onMoveNoSelectedSegments = $.proxy(RectSelectMode.onMoveNoSelectedSegmentsBase, this);
+    this.onUpNoSelectedSegments = $.proxy(RectSelectMode.onUpNoSelectedSegmentsBase, this);
 
     if(Modernizr.touch){
-        this.onDown = EditorMode.mkIgnoreMultipleTouches(this.onDown);
-        this.onMove = EditorMode.mkIgnoreMultipleTouches(this.onMove);
-        this.onUp = EditorMode.mkIgnoreMultipleTouches(this.onUp);
+        this.onDownNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onDownNoSelectedSegments);
+        this.onMoveNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onMoveNoSelectedSegments);
+        this.onUpNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onUpNoSelectedSegments);
     }
 }
 
@@ -20,17 +20,17 @@ RectSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this); 
     Editor.rectangleSelectionTool();
     $("#equation_canvas").css("cursor", "default");
-    $("#equation_canvas").on("touchstart mousedown", this.onDown);
+    $("#equation_canvas").on("touchstart mousedown", this.onDownNoSelectedSegments);
 
 }
 
 RectSelectMode.prototype.close_mode = function(){
     SelectionMode.prototype.close_mode.call(this);
-    $("#equation_canvas").off("touchstart mousedown", this.onDown);
+    $("#equation_canvas").off("touchstart mousedown", this.onDownNoSelectedSegments);
 }
 
-RectSelectMode.onDownBase = function(e){
-    SelectionMode.prototype.onDown.call(this, e);
+RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
+    RectSelectMode.prototype.onDown.call(this, e);
     // get the segments that are under the mouse click
     var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
 
@@ -53,13 +53,13 @@ RectSelectMode.onDownBase = function(e){
         Editor.start_rect_selection = Editor.mouse_position.clone();
         Editor.end_rect_selection  = Editor.mouse_position.clone();
         Editor.state = EditorState.RectangleSelecting;
-        $("#equation_canvas").on("touchmove mousemove", this.onMove);
-        $("#equation_canvas").one("touchend mouseup", this.onUp);
+        $("#equation_canvas").on("touchmove mousemove", this.onMoveNoSelectedSegments);
+        $("#equation_canvas").one("touchend mouseup", this.onUpNoSelectedSegments);
     }
     RenderManager.render();
 }
 
-RectSelectMode.onMoveBase = function(e){
+RectSelectMode.onMoveNoSelectedSegmentsBase = function(e){
     var mouse_delta = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
     Editor.end_rect_selection.Add(mouse_delta);
     // get list of segments colliding with selection rectangle
@@ -80,8 +80,8 @@ RectSelectMode.onMoveBase = function(e){
 
 }
 
-RectSelectMode.onUpBase = function(e){
-    $("#equation_canvas").off("touchmove mousemove", this.onMove);
+RectSelectMode.onUpNoSelectedSegmentsBase = function(e){
+    $("#equation_canvas").off("touchmove mousemove", this.onMoveNoSelectedSegments);
     if(Editor.selected_segments.length > 0)
         Editor.state = EditorState.SegmentsSelected;
     else

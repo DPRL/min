@@ -39,9 +39,6 @@ SelectionMode.prototype.close_mode = function(){
     this.onPinch).off("ontransformend gestureend", this.onPinchEnd);
 }
 
-SelectionMode.onDown = function(e){
-    SelectionMode.prototype.onDown.call(this, e);
-}
 //-----------------
 // Hammer Events
 // ----------------
