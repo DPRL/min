@@ -3,23 +3,17 @@ This file contains events and information specific to rectangle selection.
 */
 
 function RectSelectMode(){
-    var onDown = $.proxy(RectSelectMode.onDownBase, this);
-    var onMove = $.proxy(RectSelectMode.onMove, this);
-    var onUp = $.proxy(RectSelectMode.onUp, this);
+    this.onDown = $.proxy(RectSelectMode.onDownBase, this);
+    this.onMove = $.proxy(RectSelectMode.onMoveBase, this);
+    this.onUp = $.proxy(RectSelectMode.onUpBase, this);
 
     if(Modernizr.touch){
-        onDown = EditorMode.mkIgnoreMultipleTouches(onDown);
-        onMove = EditorMode.mkIgnoreMultipleTouches(onMove);
-        onUp = EditorMode.mkIgnoreMultipleTouches(onUp);
+        this.onDown = EditorMode.mkIgnoreMultipleTouches(this.onDown);
+        this.onMove = EditorMode.mkIgnoreMultipleTouches(this.onMove);
+        this.onUp = EditorMode.mkIgnoreMultipleTouches(this.onUp);
     }
-
-    this.onDown = onDown;
-    this.onMove = onMove;
-    this.onUp = onUp;
 }
 
-// For now this hierarchy doesn't matter, as we don't make instances
-// of the SelectionMode. This will change.
 RectSelectMode.prototype = new SelectionMode();
 
 RectSelectMode.prototype.init_mode = function(){
@@ -54,16 +48,18 @@ RectSelectMode.onDownBase = function(e){
 
         setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
     }
-    else
+    else // We are rectangle selecting
     {
         Editor.start_rect_selection = Editor.mouse_position.clone();
         Editor.end_rect_selection  = Editor.mouse_position.clone();
         Editor.state = EditorState.RectangleSelecting;
+        $("#equation_canvas").on("touchmove mousemove", this.onMove);
+        $("#equation_canvas").one("touchend mouseup", this.onUp);
     }
     RenderManager.render();
 }
 
-RectSelectMode.onMove = function(e){
+RectSelectMode.onMoveBase = function(e){
     var mouse_delta = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
     Editor.end_rect_selection.Add(mouse_delta);
     // get list of segments colliding with selection rectangle
@@ -84,7 +80,8 @@ RectSelectMode.onMove = function(e){
 
 }
 
-RectSelectMode.onUp = function(e){
+RectSelectMode.onUpBase = function(e){
+    $("#equation_canvas").off("touchmove mousemove", this.onMove);
     if(Editor.selected_segments.length > 0)
         Editor.state = EditorState.SegmentsSelected;
     else

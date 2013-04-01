@@ -178,6 +178,7 @@ Editor.onMouseDown = function(e)
         StrokeSelectMode.onDown(e);
         break;        
     case EditorState.ReadyToRectangleSelect:
+        console.log("Skipping ReadyToRectangleSelect onDown");
         //RectSelectMode.onDown(e);
         break;
 
@@ -228,7 +229,8 @@ Editor.onMouseMove = function(e)
             StrokeSelectMode.onMove(e);
             break;
         case EditorState.RectangleSelecting:
-            RectSelectMode.onMove(e);
+            console.log("skipping rect select onmove");
+            //RectSelectMode.onMove(e);
             break;
         case EditorState.SegmentsSelected:
             /* Initialize the moveQueue
@@ -347,7 +349,8 @@ Editor.onMouseUp = function(e)
             StrokeSelectMode.onUp(e);
             break;
         case EditorState.RectangleSelecting:
-            RectSelectMode.onUp(e);
+            //RectSelectMode.onUp(e);
+            console.log("skipping EditorState.RectangleSelecting!");
             break;
         case EditorState.MovingSegments:
             SelectionMode.onUp(e);
