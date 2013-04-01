@@ -175,7 +175,8 @@ Editor.onMouseDown = function(e)
     switch(Editor.state)
     {
     case EditorState.ReadyToStrokeSelect:
-        StrokeSelectMode.onDown(e);
+        //StrokeSelectMode.onDown(e);
+        console.log("Skipping StrokeSelecting switch");
         break;        
     case EditorState.ReadyToRectangleSelect:
         console.log("Skipping ReadyToRectangleSelect onDown");
@@ -226,7 +227,8 @@ Editor.onMouseMove = function(e)
             // CMS: This should never happen
             break;
         case EditorState.StrokeSelecting:
-            StrokeSelectMode.onMove(e);
+            //StrokeSelectMode.onMoveNoSelectedSegmentsBase(e);
+            console.log("skipping stroke select onmove");
             break;
         case EditorState.RectangleSelecting:
             console.log("skipping rect select onmove");
@@ -346,7 +348,8 @@ Editor.onMouseUp = function(e)
         switch(Editor.state)
         {
         case EditorState.StrokeSelecting:
-            StrokeSelectMode.onUp(e);
+            //StrokeSelectMode.onUpNoSelectedSegmentsBase(e);
+            console.log("skipping EditorState.StrokeSelecting onup!");
             break;
         case EditorState.RectangleSelecting:
             //RectSelectMode.onUp(e);

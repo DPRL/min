@@ -2,7 +2,17 @@
 This file contains events and information specific to stroke selection.
 */
 
-function StrokeSelectMode(){}
+function StrokeSelectMode(){
+    this.onDownNoSelectedSegments = $.proxy(StrokeSelectMode.onDownNoSelectedSegmentsBase, this);
+    this.onMoveNoSelectedSegments = $.proxy(StrokeSelectMode.onMoveNoSelectedSegmentsBase, this);
+    this.onUpNoSelectedSegments = $.proxy(StrokeSelectMode.onUpNoSelectedSegmentsBase, this);
+
+    if(Modernizr.touch){
+        this.onDownNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onDownNoSelectedSegments);
+        this.onMoveNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onMoveNoSelectedSegments);
+        this.onUpNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onUpNoSelectedSegments);
+    }
+}
 // For now this hierarchy doesn't matter, as we don't make instances
 // of the SelectionMode. This will change.
 StrokeSelectMode.prototype = new SelectionMode();
@@ -12,16 +22,21 @@ StrokeSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this);
     Editor.strokeSelectionTool();
     $("#equation_canvas").css("cursor", "crosshair");
+    $("#equation_canvas").on("touchstart mousedown",
+    this.onDownNoSelectedSegments);
 }
 
 StrokeSelectMode.prototype.close_mode = function(){
     $("#equation_canvas").css("cursor", "default");
+    $("#equation_canvas").off("touchstart mousedown",
+    this.onDownNoSelectedSegments);
 }
 
 /*
 Method stub for switching into StrokeSelectMode
 */
-StrokeSelectMode.onDown = function(e){
+StrokeSelectMode.onDownNoSelectedSegmentsBase = function(e){
+    StrokeSelectMode.prototype.onDown.call(this, e);
     // get the segments that are under the mouse click
     var click_result = CollisionManager.get_point_collides(Editor.mouse_position);
     if(click_result.length > 0)
@@ -41,6 +56,8 @@ StrokeSelectMode.onDown = function(e){
     } else
     {
         Editor.state = EditorState.StrokeSelecting;
+        $("#equation_canvas").on("touchmove mousemove", this.onMoveNoSelectedSegments);
+        $("#equation_canvas").one("touchend mouseup", this.onUpNoSelectedSegments);
         
     }
     Editor.previous_stroke_position = Editor.mouse_position.clone();
@@ -48,7 +65,7 @@ StrokeSelectMode.onDown = function(e){
 
 }
 
-StrokeSelectMode.onMove = function(e){
+StrokeSelectMode.onMoveNoSelectedSegmentsBase = function(e){
     // see what we stroked through between move events
     var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
     // for each segment in result add to selected segments set (if they aren't there already)
@@ -65,12 +82,13 @@ StrokeSelectMode.onMove = function(e){
     RenderManager.render();
 }
 
-StrokeSelectMode.onUp = function(e){
+StrokeSelectMode.onUpNoSelectedSegmentsBase = function(e){
+    StrokeSelectMode.prototype.onUp.call(this, e);
+    $("#equation_canvas").off("touchmove mousemove", this.onMoveNoSelectedSegments);
     if(Editor.selected_segments.length > 0)
         Editor.state = EditorState.SegmentsSelected;
     else
         Editor.state = EditorState.ReadyToStrokeSelect;
     RenderManager.clear_canvas();
-
 }
 

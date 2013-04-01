@@ -17,6 +17,7 @@ function SelectionMode(){
     this.onPinchStart = $.proxy(SelectionMode.onPinchStart, this);
     this.onPinch = $.proxy(SelectionMode.onPinch, this);
     this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
+
 }
 
 // For now this hierarchy doesn't matter, as we don't make instances
