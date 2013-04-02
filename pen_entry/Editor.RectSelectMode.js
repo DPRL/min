@@ -47,6 +47,12 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
         Editor.state = EditorState.SegmentsSelected;
 
         setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+        $("#equation_canvas").on("touchstart mousedown",
+        this.onDownSegmentsSelected);
+        $("#equation_canvas").off("touchstart mousedown", 
+        this.onDownNoSelectedSegments);
+
+        this.onDownSegmentsSelected(e);
     }
     else // We are rectangle selecting
     {

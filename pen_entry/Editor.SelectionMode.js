@@ -17,7 +17,13 @@ function SelectionMode(){
     this.onPinchStart = $.proxy(SelectionMode.onPinchStart, this);
     this.onPinch = $.proxy(SelectionMode.onPinch, this);
     this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
+    this.onDownSegmentsSelected =
+    $.proxy(SelectionMode.mouseDownSegmentsSelected, this);
 
+    if(Modernizr.touch){
+        this.onDownSegmentsSelected =
+        EditorMode.mkIgnoreMultipleTouches(this.onDownSegmentsSelected);
+    }
 }
 
 // For now this hierarchy doesn't matter, as we don't make instances
@@ -98,6 +104,7 @@ SelectionMode.onPinchEnd = function(e){
 }
 
 SelectionMode.mouseDownSegmentsSelected = function(e){    
+    console.log("Selected!!");
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
     // check for resizing
     // TODO: make this an event on just the bb handles. 
