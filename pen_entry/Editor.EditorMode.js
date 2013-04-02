@@ -45,8 +45,6 @@ EditorMode.onMouseDown = function(e){
     if(e.button == 0){
         Editor.mouse_position_prev = Editor.mouse_position;
         Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
-        console.log("prev_mous: " + Editor.mouse_position_prev);
-        console.log("curr_mous: " + Editor.mouse_position);
     }
 }
 

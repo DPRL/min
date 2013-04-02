@@ -176,10 +176,10 @@ Editor.onMouseDown = function(e)
     {
     case EditorState.ReadyToStrokeSelect:
         //StrokeSelectMode.onDown(e);
-        console.log("Skipping StrokeSelecting switch");
+        //console.log("Skipping StrokeSelecting switch");
         break;        
     case EditorState.ReadyToRectangleSelect:
-        console.log("Skipping ReadyToRectangleSelect onDown");
+        //console.log("Skipping ReadyToRectangleSelect onDown");
         //RectSelectMode.onDown(e);
         break;
 
@@ -228,10 +228,10 @@ Editor.onMouseMove = function(e)
             break;
         case EditorState.StrokeSelecting:
             //StrokeSelectMode.onMoveNoSelectedSegmentsBase(e);
-            console.log("skipping stroke select onmove");
+            //console.log("skipping stroke select onmove");
             break;
         case EditorState.RectangleSelecting:
-            console.log("skipping rect select onmove");
+            //console.log("skipping rect select onmove");
             //RectSelectMode.onMove(e);
             break;
         case EditorState.SegmentsSelected:
@@ -349,11 +349,11 @@ Editor.onMouseUp = function(e)
         {
         case EditorState.StrokeSelecting:
             //StrokeSelectMode.onUpNoSelectedSegmentsBase(e);
-            console.log("skipping EditorState.StrokeSelecting onup!");
+            //console.log("skipping EditorState.StrokeSelecting onup!");
             break;
         case EditorState.RectangleSelecting:
             //RectSelectMode.onUp(e);
-            console.log("skipping EditorState.RectangleSelecting!");
+            //console.log("skipping EditorState.RectangleSelecting!");
             break;
         case EditorState.MovingSegments:
             SelectionMode.onUp(e);

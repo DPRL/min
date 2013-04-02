@@ -62,7 +62,6 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
 RectSelectMode.onMoveNoSelectedSegmentsBase = function(e){
     RectSelectMode.prototype.onMove.call(this, e);
     var mouse_delta = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
-    console.log("mouse delta: " + mouse_delta);
     Editor.end_rect_selection.Add(mouse_delta);
     // get list of segments colliding with selection rectangle
     var rect_selected = CollisionManager.get_rectangle_collides(Editor.start_rect_selection, Editor.end_rect_selection);
