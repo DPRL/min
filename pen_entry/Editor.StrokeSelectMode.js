@@ -66,6 +66,7 @@ StrokeSelectMode.onDownNoSelectedSegmentsBase = function(e){
 }
 
 StrokeSelectMode.onMoveNoSelectedSegmentsBase = function(e){
+    StrokeSelectMode.prototype.onMove.call(this, e);
     // see what we stroked through between move events
     var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
     // for each segment in result add to selected segments set (if they aren't there already)

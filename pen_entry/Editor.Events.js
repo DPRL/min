@@ -148,20 +148,20 @@ Editor.onMouseDown = function(e)
         // we only care about left click
         if(e.button == 0)
         {
-            Editor.mouse_position_prev = Editor.mouse_position;
-            Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+            // Editor.mouse_position_prev = Editor.mouse_position;
+            // Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
         }
         else return;
     }    
     else if(e.type == "touchstart")
     {
         // Don't do anything if a hammer event is firing or there are two many fingers on the screen
-        if(Editor.state == EditorState.PinchResizing || e.touches.length > 1 || e.timeStamp - tmpLast.timeStamp < Editor.minTouchTimeDiff ){
-            return;
-        }
-        var first = event.changedTouches[0];
-        Editor.mouse_position_prev = Editor.mouse_position;
-        Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+        //if(Editor.state == EditorState.PinchResizing || e.touches.length > 1 || e.timeStamp - tmpLast.timeStamp < Editor.minTouchTimeDiff ){
+        //    return;
+        //}
+        //var first = event.changedTouches[0];
+        //Editor.mouse_position_prev = Editor.mouse_position;
+        //Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
     }
     else 
         return;
@@ -202,16 +202,16 @@ Editor.onMouseMove = function(e)
     // support for both IPad and Mouse
     if(e.type == "mousemove")
     {
-        Editor.mouse_position_prev = Editor.mouse_position;
-        Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
-        Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
-    }    
+        // Editor.mouse_position_prev = Editor.mouse_position;
+        // Editor.mouse_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+        // Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
+    }   //  
     else if(e.type == "touchmove")
     {
-        var first = event.changedTouches[0];
-        Editor.mouse_position_prev = Editor.mouse_position;
-        Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
-        Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
+        // var first = event.changedTouches[0];
+        // Editor.mouse_position_prev = Editor.mouse_position;
+        // Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+        // Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
     }
     else 
         return;
@@ -324,12 +324,12 @@ Editor.onMouseUp = function(e)
 {
     // BOILERPLATE
     // Tmplast is not needed except in selection modes
-    var tmpLast = Editor.lastEvent;
-    Editor.lastEvent = e;
+    // var tmpLast = Editor.lastEvent;
+    // Editor.lastEvent = e;
     // Don't react if we're in the middle of a transform, or if
     // there's still something touching the screen
-    if(Editor.state == EditorState.PinchResizing || e.timeStamp - tmpLast.timeStamp < 0)
-        return;
+    // if(Editor.state == EditorState.PinchResizing || e.timeStamp - tmpLast.timeStamp < 0)
+    //     return;
     // END BOILERPLATE 
 
     // TODO: Find a better way to wrap these checks
