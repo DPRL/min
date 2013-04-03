@@ -17,8 +17,14 @@ function SelectionMode(){
     this.onPinchStart = $.proxy(SelectionMode.onPinchStart, this);
     this.onPinch = $.proxy(SelectionMode.onPinch, this);
     this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
+    
     this.onDownSegmentsSelected =
-    $.proxy(SelectionMode.mouseDownSegmentsSelected, this);
+    $.proxy(SelectionMode.onDownSegmentsSelectedBase, this);
+    this.beginMovingSegmentsFromMove =
+    $.proxy(SelectionMode.beginMovingSegmentsFromMove, this);
+    this.moveSegmentsFromMove =
+    $.proxy(SelectionMode.moveSegmentsFromMoveBase, this);
+    this.onUpAfterMove = $.proxy(SelectionMode.onUpAfterMoveBase, this);
 
     if(Modernizr.touch){
         this.onDownSegmentsSelected =
@@ -26,8 +32,6 @@ function SelectionMode(){
     }
 }
 
-// For now this hierarchy doesn't matter, as we don't make instances
-// of the SelectionMode. This will change.
 SelectionMode.prototype = new EditorMode();
 
 SelectionMode.prototype.init_mode = function(){
@@ -44,6 +48,9 @@ SelectionMode.prototype.close_mode = function(){
     $("#bounding_box").hammer().off("ontransformstart gesturestart",
     this.onPinchStart).off("ontransform gesturechange",
     this.onPinch).off("ontransformend gestureend", this.onPinchEnd);
+
+    $("#equation_canvas").off("mousedown touchstart",
+    this.onDownSegmentsSelected);
 }
 
 //-----------------
@@ -103,7 +110,7 @@ SelectionMode.onPinchEnd = function(e){
     Editor.moveQueue = null;
 }
 
-SelectionMode.mouseDownSegmentsSelected = function(e){    
+SelectionMode.onDownSegmentsSelectedBase = function(e){    
     console.log("Selected!!");
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
     // check for resizing
@@ -121,11 +128,15 @@ SelectionMode.mouseDownSegmentsSelected = function(e){
         // check translate
         if(Editor.selected_bb.point_collides(Editor.mouse_position))
         {
+            console.log("translating");
             Editor.add_action(new TransformSegments(Editor.selected_segments));
-            Editor.state = EditorState.MovingSegments;
             Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
-            setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+            this.timeoutID = setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+            console.log("Set timeout: " + this.timeoutID);
+            $("#equation_canvas").one("touchmove mousemove",
+            this.beginMovingSegmentsFromMove);
+            $("#equation_canvas").one("touchend mouseup", this.onUpAfterMove);
         }
         // reselect
         else
@@ -142,8 +153,9 @@ SelectionMode.mouseDownSegmentsSelected = function(e){
                 }
                 Editor.state = EditorState.SegmentsSelected;
 
-
-                setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+               
+                this.timeoutID = setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+                console.log("Setting timeout: " + this.timeoutID);
             }
             // selecting none
             else
@@ -159,6 +171,8 @@ SelectionMode.mouseDownSegmentsSelected = function(e){
                     Editor.end_rect_selection  = Editor.mouse_position.clone();
                     Editor.state = EditorState.RectangleSelecting;    
                 }
+                $("#equation_canvas").off("touchstart mousedown",
+                this.mouseDownSegmentsSelected);
             }
             RenderManager.render();
         }
@@ -184,8 +198,21 @@ SelectionMode.moveSegments = function(previous, current){
     Editor.selected_bb.translate(translation);
 }
 
+// This method has to be called once to start the mouse movement.
+// It then binds the method to use from then on
+SelectionMode.beginMovingSegmentsFromMove = function(e){
+    // Clear the timeout so the menu doesn't appear
+    window.clearTimeout(this.timeoutID);
+    console.log("removed timeout: " + this.timeoutID);
+
+    Editor.state = EditorState.MovingSegments;
+    Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
+    Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
+    $("#equation_canvas").on("mousemove touchmove", this.moveSegmentsFromMove);
+}
+
 // Awkward name, try to change this later
-SelectionMode.moveSegmentsFromMouseMove = function(e){
+SelectionMode.moveSegmentsFromMoveBase = function(e){
     if(e.timeStamp - Editor.moveQueue[Editor.moveQueue.length - 1].x.timeStamp > 40){
                     Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
     }
@@ -239,7 +266,18 @@ SelectionMode.onDoubleClick = function(e){
         }
 }
 
-SelectionMode.onUp = function(e){
+SelectionMode.onUpAfterMoveBase = function(e){
+    window.clearTimeout(this.timeoutID);
+    console.log("cleared timeout onUpAfterMove: " + this.timeoutID);
+
+    // We're done moving for now, so make sure these events aren't bound
+    $("#equation_canvas").off("touchmove mousemove", this.moveSegmentsFromMove);
+    $("#equation_canvas").off("touchmove mousemove",
+    this.beginMovingSegmentsFromMove);
+
+    $("#equation_canvas").on("touchstart mousedown",
+    this.onDownSegmentsSelected);
+
     // RLAZ: delete strokes if cursor moves out of the window.
     var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
     var toolbarDims = document.getElementById('toolbar').getBoundingClientRect();
@@ -337,12 +375,8 @@ SelectionMode.onUp = function(e){
         theEvent.pageY > canvasDims.height - 2 * offSet ) {
         Editor.deleteTool();
     } else {
-        if (Editor.state == EditorState.MovingSegments) {
-            Editor.state = EditorState.SegmentsSelected;
-            Editor.current_action.add_new_transforms(Editor.selected_segments);
-        } else {
-            Editor.selectPenTool();
-        }
+        Editor.state = EditorState.SegmentsSelected;
+        Editor.current_action.add_new_transforms(Editor.selected_segments);
     }
 
 }

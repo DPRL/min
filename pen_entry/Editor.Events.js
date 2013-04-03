@@ -134,11 +134,11 @@ Editor.onMouseDown = function(e)
     var tmpLast = Editor.lastEvent;
     Editor.lastEvent = e;
     if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary && Modernizr.touch) {
-        Editor.touchAndHoldFlag = TouchAndHoldState.FingerDownAndStationary;
-        return;
+        //Editor.touchAndHoldFlag = TouchAndHoldState.FingerDownAndStationary;
+        //return;
     }
     else {
-        Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold; 
+        //Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold; 
     }
 
     // support for both computer mouse and tablet devices
@@ -184,7 +184,7 @@ Editor.onMouseDown = function(e)
         break;
 
     case EditorState.SegmentsSelected:
-        SelectionMode.mouseDownSegmentsSelected(e);        
+        //SelectionMode.mouseDownSegmentsSelected(e);        
         break;
 
     }
@@ -242,11 +242,13 @@ Editor.onMouseMove = function(e)
              with no mouseUp between the click and move, otherwise 
              initialized in SelectionMode.mouseDownSegmentsSelected.
             */
-            Editor.state = EditorState.MovingSegments;
-            Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
-            Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
+            // Editor.state = EditorState.MovingSegments;
+            // Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
+            // Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
+            console.log("skipping beginning!");
         case EditorState.MovingSegments:
-            SelectionMode.moveSegmentsFromMouseMove(e);
+            //SelectionMode.moveSegmentsFromMouseMove(e);
+            console.log("skipping move!");
             break;            
         case EditorState.Resizing:
             /*
@@ -356,10 +358,12 @@ Editor.onMouseUp = function(e)
             //console.log("skipping EditorState.RectangleSelecting!");
             break;
         case EditorState.MovingSegments:
-            SelectionMode.onUp(e);
+            //SelectionMode.onUp(e);
+            console.log("Skipping mouseup after moving segments");
             break;
         case  EditorState.Resizing:
             // TODO: Change this with other resizing code
+            console.log("resizing");
             Editor.state = EditorState.SegmentsSelected;
             for(var k = 0; k < Editor.selected_segments.length; k++)
                 Editor.selected_segments[k].freeze_transform();

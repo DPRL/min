@@ -14,6 +14,8 @@ function RectSelectMode(){
     }
 }
 
+// CMS: Perhaps just use the object in Editor.modes instead of making another
+// one?
 RectSelectMode.prototype = new SelectionMode();
 
 RectSelectMode.prototype.init_mode = function(){
@@ -46,11 +48,11 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
         Editor.add_action(new TransformSegments(Editor.selected_segments));
         Editor.state = EditorState.SegmentsSelected;
 
-        setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
-        $("#equation_canvas").on("touchstart mousedown",
-        this.onDownSegmentsSelected);
+        //this.timeoutID = setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
         $("#equation_canvas").off("touchstart mousedown", 
         this.onDownNoSelectedSegments);
+        $("#equation_canvas").on("touchstart mousedown",
+        this.onDownSegmentsSelected);
 
         this.onDownSegmentsSelected(e);
     }
