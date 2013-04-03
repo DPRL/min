@@ -1,7 +1,7 @@
 /*
   This is the menu that appears to allow the user to manually enter the symbol that they want.
 */
-
+// CMS: TODO: Consider making the correct menu an editor state in and of itself
 function CorrectionMenu()
 {
     
@@ -209,16 +209,20 @@ CorrectionMenu.updateOCRList = function()
     }
 }
 
+
 /*
-  return_to is the state to return to after the user is done with the relabeling
-  menu
+    hide_callback used by the hide() function to go back to the mode we were
+    in previously.
 */
-CorrectionMenu.show = function(return_to)
+CorrectionMenu.show = function(callback)
 {
     // Change state, make menu visible.
-    CorrectionMenu.prev_state = return_to;
     Editor.state = EditorState.Relabeling;
     CorrectionMenu.menu.style.visibility = "visible";
+    if(callback)
+        CorrectionMenu.hide_callback = callback;
+    else
+        CorrectionMenu.hide_callback = null;
 
     // DEBUG: uncomment and fix the following code if we want to try and
     // restore the current menu state (e.g. to go back to the menu where a correction was
@@ -362,13 +366,13 @@ CorrectionMenu.up = function(node_count)
     return;
 }
 
-CorrectionMenu.hide = function()
-{
+CorrectionMenu.hide = function(){
     Editor.clearButtonOverlays();
 
-    Editor.changeState(CorrectionMenu.prev_state);
     CorrectionMenu.menu.style.visibility = "hidden";
     
+    if(CorrectionMenu.hide_callback)
+        CorrectionMenu.hide_callback();
 }
 
 CorrectionMenu.touchstart = function(e)

@@ -53,6 +53,18 @@ SelectionMode.prototype.close_mode = function(){
     this.onDownSegmentsSelected);
 }
 
+/*
+    If touch and hold is happening, unbind the events.
+*/
+SelectionMode.prototype.touchAndHold = function(e){
+    $("#equation_canvas").off("mouseup touchend",
+    this.onUpAfterMove).off("mousemove touchmove",
+    this.beginMovingSegmentsFromMove).off("mousedown touchstart",
+    this.onDownSegmentsSelected);
+
+    SelectionMode.onDoubleClick(e);
+}
+
 //-----------------
 // Hammer Events
 // ----------------
@@ -132,7 +144,10 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             Editor.add_action(new TransformSegments(Editor.selected_segments));
             Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
-            this.timeoutID = setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+            
+            this.timeoutID = window.setTimeout(this.touchAndHold,
+            Editor.touchAndHoldTimeout, e);
+
             console.log("Set timeout: " + this.timeoutID);
             $("#equation_canvas").one("touchmove mousemove",
             this.beginMovingSegmentsFromMove);
@@ -154,7 +169,8 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                 Editor.state = EditorState.SegmentsSelected;
 
                
-                this.timeoutID = setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
+                this.timeoutID = window.setTimeout(this.touchAndHoldTimeout,
+                Editor.touchAndHoldTimeout, e);
                 console.log("Setting timeout: " + this.timeoutID);
             }
             // selecting none
@@ -252,23 +268,23 @@ SelectionMode.onDoubleClick = function(e){
         }
 
         // Depending on selection, relabel or re-segment.
-        var prev_state;
-        if(Editor.selection_method == "Stroke")
-            prev_state = EditorState.StrokeSelecting;
-        else
-            prev_state = EditorState.RectangleSelecting;
-        
-        Editor.state = EditorState.SegmentsSelected;
+        // var prev_state;
+        // if(Editor.selection_method == "Stroke")
+        //     prev_state = EditorState.StrokeSelecting;
+        // else
+        //     prev_state = EditorState.RectangleSelecting;
+        // 
+        // Editor.state = EditorState.SegmentsSelected;
         if (singleObject > 0) {
-            Editor.relabel(prev_state);
+            Editor.relabel(Editor.current_mode.displaySelectionTool);
         } else {
             Editor.groupTool();
         }
+    
 }
 
 SelectionMode.onUpAfterMoveBase = function(e){
     window.clearTimeout(this.timeoutID);
-    console.log("cleared timeout onUpAfterMove: " + this.timeoutID);
 
     // We're done moving for now, so make sure these events aren't bound
     $("#equation_canvas").off("touchmove mousemove", this.moveSegmentsFromMove);
@@ -457,7 +473,7 @@ SelectionMode.onKeyPress = function(e){
                 Editor.groupTool();
                 break;
             case KeyCode.relabel:
-                Editor.relabel(Editor.state);
+                Editor.relabel();
                 break;
             case KeyCode.pen:
                 Editor.selectPenTool();

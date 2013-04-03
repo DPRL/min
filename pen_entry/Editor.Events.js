@@ -121,7 +121,7 @@ Editor.onDoubleClick = function(e)
 
     case EditorState.MovingSegments:
     case EditorState.SegmentsSelected:
-        SelectionMode.onDoubleClick(e);
+        //SelectionMode.onDoubleClick(e);
         break;
     }
 }
@@ -551,36 +551,6 @@ Editor.strokeSelectionTool = function()
     Editor.selection_method = "Stroke";
 }
 
-// TODO: Move functionality to RectangleSelectModea (init)
-Editor.rectangleSelectionTool = function()
-{
-    // DEBUG: was Buttons.Box -> Buttons.Rectangle
-    if(Editor.button_states[Buttons.Rectangle].enabled == false)
-        return;
-
-    Editor.clearButtonOverlays();
-    Editor.button_states[Buttons.Rectangle].setSelected(true);
-
-    switch(Editor.state)
-    {
-    case EditorState.MiddleOfText:
-        Editor.current_text.finishEntry();
-        if(Editor.current_action.toString() == "EditText")
-            Editor.current_action.set_current_text(Editor.current_text.text);
-        else if(Editor.current_action.toString() == "AddSegments")
-            Editor.current_action.buildSegmentXML();                
-        Editor.current_text = null;
-    }
-    
-    if(Editor.selected_segments.length == 0)
-        Editor.state = EditorState.ReadyToRectangleSelect;
-    else
-        Editor.state = EditorState.SegmentsSelected;
-
-    RenderManager.regColorOCRbbs();
-    RenderManager.render();    
-    Editor.selection_method = "Rectangle";
-}
 
 Editor.align = function()
 {
@@ -885,12 +855,15 @@ Editor.typeTool = function()
     RenderManager.render();
 }
 
-Editor.relabel = function(return_to)
+/*
+   cb is a callback to call after thei Correction hides itself.  
+*/
+Editor.relabel = function(callback)
 {
-    CorrectionMenu.show(return_to);
     Editor.clearButtonOverlays();
     for(var k = 0; k < Editor.button_states.length; k++)
         Editor.button_states[k].setEnabled(false);
+    CorrectionMenu.show(callback);
 }
 
 // clears all the data and sends action list to server for storage
@@ -1118,7 +1091,9 @@ Editor.changeState = function(state){
         Editor.selectPenTool();
         break;
     case EditorState.RectangleSelecting:
-        Editor.rectangleSelectionTool();
+        // CMS: This should never happen
+        console.log("changing to rect select tool from changeState");
+        //RectSelectMode.rectangleSelectionTool();
         break;
     case EditorState.StrokeSelecting:
         Editor.strokeSelectionTool();

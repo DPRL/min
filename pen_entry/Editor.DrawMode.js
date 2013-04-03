@@ -141,7 +141,7 @@ DrawMode.onDoubleClick = function(e){
     RenderManager.colorOCRbbs(false);
     RenderManager.bounding_box.style.visibility = "visible";
     Editor.state = EditorState.SegmentsSelected;
-    Editor.relabel(EditorState.ReadyToStroke);
+    Editor.relabel();
 
 }
 

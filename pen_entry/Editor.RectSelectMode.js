@@ -20,10 +20,9 @@ RectSelectMode.prototype = new SelectionMode();
 
 RectSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this); 
-    Editor.rectangleSelectionTool();
+    this.displaySelectionTool();
     $("#equation_canvas").css("cursor", "default");
     $("#equation_canvas").on("touchstart mousedown", this.onDownNoSelectedSegments);
-
 }
 
 RectSelectMode.prototype.close_mode = function(){
@@ -48,7 +47,6 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
         Editor.add_action(new TransformSegments(Editor.selected_segments));
         Editor.state = EditorState.SegmentsSelected;
 
-        //this.timeoutID = setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
         $("#equation_canvas").off("touchstart mousedown", 
         this.onDownNoSelectedSegments);
         $("#equation_canvas").on("touchstart mousedown",
@@ -98,4 +96,39 @@ RectSelectMode.onUpNoSelectedSegmentsBase = function(e){
         Editor.state = EditorState.ReadyToRectangleSelect;
     Editor.start_rect_selection = Editor.end_rect_selection = null;
     RenderManager.render();
+}
+
+/*
+    This method sets the interface right interface to the right state.
+ */
+RectSelectMode.prototype.displaySelectionTool = function()
+{
+    // DEBUG: was Buttons.Box -> Buttons.Rectangle
+    if(Editor.button_states[Buttons.Rectangle].enabled == false)
+        return;
+
+    Editor.clearButtonOverlays();
+    Editor.button_states[Buttons.Rectangle].setSelected(true);
+
+    // CMS: All this state stuff should be cut out; it should be the responsibility
+    // of the caller performing the switch to do this
+    // switch(Editor.state)
+    // {
+    // case EditorState.MiddleOfText:
+    //     Editor.current_text.finishEntry();
+    //     if(Editor.current_action.toString() == "EditText")
+    //         Editor.current_action.set_current_text(Editor.current_text.text);
+    //     else if(Editor.current_action.toString() == "AddSegments")
+    //         Editor.current_action.buildSegmentXML();                
+    //     Editor.current_text = null;
+    // }
+    
+    // if(Editor.selected_segments.length == 0)
+    //     Editor.state = EditorState.ReadyToRectangleSelect;
+    // else
+    //     Editor.state = EditorState.SegmentsSelected;
+
+    RenderManager.regColorOCRbbs();
+    RenderManager.render();    
+    //Editor.selection_method = "Rectangle";
 }
