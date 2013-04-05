@@ -143,7 +143,7 @@ Editor.onMouseDown = function(e)
 
     // support for both computer mouse and tablet devices
     // gets the mouse position and states
-    if(e.type == "mousedown" && ! Modernizr.touch)
+    if(e.type == "mousedown" && !Modernizr.touch)
     {
         // we only care about left click
         if(e.button == 0)

@@ -2,6 +2,10 @@
 This file contains events and information specific to rectangle selection.
 */
 
+// CMS: Perhaps just use the object in Editor.modes instead of making another
+// one?
+RectSelectMode.prototype = new SelectionMode();
+
 function RectSelectMode(){
     this.onDownNoSelectedSegments = $.proxy(RectSelectMode.onDownNoSelectedSegmentsBase, this);
     this.onMoveNoSelectedSegments = $.proxy(RectSelectMode.onMoveNoSelectedSegmentsBase, this);
@@ -14,20 +18,17 @@ function RectSelectMode(){
     }
 }
 
-// CMS: Perhaps just use the object in Editor.modes instead of making another
-// one?
-RectSelectMode.prototype = new SelectionMode();
-
 RectSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this); 
     this.displaySelectionTool();
     $("#equation_canvas").css("cursor", "default");
-    $("#equation_canvas").on("touchstart mousedown", this.onDownNoSelectedSegments);
+    $("#equation_canvas").on(this.event_strings.onDown, this.onDownNoSelectedSegments);
+    console.log("rect select");
 }
 
 RectSelectMode.prototype.close_mode = function(){
     SelectionMode.prototype.close_mode.call(this);
-    $("#equation_canvas").off("touchstart mousedown", this.onDownNoSelectedSegments);
+    $("#equation_canvas").off(this.event_strings.onDown, this.onDownNoSelectedSegments);
 }
 
 RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
@@ -49,19 +50,27 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
 
         // Bind events for segments selected, then trigger so that we can
         // transition straight to a move if we like
-        $("#equation_canvas").off("touchstart mousedown", 
+        $("#equation_canvas").off(this.event_strings.onDown, 
         this.onDownNoSelectedSegments);
-        $("#equation_canvas").on("touchstart mousedown",
-        this.onDownSegmentsSelected).trigger("touchstart mousedown", e);
-        
+        $("#equation_canvas").on(this.event_strings.onDown,
+        this.onDownSegmentsSelected);
+
+        // CMS: When testing on iOS 5, I couldn't trigger the event properly
+        // without causing errors, instead I just run it here if there's a touch
+        // screen and then trigger it if it isn't. 
+        if(Modernizr.touch)
+            this.onDownSegmentsSelected(e);
+        else
+            $("#equation_canvas").trigger(this.event_strings.onDown,
+            e.originalEvent);
     }
     else // We are rectangle selecting
     {
         Editor.start_rect_selection = Editor.mouse_position.clone();
         Editor.end_rect_selection  = Editor.mouse_position.clone();
         Editor.state = EditorState.RectangleSelecting;
-        $("#equation_canvas").on("touchmove mousemove", this.onMoveNoSelectedSegments);
-        $("#equation_canvas").one("touchend mouseup", this.onUpNoSelectedSegments);
+        $("#equation_canvas").on(this.event_strings.onMove, this.onMoveNoSelectedSegments);
+        $("#equation_canvas").one(this.event_strings.onUp, this.onUpNoSelectedSegments);
     }
     RenderManager.render();
 }
@@ -90,7 +99,7 @@ RectSelectMode.onMoveNoSelectedSegmentsBase = function(e){
 
 RectSelectMode.onUpNoSelectedSegmentsBase = function(e){
     RectSelectMode.prototype.onUp.call(this, e);
-    $("#equation_canvas").off("touchmove mousemove", this.onMoveNoSelectedSegments);
+    $("#equation_canvas").off(this.event_strings.onMove, this.onMoveNoSelectedSegments);
     if(Editor.selected_segments.length > 0)
         Editor.state = EditorState.SegmentsSelected;
     else

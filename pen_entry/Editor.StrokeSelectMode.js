@@ -22,13 +22,13 @@ StrokeSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this);
     Editor.strokeSelectionTool();
     $("#equation_canvas").css("cursor", "crosshair");
-    $("#equation_canvas").on("touchstart mousedown",
+    $("#equation_canvas").on(this.event_strings.onDown,
     this.onDownNoSelectedSegments);
 }
 
 StrokeSelectMode.prototype.close_mode = function(){
     $("#equation_canvas").css("cursor", "default");
-    $("#equation_canvas").off("touchstart mousedown",
+    $("#equation_canvas").off(this.event_strings.onDown,
     this.onDownNoSelectedSegments);
 }
 
@@ -56,8 +56,8 @@ StrokeSelectMode.onDownNoSelectedSegmentsBase = function(e){
     } else
     {
         Editor.state = EditorState.StrokeSelecting;
-        $("#equation_canvas").on("touchmove mousemove", this.onMoveNoSelectedSegments);
-        $("#equation_canvas").one("touchend mouseup", this.onUpNoSelectedSegments);
+        $("#equation_canvas").on(this.event_strings.onMove, this.onMoveNoSelectedSegments);
+        $("#equation_canvas").one(this.event_strings.onUp, this.onUpNoSelectedSegments);
         
     }
     Editor.previous_stroke_position = Editor.mouse_position.clone();
@@ -85,7 +85,7 @@ StrokeSelectMode.onMoveNoSelectedSegmentsBase = function(e){
 
 StrokeSelectMode.onUpNoSelectedSegmentsBase = function(e){
     StrokeSelectMode.prototype.onUp.call(this, e);
-    $("#equation_canvas").off("touchmove mousemove", this.onMoveNoSelectedSegments);
+    $("#equation_canvas").off(this.event_strings.onMove, this.onMoveNoSelectedSegments);
     if(Editor.selected_segments.length > 0)
         Editor.state = EditorState.SegmentsSelected;
     else

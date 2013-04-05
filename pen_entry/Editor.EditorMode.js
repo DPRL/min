@@ -10,10 +10,28 @@ function EditorMode(){
     if(Modernizr.touch){
         this.onDown = EditorMode.onTouchStart;
         this.onMove = EditorMode.onTouchMove;
+
+        /* 
+        On mobile devices both a mouse event and a touch event could fire this
+        creates problems in some cases such as when we need to check the number
+        of touches. EventStrings are what we should use to bind in each case.
+        Note that hammer events aren't included, they are fine with their own
+        strings for now.
+        */
+        this.event_strings = {
+            "onDown": "touchstart",
+            "onMove": "touchmove",
+            "onUp": "touchend"
+            };
     }
     else{
         this.onDown = EditorMode.onMouseDown;
         this.onMove = EditorMode.onMouseMove;
+        this.event_strings = {
+            "onDown": "mousedown",
+            "onMove": "mousemove",
+            "onUp": "mouseup"
+            };
     }
 }
 
@@ -35,7 +53,7 @@ EditorMode.prototype.close_mode = function(){
 
 EditorMode.prototype.allEvents = function(e){
     this.tmpLast = Editor.lastEvent;
-    Editor.lastEvent = e;
+    Editor.lastEvent = e.originalEvent;
 }
 
 // Code to run for all modes with a mouse 
@@ -51,7 +69,7 @@ EditorMode.onMouseDown = function(e){
 // Code to run for all modes with a touch pad on touch
 EditorMode.onTouchStart = function(e){
     this.allEvents(e);
-    var first = event.changedTouches[0];
+    var first = e.originalEvent.changedTouches[0];
     Editor.mouse_position_prev = Editor.mouse_position;
     Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
 }
@@ -67,7 +85,7 @@ EditorMode.onMouseMove = function(e){
 // Initial actions for move with a finger
 EditorMode.onTouchMove = function(e){
     this.allEvents(e);
-    var first = event.changedTouches[0];
+    var first = e.originalEvent.changedTouches[0];
     Editor.mouse_position_prev = Editor.mouse_position;
     Editor.mouse_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
     Editor.mouse_move_distance = Vector2.Distance(Editor.mouse_position, Editor.mouse_position_prev);
@@ -110,7 +128,8 @@ EditorMode.onKeyPress = function(e){
 
 /*
     This function take an event handler and returns a new one which
-    will ignore multiple touches.
+    will ignore multiple touches. This function assumes we will be receiving a
+    jquery event.
 */
 EditorMode.mkIgnoreMultipleTouches = function(wrap_fn){
     return function(e){

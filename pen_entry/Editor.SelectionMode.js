@@ -3,6 +3,8 @@ This file contains events handlers that are used in Selection modes (Box/Stroke)
 of Min
 */
 
+SelectionMode.prototype = new EditorMode();
+
 function SelectionMode(){
     $("#bounding_box").hammer({
         transform: true,
@@ -25,6 +27,7 @@ function SelectionMode(){
     this.moveSegmentsFromMove =
     $.proxy(SelectionMode.moveSegmentsFromMoveBase, this);
     this.onUpAfterMove = $.proxy(SelectionMode.onUpAfterMoveBase, this);
+    this.touchAndHold = $.proxy(SelectionMode.touchAndHold, this);
 
     if(Modernizr.touch){
         this.onDownSegmentsSelected =
@@ -32,7 +35,6 @@ function SelectionMode(){
     }
 }
 
-SelectionMode.prototype = new EditorMode();
 
 SelectionMode.prototype.init_mode = function(){
     console.log("SelectionMode init_mode");
@@ -49,17 +51,17 @@ SelectionMode.prototype.close_mode = function(){
     this.onPinchStart).off("ontransform gesturechange",
     this.onPinch).off("ontransformend gestureend", this.onPinchEnd);
 
-    $("#equation_canvas").off("mousedown touchstart",
+    $("#equation_canvas").off(this.event_strings.onDown,
     this.onDownSegmentsSelected);
 }
 
 /*
     If touch and hold is happening, unbind the events.
 */
-SelectionMode.prototype.touchAndHold = function(e){
-    var eq_canv = $("#equation_canvas").off("mouseup touchend",
-    this.onUpAfterMove).off("mousemove touchmove",
-    this.beginMovingSegmentsFromMove).off("mousedown touchstart",
+SelectionMode.touchAndHold = function(e){
+    var eq_canv = $("#equation_canvas").off(this.event_strings.onUp,
+    this.onUpAfterMove).off(this.event_strings.onMove,
+    this.beginMovingSegmentsFromMove).off(this.event_strings.onDown,
     this.onDownSegmentsSelected);
 
     SelectionMode.onDoubleClick(e);
@@ -86,6 +88,7 @@ SelectionMode.onPinchStart = function(e){ // e is a Hammer.js event
     
     // TODO: Bind/unbind the touchstart function to prevent that behavior from
     // happening here. Rebind in onPinchEnd.
+    $("#equation_canvas").off("touchstart", this.onDownSegmentsSelected);
 }
 
 SelectionMode.onPinch = function(e){ 
@@ -150,9 +153,9 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             Editor.touchAndHoldTimeout, e);
 
             console.log("Set timeout: " + this.timeoutID);
-            $("#equation_canvas").one("touchmove mousemove",
+            $("#equation_canvas").one(this.event_strings.onMove,
             this.beginMovingSegmentsFromMove);
-            $("#equation_canvas").one("touchend mouseup", this.onUpAfterMove);
+            $("#equation_canvas").one(this.event_strings.onUp, this.onUpAfterMove);
         }
         // reselect
         else
@@ -176,9 +179,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             // selecting none
             else
             {
-                $("#equation_canvas").off("touchstart mousedown",
-                this.onDownSegmentsSelected);
-
                 // TODO: This if can probably go after finishing stroke select
                 if(Editor.selection_method == "Stroke")
                 {
@@ -193,10 +193,11 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
 
                     // Go back to whatever selection type we were using
                     console.log("no segments anymore");
-                    $("#equation_canvas").on("touchstart mousedown",
+                    $("#equation_canvas").on(this.event_strings.onDown,
                     Editor.current_mode.onDownNoSelectedSegments);
                 }
-                $("#equation_canvas").off("touchstart mousedown",
+
+                $("#equation_canvas").off(this.event_strings.onDown,
                 this.onDownSegmentsSelected);
             }
             RenderManager.render();
@@ -233,7 +234,7 @@ SelectionMode.beginMovingSegmentsFromMove = function(e){
     Editor.state = EditorState.MovingSegments;
     Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
     Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
-    $("#equation_canvas").on("mousemove touchmove", this.moveSegmentsFromMove);
+    $("#equation_canvas").on(this.event_strings.onMove, this.moveSegmentsFromMove);
 }
 
 // Awkward name, try to change this later
@@ -296,11 +297,11 @@ SelectionMode.onUpAfterMoveBase = function(e){
     window.clearTimeout(this.timeoutID);
 
     // We're done moving for now, so make sure these events aren't bound
-    $("#equation_canvas").off("touchmove mousemove", this.moveSegmentsFromMove);
-    $("#equation_canvas").off("touchmove mousemove",
+    $("#equation_canvas").off(this.event_strings.onMove, this.moveSegmentsFromMove);
+    $("#equation_canvas").off(this.event_strings.onMove,
     this.beginMovingSegmentsFromMove);
 
-    $("#equation_canvas").on("touchstart mousedown",
+    $("#equation_canvas").on(this.event_strings.onDown,
     this.onDownSegmentsSelected);
 
     // RLAZ: delete strokes if cursor moves out of the window.
@@ -309,8 +310,8 @@ SelectionMode.onUpAfterMoveBase = function(e){
 
     var theEvent = e;
     var offSet = 10;
-    if(e.type == "touchend") {
-        theEvent = event.changedTouches[0];
+    if(e.originalEvent.type == "touchend") {
+        theEvent = e.originalEvent.changedTouches[0];
     }
 
     /*
