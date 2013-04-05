@@ -1772,7 +1772,9 @@ Editor.search = function(e)
     case 'David\'s Math Search':
         url = 'http://saskatoon.cs.rit.edu:9001/?query=';
         break;
-
+    case 'Wikipedia':
+        url = 'http://en.wikipedia.org/wiki/Special:Search/';
+        break;
     default:
         /* Currently NIST DLMF is the default (first list item) */
         url = 'http://dlmf.nist.gov/search/search?q=';
