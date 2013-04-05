@@ -187,7 +187,25 @@ Editor.setup_events = function()
         bb.hammer.ontransform = Editor.onPinch;
         bb.hammer.ontransformend = Editor.onPinchEnd;
     }
-    
+   
+    // Clear the search text
+    var clearValue = function(e){
+            this.value =  "";
+    }
+    // Reset the search text to the default if nothing is there
+    var resetValue = function(e){
+            if(this.value  == ""){
+               this.value = Editor.defaultSearchText;
+               $(this).one("focus", clearValue);
+            }
+
+    }
+
+    // Set default search text
+    $("#tex_result").prop("value", this.defaultSearchText).one("focus",
+    clearValue).on("blur", resetValue);
+
+
     // Select the pen tool
     Editor.button_states[Buttons.Pen].enabled = true;
 
