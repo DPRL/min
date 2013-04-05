@@ -129,6 +129,7 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
     SelectionMode.prototype.onDown.call(this, e);
     console.log("Selected!!");
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
+    $("#equation_canvas").on(this.event_strings.onUp, this.onUpAfterMove);
     // check for resizing
     // TODO: make this an event on just the bb handles. 
     if(click_edge != -1)
@@ -228,9 +229,9 @@ SelectionMode.moveSegments = function(previous, current){
 // This method has to be called once to start the mouse movement.
 // It then binds the method to use from then on
 SelectionMode.beginMovingSegmentsFromMove = function(e){
-    SelectionMode.prototype.onMove.call(this, e);
     // Clear the timeout so the menu doesn't appear
     window.clearTimeout(this.timeoutID);
+    SelectionMode.prototype.onMove.call(this, e);
     Editor.state = EditorState.MovingSegments;
     Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
     Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
@@ -330,68 +331,68 @@ SelectionMode.onUpAfterMoveBase = function(e){
      */
     
     // Continue moving if there is momentum
-    // var recent = Editor.moveQueue.slice(-1)[0];
-    // var oldest = Editor.moveQueue.slice(0, 1)[0]
-    // var recent_pos = recent.y;
-    // var oldest_pos = oldest.y; 
-    // var recent_ts = recent.x.timeStamp;
-    // var oldest_ts = oldest.x.timeStamp;
-    // var delta_T = recent_ts - oldest_ts;
-    // 
-    // var deltas = Vector2.Subtract(recent_pos, oldest_pos);
-    // var distance = Vector2.Distance(recent_pos, oldest_pos);
-    // // velocity in each dimension
-    // var velocity = new Vector2(Math.max(Math.min(deltas.x/delta_T, 1), -1),
-    //                            Math.max(Math.min(deltas.y/delta_T, 1), -1));
-    // var duration = Math.max(velocity.x, velocity.y) * 2000;
-    // velocity = Vector2.Multiply(10, velocity);
+    var recent = Editor.moveQueue.slice(-1)[0];
+    var oldest = Editor.moveQueue.slice(0, 1)[0]
+    var recent_pos = recent.y;
+    var oldest_pos = oldest.y; 
+    var recent_ts = recent.x.timeStamp;
+    var oldest_ts = oldest.x.timeStamp;
+    var delta_T = recent_ts - oldest_ts;
+    
+    var deltas = Vector2.Subtract(recent_pos, oldest_pos);
+    var distance = Vector2.Distance(recent_pos, oldest_pos);
+    // velocity in each dimension
+    var velocity = new Vector2(Math.max(Math.min(deltas.x/delta_T, 1), -1),
+                               Math.max(Math.min(deltas.y/delta_T, 1), -1));
+    var duration = Math.max(velocity.x, velocity.y) * 2000;
+    velocity = Vector2.Multiply(10, velocity);
 
-    // console.log("velocity outside: " + velocity);
-    // var box_momentum = function(step, duration, velocity, position, lastStepTime){
-    //     if(duration < 0 || step < 0)
-    //         return;
+    console.log("velocity outside: " + velocity);
+    var box_momentum = function(step, duration, velocity, position, lastStepTime){
+        if(duration < 0 || step < 0)
+            return;
 
-    //     var now = new Date();
-    //     var stepDuration = now.getTime() - lastStepTime.getTime();
-    //     var new_velocity = Vector2.Multiply(step * 1/10, velocity);
+        var now = new Date();
+        var stepDuration = now.getTime() - lastStepTime.getTime();
+        var new_velocity = Vector2.Multiply(step * 1/10, velocity);
 
-    //     var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
-    //     
-    //     SelectionMode.moveSegments(position, new_pos);
-    //     Editor.current_action.add_new_transforms(Editor.selected_segments);
-    //     RenderManager.render();
-    //     
-    //     if(new_pos.x > Editor.canvas_width || new_pos.x < 0
-    //        || new_pos.y > Editor.canvas_height || new_pos.y < 0){
-    //         /*
-    //           Users will expect that when they undo, the
-    //           object will both be undeleted and move to the
-    //           starting position. Use a composite action to
-    //           achieve this.
-    //         */
-    //         console.log("Deleting.");
-    //         var action = new CompositeAction();
+        var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
+        
+        SelectionMode.moveSegments(position, new_pos);
+        Editor.current_action.add_new_transforms(Editor.selected_segments);
+        RenderManager.render();
+        
+        if(new_pos.x > Editor.canvas_width || new_pos.x < 0
+           || new_pos.y > Editor.canvas_height || new_pos.y < 0){
+            /*
+              Users will expect that when they undo, the
+              object will both be undeleted and move to the
+              starting position. Use a composite action to
+              achieve this.
+            */
+            console.log("Deleting.");
+            var action = new CompositeAction();
 
-    //         // Delete the segments that were thrown off the screen
-    //         var del_action = new DeleteSegments(Editor.selected_segments);
-    //         del_action.Apply();
-    //         Editor.clearSelectedSegments();
+            // Delete the segments that were thrown off the screen
+            var del_action = new DeleteSegments(Editor.selected_segments);
+            del_action.Apply();
+            Editor.clearSelectedSegments();
 
-    //         // Create a composite object and register it with the Editor
-    //         action.add_action(Editor.current_action);
-    //         Editor.add_action(action);
-    //         action.add_action(del_action);
+            // Create a composite object and register it with the Editor
+            action.add_action(Editor.current_action);
+            Editor.add_action(action);
+            action.add_action(del_action);
 
-    //         return;
-    //     }
-    //     window.setTimeout(box_momentum, 15, step - 1, duration - stepDuration, new_velocity, new_pos, now);
-    //     
-    // }
-    // if(distance > 100){
-    //     console.log("Editor state: " + Editor.state);
-    //     window.setTimeout(box_momentum, 15, 10, duration, velocity, recent_pos, new Date());
-    //     return;
-    // }
+            return;
+        }
+        window.setTimeout(box_momentum, 15, step - 1, duration - stepDuration, new_velocity, new_pos, now);
+        
+    }
+    if(distance > 100){
+        console.log("Editor state: " + Editor.state);
+        window.setTimeout(box_momentum, 15, 10, duration, velocity, recent_pos, new Date());
+        return;
+    }
 
     // ipad: touchend occurs when finger physically leaves the screen.
     if (theEvent.pageX < offSet || theEvent.pageX > canvasDims.right - offSet ||
