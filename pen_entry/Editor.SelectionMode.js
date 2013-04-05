@@ -57,7 +57,7 @@ SelectionMode.prototype.close_mode = function(){
     If touch and hold is happening, unbind the events.
 */
 SelectionMode.prototype.touchAndHold = function(e){
-    $("#equation_canvas").off("mouseup touchend",
+    var eq_canv = $("#equation_canvas").off("mouseup touchend",
     this.onUpAfterMove).off("mousemove touchmove",
     this.beginMovingSegmentsFromMove).off("mousedown touchstart",
     this.onDownSegmentsSelected);
@@ -123,6 +123,7 @@ SelectionMode.onPinchEnd = function(e){
 }
 
 SelectionMode.onDownSegmentsSelectedBase = function(e){    
+    SelectionMode.prototype.onDown.call(this, e);
     console.log("Selected!!");
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
     // check for resizing
@@ -167,7 +168,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                     Editor.add_selected_segment(segment);
                 }
                 Editor.state = EditorState.SegmentsSelected;
-
                
                 this.timeoutID = window.setTimeout(this.touchAndHoldTimeout,
                 Editor.touchAndHoldTimeout, e);
@@ -186,9 +186,15 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                     Editor.start_rect_selection = Editor.mouse_position.clone();
                     Editor.end_rect_selection  = Editor.mouse_position.clone();
                     Editor.state = EditorState.RectangleSelecting;    
+
+                    // Go back to whatever selection type we were using
+                    console.log("no segments anymore");
+                    $("#equation_canvas").on("touchstart mousedown",
+                    Editor.current_mode.onDownNoSelectedSegments);
                 }
                 $("#equation_canvas").off("touchstart mousedown",
-                this.mouseDownSegmentsSelected);
+                this.onDownSegmentsSelected);
+                console.log("off");
             }
             RenderManager.render();
         }
