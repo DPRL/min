@@ -181,6 +181,8 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             {
                 $("#equation_canvas").off(this.event_strings.onDown,
                 this.onDownSegmentsSelected);
+                $("#equation_canvas").off(this.event_strings.onUp,
+                this.onUpAfterMove);
 
                 // TODO: This if can probably go after finishing stroke select
                 if(Editor.selection_method == "Stroke")
@@ -195,7 +197,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                     Editor.state = EditorState.RectangleSelecting;    
 
                     // Go back to whatever selection type we were using
-                    console.log("no segments anymore");
                     $("#equation_canvas").on(this.event_strings.onDown,
                     Editor.current_mode.onDownNoSelectedSegments);
                 }
