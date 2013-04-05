@@ -179,6 +179,9 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             // selecting none
             else
             {
+                $("#equation_canvas").off(this.event_strings.onDown,
+                this.onDownSegmentsSelected);
+
                 // TODO: This if can probably go after finishing stroke select
                 if(Editor.selection_method == "Stroke")
                 {
@@ -197,8 +200,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                     Editor.current_mode.onDownNoSelectedSegments);
                 }
 
-                $("#equation_canvas").off(this.event_strings.onDown,
-                this.onDownSegmentsSelected);
             }
             RenderManager.render();
         }
@@ -300,9 +301,6 @@ SelectionMode.onUpAfterMoveBase = function(e){
     $("#equation_canvas").off(this.event_strings.onMove, this.moveSegmentsFromMove);
     $("#equation_canvas").off(this.event_strings.onMove,
     this.beginMovingSegmentsFromMove);
-
-    $("#equation_canvas").on(this.event_strings.onDown,
-    this.onDownSegmentsSelected);
 
     // RLAZ: delete strokes if cursor moves out of the window.
     var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();

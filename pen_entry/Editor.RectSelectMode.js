@@ -60,9 +60,10 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
         // screen and then trigger it if it isn't. 
         if(Modernizr.touch)
             this.onDownSegmentsSelected(e);
-        else
+        else{
             $("#equation_canvas").trigger(this.event_strings.onDown,
             e.originalEvent);
+        }
     }
     else // We are rectangle selecting
     {
