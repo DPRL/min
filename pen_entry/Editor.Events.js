@@ -248,7 +248,7 @@ Editor.onMouseMove = function(e)
             console.log("skipping beginning!");
         case EditorState.MovingSegments:
             //SelectionMode.moveSegmentsFromMouseMove(e);
-            console.log("skipping move!");
+            //console.log("skipping move!");
             break;            
         case EditorState.Resizing:
             /*
