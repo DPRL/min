@@ -47,12 +47,13 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
         Editor.add_action(new TransformSegments(Editor.selected_segments));
         Editor.state = EditorState.SegmentsSelected;
 
+        // Bind events for segments selected, then trigger so that we can
+        // transition straight to a move if we like
         $("#equation_canvas").off("touchstart mousedown", 
         this.onDownNoSelectedSegments);
         $("#equation_canvas").on("touchstart mousedown",
-        this.onDownSegmentsSelected);
-
-        this.onDownSegmentsSelected(e);
+        this.onDownSegmentsSelected).trigger("touchstart mousedown", e);
+        
     }
     else // We are rectangle selecting
     {

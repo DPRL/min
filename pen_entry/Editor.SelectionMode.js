@@ -176,6 +176,10 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             // selecting none
             else
             {
+                $("#equation_canvas").off("touchstart mousedown",
+                this.onDownSegmentsSelected);
+
+                // TODO: This if can probably go after finishing stroke select
                 if(Editor.selection_method == "Stroke")
                 {
                     Editor.previous_stroke_position = Editor.mouse_position.clone();
@@ -194,7 +198,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                 }
                 $("#equation_canvas").off("touchstart mousedown",
                 this.onDownSegmentsSelected);
-                console.log("off");
             }
             RenderManager.render();
         }
