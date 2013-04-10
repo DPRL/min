@@ -31,6 +31,11 @@ StrokeSelectMode.prototype.close_mode = function(){
     $("#equation_canvas").css("cursor", "default");
     $("#equation_canvas").off(this.event_strings.onDown,
     this.onDownNoSelectedSegments);
+
+    // CMS: TODO: When switching between stroke/rect - we should leave the
+    // selected segments
+    Editor.clear_selected_segments();
+    RenderManager.render();
 }
 
 /*
