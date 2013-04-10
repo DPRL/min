@@ -202,7 +202,6 @@ SelectionMode.resizeSegmentsOnMoveBase = function(e){
 
 SelectionMode.onDownSegmentsSelectedBase = function(e){    
     SelectionMode.prototype.onDown.call(this, e);
-    console.log("Selected!!");
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
     $("#equation_canvas").one(this.event_strings.onUp, this.onUpAfterMove);
     // check for resizing
@@ -222,7 +221,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
         // check translate
         if(Editor.selected_bb.point_collides(Editor.mouse_position))
         {
-            console.log("translating");
             Editor.add_action(new TransformSegments(Editor.selected_segments));
             Editor.moveQueue = new BoundedQueue(Editor.moveQueueLength);
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
@@ -230,7 +228,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             this.timeoutID = window.setTimeout(this.touchAndHold,
             Editor.touchAndHoldTimeout, e);
 
-            console.log("Set timeout: " + this.timeoutID);
             $("#equation_canvas").one(this.event_strings.onMove,
             this.beginMovingSegmentsFromMove);
         }
