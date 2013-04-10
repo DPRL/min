@@ -255,67 +255,7 @@ Editor.onMouseMove = function(e)
             TODO: Figure out where to put this and how to recognize when
             a resize if happening without the EditorState. Event on bb handles?
             */
-            var offset = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
-            var bb = Editor.original_bb;
-            var anchor;
-            
-            switch(Editor.grabbed_edge)
-            {
-                // top edge
-            case 0:
-                offset.x = 0.0;
-                offset.y *= -1.0;
-                anchor = new Vector2(bb.mins.x, bb.maxs.y);
-                break;
-                // top right corner
-            case 1:
-                offset.y *= -1.0;
-                anchor = new Vector2(bb.mins.x, bb.maxs.y);
-                break;
-                // right edge
-            case 2:
-                offset.y = 0.0;
-                anchor = bb.mins;
-                break;
-                // bottom right corner
-            case 3:
-                anchor = bb.mins;
-                break;
-                // bottom edge
-            case 4:
-                anchor = new Vector2(bb.maxs.x, bb.mins.y);
-                offset.x = 0.0;
-                break;
-                // bottom left corner
-            case 5:
-                anchor = new Vector2(bb.maxs.x, bb.mins.y);
-                offset.x *= -1.0;
-                break;
-                // left edge
-            case 6:
-                anchor = bb.maxs
-                offset.x *= -1.0;
-                offset.y = 0.0;
-                break;
-                // top left corner
-            case 7:
-                offset.x *= -1.0;
-                offset.y *= -1.0;
-                anchor = bb.maxs
-                break; 
-            }
-            Editor.resize_offset.Add(offset);
-            var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
-            
-            var scale = new Vector2((Editor.resize_offset.x / bb_size.x) + 1.0, (Editor.resize_offset.y / bb_size.y) + 1.0);
-            
-            if((isNaN(scale.x) || isNaN(scale.y)) == false && (scale.x == 0.0 || scale.y == 0) == false)
-            {
-                for(var k = 0; k < Editor.selected_segments.length; k++)
-                    Editor.selected_segments[k].resize(anchor, scale);
-                Editor.update_selected_bb();
-                RenderManager.render();
-            }
+            console.log("skipping resize!");
             break;
             
         }

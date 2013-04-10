@@ -21,17 +21,23 @@ function SelectionMode(){
     this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
     
     this.onDownSegmentsSelected =
-    $.proxy(SelectionMode.onDownSegmentsSelectedBase, this);
+        $.proxy(SelectionMode.onDownSegmentsSelectedBase, this);
     this.beginMovingSegmentsFromMove =
-    $.proxy(SelectionMode.beginMovingSegmentsFromMove, this);
+        $.proxy(SelectionMode.beginMovingSegmentsFromMove, this);
     this.moveSegmentsFromMove =
-    $.proxy(SelectionMode.moveSegmentsFromMoveBase, this);
+        $.proxy(SelectionMode.moveSegmentsFromMoveBase, this);
     this.onUpAfterMove = $.proxy(SelectionMode.onUpAfterMoveBase, this);
     this.touchAndHold = $.proxy(SelectionMode.touchAndHold, this);
+    this.resizeSegmentsOnMove = $.proxy(SelectionMode.resizeSegmentsOnMoveBase,
+        this);
 
     if(Modernizr.touch){
         this.onDownSegmentsSelected =
-        EditorMode.mkIgnoreMultipleTouches(this.onDownSegmentsSelected);
+            EditorMode.mkIgnoreMultipleTouches(this.onDownSegmentsSelected);
+        this.moveSegmentsFromMove =
+            EditorMode.mkIgnoreMultipleTouches(this.moveSegmentsFromMove);
+        this.resizeSegmentsOnMove =
+            EditorMode.mkIgnoreMultipleTouches(this.resizeSegmentsOnMove);
     }
 }
 
@@ -125,13 +131,78 @@ SelectionMode.onPinchEnd = function(e){
     Editor.moveQueue = null;
 }
 
+SelectionMode.resizeSegmentsOnMoveBase = function(e){
+    SelectionMode.prototype.onMove.call(this, e);
+    var offset = Vector2.Subtract(Editor.mouse_position, Editor.mouse_position_prev);
+    var bb = Editor.original_bb;
+    var anchor;
+
+    switch(Editor.grabbed_edge)
+    {
+        // top edge
+        case 0:
+            offset.x = 0.0;
+            offset.y *= -1.0;
+            anchor = new Vector2(bb.mins.x, bb.maxs.y);
+            break;
+            // top right corner
+        case 1:
+            offset.y *= -1.0;
+            anchor = new Vector2(bb.mins.x, bb.maxs.y);
+            break;
+            // right edge
+        case 2:
+            offset.y = 0.0;
+            anchor = bb.mins;
+            break;
+            // bottom right corner
+        case 3:
+            anchor = bb.mins;
+            break;
+            // bottom edge
+        case 4:
+            anchor = new Vector2(bb.maxs.x, bb.mins.y);
+            offset.x = 0.0;
+            break;
+            // bottom left corner
+        case 5:
+            anchor = new Vector2(bb.maxs.x, bb.mins.y);
+            offset.x *= -1.0;
+            break;
+            // left edge
+        case 6:
+            anchor = bb.maxs
+                offset.x *= -1.0;
+            offset.y = 0.0;
+            break;
+            // top left corner
+        case 7:
+            offset.x *= -1.0;
+            offset.y *= -1.0;
+            anchor = bb.maxs;
+            break;
+    }
+    Editor.resize_offset.Add(offset);
+    var bb_size = Vector2.Subtract(bb.maxs, bb.mins);
+
+    var scale = new Vector2((Editor.resize_offset.x / bb_size.x) + 1.0, (Editor.resize_offset.y / bb_size.y) + 1.0);
+
+    if((isNaN(scale.x) || isNaN(scale.y)) == false && (scale.x == 0.0 || scale.y == 0) == false)
+    {
+        for(var k = 0; k < Editor.selected_segments.length; k++)
+            Editor.selected_segments[k].resize(anchor, scale);
+        Editor.update_selected_bb();
+        RenderManager.render();
+    }
+}
+
 SelectionMode.onDownSegmentsSelectedBase = function(e){    
     SelectionMode.prototype.onDown.call(this, e);
     console.log("Selected!!");
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
     $("#equation_canvas").one(this.event_strings.onUp, this.onUpAfterMove);
     // check for resizing
-    // TODO: make this an event on just the bb handles. 
+    // CMS: TODO?: make this an event on just the bb handles. 
     if(click_edge != -1)
     {
         Editor.add_action(new TransformSegments(Editor.selected_segments));
@@ -139,6 +210,8 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
         Editor.grabbed_edge = click_edge;
         Editor.resize_offset = new Vector2(0,0);
         Editor.original_bb = Editor.selected_bb.clone();
+        $("#equation_canvas").on(this.event_strings.onMove,
+        this.resizeSegmentsOnMove);
     }
     else
     {
@@ -308,9 +381,10 @@ SelectionMode.onUpAfterMoveBase = function(e){
     window.clearTimeout(this.timeoutID);
 
     // We're done moving for now, so make sure these events aren't bound
-    $("#equation_canvas").off(this.event_strings.onMove, this.moveSegmentsFromMove);
     $("#equation_canvas").off(this.event_strings.onMove,
-    this.beginMovingSegmentsFromMove);
+    this.moveSegmentsFromMove).off(this.event_strings.onMove,
+    this.beginMovingSegmentsFromMove).off(this.event_strings.onMove,
+    this.resizeSegmentsOnMove);
 
     // RLAZ: delete strokes if cursor moves out of the window.
     var canvasDims = document.getElementById('equation_canvas').getBoundingClientRect();
@@ -417,7 +491,6 @@ SelectionMode.onUpAfterMoveBase = function(e){
         Editor.state = EditorState.SegmentsSelected;
         Editor.current_action.add_new_transforms(Editor.selected_segments);
     }
-
 }
 
 SelectionMode.onKeyPress = function(e){
