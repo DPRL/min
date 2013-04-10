@@ -50,6 +50,7 @@ SelectionMode.prototype.init_mode = function(){
     $("#bounding_box").hammer().on("ontransformstart gesturestart",
     this.onPinchStart).on("ontransform gesturechange",
     this.onPinch).on("ontransformend gestureend", this.onPinchEnd);
+    $(document).on("keypress", SelectionMode.onKeyPress);
 }
 
 SelectionMode.prototype.close_mode = function(){
@@ -59,6 +60,7 @@ SelectionMode.prototype.close_mode = function(){
 
     $("#equation_canvas").off(this.event_strings.onDown,
     this.onDownSegmentsSelected);
+    $(document).off("keypress", SelectionMode.onKeyPress);
 }
 
 /*
@@ -127,8 +129,6 @@ SelectionMode.onPinchEnd = function(e){
     Editor.update_selected_bb();
     RenderManager.render();
 
-    // Restore the previous state
-    Editor.changeState(EditorState.SegmentsSelected);
     Editor.moveQueue = null;
 
     $("#equation_canvas").on(this.event_strings.onDown,
