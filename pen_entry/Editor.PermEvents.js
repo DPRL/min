@@ -52,68 +52,9 @@ PermEvents.setup_toolbar = function(){
  
 }
 
-PermEvents.setup_touch_events = function(){
-    // Touch events for tablet interfaces
-    // TODO: Remove this when all the touchstart/touchend stuff is moved
-    Editor.canvas_div.addEventListener("touchstart", Editor.onMouseDown, true);
-    Editor.canvas_div.addEventListener("touchend", Editor.onMouseUp, true);
-
-    // Image upload
-    document.getElementById("upload_image").addEventListener("touchstart", 
-                                                             function(event)
-                                                             {
-                                                                 Editor.button_states[Buttons.UploadImage].setTouched(true);
-                                                             }, true);
-    document.getElementById("upload_image").addEventListener("touchend", 
-                                                             function(event)
-                                                             {
-                                                                 Editor.button_states[Buttons.UploadImage].setTouched(false);
-                                                             }, true);
-    
-    // undo
-    document.getElementById("undo").addEventListener("touchstart", 
-                                                     function(event)
-                                                     {
-                                                         Editor.button_states[Buttons.Undo].setTouched(true);
-                                                     }, true);
-    document.getElementById("undo").addEventListener("touchend", 
-                                                     function(event)
-                                                     {
-                                                         Editor.button_states[Buttons.Undo].setTouched(false);
-                                                     }, true);
-    
-    // redo
-    document.getElementById("redo").addEventListener("touchstart",
-                                                     function(event)
-                                                     {
-                                                         Editor.button_states[Buttons.Redo].setTouched(true);
-                                                     }, true);
-    document.getElementById("redo").addEventListener("touchend",
-                                                     function(event)
-                                                     {
-                                                         Editor.button_states[Buttons.Redo].setTouched(false);
-                                                     }, true);    
-
-    // align/append
-    document.getElementById("align").addEventListener("touchstart",
-                                                      function(event)
-                                                      {
-                                                          Editor.button_states[Buttons.Align].setTouched(true);
-                                                      }, true);
-    document.getElementById("align").addEventListener("touchend",
-                                                      function(event)
-                                                      {
-                                                          Editor.button_states[Buttons.Align].setTouched(false);
-                                                      }, true);    
-    
-
-}
-
 PermEvents.setup_window = function(){
     window.addEventListener("resize", Editor.fit_to_screen, true);
     window.addEventListener("orientationchange", Editor.fit_to_screen, false);
-    window.addEventListener("mousemove", Editor.onMouseMove, true);
-    window.addEventListener("touchmove", Editor.onMouseMove, true);
 
     // Prevent problem behavior from the iPad canvas.
     Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
@@ -124,9 +65,3 @@ PermEvents.setup_document = function(){
     $(document).keydown(Editor.mapCanvasBackspace);
 }
 
-PermEvents.setup_canvas = function(){
-    // Canvas bindings.
-    Editor.canvas_div.addEventListener("mousedown", Editor.onMouseDown, true);
-    Editor.canvas_div.addEventListener("mouseup", Editor.onMouseUp, true);
-    Editor.canvas_div.addEventListener("dblclick", Editor.onDoubleClick, true);
-}
