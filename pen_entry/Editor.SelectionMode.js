@@ -129,7 +129,7 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
     SelectionMode.prototype.onDown.call(this, e);
     console.log("Selected!!");
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
-    $("#equation_canvas").on(this.event_strings.onUp, this.onUpAfterMove);
+    $("#equation_canvas").one(this.event_strings.onUp, this.onUpAfterMove);
     // check for resizing
     // TODO: make this an event on just the bb handles. 
     if(click_edge != -1)
@@ -198,7 +198,15 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
 
                     // Go back to whatever selection type we were using
                     $("#equation_canvas").on(this.event_strings.onDown,
-                    Editor.current_mode.onDownNoSelectedSegments);
+                    Editor.current_mode.onDownNoSelectedSegments)
+
+                    if(Modernizr.touch){
+                        Editor.current_mode.onDownNoSelectedSegments(e);
+                    }
+                    else{
+                        $("#equation_canvas").trigger(this.event_strings.onDown,
+                        e);
+                    }
                 }
 
             }
@@ -358,7 +366,6 @@ SelectionMode.onUpAfterMoveBase = function(e){
         var new_velocity = Vector2.Multiply(step * 1/10, velocity);
 
         var new_pos = Vector2.Add(position, Vector2.Multiply(stepDuration/4, velocity));
-        
         SelectionMode.moveSegments(position, new_pos);
         Editor.current_action.add_new_transforms(Editor.selected_segments);
         RenderManager.render();
@@ -372,6 +379,12 @@ SelectionMode.onUpAfterMoveBase = function(e){
               achieve this.
             */
             console.log("Deleting.");
+            // Need to bind the movement functions for no selection
+            // Can't use 'this' because of setTimeout's behavior
+            $("#equation_canvas").off(Editor.current_mode.event_strings.onDown,
+            Editor.current_mode.onDownSegmentsSelected).on(Editor.current_mode.event_strings.onDown,
+            Editor.current_mode.onDownNoSelectedSegments);
+
             var action = new CompositeAction();
 
             // Delete the segments that were thrown off the screen
