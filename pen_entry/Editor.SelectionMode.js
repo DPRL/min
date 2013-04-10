@@ -6,19 +6,6 @@ of Min
 SelectionMode.prototype = new EditorMode();
 
 function SelectionMode(){
-    $("#bounding_box").hammer({
-        transform: true,
-        scale_threshold: .1,
-        drag_min_distance: 0,
-        // These events need to be suppressed because sometimes they would fire during
-        // a transform and prevent ontransformend from being run, leaving the editor in a bad state.
-        drag: false,
-        swipe: false
-    });
-
-    this.onPinchStart = $.proxy(SelectionMode.onPinchStart, this);
-    this.onPinch = $.proxy(SelectionMode.onPinch, this);
-    this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
     
     this.onDownSegmentsSelected =
         $.proxy(SelectionMode.onDownSegmentsSelectedBase, this);
@@ -32,6 +19,19 @@ function SelectionMode(){
         this);
 
     if(Modernizr.touch){
+        $("#bounding_box").hammer({
+            transform: true,
+            scale_threshold: .1,
+            drag_min_distance: 0,
+            // These events need to be suppressed because sometimes they would fire during
+            // a transform and prevent ontransformend from being run, leaving the editor in a bad state.
+            drag: false,
+            swipe: false
+            });
+
+        this.onPinchStart = $.proxy(SelectionMode.onPinchStart, this);
+        this.onPinch = $.proxy(SelectionMode.onPinch, this);
+        this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
         this.onDownSegmentsSelected =
             EditorMode.mkIgnoreMultipleTouches(this.onDownSegmentsSelected);
         this.moveSegmentsFromMove =
