@@ -50,6 +50,23 @@ PermEvents.setup_toolbar = function(){
         }, true);
     }
  
+    // Setup default search box text  
+    // Clear the search text
+    var clearValue = function(e){
+        this.value =  "";
+    }
+    // Reset the search text to the default if nothing is there
+    var resetValue = function(e){
+        if(this.value  == ""){
+            this.value = Editor.defaultSearchText;
+            $(this).one("focus", clearValue);
+        }
+
+    }
+
+    // Set default search text
+    $("#tex_result").prop("value", Editor.defaultSearchText).one("focus",
+            clearValue).on("blur", resetValue);
 }
 
 PermEvents.setup_window = function(){
