@@ -80,6 +80,10 @@ SelectionMode.touchAndHold = function(e){
 //   - onPinch
 //   - onPinchEnd
 SelectionMode.onPinchStart = function(e){ // e is a Hammer.js event
+    // TODO: Bind/unbind the touchstart function to prevent that behavior from
+    // happening here. Rebind in onPinchEnd.
+    $("#equation_canvas").off("touchstart", this.onDownSegmentsSelected);
+
     // Need to clear the moveQueue so that there is no velocity at the end of the touch
     Editor.add_action(new TransformSegments(Editor.selected_segments));
     Editor.state = EditorState.PinchResizing;
@@ -92,9 +96,6 @@ SelectionMode.onPinchStart = function(e){ // e is a Hammer.js event
 
     this.anchor = new Vector2(bb.mins.x  + bb_size.x / 2, bb.mins.y + bb_size.y / 2);
     
-    // TODO: Bind/unbind the touchstart function to prevent that behavior from
-    // happening here. Rebind in onPinchEnd.
-    $("#equation_canvas").off("touchstart", this.onDownSegmentsSelected);
 }
 
 SelectionMode.onPinch = function(e){ 
@@ -129,6 +130,9 @@ SelectionMode.onPinchEnd = function(e){
     // Restore the previous state
     Editor.changeState(EditorState.SegmentsSelected);
     Editor.moveQueue = null;
+
+    $("#equation_canvas").on(this.event_strings.onDown,
+        this.onDownSegmentsSelected);
 }
 
 SelectionMode.resizeSegmentsOnMoveBase = function(e){
