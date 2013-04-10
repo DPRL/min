@@ -47,6 +47,23 @@ Editor.setup_events = function()
     PermEvents.setup_toolbar();
     PermEvents.setup_document();
     
+    // Clear the search text
+    var clearValue = function(e){
+            this.value =  "";
+    }
+    // Reset the search text to the default if nothing is there
+    var resetValue = function(e){
+            if(this.value  == ""){
+               this.value = Editor.defaultSearchText;
+               $(this).one("focus", clearValue);
+            }
+
+    }
+
+    // Set default search text
+    $("#tex_result").prop("value", this.defaultSearchText).one("focus",
+    clearValue).on("blur", resetValue);
+
     // Select the pen tool
     Editor.button_states[Buttons.Pen].enabled = true;
 
@@ -729,7 +746,9 @@ Editor.search = function(e)
     case 'David\'s Math Search':
         url = 'http://saskatoon.cs.rit.edu:9001/?query=';
         break;
-
+    case 'Wikipedia':
+        url = 'http://en.wikipedia.org/wiki/Special:Search/';
+        break;
     default:
         /* Currently NIST DLMF is the default (first list item) */
         url = 'http://dlmf.nist.gov/search/search?q=';
