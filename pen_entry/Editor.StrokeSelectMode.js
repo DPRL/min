@@ -27,6 +27,7 @@ StrokeSelectMode.prototype.init_mode = function(){
 }
 
 StrokeSelectMode.prototype.close_mode = function(){
+    SelectionMode.prototype.close_mode.call(this);
     $("#equation_canvas").css("cursor", "default");
     $("#equation_canvas").off(this.event_strings.onDown,
     this.onDownNoSelectedSegments);
@@ -52,7 +53,6 @@ StrokeSelectMode.onDownNoSelectedSegmentsBase = function(e){
         Editor.add_action(new TransformSegments(Editor.selected_segments));
         Editor.state = EditorState.SegmentsSelected;
 
-        //setTimeout(function() { Editor.touchAndHold(e); }, Editor.touchAndHoldTimeout);
     } else
     {
         Editor.state = EditorState.StrokeSelecting;
@@ -86,8 +86,13 @@ StrokeSelectMode.onMoveNoSelectedSegmentsBase = function(e){
 StrokeSelectMode.onUpNoSelectedSegmentsBase = function(e){
     StrokeSelectMode.prototype.onUp.call(this, e);
     $("#equation_canvas").off(this.event_strings.onMove, this.onMoveNoSelectedSegments);
-    if(Editor.selected_segments.length > 0)
+    if(Editor.selected_segments.length > 0) {
         Editor.state = EditorState.SegmentsSelected;
+        $("#equation_canvas").on(this.event_strings.onDown,
+            this.onDownSegmentsSelected).off(this.event_strings.onDown,
+            this.onDownNoSelectedSegments);
+    }
+        
     else
         Editor.state = EditorState.ReadyToStrokeSelect;
     RenderManager.clear_canvas();

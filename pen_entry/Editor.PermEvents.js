@@ -106,8 +106,6 @@ PermEvents.setup_touch_events = function(){
                                                           Editor.button_states[Buttons.Align].setTouched(false);
                                                       }, true);    
     
-    // Prevent problem behavior from the iPad canvas.
-    Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
 
 }
 
@@ -117,6 +115,8 @@ PermEvents.setup_window = function(){
     window.addEventListener("mousemove", Editor.onMouseMove, true);
     window.addEventListener("touchmove", Editor.onMouseMove, true);
 
+    // Prevent problem behavior from the iPad canvas.
+    Editor.canvas_div.setAttribute("ontouchmove", "event.preventDefault();");
 }
 
 PermEvents.setup_document = function(){

@@ -273,22 +273,21 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                     Editor.end_rect_selection  = Editor.mouse_position.clone();
                     Editor.state = EditorState.RectangleSelecting;    
 
-                    // Go back to whatever selection type we were using
-                    $("#equation_canvas").on(this.event_strings.onDown,
-                    Editor.current_mode.onDownNoSelectedSegments)
-
-                    if(Modernizr.touch){
-                        Editor.current_mode.onDownNoSelectedSegments(e);
-                    }
-                    else{
-                        $("#equation_canvas").trigger(this.event_strings.onDown,
-                        e);
-                    }
                 }
 
+                // Go back to whatever selection type we were using
+                $("#equation_canvas").on(this.event_strings.onDown,
+                        Editor.current_mode.onDownNoSelectedSegments);
+
+                if(Modernizr.touch){
+                    Editor.current_mode.onDownNoSelectedSegments(e);
+                }
+                else{
+                    $("#equation_canvas").trigger(this.event_strings.onDown, e);
+                }
             }
-            RenderManager.render();
         }
+        RenderManager.render();
     }
 }
 
