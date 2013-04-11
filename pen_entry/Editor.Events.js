@@ -1769,7 +1769,7 @@ Editor.search = function(e)
     case 'Google':
         url='http://www.google.com/search?q=';
         break;
-    case 'David\'s Math Search':
+    case 'Tangent':
         url = 'http://saskatoon.cs.rit.edu:9001/?query=';
         break;
     case 'Wikipedia':
