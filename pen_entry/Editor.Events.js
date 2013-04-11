@@ -1732,7 +1732,7 @@ Editor.search = function(e)
     var searchString = "";
     var engineType = document.getElementById("engineSelector").value;
 	var keywords = document.getElementById("tex_result").value;
-    var searchString = Editor.slider.expressions.join(' ');
+    var searchString = Editor.slider.getCurrentExpression();
 	if (keywords) {
 		searchString += ' ' + keywords;
 	}

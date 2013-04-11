@@ -15,6 +15,14 @@ function Slider() {
 }
 
 /*
+ * Gets the TeX expression for the current slide.
+ */
+Slider.prototype.getCurrentExpression = function() {
+	var curSlide = this.slider_div.data('args').currentSlideNumber - 1;
+	return this.expressions[curSlide];
+}
+
+/*
  * Changes the selectors below the slider.  Called whenever a slide changes.
  */
 Slider.prototype.slideChange = function(args) {
