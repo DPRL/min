@@ -460,7 +460,7 @@ div.text_segment {
  * In the entry mode. */
 div.segment_input_set {
 	position: absolute;
-	color: rgba(255, 255, 255, 0.7);
+	color: rgba(172, 172, 172, 0.84);
 
 	background-color: rgba(126, 174, 235, 0.46);
 	/* background-color: rgba(50, 50, 50, 0.6);  */
