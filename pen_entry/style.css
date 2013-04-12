@@ -428,49 +428,32 @@ div.bb_handle {
 	z-index: 1001;
 }
 
-/* This controls the appearance of overlaid recognition results. */
-div.segment_set {
+/* This controls style rules common to all overlaid recognition results */
+.segment_set, .text_segment, .segment_input_set {
 	position: absolute;
-	/*background-color: rgba(50, 50, 50, 0.6); */
-	color: rgba(255, 255, 255, 0.7);
-	background-color: rgba(168, 99, 99, 0.41); 
-	z-index: 999;
+	color: rgba(172, 172, 172, 0.84);
 	text-align: center;
 	font-family: 'Ubuntu', sans-serif;
 	padding: 0;
 	-moz-user-select: none;
-
 	cursor: pointer;
+	z-index: 999;
 }
 
 /* This controls the appearance of overlaid recognition results. */
-div.text_segment {
-	position: absolute;
-	color: rgba(255, 255, 255, 0.7);
-	z-index: 999;
-	text-align: center;
-	font-family: 'Ubuntu', sans-serif;
-	padding: 0;
-	-moz-user-select: none;
+.segment_set {
+	background-color: rgba(168, 99, 99, 0.41); 
+}
 
-	cursor: pointer;
+/* This controls the appearance of overlaid recognition results. */
+.text_segment {
 }
 
 /* This controls the appearance of overlaid recognition results. 
  * In the entry mode. */
-div.segment_input_set {
-	position: absolute;
-	color: rgba(172, 172, 172, 0.84);
-
+.segment_input_set {
 	background-color: rgba(126, 174, 235, 0.46);
 	/* background-color: rgba(50, 50, 50, 0.6);  */
-	z-index: 999;
-	text-align: center;
-	font-family: 'Ubuntu', sans-serif;
-	padding: 0;
-	-moz-user-select: none;
-
-	cursor: pointer;
 }
 
 
