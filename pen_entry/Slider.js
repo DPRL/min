@@ -90,7 +90,11 @@ Slider.prototype.resizeToFit = function() {
 	var currentSlideNumber = this.slider_div.data('args').currentSlideNumber - 1;
 	var NumberofSlides =  $('.iosSlider').data('args').data.numberOfSlides;
 	var currentSlide  = $('.slider').children()[currentSlideNumber];
-	var slideWidth = currentSlide.getElementsByClassName('MathJax_Display')[0].scrollWidth;
+	try{
+		var slideWidth = currentSlide.getElementsByClassName('MathJax_Display')[0].scrollWidth;
+	}catch(e){
+		return;
+	}
 	var slideHeight = currentSlide.getElementsByClassName('MathJax_Display')[0].scrollHeight;
 	var containerWidth =  $('.slider').width();
 	var containerHeight =  $('.slider').height();
