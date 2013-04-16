@@ -10,6 +10,7 @@ function RectSelectMode(){
     this.onDownNoSelectedSegments = $.proxy(RectSelectMode.onDownNoSelectedSegmentsBase, this);
     this.onMoveNoSelectedSegments = $.proxy(RectSelectMode.onMoveNoSelectedSegmentsBase, this);
     this.onUpNoSelectedSegments = $.proxy(RectSelectMode.onUpNoSelectedSegmentsBase, this);
+    this.displaySelectionTool = RectSelectMode.rectSelectTool.bind(this);
 
     if(Modernizr.touch){
         this.onDownNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onDownNoSelectedSegments);
@@ -116,7 +117,7 @@ RectSelectMode.onUpNoSelectedSegmentsBase = function(e){
 /*
     This method sets the interface right interface to the right state.
  */
-RectSelectMode.prototype.displaySelectionTool = function()
+RectSelectMode.rectSelectTool = function()
 {
     // DEBUG: was Buttons.Box -> Buttons.Rectangle
     if(Editor.button_states[Buttons.Rectangle].enabled == false)

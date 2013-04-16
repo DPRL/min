@@ -6,6 +6,7 @@ function StrokeSelectMode(){
     this.onDownNoSelectedSegments = $.proxy(StrokeSelectMode.onDownNoSelectedSegmentsBase, this);
     this.onMoveNoSelectedSegments = $.proxy(StrokeSelectMode.onMoveNoSelectedSegmentsBase, this);
     this.onUpNoSelectedSegments = $.proxy(StrokeSelectMode.onUpNoSelectedSegmentsBase, this);
+    this.displaySelectionTool = StrokeSelectMode.strokeSelectTool.bind(this);
 
     if(Modernizr.touch){
         this.onDownNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onDownNoSelectedSegments);
@@ -33,7 +34,7 @@ StrokeSelectMode.prototype.close_mode = function(){
     this.onDownNoSelectedSegments);
 
     // CMS: TODO: When switching between stroke/rect - we should leave the
-    // selected segments
+    // selected segments 
     Editor.clear_selected_segments();
     RenderManager.render();
 }
@@ -103,3 +104,27 @@ StrokeSelectMode.onUpNoSelectedSegmentsBase = function(e){
     RenderManager.clear_canvas();
 }
 
+StrokeSelectMode.strokeSelectTool = function()
+{
+    if(Editor.button_states[Buttons.Stroke].enabled == false)
+        return;
+    Editor.clearButtonOverlays();
+    Editor.button_states[Buttons.Stroke].setSelected(true);
+    
+    // CMS: All this state stuff should be cut out; it should be the responsibility
+    // of the caller performing the switch to do this
+    //switch(Editor.state)
+    //{
+    //case EditorState.MiddleOfText:
+    //    Editor.current_text.finishEntry();
+    //    if(Editor.current_action.toString() == "EditText")
+    //        Editor.current_action.set_current_text(Editor.current_text.text);
+    //    else if(Editor.current_action.toString() == "AddSegments")
+    //        Editor.current_action.buildSegmentXML();                
+    //    Editor.current_text = null;
+    //}
+
+    RenderManager.regColorOCRbbs();
+    RenderManager.render();
+    Editor.selection_method = "Stroke";
+}

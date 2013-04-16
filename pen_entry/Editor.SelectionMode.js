@@ -17,6 +17,7 @@ function SelectionMode(){
     this.touchAndHold = $.proxy(SelectionMode.touchAndHold, this);
     this.resizeSegmentsOnMove = $.proxy(SelectionMode.resizeSegmentsOnMoveBase,
         this);
+    this.onDoubleClick = SelectionMode.onDoubleClick.bind(this);
 
     if(Modernizr.touch){
         $("#bounding_box").hammer({
@@ -38,6 +39,8 @@ function SelectionMode(){
             EditorMode.mkIgnoreMultipleTouches(this.moveSegmentsFromMove);
         this.resizeSegmentsOnMove =
             EditorMode.mkIgnoreMultipleTouches(this.resizeSegmentsOnMove);
+        this.onDoubleClick =
+            EditorMode.mkIgnoreMultipleTouches(this.onDoubleClick);
     }
 }
 
@@ -72,7 +75,7 @@ SelectionMode.touchAndHold = function(e){
     this.beginMovingSegmentsFromMove).off(this.event_strings.onDown,
     this.onDownSegmentsSelected);
 
-    SelectionMode.onDoubleClick(e);
+    this.onDoubleClick(e);
 }
 
 //-----------------
@@ -361,18 +364,16 @@ SelectionMode.onDoubleClick = function(e){
             }
         }
 
-        // Depending on selection, relabel or re-segment.
-        // var prev_state;
-        // if(Editor.selection_method == "Stroke")
-        //     prev_state = EditorState.StrokeSelecting;
-        // else
-        //     prev_state = EditorState.RectangleSelecting;
-        // 
-        // Editor.state = EditorState.SegmentsSelected;
         if (singleObject > 0) {
-            Editor.relabel(Editor.current_mode.displaySelectionTool);
+            Editor.relabel(function(){
+                Editor.current_mode.displaySelectionTool();
+                $("#equation_canvas").on(this.event_strings.onDown,
+                    this.onDownSegmentsSelected);
+            }.bind(this));
         } else {
             Editor.groupTool();
+            $("#equation_canvas").on(this.event_strings.onDown,
+                    this.onDownSegmentsSelected);
         }
     
 }
