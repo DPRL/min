@@ -35,7 +35,7 @@ div.equation_editor {
 	position: absolute;
 	left: 0px;
 	top: 0px;
-	font-family: 'Ubuntu', sans-serif;
+	font-family: "Times New Roman", serif;
 	
 }
 /* used for any buttons to change mouse cursor*/
@@ -84,7 +84,6 @@ div#rr_close_button {
 	font-size: 18px;
 	/*color: #FFF; /*color: #FFE;*/
 	 -webkit-text-stroke: 0.75px #000;
-	font-family: 'Ubuntu', sans-serif;
 	
 	/* gradient */
 	background: #FF5C49; /* old browsers */
@@ -178,7 +177,6 @@ div.symbol_cell {
 	border-style: solid;
 	border-width: 0px 1px 1px 0px;
 	font-size: 40px;
-	font-family: 'Ubuntu', sans-serif;
 }
 
 div#rr_category_list {
@@ -197,7 +195,6 @@ div.category_row {
 	border-style: solid;
 	border-width: 0px 0px 1px 0px;
 	max-height: 20%;
-	font-family: 'Ubuntu', sans-serif;
 }
 
 div.equation_canvas {
@@ -431,9 +428,8 @@ div.bb_handle {
 /* This controls style rules common to all overlaid recognition results */
 .segment_set, .text_segment, .segment_input_set {
 	position: absolute;
-	color: rgba(172, 172, 172, 0.84);
+	color: rgba(121, 121, 121, 0.97);
 	text-align: center;
-	font-family: 'Ubuntu', sans-serif;
 	padding: 0;
 	-moz-user-select: none;
 	cursor: pointer;
@@ -472,7 +468,7 @@ svg.pen_stroke {
 	-webkit-transform-origin: 0 0;
 	font-size: 72px;
 	line-height:0.85em;
-	color: black;
+	color: rgba(121, 121, 121, 0.97);
 	position: absolute;
 	z-index: 1000;
 	top: 0;
