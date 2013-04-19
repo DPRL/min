@@ -466,6 +466,8 @@ svg.pen_stroke {
 
 .textDiv {
 	-webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    transform-origin: 0 0;
 	font-size: 72px;
 	line-height:0.85em;
 	color: rgba(121, 121, 121, 0.97);
