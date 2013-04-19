@@ -1,10 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0 plus SVG 1.1//EN" "http://www.w3.org/2002/04/xhtml-math-svg/xhtml-math-svg.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-		<title>InkML Viewer</title>
+		<title>CROHME InkML Viewer</title>
 		
 		<style type="text/css">
 			
@@ -12,13 +12,13 @@
 			div.button
 			{
 				display: inline-block;
-				font-size: 18px;
+				font-size: 16px;
 				padding: 5px;
 				border-style: solid;
 				border-color: #888;
 				border-width: 1px;
 				border-radius: 3px;
-				width: 200px;
+				width: 100px;
 				
 				background: rgb(234,234,234); /* Old browsers */
 				background: -moz-linear-gradient(top, rgba(234,234,234,1) 0%, rgba(202,202,202,1) 50%, rgba(237,237,237,1) 100%); /* FF3.6+ */
@@ -46,13 +46,13 @@
 			div.button_down
 			{
 				display: inline-block;
-				font-size: 18px;
+				font-size: 16px;
 				padding: 5px;
 				border-style: solid;
 				border-color: #888;
 				border-width: 1px;
 				border-radius: 3px;			
-				width: 200px;
+				width: 100px;
 			
 				background: rgb(238,228,198); /* Old browsers */
 				background: -moz-linear-gradient(top, rgba(238,228,198,1) 0%, rgba(223,206,153,1) 50%, rgba(239,229,201,1) 100%); /* FF3.6+ */
@@ -72,7 +72,7 @@
 			svg
 			{
 				border: 1px dashed black;
-				padding: 20px;
+				padding: 10px;
 			}
 
 			path
@@ -116,7 +116,7 @@
 			{				
 				margin-left: auto;
 				margin-right: auto;				
-				border: 1px dashed black;
+				/*border: 1px dashed black;*/
 				padding: 10px;
 			}
 			
@@ -144,8 +144,8 @@
 				font-size: 200%;
 			}
 			
-			div#content {
-			}
+			/*div#content {
+			}*/
 			
 			div#classification_div {
 				background-color: #eee;
@@ -210,27 +210,31 @@
 	<body style="text-align:center;">		
 		
 		<div id="content">
-			<h1>ICDAR 2011 inkml Renderer</h1>
-			
-			<p style="text-align:left;margin-left:30px;margin-right:30px;">
-			Upload multiple inkml files to render them below (requires a browser which supports MathML and the FileReader JavaScript Object like Firefox).  Navigate through the list via the arrow keys or the prev/next buttons.
-			</p>
-			
-			<form id="inkml_form" action="">
-				<div><input type="file" id="inkml_input" multiple=""/></div>
+			<!-- <h1>
+				CROHME InkML Visualizer</h1> -->
+
+				<form id="inkml_form" action="">
+					<div align="left"><b>CROHME InkML Viewer </b> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="file" id="inkml_input" multiple=""/> 
+						<A HREF="http://www.cs.rit.edu/~dprl"><img align="left" width="220" src="http://www.cs.rit.edu/~dprl/images/DPRL_Logo_Option_01.png"/></A><br/>&nbsp;&nbsp;&nbsp;&nbsp;
+						<i>by Richard Pospesel and Kevin Hart</i>
+					</div>
 			</form>
-			
-			<hr style="margin: 30px;"/>
-			
+
+			<p style="text-align:left;margin-left:30px;margin-right:30px;">
+			This web page allows you to view handwritten math expressions stored in the CROHME InkML file format.
+					<b>Instructions:</b>
+					Upload one or more CROHME InkML files using the "Browse" button.  Navigate through the expressions using the <b>left/ right arrow keys</b> or the prev/next buttons.  <b>Click on the stroke image</b> to "replay" the drawing of an expression.  <b>Hover the mouse over a stroke</b> to see samples and highlight the correponding symbol in the rendered MathML.  
+					</p>
+
+
 			<div style="margin: 30px;">
-				<div id="prev_button" class="button" onselectstart="return false;" onmousedown="this.className='button_down'; event.preventDefault()" onmouseup="this.className='button'" onmouseout="this.className='button'">Previous</div>
-				<div id="current_index" style="width: 200px; font-size: 20px;display: inline-block;"></div>
+				<div id="prev_button" class="button" onselectstart="return false;" onmousedown="this.className='button_down'; event.preventDefault()" onmouseup="this.className='button'" onmouseout="this.className='button'">Prev</div>
+				<div id="current_index" style="width: 150px; font-size: 20px;display: inline-block;"></div>
 				<div id="next_button" class="button" onselectstart="return false;" onmousedown="this.className='button_down'; event.preventDefault()" onmouseup="this.className='button'" onmouseout="this.className='button'">Next</div>
 			</div>
+		</div>
 			
-			<div id="table_div">
-			</div>
-		
+				
 			<!--
 			<table  id="attribute_table">
 				<tr>
@@ -244,16 +248,18 @@
 				</tr>
 			</table>
 			-->
-		
+			<!-- Laying out the dynamic data -->
+			<div id="table_div">
+			</div> 
 			<div id="ink_div" style="margin: 30px;">
 			</div>
 		
-			<div id="chart_div" sstyle="margin: 30px;">
-			</div>			
-			
-			
-		</div>
+			<!-- <div id="chart_div" style="margin: 30px;">
+			</div>			-->
 		
+
+
+					
 		<script type="text/javascript" src="string_builder.js"/>
 		<script type="text/javascript" src="base64.js"/>
 		<script type="text/javascript" src="code.js"/>   

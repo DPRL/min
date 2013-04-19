@@ -36,8 +36,7 @@ mathml_dictionary = new Array();
 mathml_dictionary['\\alpha'] = '\u03B1';
 mathml_dictionary['\\beta'] = '\u03B2';
 mathml_dictionary['\\gamma'] = '\u03B3';
-mathml_dictionary['phi'] = '\u03C6';
-mathml_dictionary['\\phi'] = mathml_dictionary['phi'];
+mathml_dictionary['\\phi'] = '\u03C6';
 mathml_dictionary['\\pi'] = '\u03C0';
 mathml_dictionary['\\theta'] = '\u03B8';
 mathml_dictionary['\\infty'] = '\u221E';
@@ -51,13 +50,90 @@ mathml_dictionary['\\cos'] = "cos";
 mathml_dictionary['\\tan'] = "tan";
 mathml_dictionary['\\ldots'] = '\u2026';
 mathml_dictionary['\\neq'] = '\u2260';
-mathml_dictionary['\\leq'] = '\u2264';
-mathml_dictionary['\\lt'] = '\u003c';
+mathml_dictionary['\\lt'] = '\u003C';
+mathml_dictionary['\\gt'] = '\u003E';
 mathml_dictionary['\\geq'] = '\u2265';
+mathml_dictionary['\\leq'] = '\u2264';
 mathml_dictionary['\\rightarrow'] = '\u2192';
 mathml_dictionary['\\lim'] = "lim";
 mathml_dictionary['\\int'] = '\u222b';
 mathml_dictionary['\\sqrt'] = '\u221A';
+
+mathml_dictionary['alpha'] = '\u03B1';
+mathml_dictionary['beta'] = '\u03B2';
+mathml_dictionary['gamma'] = '\u03B3';
+mathml_dictionary['phi'] = '\u03C6';
+mathml_dictionary['pi'] = '\u03C0';
+mathml_dictionary['theta'] = '\u03B8';
+mathml_dictionary['infty'] = '\u221E';
+mathml_dictionary['pm'] = '\u00b1';
+mathml_dictionary['div'] = '\u00f7';
+mathml_dictionary['times'] = '\u00d7';
+mathml_dictionary['sum'] = '\u03A3';
+mathml_dictionary['log'] = "log";
+mathml_dictionary['sin'] = "sin";
+mathml_dictionary['cos'] = "cos";
+mathml_dictionary['tan'] = "tan";
+mathml_dictionary['ldots'] = '\u2026';
+mathml_dictionary['neq'] = '\u2260';
+mathml_dictionary['lt'] = '\u003C';
+mathml_dictionary['gt'] = '\u003E';
+mathml_dictionary['geq'] = '\u2265';
+mathml_dictionary['leq'] = '\u2264';
+mathml_dictionary['rightarrow'] = '\u2192';
+mathml_dictionary['lim'] = "lim";
+mathml_dictionary['int'] = '\u222b';
+mathml_dictionary['sqrt'] = '\u221A';
+
+
+
+// Additions for CROHME 2013
+mathml_dictionary['\\lambda'] = '\u03BB';
+mathml_dictionary['\\omega'] = '\u03C9';
+mathml_dictionary['\\theta'] = '\u03B8';
+mathml_dictionary['\\sigma'] = '\u03C3';
+mathml_dictionary['\\mu'] = '\u03BC';
+mathml_dictionary['\\Delta'] = '\u0394';
+
+mathml_dictionary['\\ast'] = '\u002A';
+mathml_dictionary['\\wedge'] = '\u2227';
+mathml_dictionary['\\vee'] = '\u2228';
+mathml_dictionary['\\supset'] = '\u2283';
+mathml_dictionary['\\subset'] = '\u2282';
+mathml_dictionary['\\forall'] = '\u2200';
+
+mathml_dictionary['\\exists'] = '\u2203';
+mathml_dictionary['\\partial'] = '\u2202';
+mathml_dictionary['\\cup'] = '\u222A';
+mathml_dictionary['\\cap'] = '\u2229';
+mathml_dictionary['\\in'] = '\u2208';
+mathml_dictionary['\\cdots'] = '\u22EF';
+mathml_dictionary['\\prime'] = '\u2032';
+
+
+mathml_dictionary['lambda'] = '\u03BB';
+mathml_dictionary['omega'] = '\u03C9';
+mathml_dictionary['theta'] = '\u03B8';
+mathml_dictionary['sigma'] = '\u03C3';
+mathml_dictionary['mu'] = '\u03BC';
+mathml_dictionary['Delta'] = '\u0394';
+
+mathml_dictionary['ast'] = '\u002A';
+mathml_dictionary['wedge'] = '\u2227';
+mathml_dictionary['vee'] = '\u2228';
+mathml_dictionary['supset'] = '\u2283';
+mathml_dictionary['subset'] = '\u2282';
+mathml_dictionary['forall'] = '\u2200';
+
+mathml_dictionary['exists'] = '\u2203';
+mathml_dictionary['partial'] = '\u2202';
+mathml_dictionary['cup'] = '\u222A';
+mathml_dictionary['cap'] = '\u2229';
+mathml_dictionary['in'] = '\u2208';
+mathml_dictionary['cdots'] = '\u22EF';
+mathml_dictionary['prime'] = '\u2032';
+
+
 
 /** 
 	Performs a Deep Copy of the mathml, and rebuilds each element in the proper namespace 
@@ -353,7 +429,7 @@ trace_nodes_to_svg = function(trace_nodes, global_index)
 	
 	// calculate scale factor to use
 	mean_distance /= total_points;
-	var scale = 6.0 / mean_distance;
+	var scale = 2.0 / mean_distance;
 	
 	// translation of points
 	var trans_x = -min_x; 
@@ -518,29 +594,29 @@ build_attribute_table = function(annotation_nodes, filename, mathml)
 		result_table.setAttribute("id", "attribute_table");
 	
 	// header
-	var top_row = document.createElement("tr");
-		var th_attributes = document.createElement("th");
-			th_attributes.setAttribute("colspan", 2);
-			th_attributes.innerHTML = "Attributes";
-		top_row.appendChild(th_attributes);
-		var th_mathml = document.createElement("th");
-			th_mathml.innerHTML = "MathML";
-		top_row.appendChild(th_mathml);
-		var th_classification = document.createElement( "th" );
-			th_classification.innerHTML = "Classification";
-		top_row.appendChild( th_classification );
-	result_table.appendChild(top_row);
+	//var top_row = document.createElement("tr");
+	//	var th_attributes = document.createElement("th");
+	//		th_attributes.setAttribute("colspan", 2);
+	//		th_attributes.innerHTML = "Attributes";
+	//	var th_mathml = document.createElement("th");
+	//		th_mathml.innerHTML = "MathML";
+	//	top_row.appendChild(th_mathml);
+	//	top_row.appendChild(th_attributes);
+
+		// RZ 2013: Removing this for space.
+		//var th_classification = document.createElement( "th" );
+		//	th_classification.innerHTML = "Classification";
+		//top_row.appendChild( th_classification );
+	//result_table.appendChild(top_row);
 	
 	// second row
 	var second_row = document.createElement("tr");
 		var td_attr_name = document.createElement("td");
 			td_attr_name.setAttribute("class", "attribute_name");
-			td_attr_name.innerHTML = "filename:";
-		second_row.appendChild(td_attr_name);
+			td_attr_name.innerHTML = "<b>File:</b>";
 		var td_attr_value = document.createElement("td");
 			td_attr_value.setAttribute("class", "attribute_value");
 			td_attr_value.innerHTML = filename;
-		second_row.appendChild(td_attr_value);
 		var td_mathml = document.createElement("td");
 			td_mathml.setAttribute("rowspan", annotation_nodes.length);
 			var div_math_div = document.createElement("div");
@@ -548,14 +624,20 @@ build_attribute_table = function(annotation_nodes, filename, mathml)
 				div_math_div.appendChild(mathml);
 			td_mathml.appendChild(div_math_div);
 			//result_table.math_jax = div_math_div;	
+			//
+		
+		second_row.appendChild(td_attr_name);
+		second_row.appendChild(td_attr_value);
 		second_row.appendChild(td_mathml);
 		
-		var td_classification = document.createElement("td");
+		// R.Z. 2013: Removing for space.
+		/* var td_classification = document.createElement("td");
 			td_classification.setAttribute("rowspan", annotation_nodes.length);
 			var div_classification_div = document.createElement("div");
 				div_classification_div.setAttribute("id", "classification_div");
 			td_classification.appendChild(div_classification_div);
 		second_row.appendChild(td_classification);
+		*/
 		
 	result_table.appendChild(second_row);
 	
@@ -636,6 +718,9 @@ on_xml_load = function(event)
 	for(var k = 0; k < file_list.length; k++)
 	{
 		var file = file_list[k];
+		filename_list[k] = file.name;
+		//console.log("FN:" + file.name);
+		
 		var r = new FileReader();
 		r.onload = function(e)
 		{
@@ -646,22 +731,24 @@ on_xml_load = function(event)
 			
 			// get our math node
 			var math_nodes = xmlDOC.getElementsByTagName("math");
+
 			if(math_nodes.length == 0)
 			{
-				alert(filename_list[e.currentTarget.index] + "does not contain any math nodes");
+				alert(file.name + " does not contain MathML.");
 				return;
 			}
-			var mathml = convert_math_nodes(math_nodes.item(0));
+			mathml = convert_math_nodes(math_nodes.item(0));
 			mathml_list[e.currentTarget.index] = mathml;
 
 			// build annotations
 			annotation_nodes = xmlDOC.getElementsByTagName("annotation");
 			if(annotation_nodes.length == 0)
 			{
-				alert(filename_list[e.currentTarget.index] + "does not contain any annotation nodes");
+				alert(filename_list[e.currentTarget.index] + " does not contain any annotation nodes.");
 				return;				
 			}
 			var table = build_attribute_table(annotation_nodes, filename_list[e.currentTarget.index], mathml);
+				//filename_list[e.currentTarget.index], mathml);
 			attribute_table_list[e.currentTarget.index] = table;
 			
 			//  build our mapping from trace ids to xml:ids in mathml
@@ -714,7 +801,6 @@ on_xml_load = function(event)
 			*/
 		}
 		r.index = k;
-		filename_list[k] = file.fileName;
 		r.readAsText(file);
 	}
 }
@@ -723,6 +809,16 @@ on_xml_load = function(event)
 update_view = function()
 {
 	console.log(current_index);
+	
+	// insert the svg
+	var svg = svg_list[current_index];
+	var ink_div = document.getElementById("ink_div");
+	while(ink_div.hasChildNodes())
+		ink_div.removeChild(ink_div.lastChild);
+	if(svg != null)
+		ink_div.appendChild(svg);
+
+
 	// insert table
 	var table = attribute_table_list[current_index];
 	var table_div = document.getElementById("table_div");
@@ -736,13 +832,7 @@ update_view = function()
 	table.math_jax.appendChild(mathml_list[current_index]);
 	//MathJax.Hub.Queue(["Typeset",MathJax.Hub,table.math_jax]);
 	*/
-	// insert the svg
-	var svg = svg_list[current_index];
-	var ink_div = document.getElementById("ink_div");
-	while(ink_div.hasChildNodes())
-		ink_div.removeChild(ink_div.lastChild);
-	if(svg != null)
-		ink_div.appendChild(svg);
+
 	
 	// cancel animation and reset strokes
 	clearTimeout(animation_timeout);
@@ -756,7 +846,7 @@ update_view = function()
 			p.setAttribute("stroke-dashoffset", 0);
 		}
 	}
-	document.getElementById("current_index").innerHTML = (current_index + 1) + " / " + total_inkmls;
+	document.getElementById("current_index").innerHTML = (current_index + 1) + " of " + total_inkmls;
 	
 	
 }
