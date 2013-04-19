@@ -18,6 +18,7 @@ function SelectionMode(){
     this.resizeSegmentsOnMove = $.proxy(SelectionMode.resizeSegmentsOnMoveBase,
         this);
     this.onDoubleClick = SelectionMode.onDoubleClick.bind(this);
+    this.onUpAfterResize = SelectionMode.onUpAfterResizeBase.bind(this);    
 
     if(Modernizr.touch){
         $("#bounding_box").hammer({
@@ -41,6 +42,8 @@ function SelectionMode(){
             EditorMode.mkIgnoreMultipleTouches(this.resizeSegmentsOnMove);
         this.onDoubleClick =
             EditorMode.mkIgnoreMultipleTouches(this.onDoubleClick);
+        this.onUpAfterResize =
+        EditorMode.mkIgnoreMultipleTouches(this.onUpAfterResize);    
     }
 }
 
@@ -206,7 +209,6 @@ SelectionMode.resizeSegmentsOnMoveBase = function(e){
 SelectionMode.onDownSegmentsSelectedBase = function(e){    
     SelectionMode.prototype.onDown.call(this, e);
     var click_edge = Editor.selected_bb.edge_clicked(Editor.mouse_position);
-    $("#equation_canvas").one(this.event_strings.onUp, this.onUpAfterMove);
     // check for resizing
     // CMS: TODO?: make this an event on just the bb handles. 
     if(click_edge != -1)
@@ -217,10 +219,12 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
         Editor.resize_offset = new Vector2(0,0);
         Editor.original_bb = Editor.selected_bb.clone();
         $("#equation_canvas").on(this.event_strings.onMove,
-        this.resizeSegmentsOnMove);
+        this.resizeSegmentsOnMove).one(this.event_strings.onUp,
+        this.onUpAfterResize);
     }
     else
     {
+        $("#equation_canvas").one(this.event_strings.onUp, this.onUpAfterMove);
         // check translate
         if(Editor.selected_bb.point_collides(Editor.mouse_position))
         {
@@ -251,7 +255,6 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                
                 this.timeoutID = window.setTimeout(this.touchAndHoldTimeout,
                 Editor.touchAndHoldTimeout, e);
-                console.log("Setting timeout: " + this.timeoutID);
             }
             // selecting none
             else
@@ -578,4 +581,15 @@ SelectionMode.onKeyPress = function(e){
             default:
         }
     }
+}
+
+SelectionMode.onUpAfterResizeBase = function(e){
+    SelectionMode.prototype.onUp.call(this, e);
+    $("#equation_canvas").off(this.event_strings.onMove,
+    this.resizeSegmentsOnMove);
+    for(var k = 0; k < Editor.selected_segments.length; k++)
+        Editor.selected_segments[k].freeze_transform();
+    Editor.current_action.add_new_transforms(Editor.selected_segments);
+    RenderManager.render();
+    Editor.resize_offset = new Vector2(0,0);
 }
