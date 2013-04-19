@@ -262,8 +262,10 @@ RenderManager.render_set_field = function(in_context_id)
                     ss_div.innerHTML = symbol;
                 else
                     ss_div.innerHTML = recognition_result.symbols[0];
-                ss_div.style.fontSize = (rect_size.y * 1.25) + "px"; // scale font up to fill more of bb
-                ss_div.style.lineHeight = rect_size.y + "px";
+
+                var min_dimension = Math.min(rect_size.y, rect_size.x);
+                ss_div.style.fontSize = (min_dimension * 1.25) + "px"; // scale font up to fill more of bb
+                ss_div.style.lineHeight = min_dimension + "px";
             }
             else {
                 // Typed characters ('SymbolSegments')

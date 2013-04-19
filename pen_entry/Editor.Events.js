@@ -707,7 +707,7 @@ Editor.search = function(e)
     var searchString = "";
     var engineType = document.getElementById("engineSelector").value;
 	var keywords = document.getElementById("tex_result").value;
-    var searchString = Editor.slider.expressions.join(' ');
+    var searchString = Editor.slider.getCurrentExpression();
 	if (keywords) {
 		searchString += ' ' + keywords;
 	}
@@ -726,11 +726,11 @@ Editor.search = function(e)
     case 'Google':
         url='http://www.google.com/search?q=';
         break;
-    case 'David\'s Math Search':
+    case 'Tangent':
         url = 'http://saskatoon.cs.rit.edu:9001/?query=';
         break;
     case 'Wikipedia':
-        url = 'http://en.wikipedia.org/wiki/Special:Search/';
+        url = 'http://en.wikipedia.org/w/index.php?title=Special%3ASearch&search=';
         break;
     default:
         /* Currently NIST DLMF is the default (first list item) */
