@@ -405,6 +405,7 @@ input.image_upload {
 
 /* MISNAMED: This is actually the selection rectangle. */
 div#bounding_box {
+    visibility: hidden;
 	position: absolute;
 	/*outline: #303030 dashed 1px;*/
 	border: 2px dashed #22D; /*dashed #333;*/
@@ -427,6 +428,19 @@ div.bb_handle {
 
 /* This controls style rules common to all overlaid recognition results */
 .segment_set, .text_segment, .segment_input_set {
+	-webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+    transform-origin: 0 0;
+    /* These are here because when we use css transforms like
+       translate/scale we can use absolute sizes and widths.
+     */
+    font-size: 1.0pt;
+    line-height: .75px;
+    width: 1px;
+    height: 1px;
+    top: 0;
+    left: 0;
+
 	position: absolute;
 	color: rgba(121, 121, 121, 0.97);
 	text-align: center;
@@ -454,6 +468,7 @@ div.bb_handle {
 
 
 div#selection_rectangle {
+    visibility: hidden;
 	position: absolute;
 	border: 2px solid #54F;				
 	z-index: 998;
