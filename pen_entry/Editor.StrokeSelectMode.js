@@ -111,7 +111,7 @@ StrokeSelectMode.strokeSelectTool = function()
     Editor.clearButtonOverlays();
     Editor.button_states[Buttons.Stroke].setSelected(true);
     
-    RenderManager.colorOCRbbs("segment_set_stroke");
+    RenderManager.colorOCRbbs("segment_stroke_select");
     RenderManager.render();
     Editor.selection_method = "Stroke";
 }

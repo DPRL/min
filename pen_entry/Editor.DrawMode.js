@@ -139,7 +139,7 @@ DrawMode.onDoubleClick = function(e){
                 Editor.add_selected_segment(Editor.segments[k]);
     }
 
-    RenderManager.colorOCRbbs("segment_set_stroke");
+    RenderManager.colorOCRbbs("segment_stroke_select");
     RenderManager.bounding_box.style.visibility = "visible";
     Editor.state = EditorState.SegmentsSelected;
     Editor.relabel();
