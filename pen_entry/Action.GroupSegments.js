@@ -3,7 +3,10 @@ GroupSegments = function(in_segments, in_new_set_id)
     this.segments = new Array();
     this.previous_set = new Array();
     this.previous_classes = new Array();
-    this.new_set_id = in_new_set_id;
+    // TODO: THIS IS A HACK PLEASE FIX THIS HACK BECAUSE IT IS A HACK
+    // Increment the set id of the merged strokes because that's what the
+    // classifier is going to do.
+    this.new_set_id = in_new_set_id + 1;
     
     for(var k = 0; k < in_segments.length; k++)
     {
@@ -20,8 +23,8 @@ GroupSegments.prototype.Undo = function()
     {
         this.segments[k].set_id = this.previous_set[k];
         this.segments[k].type_id = this.previous_classes[k];
-        console(this.segments[k].type_id);
     }
+    RenderManager.render()
 }
 
 GroupSegments.prototype.Apply = function()
@@ -30,6 +33,7 @@ GroupSegments.prototype.Apply = function()
     {
         this.segments[k].set_id = this.new_set_id;
     }
+    RenderManager.render()
 }
 
 GroupSegments.prototype.toXML = function()

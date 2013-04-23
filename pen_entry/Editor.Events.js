@@ -441,31 +441,12 @@ Editor.groupTool = function()
         var set_id = Segment.set_count++;
         Editor.add_action(new GroupSegments(Editor.selected_segments, set_id));
         
-        var to_classify = new Array();
-        for(var k = 0; k < Editor.selected_segments.length; k++)
-        {
-            var old_set_id = Editor.selected_segments[k].set_id;
-            if(to_classify.contains(old_set_id) == false)
-                to_classify.push(old_set_id);
+        for(var k = 0; k < Editor.selected_segments.length; k++) {
             Editor.selected_segments[k].set_id = set_id;
         }
 
-        // sort Editor segments by set_id
-        // insertion sort works best for nearly sorted lists
-        for(var i = 1; i < Editor.segments.length; i++)
-        {
-            var value = Editor.segments[i];
-            for(var j = i - 1; j >= 0 && Editor.segments[j].set_id > value.set_id; j--)
-                Editor.segments[j+1] = Editor.segments[j];
-            Editor.segments[j+1] = value;
-        }
         
-        // RLAZ: restored this code, so that all modified objects are
-        // reclassified.
-        to_classify.push(set_id);
-        for(var k = 0; k < to_classify.length; k++)
-            RecognitionManager.classify(to_classify[k]);
-        
+        RecognitionManager.classify(set_id);
         Editor.state = EditorState.SegmentsSelected;
     }
 }
