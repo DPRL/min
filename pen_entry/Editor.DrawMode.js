@@ -33,7 +33,7 @@ function DrawMode(){
 }
 
 DrawMode.prototype.init_mode = function(){  
-    RenderManager.editColorOCRbbs();
+    RenderManager.colorOCRbbs("segment_input_set");
     Editor.selectPenTool();
     $("#equation_canvas").css("cursor", "default");
 
@@ -138,7 +138,7 @@ DrawMode.onDoubleClick = function(e){
                 Editor.add_selected_segment(Editor.segments[k]);
     }
 
-    RenderManager.colorOCRbbs(false);
+    RenderManager.colorOCRbbs("segment_set_stroke");
     RenderManager.bounding_box.style.visibility = "visible";
     Editor.state = EditorState.SegmentsSelected;
     Editor.relabel();

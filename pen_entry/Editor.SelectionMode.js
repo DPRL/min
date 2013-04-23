@@ -50,7 +50,6 @@ function SelectionMode(){
 
 SelectionMode.prototype.init_mode = function(){
     console.log("SelectionMode init_mode");
-    RenderManager.regColorOCRbbs();
 
     // These gesture* events are iOS specific
     $("#bounding_box").hammer().on("ontransformstart gesturestart",

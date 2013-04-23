@@ -111,20 +111,7 @@ StrokeSelectMode.strokeSelectTool = function()
     Editor.clearButtonOverlays();
     Editor.button_states[Buttons.Stroke].setSelected(true);
     
-    // CMS: All this state stuff should be cut out; it should be the responsibility
-    // of the caller performing the switch to do this
-    //switch(Editor.state)
-    //{
-    //case EditorState.MiddleOfText:
-    //    Editor.current_text.finishEntry();
-    //    if(Editor.current_action.toString() == "EditText")
-    //        Editor.current_action.set_current_text(Editor.current_text.text);
-    //    else if(Editor.current_action.toString() == "AddSegments")
-    //        Editor.current_action.buildSegmentXML();                
-    //    Editor.current_text = null;
-    //}
-
-    RenderManager.regColorOCRbbs();
+    RenderManager.colorOCRbbs("segment_set_stroke");
     RenderManager.render();
     Editor.selection_method = "Stroke";
 }

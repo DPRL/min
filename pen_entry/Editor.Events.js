@@ -182,7 +182,7 @@ Editor.selectPenTool = function()
     }
 
     Editor.state = EditorState.ReadyToStroke;
-    RenderManager.editColorOCRbbs();
+    RenderManager.colorOCRbbs("segment_input_set");
     RenderManager.render();
 }
 
@@ -210,7 +210,7 @@ Editor.strokeSelectionTool = function()
     else
         Editor.state = EditorState.SegmentsSelected;
 
-    RenderManager.regColorOCRbbs();
+    RenderManager.colorOCRbbs("segment_set_stroke");
     RenderManager.render();
     Editor.selection_method = "Stroke";
 }

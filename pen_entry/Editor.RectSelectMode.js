@@ -144,7 +144,7 @@ RectSelectMode.rectSelectTool = function()
     // else
     //     Editor.state = EditorState.SegmentsSelected;
 
-    RenderManager.regColorOCRbbs();
+    RenderManager.colorOCRbbs("segment_set_rect");
     RenderManager.render();    
     //Editor.selection_method = "Rectangle";
 }
