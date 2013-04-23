@@ -27,6 +27,7 @@ function DrawMode(){
     this.onMove = $.proxy(DrawMode.onMoveBase, this);
     this.onKeyPress = $.proxy(DrawMode.onKeyPress, this);
     this.onDoubleClick = $.proxy(DrawMode.onDoubleClick, this);
+    this.selectPenTool = DrawMode.selectPenTool.bind(this);
     
     // An example of how to call a super method
     // DrawMode.prototype.onDown.call(this, e);
@@ -34,7 +35,7 @@ function DrawMode(){
 
 DrawMode.prototype.init_mode = function(){  
     RenderManager.colorOCRbbs("segment_input_set");
-    Editor.selectPenTool();
+    this.selectPenTool();
     $("#equation_canvas").css("cursor", "default");
 
     /* The 'this' variable in an event handler points to the element
@@ -181,4 +182,29 @@ DrawMode.onKeyPress = function(e){
     // Set up this event to fire and stop text input if the mouse goes down
     $(Editor.canvas_div).one('mousedown touchstart', this.stopTextInput);
 
+}
+
+DrawMode.selectPenTool = function()
+{
+    Editor.clearButtonOverlays();
+    
+    Editor.button_states[Buttons.Pen].setSelected(true);
+    Editor.clear_selected_segments();
+    Editor.current_stroke = null;
+    
+    switch(Editor.state)
+    {
+    case EditorState.MiddleOfText:
+        Editor.current_text.finishEntry();
+        if(Editor.current_action.toString() == "EditText")
+            Editor.current_action.set_current_text(Editor.current_text.text);
+        else if(Editor.current_action.toString() == "AddSegments")
+            Editor.current_action.buildSegmentXML();
+        Editor.current_text = null;
+        break;
+    }
+
+    Editor.state = EditorState.ReadyToStroke;
+    RenderManager.colorOCRbbs("segment_input_set");
+    RenderManager.render();
 }

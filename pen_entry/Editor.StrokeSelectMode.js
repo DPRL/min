@@ -21,7 +21,7 @@ StrokeSelectMode.prototype = new SelectionMode();
 
 StrokeSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this);
-    Editor.strokeSelectionTool();
+    this.displaySelectionTool();
     $("#equation_canvas").css("cursor", "crosshair");
     $("#equation_canvas").on(this.event_strings.onDown,
     this.onDownNoSelectedSegments);

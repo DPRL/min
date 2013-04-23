@@ -160,62 +160,6 @@ Editor.onKeyPress = function(e)
 // 
 //-------------------------------------------------- 
 
-// TODO: Move to initialization for draw mode
-Editor.selectPenTool = function()
-{
-    Editor.clearButtonOverlays();
-    
-    Editor.button_states[Buttons.Pen].setSelected(true);
-    Editor.clear_selected_segments();
-    Editor.current_stroke = null;
-    
-    switch(Editor.state)
-    {
-    case EditorState.MiddleOfText:
-        Editor.current_text.finishEntry();
-        if(Editor.current_action.toString() == "EditText")
-            Editor.current_action.set_current_text(Editor.current_text.text);
-        else if(Editor.current_action.toString() == "AddSegments")
-            Editor.current_action.buildSegmentXML();
-        Editor.current_text = null;
-        break;
-    }
-
-    Editor.state = EditorState.ReadyToStroke;
-    RenderManager.colorOCRbbs("segment_input_set");
-    RenderManager.render();
-}
-
-// TODO: Move functionality to StrokeSelectionMode (init)
-Editor.strokeSelectionTool = function()
-{
-    if(Editor.button_states[Buttons.Stroke].enabled == false)
-        return;
-    Editor.clearButtonOverlays();
-    Editor.button_states[Buttons.Stroke].setSelected(true);
-    
-    switch(Editor.state)
-    {
-    case EditorState.MiddleOfText:
-        Editor.current_text.finishEntry();
-        if(Editor.current_action.toString() == "EditText")
-            Editor.current_action.set_current_text(Editor.current_text.text);
-        else if(Editor.current_action.toString() == "AddSegments")
-            Editor.current_action.buildSegmentXML();                
-        Editor.current_text = null;
-    }
-    
-    if(Editor.selected_segments.length == 0)
-        Editor.state = EditorState.ReadyToStrokeSelect;
-    else
-        Editor.state = EditorState.SegmentsSelected;
-
-    RenderManager.colorOCRbbs("segment_set_stroke");
-    RenderManager.render();
-    Editor.selection_method = "Stroke";
-}
-
-
 Editor.align = function()
 {
     switch(Editor.state)
