@@ -254,6 +254,8 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                
                 this.timeoutID = window.setTimeout(this.touchAndHold,
                         Editor.touchAndHoldTimeout, e); 
+                $("#equation_canvas").one(this.event_strings.onMove,
+                        this.beginMovingSegmentsFromMove);
             }
             // selecting none
             else
