@@ -254,7 +254,13 @@ RenderManager.render_set_field = function(in_context_id)
                 else
                     ss_div.innerHTML = recognition_result.symbols[0];
 
+                // TODO: This is a HACK, use the css transforms in the future
                 var min_dimension = Math.min(rect_size.y, rect_size.x);
+                var max_dimension = (rect_size.y == min_dimension) ?
+                    rect_size.x : rect_size.y;
+                if(min_dimension < max_dimension / 2)
+                    min_dimension = max_dimension / 2;
+
                 ss_div.style.fontSize = (min_dimension * 1.25) + "px"; // scale font up to fill more of bb
                 ss_div.style.lineHeight = min_dimension + "px";
             }
