@@ -56,8 +56,7 @@ RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
         // Bind events for segments selected, then trigger so that we can
         // transition straight to a move if we like
         $("#equation_canvas").off(this.event_strings.onDown, 
-        this.onDownNoSelectedSegments);
-        $("#equation_canvas").on(this.event_strings.onDown,
+        this.onDownNoSelectedSegments).on(this.event_strings.onDown,
         this.onDownSegmentsSelected);
 
         // CMS: When testing on iOS 5, I couldn't trigger the event properly
@@ -106,8 +105,13 @@ RectSelectMode.onMoveNoSelectedSegmentsBase = function(e){
 RectSelectMode.onUpNoSelectedSegmentsBase = function(e){
     RectSelectMode.prototype.onUp.call(this, e);
     $("#equation_canvas").off(this.event_strings.onMove, this.onMoveNoSelectedSegments);
-    if(Editor.selected_segments.length > 0)
+
+    if(Editor.selected_segments.length > 0){
         Editor.state = EditorState.SegmentsSelected;
+        $("#equation_canvas").off(this.event_strings.onDown,
+        this.onDownNoSelectedSegments).on(this.event_strings.onDown,
+                this.onDownSegmentsSelected);
+    }
     else
         Editor.state = EditorState.ReadyToRectangleSelect;
     Editor.start_rect_selection = Editor.end_rect_selection = null;

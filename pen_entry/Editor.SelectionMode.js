@@ -261,8 +261,7 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             else
             {
                 $("#equation_canvas").off(this.event_strings.onDown,
-                this.onDownSegmentsSelected);
-                $("#equation_canvas").off(this.event_strings.onUp,
+                this.onDownSegmentsSelected).off(this.event_strings.onUp,
                 this.onUpAfterMove);
 
                 // TODO: This if can probably go after finishing stroke select
