@@ -232,7 +232,7 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
             
             this.timeoutID = window.setTimeout(this.touchAndHold,
-            Editor.touchAndHoldTimeout, e);
+                    Editor.touchAndHoldTimeout, e);
 
             $("#equation_canvas").one(this.event_strings.onMove,
             this.beginMovingSegmentsFromMove);
@@ -252,8 +252,8 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                 }
                 Editor.state = EditorState.SegmentsSelected;
                
-                this.timeoutID = window.setTimeout(this.touchAndHoldTimeout,
-                Editor.touchAndHoldTimeout, e);
+                this.timeoutID = window.setTimeout(this.touchAndHold,
+                        Editor.touchAndHoldTimeout, e); 
             }
             // selecting none
             else
