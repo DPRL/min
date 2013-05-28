@@ -121,6 +121,7 @@ Editor.mapCanvasBackspace = function(e)
                 // Otherwise, delete any selections.
                 e.preventDefault();
                 Editor.deleteTool();
+                $("#equation_canvas").off("keypress",Editor.current_mode.close_mode()).on("keypress", Editor.current_mode.init_mode());
                 break;
             }
         }
@@ -128,6 +129,7 @@ Editor.mapCanvasBackspace = function(e)
 
     if(e.keyCode == KeyCode.del) {
         Editor.deleteTool();
+        $("#equation_canvas").off("keypress",Editor.current_mode.close_mode()).on("keypress", Editor.current_mode.init_mode());
     }
     
 }
