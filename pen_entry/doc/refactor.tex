@@ -18,7 +18,7 @@ master branch and on http://saskatoon.cs.rit.edu/min.
 
 Min Classic by checking out the tag \verb+min_classic+ from the git repository:
 \begin{verbatim} git checkout min_classic \end{verbatim} You can checkout Min by
-using \begin{verbatim} git checkout master \end{verbatim}.
+using \begin{verbatim} git checkout master \end{verbatim}
 
 I will also make reference to 'editing modes' in both Min and Min Classic.
 When I refer to an editing mode, I am referring to a state of the editor that is
@@ -118,8 +118,7 @@ check for the touch-screen interface. Originally, we just checked the user-agent
 string to see if it had the 'iPad' in it. Modernizer provides a consistent
 interface for checking for touch-screen functionality.
 
-\subsection{TODO}
-
+\subsection*{TODO}
 Here are some things that I would like to see happen that are closely related to
 the event system refactoring.
 
@@ -195,4 +194,38 @@ the event system refactoring.
         without adding much extra information. 
 \end{description}
 
+\section*{Tips}
+\begin{description}
+    \item[Learn about prototypal inheritance] The majority of OOP languages are
+        based on classes which are then instantiated into objects which actually
+        encapsulate data and perform computations. Javascript is not one of
+        these languages. Javascript makes use of prototypal inheritance. In this
+        situation objects are created directly, and new objects are cloned from
+        these existing ones. In the new Min events' system, I make heavy use of
+        this fact. You should study what prototypal inheritance is and get a
+        sense for how Javascript does OOP.
+    \item[Learn to use 'grep'] grep is a command-line tool for searching files
+        on Unix and Unix-like systems. It allows you to search multiple files
+        for either a string or a regex. Learn to use it, the computer is better
+        than you at finding things.
+    \item[Mozilla Developer Network] The MDN is useful for virtually anything
+        having to do with designing a website. It is comprehensive and can
+        really help if you get stuck.
+    \item[Unix Tutorials] I have found these tutorials helpful in making my work
+        more pleasant: http://www.grymoire.com/Unix/ 
+        In particular I make fairly heavy use of sed in my day-to-day
+        development. It makes trivial, but tedious changes to code much
+        simpler.
+    \item[Git] Git is a tool with a steep learning curve that can also make your
+        life \emph{much} easier if you learn to use it well. I recommend these
+        sites for help:\\ 
+        http://try.github.io - An interactive tutorial for learning to use
+        Git.\\
+        http://gitready.com/ - Not so much a tutorial as a series of tips for
+        doing cool things with Git.\\
+        http://git-scm.com/book - This is a book for Git which is available for
+        free online. \\
+        'git help' - This is a way to access the Git manpages. Just run \verb+git
+        help+.
+\end{description}
 \end{document}
