@@ -1,5 +1,4 @@
 \documentclass[letterpaper]{article}
-\pagestyle{empty}
 
 \usepackage{graphicx}
 \usepackage{alltt}
@@ -150,7 +149,7 @@ the event system refactoring.
         Editor.state throughout the system.
     \item[Remove Legacy Code] There is likely some code in the Min events' system
         that could have been removed, but that I missed. 
-    \item[Consolidate Code for Keypresses] Currently we have a couple different
+    \item[Consolidate Keypress Code] Currently we have a couple different
         functions (mapCanvasBackspace, onKeyPress) that can be called to handle key-presses. We should
         consolidate these event handlers where possible and move functionality
         to more appropriate places if possible. It might also be worth
@@ -167,9 +166,13 @@ the event system refactoring.
         bind which does the same thing. We should use this method where possible
         since it will likely be a bit faster. See Editor.SelectionMode.js and
         its constructor for an example of both.
-    \item[Further Separate Event Functions in the Mode Object] It might be
+    \item[Further Separate Event Functions into Modes] It might be
         possible to further separate concerns in some of the larger functions of
         the *Mode objects even further. 
+    \item[Further Separate Event Functions into Modes] It might be
+        possible to further separate concerns in some of the larger functions of
+        the *Mode objects even further. \textbf{This task should not be a first
+        priority.}
 \end{description}
 
 \section*{Further Potential Refactors}
