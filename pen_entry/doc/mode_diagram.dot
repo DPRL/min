@@ -1,0 +1,9 @@
+
+digraph mode_graph{
+    rankdir=BT;
+    "Rectangle Selection" -> "Selection Mode" -> "Editor Mode";
+    "Stroke Selection" -> "Selection Mode";
+    "Draw Mode" -> "Editor Mode"; 
+    "Perm. Events";
+    
+}

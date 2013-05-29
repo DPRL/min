@@ -1,7 +1,10 @@
 \documentclass[letterpaper]{article}
 \pagestyle{empty}
 
+\usepackage{graphicx}
 \usepackage{alltt}
+
+\DeclareGraphicsExtensions{.png}
 
 \begin{document}
 
@@ -10,7 +13,6 @@
 \maketitle
 
 \section*{How to Read this Document}
-
 
 I will refer to the version of Min with the old events system as 'Min Classic'.
 When I make reference to just Min, I am referring to the latest version in the
@@ -86,7 +88,10 @@ additional dependent functionality one event can unbind and bind other events.
 For example, in either of the selection modes, the
 code for moving segments should only be bound/active when there are segments
 already selected. In this case, the mouseDown event binds the mouseMove event
-after it has determined that the user has just clicked a segment. 
+after it has determined that the user has just clicked a segment. The
+relationships and prototype chain of this new system are shown visually in
+Figure \ref{fig:modes}. Note that the selection modes share functionality and
+that all events have EditorMode at the top of their prototype chain.
 
 Important files in the new setup are:
 \begin{description}
@@ -111,6 +116,14 @@ Important files in the new setup are:
         selection. When a segment is selected, the events in SelectionMode take
         over.
 \end{description}
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[width=\textwidth]{mode_diagram}
+    \end{center}
+    \caption{The prototype chain of the new editor modes}
+    \label{fig:modes}
+\end{figure}
 
 \subsection*{Other Changes}
 
