@@ -156,5 +156,43 @@ the event system refactoring.
         the *Mode objects even further. 
 \end{description}
 
+\section*{Further Potential Refactors}
+
+\begin{description}
+    \item[Remove Collision Manager] The collision manager is currently used to
+        determine where on the equation\_canvas the user has clicked. For
+        example, if you look at any of the onDown base functions you will see a
+        call to the CollisionManager somewhere towards the beginning. This is
+        not an optimal use of resources, since rather than detecting if a
+        click happened on a segment, you could just bind the onclick event to
+        the segments themselves and let the browser do the work rather than
+        forcing Javascript code to do it. CollisionManager may still have some
+        use in that it helps choose which segment to select when multiple
+        segments are stacked on top of each other on the canvas. However,
+        dynamicaly setting the z-index CSS style attribute might be a better
+        choice to get this behavior. Ultimately it would make the system much
+        simpler and likely more extensible if we can eliminate the
+        CollisionManager.
+    \item[Remove RenderManager] Earlier versions of Min made use of a 'canvas'
+        element. Note that this is the \emph{type} of element, not the id of the
+        element. The problem with this is that we must manually re-render (via
+        RenderManager) when we want to update where our segments are on the
+        canvas. Not only that, but we have to re-render for \emph{every} frame
+        when we are animating moving or resizing segments. 
+        
+        In the meantime a technology called Scalable Vector Graphics (SVG) has
+        gotten widespread and mature support in modern browsers. This is a
+        better choice to use wherever possible because changes to SVG objects
+        (even animations) can be performed just by changing attributes on SVG
+        HTML elements. An advantage is that rendering is performed by the
+        browser, which (usually) has built in support for SVG. If we can change
+        all of Min to use and properly update SVG objects, we can hopefully
+        eliminate the RenderManager and be left with a system that will be
+        significantly  more responsive.
+    \item[Remove Editor.* Prefixes] Many files and objects have an Editor.*
+        prefix. While this is reasonable for global variables being stored on
+        the Editor object, in my opinion mostly just makes the names of things longer
+        without adding much extra information. 
+\end{description}
 
 \end{document}
