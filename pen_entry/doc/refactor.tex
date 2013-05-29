@@ -7,7 +7,6 @@
 
 \author{Christopher Sasarak}
 \title{Summary of Min Refactor}
-
 \maketitle
 
 \section*{How to Read this Document}
@@ -90,25 +89,25 @@ already selected. In this case, the mouseDown event binds the mouseMove event
 after it has determined that the user has just clicked segment. 
 
 Important files in the new setup are:
-\begin{itemize}
-    \item Editor.PermEvents.js This file contains events which are bound when
+\begin{description}
+    \item[Editor.PermEvents.js] This file contains events which are bound when
         Min starts and then left alone. This is where the events attached to the
         buttons on the top-bar are located.
-    \item Editor.EditorMode.js This file contains code that will be used by
+    \item[Editor.EditorMode.js] This file contains code that will be used by
         all EditorModes. All *Mode style objects have an instance of this object
         at the top of their prototype chain.
-    \item Editor.SelectionMode.js Both rectangle and stroke selection mode
+    \item[Editor.SelectionMode.js] Both rectangle and stroke selection mode
         contain a lot of shared behavior. They do movement and resizes in
         exactly the same way, the only difference is how they select strokes.
         Events common to both is in this file. This is part of the prototype
         chain for selection modes.
-    \item Editor.RectangleSelectionMode.js This contains code specific to
+    \item[Editor.RectangleSelectionMode.js] This contains code specific to
         rectangle selection. When a segment is selected, SelectionMode takes
         over.
-    \item Editor.StrokeSelectionMode.js This contains code specific to stroke
+    \item[Editor.StrokeSelectionMode.js] This contains code specific to stroke
         selection. When a segment is selected, the events in SelectionMode take
         over.
-\end{itemize}
+\end{description}
 
 \subsection*{Other Changes}
 
@@ -124,8 +123,8 @@ interface for checking for touch-screen functionality.
 Here are some things that I would like to see happen that are closely related to
 the event system refactoring.
 
-\begin{itemize}
-    \item{Remove references to EditorState} Currently there are still references
+\begin{description}
+    \item[Remove references to EditorState] Currently there are still references
         to EditorState in the events system. I left this in place because there
         are a few subsystems, like RenderManager, that rely on EditorState. So
         while none of the systems that I have changed (to my knowledge) use
@@ -133,15 +132,15 @@ the event system refactoring.
         place for the sake of other systems I was not working with at the time.
         Ideally we could completely eliminate references to EditorState and
         Editor.state throughout the system.
-    \item{Remove Legacy Code} There is likely some code in the Min events' system
+    \item[Remove Legacy Code] There is likely some code in the Min events' system
         that could have been removed, but that I missed. 
-    \item{Consolidate Code for Keypresses} Currently we have a couple different
+    \item[Consolidate Code for Keypresses] Currently we have a couple different
         functions (mapCanvasBackspace, onKeyPress) that can be called to handle key-presses. We should
         consolidate these event handlers where possible and move functionality
         to more appropriate places if possible. It might also be worth
         investigating if mapCanvasBackspace is still necessary, or if there's a
         better way to do it.
-    \item{Replace *.proxy Calls with .bind} This is a fairly trivial change. I
+    \item[Replace *.proxy Calls with .bind] This is a fairly trivial change. I
         make heavy use of jQuery's .proxy method to make sure that when an event
         is called, the special 'this' reference refers to the EditorMode object
         that is currently active. By default, in Javascript and event handler
@@ -152,10 +151,10 @@ the event system refactoring.
         bind which does the same thing. We should use this method where possible
         since it will likely be a bit faster. See Editor.SelectionMode.js and
         its constructor for an example of both.
-    \item{Further Separate Event Functions in the Mode Object} It might be
+    \item[Further Separate Event Functions in the Mode Object] It might be
         possible to further separate concerns in some of the larger functions of
         the *Mode objects even further. 
-\end{itemize}
+\end{description}
 
 
 \end{document}
