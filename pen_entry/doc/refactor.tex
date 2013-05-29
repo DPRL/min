@@ -1,7 +1,9 @@
 \documentclass[letterpaper]{article}
-\pagestyle{empty}
 
+\usepackage{graphicx}
 \usepackage{alltt}
+
+\DeclareGraphicsExtensions{.png}
 
 \begin{document}
 
@@ -11,16 +13,14 @@
 
 \section*{How to Read this Document}
 
-
 I will refer to the version of Min with the old events system as 'Min Classic'.
 When I make reference to just Min, I am referring to the latest version in the
 master branch and on http://saskatoon.cs.rit.edu/min.
+You can see Min Classic by checking out the tag \verb+min_classic+ from the git
+repository: \begin{verbatim} git checkout min_classic \end{verbatim} You can
+checkout Min by using \begin{verbatim} git checkout master \end{verbatim}
 
-Min Classic by checking out the tag \verb+min_classic+ from the git repository:
-\begin{verbatim} git checkout min_classic \end{verbatim} You can checkout Min by
-using \begin{verbatim} git checkout master \end{verbatim}
-
-I will also make reference to 'editing modes' in both Min and Min Classic.
+I will also make reference to \textbf{editing modes} in both Min and Min Classic.
 When I refer to an editing mode, I am referring to a state of the editor that is
 visible by the user. For example, when the pen icon is shaded and the user can
 draw/type symbols into the system I will refer to it as 'pen mode'.
@@ -31,23 +31,23 @@ draw/type symbols into the system I will refer to it as 'pen mode'.
 Most of the events used by Min Classic are stored in the \verb+Editor.Events.js+ file. 
 The listeners for buttons are bound in \verb+Editor.setup_events+ and will not
 change for the life of the running Min instance. These button events are moved
-and remained, but are mostly unaltered between Min Classic and the refactored
+but are mostly unaltered between Min Classic and the refactored
 version. Likewise, events related to \verb+keypress+ events are largely the
 same in Min; aside from being bound in different places/times. The Hammer events
-used for the multi-touch pinch-to-resize functionality are moved, but also largely
-unchanged.
+used for the multi-touch pinch-to-resize functionality are moved to a different
+file, but largely unchanged.
 
-The following events are bound to the \verb+equation_canvas+ div and set to trigger
-on their respective actions:
+The majority of Min Classic's behavior are bound to the \verb+equation_canvas+
+div; where a div is just a 'division' of the document and is used to group multiple
+HTML elements together. Those event handlers are named as follows:
 \verb+Editor.onMouseDown+, \verb+Editor.onMouseMove+,
 \verb+Editor.onMouseUp+, \verb+Editor.onDoubleClick+. These events are
 responsible for drawing, selecting segments, moving segments, and resizing
 segments, i.e. the vast majority of user interaction. 
 
-Because of the UI's complexity, and the limited number of possible input
-methods, the same actions must be perform different behaviors based on the
-editor's state. In Min Classic, the state was maintained by having a global
-enumeration object declared in \verb+Editor.Events.js+ called \verb+EditorState+.
+In Min Classic, the state was maintained by having a global
+object which maps states to constant integer literals (behaving like an enumeration in Java or C)
+declared in \verb+Editor.Events.js+ called \verb+EditorState+.
 As the system runs, the currently running state is maintained in the variable
 Editor.state. Editor states do no necessarily correspond directly to modes, it
 is possible for an editor mode to make use of multiple editor states. 
@@ -78,15 +78,19 @@ with a (hopefully) cleaner approach. The main goals of this refactoring were:
 \end{enumerate}
 
 The new Min event system is designed under the idea that the functionality of
-Min can be separated into several discrete modes: Draw Mode, Stroke Selection
-Mode, and Rectangle Selection mode. By keeping track of the modes, we know which
-functionality should be active and which should not be. Thus the user switches
-from one mode to another, we know exactly which mouse events are bound and which
-ones are not. To incorporate additional dependent functionality one event can
-unbind and bind other events. For example, in either of the selection modes, the
+Min can be separated into several discrete modes: \textbf{Draw Mode},
+\textbf{Stroke Selection Mode}, and \textbf{Rectangle Selection Mode}. By
+keeping track of the modes, we know which functionality should be active and
+which should not be. Thus when the user switches from one mode to another, we know
+exactly which mouse events are bound and which ones are not. To incorporate
+additional dependent functionality one event can unbind and bind other events.
+For example, in either of the selection modes, the
 code for moving segments should only be bound/active when there are segments
 already selected. In this case, the mouseDown event binds the mouseMove event
-after it has determined that the user has just clicked segment. 
+after it has determined that the user has just clicked a segment. The
+relationships and prototype chain of this new system are shown visually in
+Figure \ref{fig:modes}. Note that the selection modes share functionality and
+that all events have EditorMode at the top of their prototype chain.
 
 Important files in the new setup are:
 \begin{description}
@@ -96,6 +100,9 @@ Important files in the new setup are:
     \item[Editor.EditorMode.js] This file contains code that will be used by
         all EditorModes. All *Mode style objects have an instance of this object
         at the top of their prototype chain.
+    \item[Editor.DrawMode.js] This file contains the objects that are used for
+        behavior that is active in DrawMode, such as the typing tool and the
+        drawing tool.
     \item[Editor.SelectionMode.js] Both rectangle and stroke selection mode
         contain a lot of shared behavior. They do movement and resizes in
         exactly the same way, the only difference is how they select strokes.
@@ -109,14 +116,23 @@ Important files in the new setup are:
         over.
 \end{description}
 
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[width=\textwidth]{mode_diagram}
+    \end{center}
+    \caption{The prototype chain of the new editor modes}
+    \label{fig:modes}
+\end{figure}
+
 \subsection*{Other Changes}
 
 One final change that I made during refactoring was the addition of the
-Modernizr library. Modernizr is a library which runs when the document loads and
-finds out what the capabilities of the browser are. Currently I only use it to
+Modernizr library. Modernizr is a BSD/MIT licensed library which runs when the
+document loads and queries the browser for its capabilities. Currently I only use it to
 check for the touch-screen interface. Originally, we just checked the user-agent
 string to see if it had the 'iPad' in it. Modernizer provides a consistent
-interface for checking for touch-screen functionality.
+interface for checking for touch-screen functionality under a Free Software
+license.
 
 \subsection*{TODO}
 Here are some things that I would like to see happen that are closely related to
@@ -133,7 +149,7 @@ the event system refactoring.
         Editor.state throughout the system.
     \item[Remove Legacy Code] There is likely some code in the Min events' system
         that could have been removed, but that I missed. 
-    \item[Consolidate Code for Keypresses] Currently we have a couple different
+    \item[Consolidate Keypress Code] Currently we have a couple different
         functions (mapCanvasBackspace, onKeyPress) that can be called to handle key-presses. We should
         consolidate these event handlers where possible and move functionality
         to more appropriate places if possible. It might also be worth
@@ -150,14 +166,25 @@ the event system refactoring.
         bind which does the same thing. We should use this method where possible
         since it will likely be a bit faster. See Editor.SelectionMode.js and
         its constructor for an example of both.
-    \item[Further Separate Event Functions in the Mode Object] It might be
+    \item[Further Separate Event Functions into Modes] It might be
         possible to further separate concerns in some of the larger functions of
         the *Mode objects even further. 
+    \item[Further Separate Event Functions into Modes] It might be
+        possible to further separate concerns in some of the larger functions of
+        the *Mode objects even further. \textbf{This task should not be a first
+        priority.}
 \end{description}
 
 \section*{Further Potential Refactors}
 
 \begin{description}
+    \item[Disable Image Upload Appropriately] Currently it is possible to click the image
+        upload button when in either rectangle or stroke select mode. This is
+        inconsistent with behavior that we already have which disables
+        drawing/typing tools in selection mode. The button should probably turn
+        itself off when in either of the selection modes or clicking it in the
+        selection modes should automatically switch the user back into draw
+        mode.
     \item[Remove Collision Manager] The collision manager is currently used to
         determine where on the equation\_canvas the user has clicked. For
         example, if you look at any of the onDown base functions you will see a
@@ -191,7 +218,33 @@ the event system refactoring.
     \item[Remove Editor.* Prefixes] Many files and objects have an Editor.*
         prefix. While this is reasonable for global variables being stored on
         the Editor object, in my opinion mostly just makes the names of things longer
-        without adding much extra information. 
+        without adding much extra information. Hint: With a few well-written
+        \verb+sed+ invocations this should be much easier.
+    \item[Streamline the Classifier] The objects and methods related to
+        classification to be difficult to navigate. If the Classifier and its
+        related code can be made more transparent, the classification code will
+        be easier to maintain.
+    \item[Remove segment\_id and set\_id] During editing, the
+        user can combine and separate strokes; such as the horizontal and
+        vertical strokes in a '+'. In one interpretation, there is a single
+        symbol composed of two separate strokes, and in the other both of the
+        strokes are their own symbol. To keep track of which segments are which
+        and how they are grouped Min assigned each segment both a
+        \verb+segment_id+ and a \verb+set_id+. Every segment should have its own
+        unique (for that particular instance of of Min) \verb+segment_id+. If multiple segments are in the
+        same symbol, in addition to to their \verb+segment_id+ they will share
+        a \verb+set_id+. The problem is that maintaining these numbers properly
+        can be difficult: numerous bugs have popped up because set or segment
+        ids get changed to something wrong in the course of Min's run. Combine
+        that with the fact that the back-end server for image upload needs to
+        have some knowledge of available segment/set ids and it becomes even
+        more difficult. I think a better approach would be to combine strokes on
+        the canvas using something called the \emph{composite pattern}.
+        Wikipedia provides a good overview of composite pattern, but a quick
+        summary is that the composite pattern is a way to give singular objects
+        and multiple objects the same interface, so they can be used
+        interchangeably. This makes the segment/set issue simpler because it
+        makes the groupings of the strokes intrinsic in their DOM structure.  % reword?
 \end{description}
 
 \section*{Tips}
@@ -225,7 +278,7 @@ the event system refactoring.
         doing cool things with Git.\\
         http://git-scm.com/book - This is a book for Git which is available for
         free online. \\
-        'git help' - This is a way to access the Git manpages. Just run \verb+git
-        help+.
+        'git help' - This is a way to access the Git manpages. 
+        Just run \verb+git help+.
 \end{description}
 \end{document}
