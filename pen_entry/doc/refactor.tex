@@ -119,4 +119,43 @@ check for the touch-screen interface. Originally, we just checked the user-agent
 string to see if it had the 'iPad' in it. Modernizer provides a consistent
 interface for checking for touch-screen functionality.
 
+\subsection{TODO}
+
+Here are some things that I would like to see happen that are closely related to
+the event system refactoring.
+
+\begin{itemize}
+    \item{Remove references to EditorState} Currently there are still references
+        to EditorState in the events system. I left this in place because there
+        are a few subsystems, like RenderManager, that rely on EditorState. So
+        while none of the systems that I have changed (to my knowledge) use
+        Editor.state to make decisions, changes to EditorState were left in
+        place for the sake of other systems I was not working with at the time.
+        Ideally we could completely eliminate references to EditorState and
+        Editor.state throughout the system.
+    \item{Remove Legacy Code} There is likely some code in the Min events' system
+        that could have been removed, but that I missed. 
+    \item{Consolidate Code for Keypresses} Currently we have a couple different
+        functions (mapCanvasBackspace, onKeyPress) that can be called to handle key-presses. We should
+        consolidate these event handlers where possible and move functionality
+        to more appropriate places if possible. It might also be worth
+        investigating if mapCanvasBackspace is still necessary, or if there's a
+        better way to do it.
+    \item{Replace *.proxy Calls with .bind} This is a fairly trivial change. I
+        make heavy use of jQuery's .proxy method to make sure that when an event
+        is called, the special 'this' reference refers to the EditorMode object
+        that is currently active. By default, in Javascript and event handler
+        function's 'this' reference points to the DOM object which the event was
+        fired on. I wanted to use 'this' the way that Java might so that I could
+        store mode-specific state in the mode objects rather than as a global. I
+        used .proxy, not knowing that modern browsers have a function called
+        bind which does the same thing. We should use this method where possible
+        since it will likely be a bit faster. See Editor.SelectionMode.js and
+        its constructor for an example of both.
+    \item{Further Separate Event Functions in the Mode Object} It might be
+        possible to further separate concerns in some of the larger functions of
+        the *Mode objects even further. 
+\end{itemize}
+
+
 \end{document}
