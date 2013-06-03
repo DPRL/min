@@ -30,7 +30,8 @@ PermEvents.setup_toolbar = function(){
     document.getElementById("add").addEventListener("mouseover",Editor.showToolTip("add","New expression"), true);
     document.getElementById("remove").addEventListener("mouseover",Editor.showToolTip("remove","Delete expression"), true);
     
-    //Keyboard shortcuts
+    //Keyboard shortcuts. This makes adding keyboard shortcuts easy. You can just type the keyboard
+    // symbol and method to call on keypress like below.
     $.ctrl('Z', Editor.undo);
     $.ctrl('Y', Editor.redo);
 
@@ -52,6 +53,37 @@ PermEvents.setup_toolbar = function(){
             var file_input = document.getElementById("upload_image_input");        
             file_input.click();
         }, true);
+        
+    }
+    // HTML5's drag and drop implemented below
+    if(Modernizr.draganddrop && window.FileReader){ // check if browser supports drag and drop
+    	var dropzone = $('#equation_canvas');
+    	var text =  document.getElementsByClassName("Image_text")[0];
+        dropzone.on('dragover', function(e) {
+        	text.style.display = "block";
+        	dropzone.addClass('hover');
+        	e.stopPropagation();
+			e.preventDefault();
+			return false;
+		});
+		dropzone.on('dragleave', function(e) {
+			text.style.display = "none";
+			dropzone.removeClass('hover');
+			e.stopPropagation();
+			e.preventDefault();
+			return false;
+		});
+		dropzone.on('drop', function(e) {
+			//prevent browser from opening the file after drop off
+			text.style.display = "none";
+			e.stopPropagation();
+			e.preventDefault();
+			dropzone.removeClass('hover');
+			var file = e.originalEvent.dataTransfer.files;
+			console.log("file dropped");
+			Editor.ParseImage(file[0]);
+			return false;
+		});
     }
 }
 

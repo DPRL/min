@@ -587,6 +587,12 @@ Editor.onImageLoad = function(e)
 {
     var file_list = e.target.files;
     var file = file_list[0];
+    Editor.ParseImage(file);
+}
+// This function is called when the user clicks on the upload image button
+// And also when the user drags and drops a file on the canvas.
+Editor.ParseImage = function(file){ 
+
     if(file)
     {
         var r = new FileReader();

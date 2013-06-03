@@ -562,3 +562,16 @@ div#logoboar-wrapper div#logobar-text {
 	margin-left: 20px;
 	text-align: center;
 }
+div#equation_canvas.hover{
+	border-color:#777;
+	border-style:dashed;
+	border-radius:10px;
+}
+.Image_text{
+	text-align: center;
+	padding-top: 220px;
+	color: grey;
+	font-size: 20px;
+	font-weight: bold;
+	display:none;
+}
