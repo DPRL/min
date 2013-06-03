@@ -1,0 +1,19 @@
+
+Authors: Christopher Sasarak, Awelemdy Orakwue
+
+1) It appears that we will need some sort of collision management in order to
+find out if something is in the rectangle we draw in RectSelectMode. However,
+nothing else in the system should need this functionality so it can be taken
+from CollisionManager and moved into RectSelectMode. 
+
+2) Then we can eliminate some global state by having RectSelect mode record
+start mouse position (on mouse down) then on mouse up you just iterate through
+all on-screen segments/groups and see if it is in the rectangle. 
+
+3) Stroke selection doesn't need collision manager. Instead we can keep a list
+of selected segments, the segments can add themselves to a list through an
+onMouseOver event when the user is drawing a stroke.
+
+4) Editor.DrawMode.js has only two references to the Collision manager. It might
+be a good place to start so you can see what a better use of event handlers
+might look like.
