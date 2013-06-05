@@ -284,26 +284,26 @@ the event system refactoring.
         classification to be difficult to navigate. If the Classifier and its
         related code can be made more transparent, the classification code will
         be easier to maintain.
-    \item[Remove segment\_id and set\_id] During editing, the
+    \item[Remove instance\_id and set\_id] During editing, the
         user can combine and separate strokes; such as the horizontal and
         vertical strokes in a '+'. In one interpretation, there is a single
         symbol composed of two separate strokes, and in the other both of the
         strokes are their own symbol. To keep track of which segments are which
         and how they are grouped Min assigned each segment both a
-        \verb+segment_id+ and a \verb+set_id+. Every segment should have its own
-        unique (for that particular instance of of Min) \verb+segment_id+. If multiple segments are in the
-        same symbol, in addition to to their \verb+segment_id+ they will share
+        \verb+instance_id+ and a \verb+set_id+. Every segment should have its own
+        unique (for that particular instance of of Min) \verb+instance_id+. If multiple segments are in the
+        same symbol, in addition to to their \verb+instance_id+ they will share
         a \verb+set_id+. The problem is that maintaining these numbers properly
-        can be difficult: numerous bugs have popped up because set or segment
+        can be difficult: numerous bugs have popped up because set or instance
         ids get changed to something wrong in the course of Min's run. Combine
         that with the fact that the back-end server for image upload needs to
-        have some knowledge of available segment/set ids and it becomes even
+        have some knowledge of available instance/set ids and it becomes even
         more difficult. I think a better approach would be to combine strokes on
         the canvas using something called the \emph{composite pattern}.
         Wikipedia provides a good overview of composite pattern, but a quick
         summary is that the composite pattern is a way to give singular objects
         and multiple objects the same interface, so they can be used
-        interchangeably. This makes the segment/set issue simpler because it
+        interchangeably. This makes the instance/set issue simpler because it
         makes the groupings of the strokes intrinsic in their DOM structure.  % reword?
     \item[Min only presents 56 different symbol classes] Though we have
          classifiers that support more than this, Min only presents 56 different
