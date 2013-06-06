@@ -135,22 +135,55 @@ string to see if it had the 'iPad' in it. Modernizer provides a consistent
 interface for checking for touch-screen functionality under a Free Software
 license.
 
-\subsection*{Front End to Back End Flow}
+\subsection*{Min Workflow Process}
+Min uses a series of function calls between the interface and the backend servers to handle
+segmentation, recognition, and alignment of its input. This section provides a brief overview
+of the basic flow that these processes follow. Figure \ref{fig:frontToBack} gives a visual
+representation of this process.
+
 \begin{figure}[H]
     \begin{center}
         \includegraphics[width=\textwidth]{FrontToBackEndFlow.png}
     \end{center}
-    \caption{The flow from Front-End to Back-End processes}
+    \caption{A representation of the processes of Min}
     \label{fig:frontToBack}
 \end{figure}
 
+\subsubsection*{Initial Input}
 The Min event system accepts three types of input: keyboard inputs, pen strokes, and
-image files. Each type of input will fire a different function. Keyboard input does
-not require recognition so nothing further is done at this point for it. Pen strokes
-will activate \verb+DrawMode+ which records the position of the strokes. Image files
-will trigger \verb+onImageLoad+.
+image files. Each type of input will fire a different function. Keyboard input recognition
+is done by a simple unicode symbol look up. Pen strokes will activate \verb+DrawMode+ which
+records the position of the strokes. Image files will trigger \verb+onImageLoad+.
 
-From here, pen strokes and images will both be sent to the \verb+RecognitionManager+.
+All marks on the canvas have two properties that are being used to identify them,
+\verb+instance_id+ and \verb+set_id+. Each pen stroke, typed character, and connected
+component in an image is given a unique \verb+instance_id+ which can be used to identify
+that particular stroke. Any of these components that are perceived to be part of the same
+symbol by the system will then be given a common \verb+set_id+ which is used for identification
+of an entire symbol.
+
+\subsubsection*{Recognition}
+Data for segments and symbols is passed along in XML format which is parsed by the
+receiving function. There are different formats for different types of data, but they share a
+common structure. Each type of input into the recognizers has a corresponding \verb+Segment+
+tag. Each \verb+Segment+ tag contains the type of \verb+Segment+ that it is, as well as its
+\verb+instance_id+.
+
+For pen strokes, the tag also includes the scale and translation for the stroke. A list of the
+X and Y coordinates for the points of the stroke is also created. An example of a pen stroke
+\verb+Segment+ tag would be:
+\begin{verbatim}<Segment type="pen_stroke" instanceID="0" scale="1,1" translation="401,232"
+points="0,7|0,6|8,0|9,0|...|32,29|32,30"/>\end{verbatim}
+
+For typed symbols, the tag includes the scale and translation. The text of the what was typed
+is also put in. An example of a \verb+Segment+ tag of this type would be:
+\begin{verbatim}<Segment type="symbol" instanceID="14" scale="1,1" translation="908,276" text="a">\end{verbatim}
+
+For uploaded images, the only additional piece of information in the tag is the image itself.
+An example of an image \verb+Segment+ tag would be:
+\begin{verbatim}<Segment type="image_blob" instanceID="16" image="dat:image/png..."/>\end{verbatim}
+
+At this point, pen strokes and images will both be sent to the \verb+RecognitionManager+.
 The \verb+RecognitionManager+ enqueues all of the inputs and then calls \verb+Classifier+
 to get a classification for each. Pen strokes and images are sent to different functions
 for separate classification.
@@ -163,40 +196,39 @@ Images are sent through port 7006 to the \verb+ImageRecognitionServer+. This ser
 call on Matlab scripts to do the image processing. Matlab will segment the image and then
 classify each separate part of the image. These results are converted to an XML and returned.
 
+The recognizers will return a \verb+RecognitionResult+ which contains the instanceID of the
+segment, as well as a list of possible \verb+Result+s. Each \verb+Result+ will contain a
+symbol and the certainty that the system has that this is the correct symbol classification
+for the segment. An example of this would be:
+\begin{verbatim}<RecognitionResult instanceIDs="9">
+<Result symbol="2" certainty="0.999..."/>
+<Result symbol="z_lower" certainty="1.09...E-07"/>
+...
+<Result symbol="infty" certainty="0"/>
+<\RecognitionResult>\end{verbatim}
+
 The front end of the system receives the XML of the classified symbols. \verb+Classifier+
 processes the XML and creates recognition which is put in the \verb+RecognitionManager+'s
-result table. Then the \verb+RenderManager+ renders the canvas, displaying the recognized
-symbols.
+result table. The result with the highest certainty for each symbol is chosen. Then the
+\verb+RenderManager+ renders the recognized symbol(s) on the canvas.
 
-When Recognize Expression is pressed, the segments on the canvas are collected and tagged,
-then appended to the \verb+draculae_server+'s url. This causes the \verb+main+ function of 
-the server to process the request. The server parses the url to extract the data and
-\verb+DRACULAE+ aligns the symbols and generates Tex code to represent it. This Tex code and
-the list of segments are tagged and passed back to the events as a String which will be parsed
-to display the correct alignment on the canvas. The Tex code is sent to the \verb+Slider+ which
-updates the current slide with this code, and MathJax renders the Tex code for the user.
+\subsubsection*{Alignment}
+When Recognize Expression is pressed, the recognized symbols are collected and tagged,
+then appended to the \verb+draculae_server+'s url. They are sent to the parser as a list
+of \verb+Segment+s. Each \verb+Segment+ contains the symbol that it was classified as,
+its min and max position on the canvas, and its id. For example:
+\begin{verbatim}<SegmentList>
+<Segment symbol="2" min="349,208" max="407,286" id="2"/>
+<Segment symbol="5" min="496,250" max="554,328" id="14"/>
+<Segment symbol="phi" min="439,216" max="478,255" id="17"/>
+<\SegmentList>\end{verbatim}
 
-\subsection*{XML Formats}
-Data for segments and symbols are passed along in various XML formats that are parsed by the
-receiving function. There are different formats for different types of data, but they share a
-common structure. Each type of input has a corresponding \verb+Segment+ tag. Each \verb+Segment+
-tag contains the type of \verb+Segment+ that it is, as well as its \verb+instance_id+.
-
-For pen strokes, the tag also includes the scale and translation for the stroke. A list of the
-X and Y coordinates for the points of the stroke is also created. An example of a pen stroke
-\verb+Segment+ tag would be:
-\begin{verbatim}<Segment type=pen_stroke instanceID=? scale=? translation=?
-points=23,34|24,35|25,36>\end{verbatim}
-
-For typed symbols, the tag includes the scale and translation. The text of the what was typed
-is also put in. An example of a \verb+Segment+ tag of this type would be:
-\begin{verbatim}<Segment type=symbol instanceID=? scale=? translation=? text=a>\end{verbatim}
-
-For uploaded images, the only additional piece of information in the tag is the image itself.
-An example of an image \verb+Segment+ tag would be:
-\begin{verbatim}<Segment type=image_blob instanceID=? image=?>\end{verbatim}
-
-%TODO output file types
+This causes the \verb+main+ function of the server to process the request. The server parses
+the url to extract the data and \verb+DRACULAE+ aligns the symbols and generates Tex code to
+represent it. This Tex code and the list of segments are tagged and passed back to the events
+as a String which will be parsed to display the correct alignment on the canvas. The Tex code
+is sent to the \verb+Slider+ which updates the current slide with this code, and MathJax renders
+the Tex code for the user.
 
 \subsection*{TODO}
 Here are some things that I would like to see happen that are closely related to
