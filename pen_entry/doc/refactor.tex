@@ -163,11 +163,40 @@ Images are sent through port 7006 to the \verb+ImageRecognitionServer+. This ser
 call on Matlab scripts to do the image processing. Matlab will segment the image and then
 classify each separate part of the image. These results are converted to an XML and returned.
 
-The front end of the system recieves the XML of the classified symbols. \verb+Classifier+
+The front end of the system receives the XML of the classified symbols. \verb+Classifier+
 processes the XML and creates recognition which is put in the \verb+RecognitionManager+'s
 result table. Then the \verb+RenderManager+ renders the canvas, displaying the recognized
 symbols.
 
+When Recognize Expression is pressed, the segments on the canvas are collected and tagged,
+then appended to the \verb+draculae_server+'s url. This causes the \verb+main+ function of 
+the server to process the request. The server parses the url to extract the data and
+\verb+DRACULAE+ aligns the symbols and generates Tex code to represent it. This Tex code and
+the list of segments are tagged and passed back to the events as a String which will be parsed
+to display the correct alignment on the canvas. The Tex code is sent to the \verb+Slider+ which
+updates the current slide with this code, and MathJax renders the Tex code for the user.
+
+\subsection*{XML Formats}
+Data for segments and symbols are passed along in various XML formats that are parsed by the
+receiving function. There are different formats for different types of data, but they share a
+common structure. Each type of input has a corresponding \verb+Segment+ tag. Each \verb+Segment+
+tag contains the type of \verb+Segment+ that it is, as well as its \verb+instance_id+.
+
+For pen strokes, the tag also includes the scale and translation for the stroke. A list of the
+X and Y coordinates for the points of the stroke is also created. An example of a pen stroke
+\verb+Segment+ tag would be:
+\begin{verbatim}<Segment type=pen_stroke instanceID=? scale=? translation=?
+points=23,34|24,35|25,36>\end{verbatim}
+
+For typed symbols, the tag includes the scale and translation. The text of the what was typed
+is also put in. An example of a \verb+Segment+ tag of this type would be:
+\begin{verbatim}<Segment type=symbol instanceID=? scale=? translation=? text=a>\end{verbatim}
+
+For uploaded images, the only additional piece of information in the tag is the image itself.
+An example of an image \verb+Segment+ tag would be:
+\begin{verbatim}<Segment type=image_blob instanceID=? image=?>\end{verbatim}
+
+%TODO output file types
 
 \subsection*{TODO}
 Here are some things that I would like to see happen that are closely related to
@@ -255,26 +284,26 @@ the event system refactoring.
         classification to be difficult to navigate. If the Classifier and its
         related code can be made more transparent, the classification code will
         be easier to maintain.
-    \item[Remove segment\_id and set\_id] During editing, the
+    \item[Remove instance\_id and set\_id] During editing, the
         user can combine and separate strokes; such as the horizontal and
         vertical strokes in a '+'. In one interpretation, there is a single
         symbol composed of two separate strokes, and in the other both of the
         strokes are their own symbol. To keep track of which segments are which
         and how they are grouped Min assigned each segment both a
-        \verb+segment_id+ and a \verb+set_id+. Every segment should have its own
-        unique (for that particular instance of of Min) \verb+segment_id+. If multiple segments are in the
-        same symbol, in addition to to their \verb+segment_id+ they will share
+        \verb+instance_id+ and a \verb+set_id+. Every segment should have its own
+        unique (for that particular instance of of Min) \verb+instance_id+. If multiple segments are in the
+        same symbol, in addition to to their \verb+instance_id+ they will share
         a \verb+set_id+. The problem is that maintaining these numbers properly
-        can be difficult: numerous bugs have popped up because set or segment
+        can be difficult: numerous bugs have popped up because set or instance
         ids get changed to something wrong in the course of Min's run. Combine
         that with the fact that the back-end server for image upload needs to
-        have some knowledge of available segment/set ids and it becomes even
+        have some knowledge of available instance/set ids and it becomes even
         more difficult. I think a better approach would be to combine strokes on
         the canvas using something called the \emph{composite pattern}.
         Wikipedia provides a good overview of composite pattern, but a quick
         summary is that the composite pattern is a way to give singular objects
         and multiple objects the same interface, so they can be used
-        interchangeably. This makes the segment/set issue simpler because it
+        interchangeably. This makes the instance/set issue simpler because it
         makes the groupings of the strokes intrinsic in their DOM structure.  % reword?
     \item[Min only presents 56 different symbol classes] Though we have
          classifiers that support more than this, Min only presents 56 different
