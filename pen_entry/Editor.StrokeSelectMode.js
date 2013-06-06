@@ -7,7 +7,7 @@ function StrokeSelectMode(){
     this.onMoveNoSelectedSegments = $.proxy(StrokeSelectMode.onMoveNoSelectedSegmentsBase, this);
     this.onUpNoSelectedSegments = $.proxy(StrokeSelectMode.onUpNoSelectedSegmentsBase, this);
     this.displaySelectionTool = StrokeSelectMode.strokeSelectTool.bind(this);
-    
+
     if(Modernizr.touch){
         this.onDownNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onDownNoSelectedSegments);
         this.onMoveNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onMoveNoSelectedSegments);
@@ -44,26 +44,28 @@ Method stub for switching into StrokeSelectMode
 */
 StrokeSelectMode.onDownNoSelectedSegmentsBase = function(e){
     StrokeSelectMode.prototype.onDown.call(this, e);
-    /*if(Editor.selected_segments.length > 0)
+    // get the segments that are under the mouse click
+    var click_result = CollisionManager.get_point_collides(Editor.mouse_position);
+    if(click_result.length > 0)
     {
         // nothing selected at the moment, add all below mouse click to selected
         // add the last guy in the list (probably most recently added) to selected set
-        var segment = Editor.selected_segments[Editor.selected_segments.length-1];
-        for(var k = 0; k < Editor.segments.length; k++){
-        	if(Editor.segments[k].set_id == segment.set_id)
-				Editor.add_selected_segment(Editor.segments[k]); 
-        }
+        var segment = click_result.pop();
+        for(var k = 0; k < Editor.segments.length; k++)
+            if(Editor.segments[k].set_id == segment.set_id)
+                Editor.add_selected_segment(Editor.segments[k]);
+        
+        
         Editor.add_action(new TransformSegments(Editor.selected_segments));
         Editor.state = EditorState.SegmentsSelected;
 
     } else
-    {*/
-    	StrokeSelectMode.add_event_to_segments();
+    {
         Editor.state = EditorState.StrokeSelecting;
         $("#equation_canvas").on(this.event_strings.onMove, this.onMoveNoSelectedSegments);
         $("#equation_canvas").one(this.event_strings.onUp, this.onUpNoSelectedSegments);
         
-    //}
+    }
     Editor.previous_stroke_position = Editor.mouse_position.clone();
     RenderManager.render();
 
@@ -71,9 +73,20 @@ StrokeSelectMode.onDownNoSelectedSegmentsBase = function(e){
 
 StrokeSelectMode.onMoveNoSelectedSegmentsBase = function(e){
     StrokeSelectMode.prototype.onMove.call(this, e);
+    // see what we stroked through between move events
+    var stroke_result = CollisionManager.get_line_collides(Editor.mouse_position_prev, Editor.mouse_position);
+    // for each segment in result add to selected segments set (if they aren't there already)
+    if(stroke_result.length > 0)
+    {
+        var initial_length = Editor.selected_segments.length;
+        while(stroke_result.length > 0)
+        {
+            var segment = stroke_result.pop();
+            Editor.add_selected_segment(segment);
+        }
+    }
     Editor.previous_stroke_position = Editor.mouse_position_prev.clone();
     RenderManager.render();
-    
 }
 
 StrokeSelectMode.onUpNoSelectedSegmentsBase = function(e){
@@ -84,13 +97,10 @@ StrokeSelectMode.onUpNoSelectedSegmentsBase = function(e){
         $("#equation_canvas").on(this.event_strings.onDown,
             this.onDownSegmentsSelected).off(this.event_strings.onDown,
             this.onDownNoSelectedSegments);
-    }    
-    else{
+    }
+        
+    else
         Editor.state = EditorState.ReadyToStrokeSelect;
-    }
-    for(var i=0; i < Editor.selected_segments.length; i++){
-    		$(Editor.segments[i].root_svg).off('mouseover');
-    }
     RenderManager.clear_canvas();
 }
 
@@ -104,28 +114,4 @@ StrokeSelectMode.strokeSelectTool = function()
     RenderManager.colorOCRbbs("segment_stroke_select");
     RenderManager.render();
     Editor.selection_method = "Stroke";
-}
-
-StrokeSelectMode.add_collided_segments = function(i)
-{
-	return function() { console.log("I is: " + i); };
-	// return (function(e){
-// 		var segment = Editor.segments[i];
-// 		if(Editor.selected_segments.contains(segment))
-// 			return;
-// 
-// 		Editor.add_selected_segment(segment);
-// 	});
-}
-
-StrokeSelectMode.add_event_to_segments = function(){ 
-	console.log('add_event_to_segments');
-//		for(var i=0; i < Editor.segments.length; i++){
-//     	$(Editor.segments[i].root_svg).one('mouseover', StrokeSelectMode.add_collided_segments(i));
-//     }
-		console.log(Editor.segments[0].root_svg);
-		console.log(Editor.segments[1].root_svg);
-	   	$(Editor.segments[0].root_svg).on('mouseover', StrokeSelectMode.add_collided_segments(0));
-      	$(Editor.segments[1].root_svg).one('mouseover', StrokeSelectMode.add_collided_segments(1));
-
 }
