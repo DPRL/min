@@ -28,6 +28,8 @@ function DrawMode(){
     this.onKeyPress = $.proxy(DrawMode.onKeyPress, this);
     this.onDoubleClick = $.proxy(DrawMode.onDoubleClick, this);
     this.selectPenTool = DrawMode.selectPenTool.bind(this);
+    // List of segments associated with user's actions(click,dblclick etc)
+    DrawMode.collided_segments = new Array();
     
     // An example of how to call a super method
     // DrawMode.prototype.onDown.call(this, e);
@@ -45,6 +47,9 @@ DrawMode.prototype.init_mode = function(){
        Should I have just used something like EditorMode.onDown
        instead of attaching the function to the prototype?
      */
+    // The boolean below is used to differentiate a click from a double click in the 
+    // onDownBase function.
+    this.single_click = false;
     $(Editor.canvas_div).on('mousedown touchstart',  this.onDown);
     $(Editor.canvas_div).on('mouseup touchend',  this.onUp);
     $(Editor.canvas_div).on('dblclick', this.onDoubleClick);
@@ -90,6 +95,18 @@ DrawMode.prototype.stopTextInput = function(e){
 }
 
 DrawMode.onDownBase = function(e){
+
+	if(this.single_click)
+    { // double click
+    	this.single_click = false;
+    	$(Editor.canvas_div).off('mousemove touchmove', this.onMove);
+    	
+    }else
+    { // single click
+    	this.single_click = true;
+    	$(Editor.canvas_div).on('mousemove touchmove', this.onMove);
+    }
+
     DrawMode.prototype.onDown.call(this, e);
     // build a new stroke object and save reference so we can add new points
     Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
@@ -99,11 +116,11 @@ DrawMode.onDownBase = function(e){
     Editor.state = EditorState.MiddleOfStroke;
 
     RenderManager.render();
-    // Bind this as long as the mouse is down
-    $(Editor.canvas_div).on('mousemove touchmove', this.onMove);
 }
 
 DrawMode.onUpBase = function(e){
+	this.single_click = false; // reset the boolean used to differentiate click and a dblclick
+	
     DrawMode.prototype.onUp.call(this, e);
     var set_id_changes = [];
     Editor.state = EditorState.ReadyToStroke;
@@ -114,13 +131,21 @@ DrawMode.onUpBase = function(e){
         // This make sure that we remove the exact element of the array
         Editor.segments.splice(Editor.segments.indexOf(Editor.current_stroke), 1);
     }
-
+    
+    var stroke = Editor.current_stroke;
     Editor.current_stroke = null;
     Editor.current_action.set_id_changes = set_id_changes;
     Editor.current_action.buildSegmentXML();
+    // bind the last penstroke's bounding box to a dblclick event
+    var seg_array = $('.segment_input_set');
+    if(seg_array.length > 0){
+    	seg_array[seg_array.length-1].ondblclick = function(){
+    		DrawMode.segment_clicked(stroke);
+    		$.proxy(DrawMode.onDoubleClick, this);}; // bind last seg to dblclick
+	}
 
     // Unbind the move action
-    $(Editor.canvas_div).off('mousemove touchmove', this.onMove);
+    $(Editor.canvas_div).off(this.event_strings.onMove, this.onMove);
 }
 
 DrawMode.onMoveBase = function(e){
@@ -131,25 +156,14 @@ DrawMode.onMoveBase = function(e){
 }
 
 DrawMode.onDoubleClick = function(e){
-    // TODO: we have to re-detect the selection for double click vs. touch-and-hold.
-    // TODO: I think there should be a better way to do this than having to check points manually 
-    //       such as using the div of the bounding box
-    if (Editor.touchAndHoldFlag == TouchAndHoldState.NoTouchAndHold) {
-        var click_result = CollisionManager.get_point_collides_bb(Editor.mouse_position);
-        if(click_result.length == 0)
-            return;
-
-        var segment = click_result.pop();
-        for(var k = 0; k < Editor.segments.length; k++)
-            if(Editor.segments[k].set_id == segment.set_id)
-                Editor.add_selected_segment(Editor.segments[k]);
-    }
-
+    var seg = DrawMode.collided_segments.pop();
+    if(seg != null)
+		Editor.add_selected_segment(seg);
     RenderManager.colorOCRbbs("segment_stroke_select");
     RenderManager.bounding_box.style.visibility = "visible";
     Editor.state = EditorState.SegmentsSelected;
     Editor.relabel();
-
+    
 }
 
 DrawMode.onKeyPress = function(e){
@@ -177,7 +191,6 @@ DrawMode.onKeyPress = function(e){
     }
 
     Editor.typeTool();
-    var clicked_points = CollisionManager.get_point_collides(Editor.mouse_position);
 
     var s = new SymbolSegment(Editor.mouse_position);
     Editor.current_text = s;
@@ -213,4 +226,13 @@ DrawMode.selectPenTool = function()
     Editor.state = EditorState.ReadyToStroke;
     RenderManager.colorOCRbbs("segment_input_set");
     RenderManager.render();
+}
+
+// adds a clicked segment to the collided_segments array
+DrawMode.segment_clicked = function(segment)
+{
+	if(DrawMode.collided_segments.contains(segment))
+		return;
+
+	DrawMode.collided_segments.push(segment);
 }
