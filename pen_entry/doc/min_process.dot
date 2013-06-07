@@ -1,0 +1,46 @@
+digraph min_process {
+    UI [label="User Input"];
+    EE [label="Editor.Event"];
+    PS1 [label="Pen Stroke",shape="plaintext"];
+    IM1 [label="Image",shape="plaintext"];
+    TT1 [label="Typed Text",shape="plaintext"];
+    DM [label="DrawMode"];
+    RM [label="RecognitionManager"];
+    CL [label="Classifier"];
+    PPS [label="Pen Stroke\nPort Number 1504",shape="plaintext"];
+    PIM [label="Image\nPort Number 7006",shape="plaintext"];
+    LC [label="lei_classifier/Main"];
+    IRS [label="ImageRecognitionServer"];
+    PSoIM [label="Pen Stroke\nor Image",shape="plaintext"];
+    ETT [label="Unicode is used to\nclassify Text.",shape="box"];
+    EIM [label="Matlab is used to\nclassify Images.",shape="box"];
+    EPS [label="LeiClassifier is used to\nclassify Pen Strokes.",shape="box"];    
+    TT2 [label="Typed Text",shape="plaintext"];
+
+    {rank=same; PS1 IM1 TT1}
+    
+    UI -> EE;
+    EE -> PS1 [arrowhead="none"];
+    EE -> IM1 [arrowhead="none"];
+    EE -> TT1 [arrowhead="none"];
+
+    PS1 -> DM;
+    TT1 -> DM;
+    
+    TT1 -> RM;
+    IM1 -> RM;
+    DM -> RM;
+    RM -> TT2 [arrowhead="none"];
+    RM -> PSoIM [arrowhead="none"];
+    PSoIM->CL;
+    
+    TT2 -> ETT;
+
+    CL -> PPS [arrowhead="none"];
+    PPS -> LC;
+    LC -> EPS;
+
+    CL -> PIM [arrowhead="none"];
+    PIM -> IRS;
+    IRS -> EIM;
+}

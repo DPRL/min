@@ -141,19 +141,19 @@ segmentation, recognition, and alignment of its input. This section provides a b
 of the basic flow that these processes follow. Figure \ref{fig:frontToBack} gives a visual
 representation of this process.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \begin{center}
-        \includegraphics[width=\textwidth]{FrontToBackEndFlow.png}
+        \includegraphics[width=0.7\textwidth]{min_process.png}
     \end{center}
     \caption{A representation of the processes of Min}
     \label{fig:frontToBack}
 \end{figure}
 
-\subsubsection*{Initial Input}
+\subsubsection*{Segmentation}
 The Min event system accepts three types of input: keyboard inputs, pen strokes, and
-image files. Each type of input will fire a different function. Keyboard input recognition
-is done by a simple unicode symbol look up. Pen strokes will activate \verb+DrawMode+ which
-records the position of the strokes. Image files will trigger \verb+onImageLoad+.
+image files. Each type of input will fire a different function. Keyboard input will be
+recorded by \verb+finishEntry+. Pen strokes will activate \verb+DrawMode+ which records
+the position of the strokes. Image files will trigger \verb+onImageLoad+.
 
 All marks on the canvas have two properties that are being used to identify them,
 \verb+instance_id+ and \verb+set_id+. Each pen stroke, typed character, and connected
@@ -161,6 +161,11 @@ component in an image is given a unique \verb+instance_id+ which can be used to 
 that particular stroke. Any of these components that are perceived to be part of the same
 symbol by the system will then be given a common \verb+set_id+ which is used for identification
 of an entire symbol.
+
+Segmentation of the strokes is handled differently for each type of input. When text is typed
+in, each character is treated as one symbol. For images each group of connected components is
+one symbol. For pen strokes, strokes are grouped together based on whether they collide or not.
+Any strokes that intersect another set combine with that set.
 
 \subsubsection*{Recognition}
 Data for segments and symbols is passed along in XML format which is parsed by the
@@ -183,10 +188,11 @@ For uploaded images, the only additional piece of information in the tag is the 
 An example of an image \verb+Segment+ tag would be:
 \begin{verbatim}<Segment type="image_blob" instanceID="16" image="dat:image/png..."/>\end{verbatim}
 
-At this point, pen strokes and images will both be sent to the \verb+RecognitionManager+.
-The \verb+RecognitionManager+ enqueues all of the inputs and then calls \verb+Classifier+
-to get a classification for each. Pen strokes and images are sent to different functions
-for separate classification.
+At this point, segments will be sent to the \verb+RecognitionManager+. Typed text is
+looked up by comparing its unicode to a list and finding the corresponding symbol. The
+\verb+RecognitionManager+ enqueues the pen strokes and images in a list and then calls
+\verb+Classifier+ to get a classification for each. Pen strokes and images are sent to
+different functions for separate classification.
 
 Pen strokes are sent through port 1504 to the \verb+Main+ class of \verb+Mono/lei_classifier+.
 This will make a call to a \verb+ClassifierServer+ which uses the \verb+LeiClassifier+ to
