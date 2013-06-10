@@ -29,6 +29,10 @@ PermEvents.setup_toolbar = function(){
     document.getElementById("search").addEventListener("mouseover",Editor.showToolTip("search","Search"), true);
     document.getElementById("add").addEventListener("mouseover",Editor.showToolTip("add","New expression"), true);
     document.getElementById("remove").addEventListener("mouseover",Editor.showToolTip("remove","Delete expression"), true);
+    
+    //Keyboard shortcuts
+    $.ctrl('Z', Editor.undo);
+    $.ctrl('Y', Editor.redo);
 
     // add an upload image button to the canvas if this is supported
     if(window.FileReader){

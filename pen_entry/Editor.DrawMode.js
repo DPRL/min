@@ -53,6 +53,11 @@ DrawMode.prototype.init_mode = function(){
 }
 
 DrawMode.prototype.close_mode = function(){
+   if(Editor.current_text != null){
+        this.stopTextInput();
+        $(Editor.canvas_div).off(this.event_strings.onDown, this.stopTextInput);
+   }
+
    $(Editor.canvas_div).off('mousedown touchstart', this.onDown); 
    $(Editor.canvas_div).off('mouseup touchend', this.onUp); 
    $(Editor.canvas_div).off('doubleclick', this.onDoubleClick);
@@ -78,6 +83,7 @@ DrawMode.prototype.stopTextInput = function(e){
     // Editor.add_segment(Editor.current_stroke);            
         
     Editor.state = EditorState.MiddleOfStroke;
+    Editor.current_text = null;
 
     RenderManager.render();
 

@@ -121,6 +121,7 @@ Editor.mapCanvasBackspace = function(e)
                 // Otherwise, delete any selections.
                 e.preventDefault();
                 Editor.deleteTool();
+                $("#equation_canvas").off("keypress",Editor.current_mode.close_mode()).on("keypress", Editor.current_mode.init_mode());
                 break;
             }
         }
@@ -128,6 +129,7 @@ Editor.mapCanvasBackspace = function(e)
 
     if(e.keyCode == KeyCode.del) {
         Editor.deleteTool();
+        $("#equation_canvas").off("keypress",Editor.current_mode.close_mode()).on("keypress", Editor.current_mode.init_mode());
     }
     
 }
@@ -676,3 +678,12 @@ Editor.showToolTip = function(target, use){
 		$('#' + target).tooltip({content: use, items: '#' + target});
 	}
 }
+$.ctrl = function(key, callback, args) {
+    $(document).keydown(function(e) {
+        if(!args) args=[]; // IE barks when args is null 
+        if(e.keyCode == key.charCodeAt(0) && e.ctrlKey) {
+            callback.apply(this, args);
+            return false;
+        }
+    });        
+};

@@ -232,7 +232,7 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
             Editor.moveQueue.enqueue(new Vector2(e, Editor.mouse_position.clone()));
             
             this.timeoutID = window.setTimeout(this.touchAndHold,
-            Editor.touchAndHoldTimeout, e);
+                    Editor.touchAndHoldTimeout, e);
 
             $("#equation_canvas").one(this.event_strings.onMove,
             this.beginMovingSegmentsFromMove);
@@ -252,15 +252,16 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                 }
                 Editor.state = EditorState.SegmentsSelected;
                
-                this.timeoutID = window.setTimeout(this.touchAndHoldTimeout,
-                Editor.touchAndHoldTimeout, e);
+                this.timeoutID = window.setTimeout(this.touchAndHold,
+                        Editor.touchAndHoldTimeout, e); 
+                $("#equation_canvas").one(this.event_strings.onMove,
+                        this.beginMovingSegmentsFromMove);
             }
             // selecting none
             else
             {
                 $("#equation_canvas").off(this.event_strings.onDown,
-                this.onDownSegmentsSelected);
-                $("#equation_canvas").off(this.event_strings.onUp,
+                this.onDownSegmentsSelected).off(this.event_strings.onUp,
                 this.onUpAfterMove);
 
                 // TODO: This if can probably go after finishing stroke select

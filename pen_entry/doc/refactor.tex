@@ -2,6 +2,7 @@
 
 \usepackage{graphicx}
 \usepackage{alltt}
+\usepackage{float}
 
 \DeclareGraphicsExtensions{.png}
 
@@ -134,6 +135,40 @@ string to see if it had the 'iPad' in it. Modernizer provides a consistent
 interface for checking for touch-screen functionality under a Free Software
 license.
 
+\subsection*{Front End to Back End Flow}
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[width=\textwidth]{FrontToBackEndFlow.png}
+    \end{center}
+    \caption{The flow from Front-End to Back-End processes}
+    \label{fig:frontToBack}
+\end{figure}
+
+The Min event system accepts three types of input: keyboard inputs, pen strokes, and
+image files. Each type of input will fire a different function. Keyboard input does
+not require recognition so nothing further is done at this point for it. Pen strokes
+will activate \verb+DrawMode+ which records the position of the strokes. Image files
+will trigger \verb+onImageLoad+.
+
+From here, pen strokes and images will both be sent to the \verb+RecognitionManager+.
+The \verb+RecognitionManager+ enqueues all of the inputs and then calls \verb+Classifier+
+to get a classification for each. Pen strokes and images are sent to different functions
+for separate classification.
+
+Pen strokes are sent through port 1504 to the \verb+Main+ class of \verb+Mono/lei_classifier+.
+This will make a call to a \verb+ClassifierServer+ which uses the \verb+LeiClassifier+ to
+classify the pen strokes. The results are returned as an XML.
+
+Images are sent through port 7006 to the \verb+ImageRecognitionServer+. This server will
+call on Matlab scripts to do the image processing. Matlab will segment the image and then
+classify each separate part of the image. These results are converted to an XML and returned.
+
+The front end of the system recieves the XML of the classified symbols. \verb+Classifier+
+processes the XML and creates recognition which is put in the \verb+RecognitionManager+'s
+result table. Then the \verb+RenderManager+ renders the canvas, displaying the recognized
+symbols.
+
+
 \subsection*{TODO}
 Here are some things that I would like to see happen that are closely related to
 the event system refactoring.
@@ -241,6 +276,12 @@ the event system refactoring.
         and multiple objects the same interface, so they can be used
         interchangeably. This makes the segment/set issue simpler because it
         makes the groupings of the strokes intrinsic in their DOM structure.  % reword?
+    \item[Min only presents 56 different symbol classes] Though we have
+         classifiers that support more than this, Min only presents 56 different
+         classes to the user. We should increase this as users sometimes ask why a
+         particular letter or symbol is not available. Look at
+         \verb+example_tree_icdar.xml+ as a starting point.
+       
 \end{description}
 
 \section*{Tips}
@@ -277,4 +318,5 @@ the event system refactoring.
         'git help' - This is a way to access the Git manpages. 
         Just run \verb+git help+.
 \end{description}
+
 \end{document}
