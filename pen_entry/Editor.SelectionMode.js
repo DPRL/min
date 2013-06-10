@@ -305,10 +305,6 @@ SelectionMode.moveSegments = function(previous, current){
     var translation = Vector2.Subtract(current, previous);
     for(var k = 0; k < Editor.selected_segments.length; k++)
     {
-        seg = Editor.selected_segments[k];
-        if(seg.clear != undefined) {
-            seg.clear(Editor.contexts[0]);
-        }                    
         seg.translate(translation);
     }
     Editor.selected_bb.translate(translation);

@@ -78,7 +78,6 @@ StrokeSelectMode.onMoveNoSelectedSegmentsBase = function(e){
     // for each segment in result add to selected segments set (if they aren't there already)
     if(stroke_result.length > 0)
     {
-        var initial_length = Editor.selected_segments.length;
         while(stroke_result.length > 0)
         {
             var segment = stroke_result.pop();
