@@ -236,6 +236,38 @@ as a String which will be parsed to display the correct alignment on the canvas.
 is sent to the \verb+Slider+ which updates the current slide with this code, and MathJax renders
 the Tex code for the user.
 
+\subsection*{Notes on removing calls to the CollisionManager}
+We have been trying to remove unnecessary calls to the CollisionManager from files like
+Editor.DrawMode, Editor.StrokeSelectMode and Editor.RectSelectMode so the system can be sped up.
+We were successful at removing calls made from Editor.DrawMode but couldn't remove calls
+from the other files. There are several reasons for this and they are described below:
+
+\begin{description}
+	\item[Editor.StrokeSelectMode and Editor.RectSelectMode] These files make two calls 
+		each to the CollisionManager. First, onMouseDown to determine if the user clicked 
+		on a segment and if so, add it to the selected_segments array. Second, calls the 
+		CollisionManager during the movement phase. Each call to the CollisionManager 
+		just returns an array with the collided segments. To eliminate these calls, we tried binding 
+		mouseover events to the segments but noticed that in StrokeSelectMode, the mouseover events 
+		don't get triggered because the user's mouse was too fast. This approach seemed 
+		like it would work for RectSelectMode because we could just add segments in the 
+		selected_segments array by binding a mouseover event on the bounding box but that 
+		didn't work. This is because of how we are currently using the SVG element that 
+		pertains to each stroke. Currently, the SVG element for each stroke covers the entire canvas 
+		so on mouse over the last segment's SVG element is the only one being triggered.
+		The last stroke's SVG covers the entire canvas and previous strokes are below it.
+		It's just like a stack of SVG's.
+\end{description}
+
+We agreed that moving functions specific to each Editor Mode file may help keep code clean
+but it doesn't really speed it up. A solution was proposed about the SVG problem and it was
+to set the width and height of the SVG element to be fixed instead of covering entire 
+canvas (\begin{verbatim} 100% for the width and height \end{verbatim}). This solution was 
+implemented by David Stalnaker and pushed onto a different branch in the Git repository. 
+We are currently not making use of this solution because it broke a lot things in min. 
+In all, the CollisionManager file will be there for now. 
+		
+
 \subsection*{TODO}
 Here are some things that I would like to see happen that are closely related to
 the event system refactoring.
@@ -296,7 +328,7 @@ the event system refactoring.
         dynamicaly setting the z-index CSS style attribute might be a better
         choice to get this behavior. Ultimately it would make the system much
         simpler and likely more extensible if we can eliminate the
-        CollisionManager.
+        CollisionManager. This has been addressed above. 
     \item[Remove RenderManager] Earlier versions of Min made use of a 'canvas'
         element. Note that this is the \emph{type} of element, not the id of the
         element. The problem with this is that we must manually re-render (via
