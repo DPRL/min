@@ -3,15 +3,18 @@
 # second time, so I added a pass2 target.
 
 LATEX = pdflatex
-DOT = dot -Tpng  
+DOT = dot -Tpdf  
 
 all: refactor.pdf
 
-refactor.pdf: mode_diagram.png refactor.tex
+refactor.pdf: mode_diagram.pdf refactor.tex min_process.pdf
 	$(LATEX) refactor.tex
 
-mode_diagram.png: mode_diagram.dot
-	$(DOT) -omode_diagram.png mode_diagram.dot
+mode_diagram.pdf: mode_diagram.dot
+	$(DOT) -omode_diagram.pdf mode_diagram.dot
+
+min_process.pdf: min_process.dot
+	$(DOT) -omin_process.pdf min_process.dot
 
 clean:
 	rm *.png *.log *.pdf *.aux
