@@ -156,6 +156,14 @@ DrawMode.onMoveBase = function(e){
 }
 
 DrawMode.onDoubleClick = function(e){
+	// All Editor Modes(RectSelect and StrokeSelect) call DrawMode's
+	// onDoubleClick when in the mode and an expression is double clicked on
+	// Simple unbind the events already attached in those modes.
+	var eq_canv = $("#equation_canvas").off(this.event_strings.onUp,
+    this.onUpAfterMove).off(this.event_strings.onMove,
+    this.beginMovingSegmentsFromMove).off(this.event_strings.onDown,
+    this.onDownSegmentsSelected);
+    
     var seg = DrawMode.collided_segments.pop();
     if(seg != null)
 		Editor.add_selected_segment(seg);
