@@ -153,17 +153,9 @@ RenderManager.render_bb_control_point = function(in_x, in_y, in_context)
 // RLAZ: New method to colorize the bounding boxes for OCR results
 // based on state.
 RenderManager.colorOCRbbs = function(classname) {
-    //var classname;
-    //if (editing) 
-    //    classname = "segment_input_set";
-    //else
-    //    classname = "segment_set";
-
     for (var i = 0; i < RenderManager.segment_set_divs.length; i++) {
         var segment = RenderManager.segment_set_divs[i];
-        if (segment.className != "text_segment") {
-            segment.className = classname;
-        }
+        RenderManager.segment_set_divs[i].className = classname;
     }
 }
 

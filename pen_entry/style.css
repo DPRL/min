@@ -464,10 +464,6 @@ div.bb_handle {
 	background-color: rgba(113, 168, 99, 0.41); 
 }
 
-/* This controls the appearance of overlaid recognition results. */
-.text_segment {
-}
-
 /* This controls the appearance of overlaid recognition results. 
  * In the entry mode. */
 .segment_input_set {
