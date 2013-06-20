@@ -205,18 +205,10 @@ RenderManager.render_set_field = function(in_context_id)
             {
                 var div = document.createElement('div');
 
-                switch(Editor.state)
-                {
-                case EditorState.ReadyToStroke:
-                case EditorState.MiddleOfStroke:
-                case EditorState.ReadyForText:
-                case EditorState.MiddleOfText: 
+                if(! (Editor.current_mode instanceof SelectionMode))   
                     div.className = 'segment_input_set';
-                    break;
-                default:
+                else
                     div.className = 'segment_set';
-                    break;
-                }
 
                 div.style.visibility='hidden';
                 
