@@ -6,6 +6,8 @@ This file contains events and information specific to rectangle selection.
 // one?
 RectSelectMode.prototype = new SelectionMode();
 
+RectSelectMode.prototype.segment_style_class = "segment_rect_select";
+
 function RectSelectMode(){
     this.onDownNoSelectedSegments = $.proxy(RectSelectMode.onDownNoSelectedSegmentsBase, this);
     this.onMoveNoSelectedSegments = $.proxy(RectSelectMode.onMoveNoSelectedSegmentsBase, this);
@@ -148,7 +150,7 @@ RectSelectMode.rectSelectTool = function()
     // else
     //     Editor.state = EditorState.SegmentsSelected;
 
-    RenderManager.colorOCRbbs("segment_rect_select");
+    RenderManager.colorOCRbbs(this.segment_style_class);
     RenderManager.render();    
     //Editor.selection_method = "Rectangle";
 }

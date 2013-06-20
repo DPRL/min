@@ -7,6 +7,8 @@ mode of Min.
 // of the SelectionMode. This will change.
 DrawMode.prototype = new EditorMode();
 
+DrawMode.prototype.segment_style_class = "segment_input_set";
+
 function DrawMode(){
     // Call the super constructor
     // CMS: Might not need this
@@ -36,7 +38,7 @@ function DrawMode(){
 }
 
 DrawMode.prototype.init_mode = function(){  
-    RenderManager.colorOCRbbs("segment_input_set");
+    RenderManager.colorOCRbbs(this.segment_style_class);
     this.selectPenTool();
     $("#equation_canvas").css("cursor", "default");
 
@@ -232,7 +234,7 @@ DrawMode.selectPenTool = function()
     }
 
     Editor.state = EditorState.ReadyToStroke;
-    RenderManager.colorOCRbbs("segment_input_set");
+    RenderManager.colorOCRbbs(this.segment_style_class);
     RenderManager.render();
 }
 

@@ -205,11 +205,7 @@ RenderManager.render_set_field = function(in_context_id)
             {
                 var div = document.createElement('div');
 
-                if(! (Editor.current_mode instanceof SelectionMode))   
-                    div.className = 'segment_input_set';
-                else
-                    div.className = 'segment_set';
-
+                div.className = Editor.current_mode.segment_style_class;
                 div.style.visibility='hidden';
                 
                 Editor.canvas_div.appendChild(div);

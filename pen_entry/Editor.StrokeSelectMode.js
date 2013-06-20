@@ -2,6 +2,9 @@
 This file contains events and information specific to stroke selection.
 */
 
+StrokeSelectMode.prototype = new SelectionMode();
+StrokeSelectMode.prototype.segment_style_class = "segment_stroke_select";
+
 function StrokeSelectMode(){
     this.onDownNoSelectedSegments = $.proxy(StrokeSelectMode.onDownNoSelectedSegmentsBase, this);
     this.onMoveNoSelectedSegments = $.proxy(StrokeSelectMode.onMoveNoSelectedSegmentsBase, this);
@@ -14,9 +17,6 @@ function StrokeSelectMode(){
         this.onUpNoSelectedSegments = EditorMode.mkIgnoreMultipleTouches(this.onUpNoSelectedSegments);
     }
 }
-// For now this hierarchy doesn't matter, as we don't make instances
-// of the SelectionMode. This will change.
-StrokeSelectMode.prototype = new SelectionMode();
 
 
 StrokeSelectMode.prototype.init_mode = function(){
@@ -110,7 +110,7 @@ StrokeSelectMode.strokeSelectTool = function()
     Editor.clearButtonOverlays();
     Editor.button_states[Buttons.Stroke].setSelected(true);
     
-    RenderManager.colorOCRbbs("segment_stroke_select");
+    RenderManager.colorOCRbbs(this.segment_style_class);
     RenderManager.render();
     Editor.selection_method = "Stroke";
 }
