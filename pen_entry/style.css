@@ -427,7 +427,7 @@ div.bb_handle {
 }
 
 /* This controls style rules common to all overlaid recognition results */
-.segment_stroke_select, .segment_rect_select, .text_segment, .segment_input_set {
+.segment_stroke_select, .segment_rect_select, .text_segment, .segment_draw_mode {
 	-webkit-transform-origin: 0 0;
     -moz-transform-origin: 0 0;
     transform-origin: 0 0;
@@ -466,7 +466,7 @@ div.bb_handle {
 
 /* This controls the appearance of overlaid recognition results. 
  * In the entry mode. */
-.segment_input_set {
+.segment_draw_mode {
 	background-color: rgba(126, 174, 235, 0.46);
 	/* background-color: rgba(50, 50, 50, 0.6);  */
 }

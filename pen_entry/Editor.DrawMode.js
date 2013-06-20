@@ -7,7 +7,7 @@ mode of Min.
 // of the SelectionMode. This will change.
 DrawMode.prototype = new EditorMode();
 
-DrawMode.prototype.segment_style_class = "segment_input_set";
+DrawMode.prototype.segment_style_class = "segment_draw_mode";
 
 function DrawMode(){
     // Call the super constructor
@@ -139,7 +139,7 @@ DrawMode.onUpBase = function(e){
     Editor.current_action.set_id_changes = set_id_changes;
     Editor.current_action.buildSegmentXML();
     // bind the last penstroke's bounding box to a dblclick event
-    var seg_array = $('.segment_input_set');
+    var seg_array = $('.segment_draw_mode');
     if(seg_array.length > 0){
     	seg_array[seg_array.length-1].ondblclick = function(){
     		DrawMode.segment_clicked(stroke);
