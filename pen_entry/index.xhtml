@@ -8,6 +8,7 @@
       xmlns:xlink="http://www.w3.org/1999/xlink">
 	<head>
 		<link href="http://fonts.googleapis.com/css?family=Ubuntu&amp;subset=cyrillic-ext,latin,greek,greek-ext,latin-ext,cyrillic&amp;v2" rel="stylesheet" type="text/css"/>
+		<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"></meta>
 		<meta name="viewport" content="user-scalable=no, maximum-scale=1.0, minimum-scale=1.0"></meta>
 		<meta name="apple-mobile-web-app-capable" content="yes"></meta>
 		<meta name="apple-mobile-web-app-status-bar-style" content="black"></meta>
@@ -240,6 +241,12 @@
 	<script type="text/javascript" src="CollisionManager.js"></script>
 	<script type="text/javascript" src="RecognitionManager.js"></script>
 	
+	<!-- Imports -->
+	<script type="text/javascript" src="TeX_Input.js"></script> 
+	
+	<!-- Raphael -->
+	<script type="text/javascript" src="third_party/Raphael.js"></script>
+	
 	<!-- collision objects -->
 	<script type="text/javascript" src="BoundingBox.js"></script>
 
@@ -250,8 +257,8 @@
 	<script type="text/javascript" src="SymbolSegment.js"></script>
 
 	<!-- Undoable/Redoable Actions -->
-        <script type="text/javascript" src="Action.js"></script>
-        <script type="text/javascript" src="Action.CompositeAction.js"></script>
+    <script type="text/javascript" src="Action.js"></script>
+    <script type="text/javascript" src="Action.CompositeAction.js"></script>
 	<script type="text/javascript" src="Action.AddSegments.js"></script>
 	<script type="text/javascript" src="Action.TransformSegments.js"></script>
 	<script type="text/javascript" src="Action.GroupSegments.js"></script>
@@ -271,7 +278,7 @@
 			}
 		});
 	</script>
-	<script type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+	<script type="text/javascript" src="third_party/MathJax/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
 
 	<!-- iosSlider plugin -->
 	<script type="text/javascript" src="third_party/iosSlider/jquery.easing-1.3.js"></script>

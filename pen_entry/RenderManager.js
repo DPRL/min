@@ -225,7 +225,7 @@ RenderManager.render_set_field = function(in_context_id)
 
             // Recognition result/label
             var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
-            if(recognition_result != null && set_segments[0].constructor != SymbolSegment)
+            if(recognition_result != null && set_segments[0].constructor != SymbolSegment && set_segments[0].constructor != TeX_Input)
             {
                 // Lines 
                 var symbol = RecognitionManager.symbol_name_to_unicode[recognition_result.symbols[0]];
