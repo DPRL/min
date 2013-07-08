@@ -1,4 +1,6 @@
 digraph min_process {
+    compound=true;
+
     UI [label="User Input"];
     EE [label="Editor.Event"];
     PS1 [label="Pen Stroke",shape="plaintext"];
@@ -16,6 +18,18 @@ digraph min_process {
     EIM [label="Matlab is used to\nclassify Images.",shape="box"];
     EPS [label="LeiClassifier is used to\nclassify Pen Strokes.",shape="box"];    
     TT2 [label="Typed Text",shape="plaintext"];
+    OUT [label="Recognized Symbol\nLayout",shape="box"];
+    
+    subgraph cluster_align {
+        PA [label="Parse"];
+        AL [label="Align"];
+        PA -> AL;
+    }
+
+    ETT -> PA [lhead=cluster_align];
+    EPS -> PA [lhead=cluster_align];
+    EIM -> PA [lhead=cluster_align];
+    AL -> OUT [ltail=cluster_align];
 
     {rank=same; PS1 IM1 TT1}
     
