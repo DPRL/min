@@ -86,6 +86,17 @@ TransformSegments.prototype.rescale = function(elapsed, utc_ms)
     Editor.update_selected_bb();
     RenderManager.render();
     
+    // Added because each TeX_Input element in the 'this.segments' array has to
+    // compensate for horizontal flip
+    for(var j = 0; j < this.segments.length; j++)
+    {
+    	if(this.segments[j].constructor == TeX_Input){
+    		this.segments[j].dirty_flag = true;
+        	this.segments[j].change_offset = true;
+        	this.segments[j].render();
+        }
+    }
+    
     this.frames++;
     
     if(fraction == 1.0)

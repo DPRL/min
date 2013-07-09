@@ -1,6 +1,6 @@
 digraph min_process {
-    compound=true;
-
+	compound = true;
+	
     UI [label="User Input"];
     EE [label="Editor.Event"];
     PS1 [label="Pen Stroke",shape="plaintext"];
@@ -20,7 +20,7 @@ digraph min_process {
     TT2 [label="Typed Text",shape="plaintext"];
     OUT [label="Recognized Symbol\nLayout",shape="box"];
     
-    subgraph cluster_align {
+	subgraph cluster_align {
         PA [label="Parse"];
         AL [label="Align"];
         PA -> AL;

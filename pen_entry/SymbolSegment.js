@@ -19,15 +19,15 @@ function SymbolSegment(in_position) {
     this.text_height = 32;
     
     this.scale = new Vector2(1.0, 1.0);
-    this.translation = new Vector2(in_position.x, in_position.y);
+    this.translation = in_position.clone();
     
     this.temp_scale = new Vector2(1.0, 1.0);
     this.temp_translation = new Vector2(0.0, 0.0);
     
     this.size = new Vector2(0, 0);
     
-    this.world_mins = new Vector2(in_position.x, in_position.y);
-    this.world_maxs = new Vector2(in_position.x, in_position.y);
+    this.world_mins = in_position.clone();
+    this.world_maxs = in_position.clone();
     
     this.is_empty = true;
     
@@ -107,6 +107,7 @@ SymbolSegment.prototype.render = function() {
     
     this.textDiv.css('-webkit-transform', transform);
     this.textDiv.css('-moz-transform', transform);
+    
     
     this.textDiv.text(this.text);
     

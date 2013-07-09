@@ -214,10 +214,10 @@ result table. The result with the highest certainty for each symbol is chosen. T
 \verb+RenderManager+ renders the recognized symbol(s) on the canvas.
 
 \subsubsection*{Alignment}
-When Recognize Expression is pressed, the recognized symbols are collected and tagged,
-then appended to the \verb+draculae_server+'s url. They are sent to the parser as a list
-of \verb+Segment+s. Each \verb+Segment+ contains the symbol that it was classified as,
-its min and max position on the canvas, and its id. For example:
+The alignment operation consists of two processes that are performed as one. 
+First, the recognized symbols are collected and tagged,then appended to the \verb+draculae_server+'s url. 
+They are sent to the parser as a list of \verb+Segment+s. Each \verb+Segment+ contains the symbol 
+that it was classified as, its min and max position on the canvas, and its id. For example:
 \begin{verbatim}<SegmentList>
 <Segment symbol="2" min="349,208" max="407,286" id="2"/>
 <Segment symbol="5" min="496,250" max="554,328" id="14"/>
@@ -226,10 +226,38 @@ its min and max position on the canvas, and its id. For example:
 
 This causes the \verb+main+ function of the server to process the request. The server parses
 the url to extract the data and \verb+DRACULAE+ aligns the symbols and generates Tex code to
-represent it. This Tex code and the list of segments are tagged and passed back to the events
-as a String which will be parsed to display the correct alignment on the canvas. The Tex code
-is sent to the \verb+Slider+ which updates the current slide with this code, and MathJax renders
-the Tex code for the user.
+represent it. This Tex code and the list of segments are tagged and passed back to the front end
+as a String. 
+Lastly, when the front end gets the returned alignment result, it parses it to get the segments and the latex.
+The alignment response data sent back from DRACULAE looks like this:
+\begin{verbatim}
+<AlignResponse>
+	<TexString> 
+		\documentclass[12pt,letter]{article}
+		\usepackage{amssymb}
+
+		\begin{document}
+		\pagestyle{empty}
+		\begin{Huge}
+
+		$
+			2
+			x
+		$
+
+		\end{Huge}
+		\end{document}
+	</TexString>
+	<SegmentList id="2" min = "355,31" max = "421,199"></SegmentList>
+	<SegmentList id="9" min = "439,75" max = "483,199"></SegmentList>
+</AlignResponse>
+\end{verbatim}
+The segment list results contains the coordinates of where each recognized segment on the canvas should be placed.
+This information is extracted and used to transform each segment after the coordinate and scale of each 
+segment is calculated and applied. We make use of a 'class' called TransformSegments and it's 
+responsible for transforming each segment's position and scale as well as calling the RenderManager
+to render transformed segment. The Tex code is sent to the \verb+Slider+ which updates 
+the current slide with this code, and MathJax renders the Tex code for the user to see.
 
 \subsection*{Notes on removing calls to the CollisionManager}
 We have been trying to remove unnecessary calls to the CollisionManager from files like
@@ -261,8 +289,97 @@ canvas (100\% for the width and height). This solution was
 implemented by David Stalnaker and pushed onto a different branch in the Git repository. 
 We are currently not making use of this solution because it broke a lot things in min. 
 In all, the \verb+CollisionManager+ file will be there for now. 
-		
+
+\subsection*{Notes on importing Tex into Min using MathJax}
+We came up with a method that will allow us to import Tex into Min by using MathJax. 
+MathJax is an open source javascript display engine for mathematics that works in all 
+browsers. In simple terms, it goes through a web page and displays the math equations on 
+the page while paying attention to the surrounding text. Its input types are Tex, MathML, 
+and ASCIIMathML. Its output types are HTML-CSS, SVG and Native MathML. These input and output 
+types are specified before MathJax loads. When MathJax run through the page and detects a 
+math equation on the page, it identifies the math with their own tag which helps them during
+the retrieval phase. Once the math equation is retrieved and math input type is specified 
+say Tex for instance, it parses the Tex equation symbol by symbol and converts it into an 
+internal representation and processes it. During the output phase, it determines the output
+format and displays the Math in that output format. MathJax keeps a dictionary of all possible
+math symbol in their code base and uses it during the output phase to display the Math. 
+This dictionary is big, each output format has it's own dictionary for instance an SVG output
+has all the path tags depending on the font of the math (Bold,italics, etc). In the HTML, 
+MathJax creates a div with id called \verb+MathJax_SVG_glyphs+ which
+holds all the path elements needed to render the equation as an SVG. Each symbol's path 
+element has to be manually flipped horizontally by MathJax because they symbol's path element
+tag when displayed as is in the div is up side down. Minor problem but worth mentioning.
+
+To display the Tex equation, we append the Tex to a hidden div in the body of Min and have MathJax 
+render the Tex to an SVG and we scale the rendered Tex so that the height and width always 
+fit the height and width of Min's canvas. Once the scaling is done, the rendered Tex is 
+copied over to Min by determining the screen position of each symbol in the rendered SVG 
+and positioning it on the canvas using a new class called \verb+Tex_Input+. \verb+Tex_Input+ is a sub 
+class of the \verb+pen_stroke+ class and allows us to import each symbol to Min. Upon initialization,
+\verb+Tex_Input+ initializes the super class and creates a new SVG element and appends the 
+symbol's SVG element. MathJax displays each symbol's SVG using the SVG path element which 
+they already defined in their code base and copy it over to the HTML body like stated above,
+but for some math symbols like the division symbol for a fraction for instance, MathJax 
+doesn't have a path element predefined for it but displays it using SVG's rectangle element
+with a width and height that properly fits. 
+
+Once the math symbol has been imported into Min, the next step is to have the slider display 
+the Tex which is not trivial. In all, the hidden div which MathJan originally rendered the 
+Tex in is removed from the HTML body. 	
 \newpage
+
+\subsection*{Notes on importing Tex into Min using MathJax}
+We came up with a method that will allow us to import Tex into Min by using MathJax. 
+MathJax is an open source javascript display engine for mathematics that works in all 
+browsers. In simple terms, it goes through a web page and displays the math equations on 
+the page while paying attention to the surrounding text. Its input types are Tex, MathML, 
+and ASCIIMathML. Its output types are HTML-CSS, SVG and Native MathML. These input and output 
+types are specified in the script tag that loads MathJax. When MathJax runs through the page and detects a 
+math equation on the page, it identifies the math with a special tag which helps it during
+the retrieval phase. Once the math equation is retrieved and math input type is specified 
+for instance, TeX, it parses the Tex equation symbol by symbol and converts it into an 
+internal representation and processes it. During the output phase, it determines the output
+format and displays the Math in the output format. MathJax keeps a dictionary of all possible
+math symbols in their code base and uses it during the output phase to display the Math. 
+This dictionary is big, each output format has it's own dictionary for instance an SVG output
+has all the path tags depending on the font of the math (Bold,italics, etc). In the HTML, 
+MathJax creates a hidden div with id called \verb+MathJax_SVG_glyphs+ which
+holds all the path elements needed to render the equation as an SVG. Each symbol's path 
+element has to be manually flipped horizontally by MathJax because the symbol's path element
+tag when displayed is up side down. Minor problem but worth mentioning.
+
+To display the Tex equation, we append the Tex to a hidden div in the body of Min and have MathJax 
+render the Tex to an SVG and we scale the rendered Tex so that the height and width always 
+fit the height and width of Min's canvas not the whole page. Once the scaling is done, the rendered Tex is 
+copied over to Min by determining the screen position of each symbol in the rendered SVG by looping through
+the SVG use tag MathJax uses to reference the \verb+MathJax_SVG_glyphs that holds the paths for each element.
+The SVG use tag has a href which is one of the internal naming convention used by MathJax to identify each 
+symbol. Here is an example of the use tag:
+
+\begin{verbatim}
+<use xmlns="http://www.w3.org/2000/svg" xlink:href="#MJMAIN-32" xmlns="http://www.w3.org/1999/xlink"/>
+\end{verbatim}
+
+The use tag's href in addition to containing the internal representation of each symbol contains the
+unicode representation of each symbol in this case 32. The unicode is always after the hyphen symbol.
+The symbol in the above example is two. Onces the href atribute has been acquired, the DOM is queried and 
+the path element returned. This path element is then used to display the symbol on canvas while placing
+it in the right spot. We make use of a 'class' called \verb+Tex_Input+ to place the path element on the canvas. 
+\verb+Tex_Input+ is a sub class of the \verb+pen_stroke+ class and allows us to import each symbol to Min. 
+Upon initialization, \verb+Tex_Input+ initializes the super class and creates a new SVG element and appends the 
+symbol's SVG element. MathJax displays each symbol's SVG using the SVG path element which 
+they already defined in their code base and copy it over to the HTML body like stated above,
+but for some math symbols like the division symbol for a fraction for instance, MathJax 
+doesn't have a path element predefined for it but displays it using SVG's rectangle element
+with a width and height that properly fits. 
+
+After the path element placed, the path element has to be converted to polyline points which is needed
+by Min's classifier during classification. Therefore, the path elements have to be parsed and the 
+polyline points returned. The parsing is done in the front in the \verb+Tex_Input+ file. 
+
+Once the math symbol has been imported into Min, the next step is to have the slider display 
+the Tex which is not trivial. In all, the hidden div which MathJan originally rendered the 
+Tex in is removed from the HTML body. 
 
 \subsection*{TODO}
 Here are some things that I would like to see happen that are closely related to

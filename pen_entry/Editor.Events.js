@@ -46,6 +46,7 @@ Editor.setup_events = function()
 
     PermEvents.setup_toolbar();
     PermEvents.setup_document();
+    PermEvents.check_url();
 
     // Select the pen tool
     Editor.button_states[Buttons.Pen].enabled = true;
@@ -356,7 +357,7 @@ Editor.align = function()
                         segments[i].resize(min_0, scale);
                         segments[i].freeze_transform();
                         segments[i].translate(Vector2.Subtract(min_f, min_0));
-                        segments[i].freeze_transform();
+                        segments[i].freeze_transform();    
                     }
                     
                 }
