@@ -100,6 +100,13 @@ PermEvents.setup_document = function(){
     $(document).keydown(Editor.mapCanvasBackspace);
 }
 
+// Method that just helps with the recursion in scale_tex
+PermEvents.stub = function(elem){
+	PermEvents.scale_tex(elem);
+	PermEvents.MoveSVGSegmentsToCanvas(elem);
+	document.body.removeChild(elem); // Remove elem from document body (Import done)
+}
+
 // Checks Min's URL for any TeX parameter. If there is, create a new TeX_Input and
 // move the rendered TeX(using MathJax) to the canvas
 PermEvents.check_url = function(){
@@ -121,17 +128,11 @@ PermEvents.check_url = function(){
     	// PermEvents.callBack
     	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
     	MathJax.Hub.Queue(["Rerender", MathJax.Hub], [function(){ 
-    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [PermEvents.stub(elem).bind( this)]);
+    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [PermEvents.stub.bind( this, elem)]);
     	}]);
     }
 }
 
-// Method that just helps with the recursion in scale_tex
-PermEvents.stub = function(elem){
-	PermEvents.scale_tex(elem);
-	PermEvents.MoveSVGSegmentsToCanvas(elem);
-	document.body.removeChild(elem); // Remove elem from document body (Import done)
-}
 // Scales the Tex to fit canvas width and height before insertion
 PermEvents.scale_tex = function(elem){
 	var equation_canvas_width = $("#equation_canvas")[0].offsetWidth;
@@ -141,7 +142,7 @@ PermEvents.scale_tex = function(elem){
 	var math_height = MathJax_div.offsetHeight;
 	if(math_width > equation_canvas_width || math_height > equation_canvas_height){ 
 		elem.style.fontSize =  (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [PermEvents.scale_tex(elem).bind( this)]);
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [PermEvents.scale_tex.bind(this, elem)]);
 	}else{
 		return;
 	}
