@@ -5,6 +5,7 @@
 \usepackage{float}
 
 \DeclareGraphicsExtensions{.pdf}
+
 \begin{document}
 \author{Christopher Sasarak, Awelemdy Orakwue, Justin Kelly} \title{Summary of Min Refactor} 
 \maketitle
@@ -352,7 +353,7 @@ To display the Tex equation, we append the Tex to a hidden div in the body of Mi
 render the Tex to an SVG and we scale the rendered Tex so that the height and width always 
 fit the height and width of Min's canvas not the whole page. Once the scaling is done, the rendered Tex is 
 copied over to Min by determining the screen position of each symbol in the rendered SVG by looping through
-the SVG use tag MathJax uses to reference the \verb+MathJax_SVG_glyphs that holds the paths for each element.
+the SVG use tag MathJax uses to reference the \verb+MathJax_SVG_glyphs+ which hold the paths for each element.
 The SVG use tag has a href which is one of the internal naming convention used by MathJax to identify each 
 symbol. Here is an example of the use tag:
 
@@ -412,7 +413,7 @@ the event system refactoring.
         used .proxy, not knowing that modern browsers have a function called
         bind which does the same thing. We should use this method where possible
         since it will likely be a bit faster. See Editor.SelectionMode.js and
-        its constructor for an example of both.
+        its constructor for an example of both. \textbf{COMPLETE!}
     \item[Further Separate Event Functions into Modes] It might be
         possible to further separate concerns in some of the larger functions of
         the *Mode objects even further. 
