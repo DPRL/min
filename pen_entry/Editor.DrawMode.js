@@ -16,7 +16,7 @@ function DrawMode(){
    
     // Make 'this' refer to this DrawMode object in 
     // the event handler.
-    var onDown = $.proxy(DrawMode.onDownBase, this);
+    var onDown = DrawMode.onDownBase.bind( this);
 
     // Check for touch capability, if it exists, block multiple touches
     // TODO: Find out if we need to check for both mouse and touches
@@ -25,10 +25,10 @@ function DrawMode(){
     else
         this.onDown = onDown;
 
-    this.onUp = $.proxy(DrawMode.onUpBase, this);
-    this.onMove = $.proxy(DrawMode.onMoveBase, this);
-    this.onKeyPress = $.proxy(DrawMode.onKeyPress, this);
-    this.onDoubleClick = $.proxy(DrawMode.onDoubleClick, this);
+    this.onUp = DrawMode.onUpBase.bind( this);
+    this.onMove = DrawMode.onMoveBase.bind( this);
+    this.onKeyPress = DrawMode.onKeyPress.bind( this);
+    this.onDoubleClick = DrawMode.onDoubleClick.bind( this);
     this.selectPenTool = DrawMode.selectPenTool.bind(this);
     // List of segments associated with user's actions(click,dblclick etc)
     DrawMode.collided_segments = new Array();
@@ -143,7 +143,7 @@ DrawMode.onUpBase = function(e){
     if(seg_array.length > 0){
     	seg_array[seg_array.length-1].ondblclick = function(){
     		DrawMode.segment_clicked(stroke);
-    		$.proxy(DrawMode.onDoubleClick, this);}; // bind last seg to dblclick
+    		DrawMode.onDoubleClick.bind( this);}; // bind last seg to dblclick
 	}
 
     // Unbind the move action

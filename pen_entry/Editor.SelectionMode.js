@@ -8,13 +8,13 @@ SelectionMode.prototype = new EditorMode();
 function SelectionMode(){
     
     this.onDownSegmentsSelected =
-        $.proxy(SelectionMode.onDownSegmentsSelectedBase, this);
+        SelectionMode.onDownSegmentsSelectedBase.bind( this);
     this.beginMovingSegmentsFromMove =
-        $.proxy(SelectionMode.beginMovingSegmentsFromMove, this);
+        SelectionMode.beginMovingSegmentsFromMove.bind( this);
     this.moveSegmentsFromMove =
-        $.proxy(SelectionMode.moveSegmentsFromMoveBase, this);
-    this.onUpAfterMove = $.proxy(SelectionMode.onUpAfterMoveBase, this);
-    this.touchAndHold = $.proxy(SelectionMode.touchAndHold, this);
+        SelectionMode.moveSegmentsFromMoveBase.bind( this);
+    this.onUpAfterMove = SelectionMode.onUpAfterMoveBase.bind( this);
+    this.touchAndHold = SelectionMode.touchAndHold.bind( this);
     this.resizeSegmentsOnMove = $.proxy(SelectionMode.resizeSegmentsOnMoveBase,
         this);
     this.onDoubleClick = SelectionMode.onDoubleClick.bind(this);
@@ -31,9 +31,9 @@ function SelectionMode(){
             swipe: false
             });
 
-        this.onPinchStart = $.proxy(SelectionMode.onPinchStart, this);
-        this.onPinch = $.proxy(SelectionMode.onPinch, this);
-        this.onPinchEnd = $.proxy(SelectionMode.onPinchEnd, this);
+        this.onPinchStart = SelectionMode.onPinchStart.bind( this);
+        this.onPinch = SelectionMode.onPinch.bind( this);
+        this.onPinchEnd = SelectionMode.onPinchEnd.bind( this);
         this.onDownSegmentsSelected =
             EditorMode.mkIgnoreMultipleTouches(this.onDownSegmentsSelected);
         this.moveSegmentsFromMove =

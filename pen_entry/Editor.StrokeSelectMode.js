@@ -6,9 +6,9 @@ StrokeSelectMode.prototype = new SelectionMode();
 StrokeSelectMode.prototype.segment_style_class = "segment_stroke_select";
 
 function StrokeSelectMode(){
-    this.onDownNoSelectedSegments = $.proxy(StrokeSelectMode.onDownNoSelectedSegmentsBase, this);
-    this.onMoveNoSelectedSegments = $.proxy(StrokeSelectMode.onMoveNoSelectedSegmentsBase, this);
-    this.onUpNoSelectedSegments = $.proxy(StrokeSelectMode.onUpNoSelectedSegmentsBase, this);
+    this.onDownNoSelectedSegments = StrokeSelectMode.onDownNoSelectedSegmentsBase.bind( this);
+    this.onMoveNoSelectedSegments = StrokeSelectMode.onMoveNoSelectedSegmentsBase.bind( this);
+    this.onUpNoSelectedSegments = StrokeSelectMode.onUpNoSelectedSegmentsBase.bind( this);
     this.displaySelectionTool = StrokeSelectMode.strokeSelectTool.bind(this);
 
     if(Modernizr.touch){

@@ -121,7 +121,7 @@ PermEvents.check_url = function(){
     	// PermEvents.callBack
     	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
     	MathJax.Hub.Queue(["Rerender", MathJax.Hub], [function(){ 
-    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [$.proxy(PermEvents.stub(elem), this)]);
+    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [PermEvents.stub(elem).bind( this)]);
     	}]);
     }
 }
@@ -141,7 +141,7 @@ PermEvents.scale_tex = function(elem){
 	var math_height = MathJax_div.offsetHeight;
 	if(math_width > equation_canvas_width || math_height > equation_canvas_height){ 
 		elem.style.fontSize =  (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(PermEvents.scale_tex(elem), this)]);
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [PermEvents.scale_tex(elem).bind( this)]);
 	}else{
 		return;
 	}

@@ -80,7 +80,7 @@ Slider.prototype.mathJaxUpdate = function() {
 	var currentSlideNumber = this.slider_div.data('args').currentSlideNumber - 1;
 	var NumberofSlides =  $('.iosSlider').data('args').data.numberOfSlides;
 	var currentSlide  = $('.slider').children()[currentSlideNumber];
-	MathJax.Hub.Queue(["Rerender",MathJax.Hub, currentSlide], [$.proxy(this.resizeToFit, this)]);
+	MathJax.Hub.Queue(["Rerender",MathJax.Hub, currentSlide], [this.resizeToFit.bind( this)]);
 }
 
 /**
@@ -102,7 +102,7 @@ Slider.prototype.resizeToFit = function() {
 	if (percent > 50 && (slideWidth > containerWidth || slideHeight > containerHeight)){ //font size and width
 		var percent = percent - 5;
 		currentSlide.style.fontSize =  percent + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub, currentSlide], [$.proxy(this.resizeToFit, this)]);
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub, currentSlide], [this.resizeToFit.bind( this)]);
 	}
 
 }
