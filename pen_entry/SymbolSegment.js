@@ -72,13 +72,13 @@ SymbolSegment.prototype.popCharacter = function() {
 // object to a list of individual characters on the canvas,
 // when the user clicks elsewhere (focus is lost).
 SymbolSegment.prototype.finishEntry = function() {
-    letters = this.text.split("");
+    //letters = this.text.split("");
 
     // Don't record the temporary text object.
     var action = new DeleteSegments(new Array(this));
     action.Apply();
     
-    origin = this.worldMinPosition();
+    /*origin = this.worldMinPosition();
     for(var i = 0; i < letters.length; i++) {
         var s = new SymbolSegment(origin);
 
@@ -94,9 +94,88 @@ SymbolSegment.prototype.finishEntry = function() {
 
         s.update_extents();
         origin.x = s.worldMaxPosition().x + 2;
-    }
+    }*/
+    var elem = document.createElement("div");
+	elem.setAttribute("id","SymbolSegment_Tex");
+	elem.style.visibility = "hidden"; 		// Hide the element
+	elem.style.position = "absolute";
+	elem.style.fontSize = "800%";
+	elem.innerHTML = '\\[' + this.text + '\\]'; 	// So MathJax can render it
+	document.body.appendChild(elem); 		// don't forget to remove it later
+	
+	// Change renderer to svg and make sure it has been processed before calling
+	// SymbolSegment's callBack
+	var translation = this.translation.clone();
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
+    MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
+    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [SymbolSegment.stub,elem,translation]);
+    }]);
 
 };
+
+// Scales the Tex to fit canvas width and height before insertion
+// Moved here because many classes will make use of it
+SymbolSegment.scale_tex = function(elem){
+	var equation_canvas_width = $("#equation_canvas")[0].offsetWidth;
+	var equation_canvas_height = $("#equation_canvas")[0].offsetHeight;
+	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0];
+	var math_width = MathJax_div.offsetWidth;
+	var math_height = MathJax_div.offsetHeight;
+	if(math_width > equation_canvas_width || math_height > equation_canvas_height){ 
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(SymbolSegment.scale_tex(elem), this)]);
+	}else{
+		return;
+	}
+}
+
+// Method that just helps with the recursion in scale_tex
+SymbolSegment.stub = function(elem,translation){
+	SymbolSegment.scale_tex(elem); // scale tex
+	SymbolSegment.switch_to_svg(elem,translation);
+	document.body.removeChild(elem); // Remove elem from document body (Import done)
+}
+
+// Copies the rendered SVG in elem to the canvas
+SymbolSegment.switch_to_svg = function(elem,translation){
+	var svg_root = document.getElementsByClassName("MathJax_SVG")[0].firstChild;
+	var use_tag_array = svg_root.getElementsByTagName("use");
+	var rect_tag_array = svg_root.getElementsByTagName("rect");
+	var default_position = translation; // Mouse down point
+	use_tag_array = Array.prototype.slice.call(use_tag_array);
+	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
+	var elements_array = use_tag_array.concat(rect_tag_array);
+	var initial_offset; // Used to keep segments at user's click position
+	for(var i = 0; i < elements_array.length; i++){
+		var offset = $(elements_array[i]).offset();
+		if(i == 0)
+			initial_offset = offset;
+		
+		// Set up prototype inheritance chain and call query reformation 
+		TeX_Input.prototype.__proto__ = subclassOf(PenStroke);
+		var in_x = parseInt((default_position.x + offset.left-initial_offset.left).toFixed(2));
+		var in_y = parseInt((default_position.y + offset.top-initial_offset.top).toFixed(2));
+		var pen_stroke = new TeX_Input(elements_array[i], in_x, in_y, 6, null);
+		pen_stroke.initialize(svg_root, i, elements_array[i].tagName.toString());
+		
+		// Add the pen_stroke object to the Editor
+		Editor.add_action(new AddSegments(new Array(pen_stroke)));
+		Editor.add_segment(pen_stroke);
+		RenderManager.render();
+		pen_stroke.index = RenderManager.segment_set_divs.length-1;
+		pen_stroke.correct_flip();
+		Editor.state = EditorState.ReadyToStroke;
+		RecognitionManager.addRecognitionForText(pen_stroke);
+	}
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
+}
+
+// Used to implement inheritance
+function subclassOf(base){
+	_subclassOf.prototype= base.prototype;
+    return new _subclassOf();
+}
+function _subclassOf() {};
 
 SymbolSegment.prototype.render = function() {        
 

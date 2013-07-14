@@ -85,6 +85,19 @@ Editor.fit_to_screen = function(event)
     window.scroll(0,0);
 }
 
+// Scales the Tex to fit canvas width and height before insertion
+// Moved here because many classes will make use of it
+Editor.scale_tex = function(elem){
+	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0];
+	var math_width = MathJax_div.offsetWidth;
+	var math_height = MathJax_div.offsetHeight;
+	if(math_width < target_width || math_height < target_height){ 
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 10) + "%";
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
+	}else{
+		return;
+	}
+}
 
 
 //--------------------------------------------------
@@ -270,7 +283,6 @@ Editor.align = function()
             success: function(in_data, textStatus, xmlhttp)
             {
                 // parse response here
-                var new_dimensions = new Array();
 
                 // parse response xml
                 var xmldoc = in_data;
@@ -284,88 +296,31 @@ Editor.align = function()
                 }
                 
                 // Update the current slide with the TeX.
+                var tex_math = "";
                 if ( tex_nodes.length != 0 ) {
                     var tex_string = tex_nodes[ 0 ].textContent;
                     // get just the math, removing spaces
-                    var tex_math = tex_string.split("$").slice(1,-1).join("").replace( /\s*/g, "" );
+                    tex_math = tex_string.split("$").slice(1,-1).join("").replace( /\s*/g, "" );
 					Editor.slider.updateSlide(tex_math);
                 }
-                
-                for(var k = 0; k < segment_nodes.length; k++)
-                {
-                    var attributes = segment_nodes[k].attributes;
-                    var t = new Tuple();
-                    t.item1 = parseInt(attributes.getNamedItem("id").value);
-                    t.item2 = parseVector2(attributes.getNamedItem("min").value);
-                    t.item3 = parseVector2(attributes.getNamedItem("max").value)
-                    new_dimensions.push(t);
-
-                }
-                
-                // foreach segment set
-                
-                var transform_action = new TransformSegments(Editor.segments);
-                
-                for(var k = 0; k < new_dimensions.length; k++)
-                {
-                    var t = null;
-                    // find tuple containing original size of segment
-                    for(var j = 0; j < data.length; j++)
-                    {
-                        if(data[j].item1.set_id == new_dimensions[k].item1)
-                        {
-                            t = data[j];
-                            break;
-                        }
-                    }
-
-                    if(t == null)
-                        continue;
-                    
-                    var set_id = new_dimensions[k].item1;
-                    var segments = Editor.get_segment_by_id(set_id);
-                    
-                    var min_0 = t.item4;
-                    var max_0 = t.item5;
-                    
-                    var min_f = new_dimensions[k].item2;
-                    var max_f = new_dimensions[k].item3;
-                    
-                    var size0 = Vector2.Subtract(max_0, min_0);
-                    var sizef = Vector2.Subtract(max_f, min_f);
-                    
-                    // If it's a text segment, account for the draculae making x's smaller than t's, etc
-                    if (segments.length == 1 && segments[0].constructor == SymbolSegment) {
-                        if (-1 != $.inArray(segments[0].text, Editor.x_height_chars)) {
-                            min_f.y -= sizef.y;
-                            sizef.y *= 2;
-                        }
-                        if (-1 != $.inArray(segments[0].text, Editor.descender_chars)) {
-                            min_f.y -= sizef.y / 2;
-                        }
-                    }
-                    
-                    var scale = new Vector2(sizef.x / size0.x, sizef.y / size0.y);
-                    
-                    var translation = new Vector2();
-                    translation.x = scale.x * min_f.x - min_0.x;
-                    translation.y = scale.y * min_f.y - min_0.y;
-                    
-                    
-                    for(var i = 0; i < segments.length; i++)
-                    {
-                        segments[i].resize(min_0, scale);
-                        segments[i].freeze_transform();
-                        segments[i].translate(Vector2.Subtract(min_f, min_0));
-                        segments[i].freeze_transform();    
-                    }
-                    
-                }
-                
-                transform_action.add_new_transforms(Editor.segments);
-                transform_action.Apply();
-                Editor.add_action(transform_action);
-                //RenderManager.render();
+                /* Assuming the latex is correctly rendered - Need to use macro commands that
+                	mathjax supports. See website below:
+                	http://docs.mathjax.org/en/v1.1-latest/tex.html#supported-latex-commands
+                */
+                var elem = document.createElement("div");
+				elem.setAttribute("id","Hidden_Tex");
+				elem.style.visibility = "visible"; 		// Hide the element
+				elem.style.position = "absolute";
+				elem.style.fontSize = "800%";
+				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
+				document.body.appendChild(elem); 		// don't forget to remove it later
+	
+				// Change renderer to svg and make sure it has been processed before calling
+				// PermEvents.callBack
+				MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
+    			MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
+    				MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [Editor.copy_tex,elem,data]);
+    			}]);
             },
             error: function(jqXHR, textStatus, errorThrown)
             {
@@ -375,6 +330,207 @@ Editor.align = function()
             }
         }
     );
+}
+
+// Returns the total width and height of elements on the canvas from their BBox
+Editor.get_canvas_elements_dimensions = function(){
+	var start_width = parseFloat(RenderManager.segment_set_divs[0].getBoundingClientRect().left.toFixed(2));
+	var end_width = parseFloat(RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-1].getBoundingClientRect().right.toFixed(2));
+	var height = 0;
+	for(var i = 0; i < RenderManager.segment_set_divs.length; i++){
+		var h = RenderManager.segment_set_divs[i].getBoundingClientRect();
+		if(h.height >= height)
+			height = h.height;
+	}
+	return new Tuple(end_width-start_width, height);
+}
+
+Editor.copy_tex = function(elem,data){
+	/*var dim_tuple = Editor.get_canvas_elements_dimensions();
+	target_width = dim_tuple.item1;
+	target_height = dim_tuple.item2;
+	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
+	*/
+	
+	// Identify the segments and place them appropriately
+	var svg_root =  document.getElementById("Hidden_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+	var use_tag_array = svg_root.getElementsByTagName("use");
+	var rect_tag_array = svg_root.getElementsByTagName("rect"); 
+	use_tag_array = Array.prototype.slice.call(use_tag_array);
+	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
+	var elements = use_tag_array.concat(rect_tag_array);
+	
+	var sorted_coordinates = Editor.sort_svg_positions(elements);
+	x_pos = sorted_coordinates[0];
+	y_pos = sorted_coordinates[1];
+	
+	var transform_action = new TransformSegments(Editor.segments);
+	// Save initial position of the first element
+	if(!Editor.align_first_click){
+		//Editor.default_position = Editor.segments[0].translation;
+		Editor.default_position = new Vector2(400,50);
+		Editor.align_first_click = true;
+	}
+	//var default_position = Editor.segments[0].translation;
+	var default_position = new Vector2(400,50);
+	Editor.apply_alignment(x_pos,default_position,true);
+	Editor.apply_alignment(y_pos,default_position,false);
+	transform_action.add_new_transforms(Editor.segments);
+	transform_action.Apply();
+	Editor.add_action(transform_action);
+	x_pos = []; // Clear both arrays
+	y_pos = [];
+	document.body.removeChild(elem); // Remove elem from document body (Align done)
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
+}
+
+// Identifies elements on canvas to MathJax rendered SVG and then moves to around to 
+// look just like the SVG
+Editor.apply_alignment = function(array,default_position,remove_duplicates){
+	// Editor.segments is already sorted during insertion into the array
+	var transformed_segments = new Array(); // holds segment set_ids
+	for(var i = 0; i < array.length; i++){
+		var svg_symbol = array[i].item2;
+		var unicode = null;
+		var text = null;
+		if(svg_symbol.getAttribute("href")){
+			unicode = svg_symbol.getAttribute("href").split("-")[1];
+			text = String.fromCharCode(parseInt(unicode,16));
+		}else
+			text = "-"; // rect element is usually a division symbol which is a dash in Min
+		var prev_set_id = null;
+		var signal = false; // used to control indexing into RenderManager's segment_set_divs
+		var index;
+		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
+		for(var j = 0; j < Editor.segments.length; j++){ // Find the segment on canvas
+			if(signal)
+				index = j-1;
+			else
+				index = j;
+			var segment_text = null;
+			if(Editor.segments[j].constructor != TeX_Input && Editor.segments[j].constructor != SymbolSegment && Editor.segments[j].set_id == prev_set_id){ // joined symbols
+				segment_text = RenderManager.segment_set_divs[index].innerHTML;
+				signal = true;
+			}else if(Editor.segments[j].constructor != TeX_Input && Editor.segments[j].constructor != SymbolSegment){ // PenStroke and Image Blobs
+				segment_text = RenderManager.segment_set_divs[index].innerHTML; 
+				signal = false;
+			}else if(Editor.segments[j].constructor == TeX_Input || Editor.segments[j].constructor == SymbolSegment){ // TeX_Input and SymbolSegment don't have text on their BBox
+				segment_text = Editor.segments[j].text; 
+				signal = false;
+			}
+			var set_id = Editor.segments[j].set_id;
+			if(segment_text == text && (!transformed_segments.contains(set_id))){
+				transformed_segments.push(set_id);
+				segments = Editor.get_segment_by_id(set_id);
+				break;
+			}
+			prev_set_id = Editor.segments[j].set_id;
+		}
+		if(segments == null)
+			continue;
+			
+		// Apply transformation to segment
+		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
+		var svg_width = parseInt(svg_symbol_rect.width);
+    	var svg_height = parseInt(svg_symbol_rect.height);
+		
+		for(var k = 0; k < segments.length; k++){ 
+			var seg_rect = null;
+			if(segments[k].constructor == SymbolSegment)
+				seg_rect = segments[k].element.getBoundingClientRect();
+			else
+				seg_rect = segments[k].inner_svg.getBoundingClientRect();
+
+    		var elementOncanvasWidth = parseInt(seg_rect.width);
+    		var elementOncanvasHeight = parseInt(seg_rect.height);
+			var s = parseFloat((Math.max(svg_width/elementOncanvasWidth, svg_height/elementOncanvasHeight)).toFixed(2));
+			var scale = new Vector2(s,s);
+			var min_0 = segments[k].world_mins;
+			segments[k].resize(min_0, scale);
+            segments[k].freeze_transform();
+            
+            var width_scale = parseFloat((seg_rect.width/svg_symbol_rect.width).toFixed(2));
+			var height_scale = parseFloat((seg_rect.height/svg_symbol_rect.height).toFixed(2));
+			//svg_symbol.setAttribute("transform", "scale("+width_scale+","+height_scale+")");
+			
+			//svg_symbol_rect = svg_symbol.getBoundingClientRect();
+			var svg_vector_format = new Vector2(parseInt(svg_symbol_rect.left.toFixed(2)),parseInt(svg_symbol_rect.top.toFixed(2)));
+            var in_x = parseInt(default_position.x.toFixed(2)) + svg_vector_format.x;
+			var in_y = parseInt(default_position.y.toFixed(2)) + svg_vector_format.y;
+			var translation = new Vector2(in_x,in_y);
+            if(segments[k].already_aligned && Vector2.Equals(Vector2.Subtract(translation,svg_vector_format), default_position))
+    			continue;
+    		else{
+    			 if(!segments[k].already_aligned || !Vector2.Equals(Vector2.Subtract(translation,svg_vector_format), default_position) ){
+    				in_x = parseInt(Editor.default_position.x.toFixed(2)) + svg_vector_format.x;
+					in_y = parseInt(Editor.default_position.y.toFixed(2)) + svg_vector_format.y;
+					translation = new Vector2(in_x,in_y);
+				}
+				//segments[k].translation = Editor.check_collision(translation,seg_rect,svg_symbol_rect);
+				segments[k].translation = translation;
+				segments[k].already_aligned = true;
+			}
+			svg_symbol.removeAttribute("transform");
+			//segments[k].size = new Vector2(svg_width,svg_height);
+        }
+        // Remove segment from y_pos array if remove_duplicates == true to reduce redundancy
+        if(remove_duplicates){
+			for(var l = 0; l < y_pos.length; l++){
+				if(y_pos[l].item2 == array[i].item2)
+					y_pos.splice(l,1);
+			}
+		}
+	}
+}
+
+// Makes sure the segment to be aligned doesn't collide with other aligned segments
+Editor.check_collision = function(translation,seg_rect,svg_rect){
+	for(var i = 0; i < Editor.segments.length; i++){
+		if(Editor.segments[i].already_aligned){
+			var aligned_elem_rect;
+			if(Editor.segments[i].constructor == SymbolSegment)
+				aligned_elem_rect = Editor.segments[i].element.getBoundingClientRect();
+			else
+				aligned_elem_rect = Editor.segments[i].inner_svg.getBoundingClientRect();
+			// check collision in the x and y axis
+			if(seg_rect.left <= aligned_elem_rect.right)
+				translation.x += parseInt(seg_rect.left - aligned_elem_rect.right);
+			/*if(seg_rect.bottom <= aligned_elem_rect.top)
+				translation.y += parseInt(seg_rect.bottom - aligned_elem_rect.top);*/
+			//var seg_translation = Editor.segments[i].translation;
+			
+		}
+	}
+	return translation;
+}
+
+//Sorts an array
+Editor.sort_svg_positions = function(array){
+	var result = new Array();
+	var x_pos = new Array(); // all x coordinates
+	var y_pos = new Array(); // all y coordinates
+	
+	for(var i = 0; i < array.length; i++){
+		var tuple_x = new Tuple(parseInt(array[i].getBoundingClientRect().left.toFixed(2)), array[i]);
+		var tuple_y = new Tuple(parseInt(array[i].getBoundingClientRect().top.toFixed(2)), array[i]);
+		x_pos.push(tuple_x);
+		y_pos.push(tuple_y);
+	}
+	x_pos.sort(Editor.compare_numbers);
+	y_pos.sort(Editor.compare_numbers);
+	result[0] = x_pos;
+	result[1] = y_pos;
+	return result;
+}
+
+// Compare parsed in tuples
+Editor.compare_numbers = function(a, b){
+	if(a.item1 < b.item1)
+		return -1;
+	else if(a.item1 > b.item1)
+		return 1;
+	else
+		return 0;
 }
 
 // adds currently selected segments to a single segment group object

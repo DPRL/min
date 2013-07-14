@@ -12,6 +12,13 @@ function Slider() {
 		onSlideChange: this.slideChange
 	});
 	this.expressions = [''];
+	var items = $(".slider .item")[0].setAttribute("draggable", "true");
+	var items = $(".slider .item")[0].setAttribute("ondragstart", "Editor.slider.drag_to_canvas(event)");
+}
+
+Slider.prototype.drag_to_canvas = function(e){
+	e.dataTransfer.setData("Text", e.target.dataset.value);
+	console.log(e.target.text);
 }
 
 /*
@@ -36,7 +43,7 @@ Slider.prototype.slideChange = function(args) {
 Slider.prototype.addSlide = function() {
 	this.expressions.push('');
 	var slidePosition = $(".slider")[0].childElementCount;
-	var slideHTML = "<div class = 'item'></div>";
+	var slideHTML = "<div class = 'item' draggable = 'true'></div>";
 	$(".selectors").append("<div class = 'item'></div>"); // Appends a selector
 	this.slider_div.iosSlider('addSlide', slideHTML, slidePosition+1); //Plus one because the Slider's  addSlide method in the javascript subtracts one from the position passed in.
 	MathJax.Hub.Queue(["Typeset",MathJax.Hub]); // Calls MathJax to render the new slide
@@ -50,6 +57,7 @@ Slider.prototype.addSlide = function() {
 Slider.prototype.updateSlide = function(tex) {
 	var curSlide = this.slider_div.data('args').currentSlideNumber - 1;
 	$(this.slider_div.find('.slider>.item')[curSlide]).text('\\[' + tex + '\\]');
+	this.slider_div.find('.slider>.item')[curSlide].setAttribute("data-value",tex.toString());
 	this.expressions[curSlide] = tex;
 	MathJax.Hub.Queue(["Typeset",MathJax.Hub]); // Calls MathJax to render the new slide
 	this.mathJaxUpdate();

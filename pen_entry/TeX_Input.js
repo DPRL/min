@@ -23,7 +23,7 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
 	
 	// add root_svg and apply appropriate transform here
     this.root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.root_svg.setAttribute("class", "pen_stroke");
+    this.root_svg.setAttribute("class", "Tex_Input");
     this.root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     this.root_svg.setAttribute("width", "100%");
@@ -98,19 +98,26 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
 TeX_Input.prototype.correct_flip = function(){
 
 	var overlay_height = $(RenderManager.segment_set_divs[this.index]).offset().top;
-	var element_pos = null;
+	var overlay_width = $(RenderManager.segment_set_divs[this.index]).offset().left;
+	var element_height = null;
+	var element_width = null;
 	if(this.element_type == "path"){
-		element_pos = $(this.path_tag).offset().top;
+		element_height = $(this.path_tag).offset().top;
+		element_width = $(this.path_tag).offset().left;
 	}else{
-		element_pos = $(this.rect_tag).offset().top;
+		element_height = $(this.rect_tag).offset().top;
+		element_width = $(this.rect_tag).offset().left;
 	}
-	if(parseInt(overlay_height - element_pos) != 0){
-		this.flip_offset = parseInt(overlay_height - element_pos);
+	if(parseFloat(overlay_height - element_height) != 0){
+		this.flip_offset = parseFloat(overlay_height - element_height);
+	}
+	if(parseFloat(overlay_width - element_width) != 0){
+		this.x_offset = parseFloat(overlay_width - element_width);
 	}
 	var sb = new StringBuilder();
     sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
     sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
-    sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y + this.flip_offset).append(") ");
+    sb.append("translate(").append(this.translation.x + this.x_offset).append(',').append(this.translation.y + this.flip_offset).append(") ");
     sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
     this.inner_svg.setAttribute("transform", sb.toString() + " matrix(1 0 0 -1 0 0)");
 }
@@ -130,11 +137,12 @@ TeX_Input.prototype.private_render = function(in_color, in_width)
 	// to compensate for the horizontal flip
 	if(this.change_offset){
 		this.flip_offset = 0;
+		this.x_offset = 0;
 	}
     var sb = new StringBuilder();
     sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
     sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
-    sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y + this.flip_offset).append(") ");
+    sb.append("translate(").append(this.translation.x + this.x_offset).append(',').append(this.translation.y + this.flip_offset).append(") ");
     sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
     this.inner_svg.setAttribute("transform", sb.toString() + " matrix(1 0 0 -1 0 0)");
     

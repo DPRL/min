@@ -58,7 +58,7 @@ PermEvents.setup_toolbar = function(){
     // HTML5's drag and drop implemented below
     if(Modernizr.draganddrop && window.FileReader){ // check if browser supports drag and drop
     	var dropzone = $('#equation_canvas');
-    	var text =  document.getElementsByClassName("Image_text")[0];
+    	var text =  document.getElementsByClassName("Drop_text")[0];
         dropzone.on('dragover', function(e) {
         	text.style.display = "block";
         	dropzone.addClass('hover');
@@ -81,7 +81,15 @@ PermEvents.setup_toolbar = function(){
 			dropzone.removeClass('hover');
 			var file = e.originalEvent.dataTransfer.files;
 			console.log("file dropped");
-			Editor.ParseImage(file[0]);
+			if(e.originalEvent.dataTransfer.files.length == 0)
+				PermEvents.Start_TeX_Input(e.originalEvent.dataTransfer.getData("Text"));
+			else{
+				// Check if the type is a text file, if so parse it and get tex
+				if(file[0].type == "text/plain")
+					PermEvents.parse_text_file(file[0]);
+				else
+					Editor.ParseImage(file[0]);
+			}
 			return false;
 		});
     }
@@ -100,6 +108,18 @@ PermEvents.setup_document = function(){
     $(document).keydown(Editor.mapCanvasBackspace);
 }
 
+// Parses a text file for Tex
+PermEvents.parse_text_file = function(file){
+	var reader = new FileReader();
+	reader.onload = function(e){
+		tex = e.target.result;
+		PermEvents.Start_TeX_Input(tex);
+	};
+	reader.readAsText(file);
+}
+
+					/** Tex Input starts here **/
+
 // Checks Min's URL for any TeX parameter. If there is, create a new TeX_Input and
 // move the rendered TeX(using MathJax) to the canvas
 PermEvents.check_url = function(){
@@ -107,31 +127,30 @@ PermEvents.check_url = function(){
     var query = window.location.search.slice(9);
     if(query){
     	tex = decodeURIComponent(query); // decode it to get its latex
-    	console.log("Latex is: " + tex);
-    	
-    	var elem = document.createElement("div");
-    	elem.setAttribute("id","Hidden_Tex");
-    	elem.style.visibility = "hidden"; 		// Hide the element
-    	elem.style.position = "absolute";
-    	elem.style.fontSize = "800%";
-    	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
-    	document.body.appendChild(elem); 		// don't forget to remove it later
-    	
-    	// Change renderer to svg and make sure it has been processed before calling
-    	// PermEvents.callBack
-    	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-    	MathJax.Hub.Queue(["Rerender", MathJax.Hub], [function(){ 
-    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [$.proxy(PermEvents.stub(elem), this)]);
-    	}]);
+    	PermEvents.Start_TeX_Input(tex);
     }
 }
 
-// Method that just helps with the recursion in scale_tex
-PermEvents.stub = function(elem){
-	PermEvents.scale_tex(elem);
-	PermEvents.MoveSVGSegmentsToCanvas(elem);
-	document.body.removeChild(elem); // Remove elem from document body (Import done)
+// Inputs TeX from any source(Text files, URL parameter) into Min using MathJax
+PermEvents.Start_TeX_Input = function(tex){
+	console.log("Latex is: " + tex);
+	
+	var elem = document.createElement("div");
+	elem.setAttribute("id","Hidden_Tex");
+	elem.style.visibility = "hidden"; 		// Hide the element
+	elem.style.position = "absolute";
+	elem.style.fontSize = "800%";
+	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
+	document.body.appendChild(elem); 		// don't forget to remove it later
+	
+	// Change renderer to svg and make sure it has been processed before calling
+	// PermEvents.callBack
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
+    	MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
+    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [PermEvents.stub,elem]);
+    }]);
 }
+
 // Scales the Tex to fit canvas width and height before insertion
 PermEvents.scale_tex = function(elem){
 	var equation_canvas_width = $("#equation_canvas")[0].offsetWidth;
@@ -146,6 +165,12 @@ PermEvents.scale_tex = function(elem){
 		return;
 	}
 }
+// Method that just helps with the recursion in scale_tex
+PermEvents.stub = function(elem){
+	PermEvents.scale_tex(elem); // scale tex
+	PermEvents.MoveSVGSegmentsToCanvas(elem);
+	document.body.removeChild(elem); // Remove elem from document body (Import done)
+}
 
 // Copies the rendered SVG in elem to the canvas
 PermEvents.MoveSVGSegmentsToCanvas = function(elem){
@@ -153,45 +178,30 @@ PermEvents.MoveSVGSegmentsToCanvas = function(elem){
 	var use_tag_array = svg_root.getElementsByTagName("use");
 	var default_position = null;
 	if(svg_root.getBoundingClientRect().width > 800){ // long expressions
-		default_position = new Vector2(0,173); // arbitrary position on the screen
+		default_position = new Vector2(0,150); // arbitrary position on the screen
 	}else{
 		default_position = new Vector2(400,150); // arbitrary position on the screen
 	}
 	var rect_tag_array = svg_root.getElementsByTagName("rect");
-	var j = null;
-	for(var i = 0; i < use_tag_array.length; i++){
-		var offset = $(use_tag_array[i]).offset();
+	use_tag_array = Array.prototype.slice.call(use_tag_array);
+	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
+	var elements_array = use_tag_array.concat(rect_tag_array);
+	
+	for(var i = 0; i < elements_array.length; i++){
+		var offset = $(elements_array[i]).offset();
 		
 		// Set up prototype inheritance chain and call query reformation 
 		TeX_Input.prototype.__proto__ = subclassOf(PenStroke);
 		var in_x = parseInt((default_position.x + offset.left).toFixed(2));
 		var in_y = parseInt((default_position.y + offset.top).toFixed(2));
-		var pen_stroke = new TeX_Input(use_tag_array[i], in_x, in_y, 6, i);
-		pen_stroke.initialize(svg_root, i, "use");
+		var pen_stroke = new TeX_Input(elements_array[i], in_x, in_y, 6, null);
+		pen_stroke.initialize(svg_root, i, elements_array[i].tagName.toString());
 		
 		// Add the pen_stroke object to the Editor
 		Editor.add_action(new AddSegments(new Array(pen_stroke)));
 		Editor.add_segment(pen_stroke);
 		RenderManager.render();
-		pen_stroke.correct_flip();
-		Editor.state = EditorState.ReadyToStroke;
-		RecognitionManager.addRecognitionForText(pen_stroke);
-		j = i;
-	}
-	for(var i = 0; i < rect_tag_array.length; i++){
-		var offset = $(rect_tag_array[i]).offset();
-		
-		// Set up prototype inheritance chain and call query reformation 
-		TeX_Input.prototype.__proto__ = subclassOf(PenStroke);
-		var in_x = parseInt((default_position.x + offset.left).toFixed(2));
-		var in_y = parseInt((default_position.y + offset.top).toFixed(2));
-		var pen_stroke = new TeX_Input(rect_tag_array[i], in_x, in_y, 6, i+j+1);
-		pen_stroke.initialize(svg_root, i, "rect");
-		
-		// Add the pen_stroke object to the Editor
-		Editor.add_action(new AddSegments(new Array(pen_stroke)));
-		Editor.add_segment(pen_stroke);
-		RenderManager.render();
+		pen_stroke.index = RenderManager.segment_set_divs.length-1;
 		pen_stroke.correct_flip();
 		Editor.state = EditorState.ReadyToStroke;
 		RecognitionManager.addRecognitionForText(pen_stroke);
@@ -201,6 +211,7 @@ PermEvents.MoveSVGSegmentsToCanvas = function(elem){
     	Editor.slider.updateSlide(tex); 		// Update the current slide
     }]);
 }
+
 // Used to implement inheritance
 function subclassOf(base){
 	_subclassOf.prototype= base.prototype;

@@ -159,17 +159,14 @@ PenStroke.prototype.finish_stroke = function()
     this.polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
     
     sb.clear();
-    //var t = "";
     for(var k = 0; k < this.points.length; k++)
     {
         this.points[k] = Vector2.Subtract(this.points[k], this.world_mins);
         sb.append(this.points[k].x).append(',').append(this.points[k].y).append(' ');
-        //t += this.points[k].x + "," + this.points[k].y + " ";
     }
     
     this.polyline.setAttribute("points", sb.toString());
     this.polyline.setAttribute("style", "fill:none; stroke:" + this.color + ";stroke-width:" + this.stroke_width);
-    //this.get_path(t);
 
     this.inner_svg.appendChild(this.polyline);
     this.root_svg.appendChild(this.inner_svg);
@@ -180,11 +177,6 @@ PenStroke.prototype.finish_stroke = function()
     RenderManager.clear_canvas();
     return true;
 }
-
-/*PenStroke.prototype.get_path = function(d){
-	var temp = d.split(" ");
-	
-}*/
 
 PenStroke.prototype.private_render = function(in_color, in_width)
 {

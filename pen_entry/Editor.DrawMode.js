@@ -81,19 +81,12 @@ DrawMode.prototype.stopTextInput = function(e){
     if(Editor.current_action.toString() == "EditText")
         Editor.current_action.set_current_text(Editor.current_text.text);
     else if(Editor.current_action.toString() == "AddSegments")
-        Editor.current_action.buildSegmentXML();                
-
-
-    // build a new stroke object and save reference so we can add new points
-    // Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
-    // Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
-    // Editor.add_segment(Editor.current_stroke);            
+        Editor.current_action.buildSegmentXML();                           
         
     Editor.state = EditorState.MiddleOfStroke;
     Editor.current_text = null;
 
     RenderManager.render();
-
 }
 
 DrawMode.onDownBase = function(e){
