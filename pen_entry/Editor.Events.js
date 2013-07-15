@@ -91,8 +91,8 @@ Editor.scale_tex = function(elem){
 	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0];
 	var math_width = MathJax_div.offsetWidth;
 	var math_height = MathJax_div.offsetHeight;
-	if(math_width < target_width || math_height < target_height){ 
-		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 10) + "%";
+	if(math_width > target_width || math_height > target_height){ 
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
 	}else{
 		return;
@@ -346,11 +346,13 @@ Editor.get_canvas_elements_dimensions = function(){
 }
 
 Editor.copy_tex = function(elem,data){
-	/*var dim_tuple = Editor.get_canvas_elements_dimensions();
+	var dim_tuple = Editor.get_canvas_elements_dimensions();
 	target_width = dim_tuple.item1;
 	target_height = dim_tuple.item2;
+	//target_width = $("#equation_canvas")[0].offsetWidth;
+	//target_height = $("#equation_canvas")[0].offsetHeight;
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
-	*/
+	
 	
 	// Identify the segments and place them appropriately
 	var svg_root =  document.getElementById("Hidden_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
@@ -367,12 +369,12 @@ Editor.copy_tex = function(elem,data){
 	var transform_action = new TransformSegments(Editor.segments);
 	// Save initial position of the first element
 	if(!Editor.align_first_click){
-		//Editor.default_position = Editor.segments[0].translation;
-		Editor.default_position = new Vector2(400,50);
+		Editor.default_position = Editor.segments[0].translation;
+		//Editor.default_position = new Vector2(400,50);
 		Editor.align_first_click = true;
 	}
-	//var default_position = Editor.segments[0].translation;
-	var default_position = new Vector2(400,50);
+	var default_position = Editor.segments[0].translation;
+	//var default_position = new Vector2(400,50);
 	Editor.apply_alignment(x_pos,default_position,true);
 	Editor.apply_alignment(y_pos,default_position,false);
 	transform_action.add_new_transforms(Editor.segments);
@@ -391,10 +393,9 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 	var transformed_segments = new Array(); // holds segment set_ids
 	for(var i = 0; i < array.length; i++){
 		var svg_symbol = array[i].item2;
-		var unicode = null;
 		var text = null;
 		if(svg_symbol.getAttribute("href")){
-			unicode = svg_symbol.getAttribute("href").split("-")[1];
+			var unicode = svg_symbol.getAttribute("href").split("-")[1];
 			text = String.fromCharCode(parseInt(unicode,16));
 		}else
 			text = "-"; // rect element is usually a division symbol which is a dash in Min
@@ -447,6 +448,8 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			var scale = new Vector2(s,s);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0, scale);
+			segments[k].align_scale = s;
+			segments[k].align_old_translation = segments[k].translation;
             segments[k].freeze_transform();
             
             var width_scale = parseFloat((seg_rect.width/svg_symbol_rect.width).toFixed(2));
@@ -466,11 +469,12 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 					in_y = parseInt(Editor.default_position.y.toFixed(2)) + svg_vector_format.y;
 					translation = new Vector2(in_x,in_y);
 				}
-				//segments[k].translation = Editor.check_collision(translation,seg_rect,svg_symbol_rect);
 				segments[k].translation = translation;
+				var new_tran = Editor.check_collision(seg_rect,segments[k]);
+				segments[k].translation.Add(new_tran);
 				segments[k].already_aligned = true;
 			}
-			svg_symbol.removeAttribute("transform");
+			//svg_symbol.removeAttribute("transform");
 			//segments[k].size = new Vector2(svg_width,svg_height);
         }
         // Remove segment from y_pos array if remove_duplicates == true to reduce redundancy
@@ -484,24 +488,48 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 }
 
 // Makes sure the segment to be aligned doesn't collide with other aligned segments
-Editor.check_collision = function(translation,seg_rect,svg_rect){
+Editor.check_collision = function(seg_rect,segment){
+	var offset = new Vector2(0,0);
 	for(var i = 0; i < Editor.segments.length; i++){
 		if(Editor.segments[i].already_aligned){
-			var aligned_elem_rect;
-			if(Editor.segments[i].constructor == SymbolSegment)
-				aligned_elem_rect = Editor.segments[i].element.getBoundingClientRect();
-			else
-				aligned_elem_rect = Editor.segments[i].inner_svg.getBoundingClientRect();
-			// check collision in the x and y axis
-			if(seg_rect.left <= aligned_elem_rect.right)
-				translation.x += parseInt(seg_rect.left - aligned_elem_rect.right);
-			/*if(seg_rect.bottom <= aligned_elem_rect.top)
-				translation.y += parseInt(seg_rect.bottom - aligned_elem_rect.top);*/
-			//var seg_translation = Editor.segments[i].translation;
-			
+			var aligned_elem_rect = Editor.get_BBox(Editor.segments[i]);
+			var seg_rect = Editor.get_BBox(segment);
+			var aligned_elem_pos = Editor.get_position(aligned_elem_rect,Editor.segments[i]);
+			var seg_pos = Editor.get_position(seg_rect,segment);
+			// Detect collision based on newly calculated BBoxs
+			if(seg_pos.item3 < aligned_elem_pos.item4){
+				offset.x = aligned_elem_pos.item4 - seg_pos.item3+15;
+			}
+			/*if(seg_pos.item4 > aligned_elem_pos.item3){
+				offset.y = seg_pos.item4 - aligned_elem_pos.item3;
+			}*/
 		}
 	}
-	return translation;
+	return offset;
+}
+
+// Returns the BBox of an element after applying scaling and translation
+Editor.get_position = function(rect, segment){
+	// Apply scale to rect element
+	var height = rect.height*segment.align_scale,
+		width = rect.width*segment.align_scale,
+		left = rect.left,
+		right = width+left,
+		top = rect.top,
+		bottom = top+height;
+	var translation_diff = Vector2.Subtract(segment.align_old_translation,segment.translation);
+	return new Tuple(height, width, (left-translation_diff.x),(right-translation_diff.x),
+		(top-translation_diff.y), (bottom-translation_diff.y));
+}
+
+// Returns the BBox of an element
+Editor.get_BBox = function(seg){
+	var elem_rect;
+	if(seg.constructor == SymbolSegment)
+		elem_rect = seg.element.getBoundingClientRect();
+	else
+		elem_rect = seg.inner_svg.getBoundingClientRect();
+	return elem_rect;
 }
 
 //Sorts an array
