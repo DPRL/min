@@ -400,7 +400,7 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 		}else
 			text = "-"; // rect element is usually a division symbol which is a dash in Min
 		var prev_set_id = null;
-		var signal = false; // used to control indexing into RenderManager's segment_set_divs
+		var signal = false; // used to index into RenderManager's segment_set_divs
 		var index;
 		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
 		for(var j = 0; j < Editor.segments.length; j++){ // Find the segment on canvas
@@ -434,7 +434,8 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
 		var svg_width = parseInt(svg_symbol_rect.width);
     	var svg_height = parseInt(svg_symbol_rect.height);
-		
+    	var highest_width = 0;
+    	var highest_height = 0;
 		for(var k = 0; k < segments.length; k++){ 
 			var seg_rect = null;
 			if(segments[k].constructor == SymbolSegment)
@@ -445,21 +446,31 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			/*var width_scale = parseFloat((seg_rect.width/svg_symbol_rect.width).toFixed(2));
 			var height_scale = parseFloat((seg_rect.height/svg_symbol_rect.height).toFixed(2));
 			svg_symbol.setAttribute("transform", "scale("+width_scale+","+height_scale+")");
-			svg_symbol_rect = svg_symbol.getBoundingClientRect();*/
+			svg_symbol_rect = svg_symbol.getBoundingClientRect();
 			var svg_width = parseInt(svg_symbol_rect.width);
-    		var svg_height = parseInt(svg_symbol_rect.height);
+    		var svg_height = parseInt(svg_symbol_rect.height);*/
     		
     		var elementOncanvasWidth = parseInt(seg_rect.width);
     		var elementOncanvasHeight = parseInt(seg_rect.height);
-			var s = parseFloat((Math.max(svg_width/elementOncanvasWidth, svg_height/elementOncanvasHeight)).toFixed(2));
-			var s2 = parseFloat((svg_height/elementOncanvasHeight).toFixed(2));
+    		var s,s2;
+    		if(elementOncanvasWidth > highest_width){
+    			highest_width = elementOncanvasWidth;
+    			s = parseFloat((Math.max(svg_width/elementOncanvasWidth, svg_height/elementOncanvasHeight)).toFixed(2));
+    		}else
+    			s = parseFloat((Math.max(svg_width/highest_width, svg_height/highest_height)).toFixed(2));
+    		if(elementOncanvasHeight > highest_height){
+    			highest_height = elementOncanvasHeight;
+    			s2 = parseFloat((svg_height/elementOncanvasHeight).toFixed(2));
+    		}else
+    			s2 = parseFloat((svg_height/highest_height).toFixed(2));
+			//var s = parseFloat((Math.max(svg_width/elementOncanvasWidth, svg_height/elementOncanvasHeight)).toFixed(2));
+			//var s2 = parseFloat((svg_height/elementOncanvasHeight).toFixed(2));
 			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0, scale);
-			segments[k].align_scale = s;
+			segments[k].align_scale = scale;
 			segments[k].align_old_translation = segments[k].translation;
             segments[k].freeze_transform();
-            
 			
 			//svg_symbol_rect = svg_symbol.getBoundingClientRect();
 			var svg_vector_format = new Vector2(parseInt(svg_symbol_rect.left.toFixed(2)),parseInt(svg_symbol_rect.top.toFixed(2)));
@@ -475,8 +486,10 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 					translation = new Vector2(in_x,in_y);
 				}
 				segments[k].translation = translation;
-				var new_tran = Editor.check_collision(seg_rect,segments[k]);
-				segments[k].translation.Add(new_tran);
+				if(segments.length < 2){ // no need to calculate for joined strokes
+					//var new_tran = Editor.check_collision(seg_rect,segments[k]);
+					//segments[k].translation.Add(new_tran);
+				}
 				segments[k].already_aligned = true;
 			}
         }
@@ -501,7 +514,7 @@ Editor.check_collision = function(seg_rect,segment){
 			var seg_pos = Editor.get_position(seg_rect,segment);
 			// Detect collision based on newly calculated BBoxs
 			if(seg_pos.item3 < aligned_elem_pos.item4){
-				offset.x = aligned_elem_pos.item4 - seg_pos.item3+15;
+				offset.x = aligned_elem_pos.item4 - seg_pos.item3;
 			}
 			/*if(seg_pos.item4 > aligned_elem_pos.item3){
 				offset.y = seg_pos.item4 - aligned_elem_pos.item3;
@@ -514,8 +527,8 @@ Editor.check_collision = function(seg_rect,segment){
 // Returns the BBox of an element after applying scaling and translation
 Editor.get_position = function(rect, segment){
 	// Apply scale to rect element
-	var height = rect.height,
-		width = rect.width*segment.align_scale,
+	var height = rect.height*segment.align_scale.y,
+		width = rect.width*segment.align_scale.x,
 		left = rect.left,
 		right = width+left,
 		top = rect.top,
