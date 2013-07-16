@@ -78,23 +78,6 @@ SymbolSegment.prototype.finishEntry = function() {
     var action = new DeleteSegments(new Array(this));
     action.Apply();
     
-    /*origin = this.worldMinPosition();
-    for(var i = 0; i < letters.length; i++) {
-        var s = new SymbolSegment(origin);
-
-        if (letters[i] == " ") {
-            s.addSpace();
-        } else {
-            s.addCharacter(letters[i]);
-            Editor.add_action(new AddSegments(new Array(s)));
-            Editor.add_segment(s);
-
-            RecognitionManager.addRecognitionForText(s);
-        }
-
-        s.update_extents();
-        origin.x = s.worldMaxPosition().x + 2;
-    }*/
     var elem = document.createElement("div");
 	elem.setAttribute("id","SymbolSegment_Tex");
 	elem.style.visibility = "hidden"; 		// Hide the element
@@ -150,7 +133,6 @@ SymbolSegment.switch_to_svg = function(elem,translation){
 		var offset = $(elements_array[i]).offset();
 		if(i == 0)
 			initial_offset = offset;
-		
 		// Set up prototype inheritance chain and call query reformation 
 		TeX_Input.prototype.__proto__ = subclassOf(PenStroke);
 		var in_x = parseInt((default_position.x + offset.left-initial_offset.left).toFixed(2));

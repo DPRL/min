@@ -307,6 +307,8 @@ Editor.align = function()
                 	mathjax supports. See website below:
                 	http://docs.mathjax.org/en/v1.1-latest/tex.html#supported-latex-commands
                 */
+                if(tex_math.search("vbox") != -1)
+                	return;
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Hidden_Tex");
 				elem.style.visibility = "visible"; 		// Hide the element
@@ -346,11 +348,11 @@ Editor.get_canvas_elements_dimensions = function(){
 }
 
 Editor.copy_tex = function(elem,data){
-	var dim_tuple = Editor.get_canvas_elements_dimensions();
-	target_width = dim_tuple.item1;
-	target_height = dim_tuple.item2;
-	//target_width = $("#equation_canvas")[0].offsetWidth;
-	//target_height = $("#equation_canvas")[0].offsetHeight;
+	//var dim_tuple = Editor.get_canvas_elements_dimensions();
+	//target_width = dim_tuple.item1;
+	//target_height = dim_tuple.item2;
+	target_width = $("#equation_canvas")[0].offsetWidth;
+	target_height = $("#equation_canvas")[0].offsetHeight;
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
 	
 	
@@ -370,11 +372,9 @@ Editor.copy_tex = function(elem,data){
 	// Save initial position of the first element
 	if(!Editor.align_first_click){
 		Editor.default_position = Editor.segments[0].translation;
-		//Editor.default_position = new Vector2(400,50);
 		Editor.align_first_click = true;
 	}
 	var default_position = Editor.segments[0].translation;
-	//var default_position = new Vector2(400,50);
 	Editor.apply_alignment(x_pos,default_position,true);
 	Editor.apply_alignment(y_pos,default_position,false);
 	transform_action.add_new_transforms(Editor.segments);
@@ -442,19 +442,24 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			else
 				seg_rect = segments[k].inner_svg.getBoundingClientRect();
 
+			/*var width_scale = parseFloat((seg_rect.width/svg_symbol_rect.width).toFixed(2));
+			var height_scale = parseFloat((seg_rect.height/svg_symbol_rect.height).toFixed(2));
+			svg_symbol.setAttribute("transform", "scale("+width_scale+","+height_scale+")");
+			svg_symbol_rect = svg_symbol.getBoundingClientRect();*/
+			var svg_width = parseInt(svg_symbol_rect.width);
+    		var svg_height = parseInt(svg_symbol_rect.height);
+    		
     		var elementOncanvasWidth = parseInt(seg_rect.width);
     		var elementOncanvasHeight = parseInt(seg_rect.height);
 			var s = parseFloat((Math.max(svg_width/elementOncanvasWidth, svg_height/elementOncanvasHeight)).toFixed(2));
-			var scale = new Vector2(s,s);
+			var s2 = parseFloat((svg_height/elementOncanvasHeight).toFixed(2));
+			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0, scale);
 			segments[k].align_scale = s;
 			segments[k].align_old_translation = segments[k].translation;
             segments[k].freeze_transform();
             
-            var width_scale = parseFloat((seg_rect.width/svg_symbol_rect.width).toFixed(2));
-			var height_scale = parseFloat((seg_rect.height/svg_symbol_rect.height).toFixed(2));
-			//svg_symbol.setAttribute("transform", "scale("+width_scale+","+height_scale+")");
 			
 			//svg_symbol_rect = svg_symbol.getBoundingClientRect();
 			var svg_vector_format = new Vector2(parseInt(svg_symbol_rect.left.toFixed(2)),parseInt(svg_symbol_rect.top.toFixed(2)));
@@ -474,8 +479,6 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 				segments[k].translation.Add(new_tran);
 				segments[k].already_aligned = true;
 			}
-			//svg_symbol.removeAttribute("transform");
-			//segments[k].size = new Vector2(svg_width,svg_height);
         }
         // Remove segment from y_pos array if remove_duplicates == true to reduce redundancy
         if(remove_duplicates){
@@ -511,7 +514,7 @@ Editor.check_collision = function(seg_rect,segment){
 // Returns the BBox of an element after applying scaling and translation
 Editor.get_position = function(rect, segment){
 	// Apply scale to rect element
-	var height = rect.height*segment.align_scale,
+	var height = rect.height,
 		width = rect.width*segment.align_scale,
 		left = rect.left,
 		right = width+left,

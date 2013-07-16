@@ -81,9 +81,13 @@ PermEvents.setup_toolbar = function(){
 			dropzone.removeClass('hover');
 			var file = e.originalEvent.dataTransfer.files;
 			console.log("file dropped");
-			if(e.originalEvent.dataTransfer.files.length == 0)
-				PermEvents.Start_TeX_Input(e.originalEvent.dataTransfer.getData("Text"));
-			else{
+			if(e.originalEvent.dataTransfer.files.length == 0){
+				default_position_specified = true;
+				drop_position = new Vector2(e.originalEvent.pageX - Editor.div_position[0],
+					 e.originalEvent.pageY - Editor.div_position[1]);
+				tex = e.originalEvent.dataTransfer.getData("Text");
+				PermEvents.Start_TeX_Input(tex);
+			}else{
 				// Check if the type is a text file, if so parse it and get tex
 				if(file[0].type == "text/plain")
 					PermEvents.parse_text_file(file[0]);
@@ -176,24 +180,35 @@ PermEvents.stub = function(elem){
 PermEvents.MoveSVGSegmentsToCanvas = function(elem){
 	var svg_root = document.getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
-	var default_position = null;
-	if(svg_root.getBoundingClientRect().width > 800){ // long expressions
-		default_position = new Vector2(0,150); // arbitrary position on the screen
-	}else{
-		default_position = new Vector2(400,150); // arbitrary position on the screen
+	if(default_position_specified)
+		default_position = drop_position; // Slider to canvas drop
+	else{
+		if(svg_root.getBoundingClientRect().width > 800){ // long expressions
+			default_position = new Vector2(0,150); // arbitrary position on the screen
+		}else{
+			default_position = new Vector2(400,150); // arbitrary position on the screen
+		}
 	}
 	var rect_tag_array = svg_root.getElementsByTagName("rect");
 	use_tag_array = Array.prototype.slice.call(use_tag_array);
 	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
 	var elements_array = use_tag_array.concat(rect_tag_array);
-	
+	var initial_offset; // Used to keep segments at user's click position
 	for(var i = 0; i < elements_array.length; i++){
 		var offset = $(elements_array[i]).offset();
-		
+		if(i == 0)
+			initial_offset = offset;
 		// Set up prototype inheritance chain and call query reformation 
 		TeX_Input.prototype.__proto__ = subclassOf(PenStroke);
-		var in_x = parseInt((default_position.x + offset.left).toFixed(2));
-		var in_y = parseInt((default_position.y + offset.top).toFixed(2));
+		var in_x = null;
+		var in_y = null;
+		if(default_position_specified){
+			in_x = parseInt((default_position.x + offset.left-initial_offset.left).toFixed(2));
+			in_y = parseInt((default_position.y + offset.top-initial_offset.top).toFixed(2));
+		}else{
+			in_x = parseInt((default_position.x + offset.left).toFixed(2));
+			in_y = parseInt((default_position.y + offset.top).toFixed(2));
+		}
 		var pen_stroke = new TeX_Input(elements_array[i], in_x, in_y, 6, null);
 		pen_stroke.initialize(svg_root, i, elements_array[i].tagName.toString());
 		
