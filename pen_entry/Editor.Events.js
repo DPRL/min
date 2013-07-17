@@ -343,7 +343,7 @@ Editor.scale_tex = function(elem){
 	//target_height = dim_tuple.item2 * (math_width/math_height);
 	//target_width = dim_tuple.item1;
 	//target_height = dim_tuple.item2;
-	console.log("Width: " + math_width + " Height: " + math_height);
+	//console.log("Width: " + math_width + " Height: " + math_height);
 	if(math_width > target_width || math_height > target_height){ 
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
@@ -400,6 +400,8 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 		if(svg_symbol.getAttribute("href")){
 			var unicode = svg_symbol.getAttribute("href").split("-")[1];
 			text = String.fromCharCode(parseInt(unicode,16));
+			if(text == "−") // special case character. Has zero-width space -> Look it up you will be amazed
+				text = "-";
 		}else
 			text = "-"; // rect element is usually a division symbol which is a dash in Min
 		var prev_set_id = null;
@@ -419,8 +421,8 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			var set_id = Editor.segments[j].set_id;
 			if(text == "+")
 				segment_text = "+";
-			if(text == "x")
-				segment_text = "x";
+			if(text == "-")
+				segment_text = "-";
 			if(segment_text == text && (!transformed_segments.contains(set_id))){
 				transformed_segments.push(set_id);
 				segments = Editor.get_segment_by_id(set_id);
@@ -457,6 +459,7 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
     		if(joined_segs){
     			s = svg_width/joined_width;
     			s2 = svg_height/joined_height;
+    			joined_segs = false;
     		}else{
 				s = svg_width/elementOncanvasWidth;
 				s2 = svg_height/elementOncanvasHeight;
