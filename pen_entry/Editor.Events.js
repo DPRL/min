@@ -428,6 +428,7 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			}
 			prev_set_id = Editor.segments[j].set_id;
 		}
+		index--; // Reset to normal index
 		if(segments == null)
 			continue;
 		var joined_segs,joined_width,joined_height;
@@ -460,8 +461,8 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 				s = svg_width/elementOncanvasWidth;
 				s2 = svg_height/elementOncanvasHeight;
 			}
-			/*new_height =  svg_height * (elementOncanvasWidth/elementOncanvasHeight);
-			//new_width =  dim_tuple.item1 * (svg_width/svg_height);
+			/*new_height = svg_height * (elementOncanvasWidth/elementOncanvasHeight);
+			//new_width = dim_tuple.item1 * (svg_width/svg_height);
 			//s = parseFloat((svg_width/new_width).toFixed(2));
 			s2 =  new_height/svg_height;*/
 			
