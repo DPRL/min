@@ -403,24 +403,18 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 		}else
 			text = "-"; // rect element is usually a division symbol which is a dash in Min
 		var prev_set_id = null;
-		var signal = false; // used to index into RenderManager's segment_set_divs
-		var index;
+		var index = 0;
 		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
 		for(var j = 0; j < Editor.segments.length; j++){ // Find the segment on canvas
-			if(signal)
-				index = j-1;
-			else
-				index = j;
 			var segment_text = null;
 			if(Editor.segments[j].constructor != TeX_Input && Editor.segments[j].constructor != SymbolSegment && Editor.segments[j].set_id == prev_set_id){ // joined symbols
-				segment_text = RenderManager.segment_set_divs[index].innerHTML;
-				signal = true;
+				segment_text = RenderManager.segment_set_divs[index-1].innerHTML;
 			}else if(Editor.segments[j].constructor != TeX_Input && Editor.segments[j].constructor != SymbolSegment){ // PenStroke and Image Blobs
 				segment_text = RenderManager.segment_set_divs[index].innerHTML; 
-				signal = false;
+				index++;
 			}else if(Editor.segments[j].constructor == TeX_Input || Editor.segments[j].constructor == SymbolSegment){ // TeX_Input and SymbolSegment don't have text on their BBox
 				segment_text = Editor.segments[j].text; 
-				signal = false;
+				index++;
 			}
 			var set_id = Editor.segments[j].set_id;
 			if(text == "+")
