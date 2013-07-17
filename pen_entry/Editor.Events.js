@@ -85,21 +85,6 @@ Editor.fit_to_screen = function(event)
     window.scroll(0,0);
 }
 
-// Scales the Tex to fit canvas width and height before insertion
-// Moved here because many classes will make use of it
-Editor.scale_tex = function(elem){
-	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0];
-	var math_width = MathJax_div.offsetWidth;
-	var math_height = MathJax_div.offsetHeight;
-	if(math_width > target_width || math_height > target_height){ 
-		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
-	}else{
-		return;
-	}
-}
-
-
 //--------------------------------------------------
 // 
 // User Input Events
@@ -314,6 +299,9 @@ Editor.align = function()
 				elem.style.visibility = "visible"; 		// Hide the element
 				elem.style.position = "absolute";
 				elem.style.fontSize = "800%";
+				/*var dim_tuple = Editor.get_canvas_elements_dimensions();
+				elem.style.width = dim_tuple.item1 + "px";
+				elem.style.height = dim_tuple.item2 + "px";*/
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
 				document.body.appendChild(elem); 		// don't forget to remove it later
 	
@@ -347,14 +335,28 @@ Editor.get_canvas_elements_dimensions = function(){
 	return new Tuple(end_width-start_width, height);
 }
 
-Editor.copy_tex = function(elem,data){
-	//var dim_tuple = Editor.get_canvas_elements_dimensions();
+Editor.scale_tex = function(elem){
+	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0];
+	math_width = MathJax_div.offsetWidth;
+	math_height = MathJax_div.offsetHeight;
+	//target_width = dim_tuple.item1 * (math_width/math_height);
+	//target_height = dim_tuple.item2 * (math_width/math_height);
 	//target_width = dim_tuple.item1;
 	//target_height = dim_tuple.item2;
+	console.log("Width: " + math_width + " Height: " + math_height);
+	if(math_width > target_width || math_height > target_height){ 
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
+	}else{
+		return;
+	}
+}
+
+Editor.copy_tex = function(elem,data){
+	dim_tuple = Editor.get_canvas_elements_dimensions();
 	target_width = $("#equation_canvas")[0].offsetWidth;
 	target_height = $("#equation_canvas")[0].offsetHeight;
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
-	
 	
 	// Identify the segments and place them appropriately
 	var svg_root =  document.getElementById("Hidden_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
@@ -374,6 +376,7 @@ Editor.copy_tex = function(elem,data){
 		Editor.default_position = Editor.segments[0].translation;
 		Editor.align_first_click = true;
 	}
+	var initial_offset;
 	var default_position = Editor.segments[0].translation;
 	Editor.apply_alignment(x_pos,default_position,true);
 	Editor.apply_alignment(y_pos,default_position,false);
@@ -420,6 +423,10 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 				signal = false;
 			}
 			var set_id = Editor.segments[j].set_id;
+			if(text == "+")
+				segment_text = "+";
+			if(text == "x")
+				segment_text = "x";
 			if(segment_text == text && (!transformed_segments.contains(set_id))){
 				transformed_segments.push(set_id);
 				segments = Editor.get_segment_by_id(set_id);
@@ -429,42 +436,42 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 		}
 		if(segments == null)
 			continue;
-			
+		var joined_segs,joined_width,joined_height;
+		if(segments.length == 2){
+			segments[0].index = index;
+			segments[1].index = index;
+			var dim = Editor.get_joinedSeg_dimensions(segments);
+			joined_height = dim.item1;
+			joined_width = dim.item2;
+			joined_segs = true;
+		}
 		// Apply transformation to segment
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
-		var svg_width = parseInt(svg_symbol_rect.width);
-    	var svg_height = parseInt(svg_symbol_rect.height);
-    	var highest_width = 0;
-    	var highest_height = 0;
+		//Editor.draw_rect(svg_symbol_rect);
+		var svg_width = svg_symbol_rect.width;
+    	var svg_height = svg_symbol_rect.height;
 		for(var k = 0; k < segments.length; k++){ 
-			var seg_rect = null;
-			if(segments[k].constructor == SymbolSegment)
-				seg_rect = segments[k].element.getBoundingClientRect();
-			else
-				seg_rect = segments[k].inner_svg.getBoundingClientRect();
-
-			/*var width_scale = parseFloat((seg_rect.width/svg_symbol_rect.width).toFixed(2));
-			var height_scale = parseFloat((seg_rect.height/svg_symbol_rect.height).toFixed(2));
-			svg_symbol.setAttribute("transform", "scale("+width_scale+","+height_scale+")");
-			svg_symbol_rect = svg_symbol.getBoundingClientRect();
-			var svg_width = parseInt(svg_symbol_rect.width);
-    		var svg_height = parseInt(svg_symbol_rect.height);*/
-    		
-    		var elementOncanvasWidth = parseInt(seg_rect.width);
-    		var elementOncanvasHeight = parseInt(seg_rect.height);
-    		var s,s2;
-    		if(elementOncanvasWidth > highest_width){
-    			highest_width = elementOncanvasWidth;
-    			s = parseFloat((Math.max(svg_width/elementOncanvasWidth, svg_height/elementOncanvasHeight)).toFixed(2));
-    		}else
-    			s = parseFloat((Math.max(svg_width/highest_width, svg_height/highest_height)).toFixed(2));
-    		if(elementOncanvasHeight > highest_height){
-    			highest_height = elementOncanvasHeight;
-    			s2 = parseFloat((svg_height/elementOncanvasHeight).toFixed(2));
-    		}else
-    			s2 = parseFloat((svg_height/highest_height).toFixed(2));
-			//var s = parseFloat((Math.max(svg_width/elementOncanvasWidth, svg_height/elementOncanvasHeight)).toFixed(2));
-			//var s2 = parseFloat((svg_height/elementOncanvasHeight).toFixed(2));
+			var s,s2,in_x,in_y;
+			segments[k].index = index; // Index used to retrieve RenderManager BBox height and width
+			var seg_rect = Editor.get_BBox(segments[k]);
+    		var elementOncanvasWidth = seg_rect.width;
+    		var elementOncanvasHeight = seg_rect.height;
+    		/*width_scale = svg_symbol_rect.width/svg_width;
+    		height_scale = svg_symbol_rect.height/svg_height;
+    		svg_symbol.setAttribute("transform", "scale("+width_scale+","+height_scale+")");*/
+    		if(joined_segs){
+    			s = svg_width/joined_width;
+    			s2 = svg_height/joined_height;
+    		}else{
+				s = svg_width/elementOncanvasWidth;
+				s2 = svg_height/elementOncanvasHeight;
+			}
+			/*new_height =  svg_height * (elementOncanvasWidth/elementOncanvasHeight);
+			//new_width =  dim_tuple.item1 * (svg_width/svg_height);
+			//s = parseFloat((svg_width/new_width).toFixed(2));
+			s2 =  new_height/svg_height;*/
+			
+			//s2 = parseFloat((dim_tuple.item2/elementOncanvasHeight).toFixed(2));
 			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0, scale);
@@ -472,26 +479,40 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			segments[k].align_old_translation = segments[k].translation;
             segments[k].freeze_transform();
 			
-			//svg_symbol_rect = svg_symbol.getBoundingClientRect();
 			var svg_vector_format = new Vector2(parseInt(svg_symbol_rect.left.toFixed(2)),parseInt(svg_symbol_rect.top.toFixed(2)));
-            var in_x = parseInt(default_position.x.toFixed(2)) + svg_vector_format.x;
-			var in_y = parseInt(default_position.y.toFixed(2)) + svg_vector_format.y;
+            if(i == 0 && remove_duplicates)
+    			initial_offset = svg_vector_format;
+    		if(segments.length == 2){
+    			in_x = parseInt(default_position.x.toFixed(2)) + svg_vector_format.x;
+				in_y = parseInt(default_position.y.toFixed(2)) + svg_vector_format.y;
+    		}else{
+    			in_x = parseInt(default_position.x.toFixed(2)) + svg_vector_format.x;
+				in_y = parseInt(default_position.y.toFixed(2)) + svg_vector_format.y;
+    		}
+            
 			var translation = new Vector2(in_x,in_y);
-            if(segments[k].already_aligned && Vector2.Equals(Vector2.Subtract(translation,svg_vector_format), default_position))
+			translation.Subtract(initial_offset);
+            /*if(segments[k].already_aligned && Vector2.Equals(Vector2.Subtract(translation,svg_vector_format), default_position))
     			continue;
     		else{
     			 if(!segments[k].already_aligned || !Vector2.Equals(Vector2.Subtract(translation,svg_vector_format), default_position) ){
-    				in_x = parseInt(Editor.default_position.x.toFixed(2)) + svg_vector_format.x;
-					in_y = parseInt(Editor.default_position.y.toFixed(2)) + svg_vector_format.y;
+    				if(segments.length == 2){
+    					in_x = parseInt(Editor.default_position.x.toFixed(2)) + svg_vector_format.x;
+						in_y = parseInt(Editor.default_position.y.toFixed(2)) + svg_vector_format.y;
+    				}else{
+    					in_x = parseInt(Editor.default_position.x.toFixed(2)) + svg_vector_format.x;
+						in_y = parseInt(Editor.default_position.y.toFixed(2)) + svg_vector_format.y;
+    				}
 					translation = new Vector2(in_x,in_y);
+					translation.Subtract(initial_offset);
 				}
 				segments[k].translation = translation;
-				if(segments.length < 2){ // no need to calculate for joined strokes
-					//var new_tran = Editor.check_collision(seg_rect,segments[k]);
-					//segments[k].translation.Add(new_tran);
-				}
+				//var new_tran = Editor.check_collision(seg_rect,segments[k]);
+				//segments[k].translation.Add(new_tran);
 				segments[k].already_aligned = true;
-			}
+			}*/
+			segments[k].already_aligned = true;
+			segments[k].translation = translation;
         }
         // Remove segment from y_pos array if remove_duplicates == true to reduce redundancy
         if(remove_duplicates){
@@ -501,6 +522,32 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			}
 		}
 	}
+}
+
+Editor.draw_rect = function(dim){
+	var div = document.createElement('div');
+	div.className = Editor.current_mode.segment_style_class;
+	div.style.visibility='visible';
+	document.body.appendChild(div)
+	div.style.visibility = "visible";
+	div.style.left = dim.left + "px";
+	div.style.top = dim.top + "px";
+	div.style.width = dim.width + "px";
+	div.style.height = dim.height + "px";
+	div.style.color = "red";
+}
+
+// Returns the maximum height and width of joined segments like a plus
+Editor.get_joinedSeg_dimensions = function(segments){
+	var height = width = 0;
+	for(var i = 0; i < segments.length; i++){
+		var seg_rect = Editor.get_BBox(segments[i]);
+		if(seg_rect.height > height)
+			height = seg_rect.height;
+		if(seg_rect.width > width)
+			width = seg_rect.width;
+	}
+	return new Tuple(height,width);
 }
 
 // Makes sure the segment to be aligned doesn't collide with other aligned segments
@@ -540,12 +587,17 @@ Editor.get_position = function(rect, segment){
 
 // Returns the BBox of an element
 Editor.get_BBox = function(seg){
-	var elem_rect;
+	/*var elem_rect;
 	if(seg.constructor == SymbolSegment)
 		elem_rect = seg.element.getBoundingClientRect();
 	else
 		elem_rect = seg.inner_svg.getBoundingClientRect();
-	return elem_rect;
+	return elem_rect;*/
+	var v = {'width':0,'height':0};
+	var t = RenderManager.segment_set_divs[seg.index];
+	v.width = parseInt(t.style.width);
+	v.height = parseInt(t.style.height);
+	return v;
 }
 
 //Sorts an array

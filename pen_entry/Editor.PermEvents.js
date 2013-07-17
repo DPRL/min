@@ -89,6 +89,8 @@ PermEvents.setup_toolbar = function(){
 				PermEvents.Start_TeX_Input(tex);
 			}else{
 				// Check if the type is a text file, if so parse it and get tex
+				
+				default_position_specified = false;
 				if(file[0].type == "text/plain")
 					PermEvents.parse_text_file(file[0]);
 				else
@@ -131,6 +133,7 @@ PermEvents.check_url = function(){
     var query = window.location.search.slice(9);
     if(query){
     	tex = decodeURIComponent(query); // decode it to get its latex
+		default_position_specified = false;
     	PermEvents.Start_TeX_Input(tex);
     }
 }
