@@ -80,7 +80,6 @@ PermEvents.setup_toolbar = function(){
 			e.preventDefault();
 			dropzone.removeClass('hover');
 			var file = e.originalEvent.dataTransfer.files;
-			console.log("file dropped");
 			if(e.originalEvent.dataTransfer.files.length == 0){
 				default_position_specified = true;
 				drop_position = new Vector2(e.originalEvent.pageX - Editor.div_position[0],
@@ -89,7 +88,6 @@ PermEvents.setup_toolbar = function(){
 				PermEvents.Start_TeX_Input(tex);
 			}else{
 				// Check if the type is a text file, if so parse it and get tex
-				
 				default_position_specified = false;
 				if(file[0].type == "text/plain")
 					PermEvents.parse_text_file(file[0]);
@@ -148,12 +146,12 @@ PermEvents.Start_TeX_Input = function(tex){
 	elem.style.position = "absolute";
 	elem.style.fontSize = "800%";
 	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
-	document.body.appendChild(elem); 		// don't forget to remove it later
+	document.body.appendChild(elem); 
 	
 	// Change renderer to svg and make sure it has been processed before calling
 	// PermEvents.callBack
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-    	MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
+    MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
     		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [PermEvents.stub,elem]);
     }]);
 }
@@ -181,7 +179,7 @@ PermEvents.stub = function(elem){
 
 // Copies the rendered SVG in elem to the canvas
 PermEvents.MoveSVGSegmentsToCanvas = function(elem){
-	var svg_root = document.getElementsByClassName("MathJax_SVG")[0].firstChild;
+	var svg_root = document.getElementById("Hidden_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
 	if(default_position_specified)
 		default_position = drop_position; // Slider to canvas drop

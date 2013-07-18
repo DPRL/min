@@ -210,6 +210,7 @@ RenderManager.render_set_field = function(in_context_id)
                 
                 Editor.canvas_div.appendChild(div);
                 RenderManager.segment_set_divs.push(div);
+                RenderManager.new_div = true; // Signals when to create SVG or update it
             }
 
 
@@ -229,12 +230,35 @@ RenderManager.render_set_field = function(in_context_id)
             {
                 // Lines 
                 var symbol = RecognitionManager.symbol_name_to_unicode[recognition_result.symbols[0]];
-                if(symbol != undefined)
+                /*if(symbol != undefined)
                     ss_div.innerHTML = symbol;
                 else
-                    ss_div.innerHTML = recognition_result.symbols[0];
-
-                // TODO: This is a HACK, use the css transforms in the future
+                    ss_div.innerHTML = recognition_result.symbols[0];*/
+                var tex;
+                if(symbol != undefined)
+                    tex = symbol;
+                else
+                    tex = recognition_result.symbols[0];
+                set_segments[0].text = tex;
+                if(RenderManager.new_div){
+					console.log("calling render_manager");
+					var elem = document.createElement("div");
+					elem.setAttribute("id","RenderManager_Tex");
+					elem.style.visibility = "hidden"; 		// Hide the element
+					elem.style.position = "absolute";
+					elem.style.fontSize = "500%";
+					elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
+					document.body.appendChild(elem);
+					RenderManager.new_div = false;
+					var index = RenderManager.segment_set_divs.length;
+					MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],[function(){
+						MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
+							MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [RenderManager.insert_teX,elem,ss_div,rect_size.x,rect_size.y,index]);
+					}])}]);
+				}else{
+					RenderManager.render_svg(ss_div);// Update the SVG on BBox
+				}
+                /* TODO: This is a HACK, use the css transforms in the future
                 var min_dimension = Math.min(rect_size.y, rect_size.x);
                 var max_dimension = (rect_size.y == min_dimension) ?
                     rect_size.x : rect_size.y;
@@ -242,7 +266,7 @@ RenderManager.render_set_field = function(in_context_id)
                     min_dimension = max_dimension / 2;
 
                 ss_div.style.fontSize = (min_dimension * 1.25) + "px"; // scale font up to fill more of bb
-                ss_div.style.lineHeight = min_dimension + "px";
+                ss_div.style.lineHeight = min_dimension + "px";*/
             }
             else {
                 // Typed characters ('SymbolSegments')
@@ -266,6 +290,97 @@ RenderManager.render_set_field = function(in_context_id)
         RenderManager.segment_set_divs[k].style.visibility = "hidden";
         RenderManager.segment_set_divs[k].innerHTML = "";
     }
+}
+
+// Adjusts the SVG recognition result to fit the RenderManager's Box
+RenderManager.render_svg = function(BBox_div){
+	var element,x_offset,y_offset;
+	var svg_root = BBox_div.firstChild;
+	var inner_svg = svg_root.getElementsByTagName("g")[0];
+	var use_tag_array = svg_root.getElementsByTagName("path")[0];
+	var rect_tag_array = svg_root.getElementsByTagName("rect")[0];
+	if(rect_tag_array == null)
+		element = use_tag_array;
+	else
+		element = rect_tag_array;
+	inner_svg.removeAttribute("transform");
+	var svg_width = parseInt(element.getBoundingClientRect().width);
+	var svg_height = parseInt(element.getBoundingClientRect().height);
+	var scale_x = parseInt(BBox_div.getBoundingClientRect().width)/svg_width;
+	var scale_y = parseInt(BBox_div.getBoundingClientRect().height)/svg_height;
+	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+	var BBox_top = $(BBox_div).offset().top;
+	var BBox_left = $(BBox_div).offset().left;
+	element_height = $(element).offset().top;
+	element_width = $(element).offset().left;
+	x_tran = parseFloat(inner_svg.getAttribute("transform").split(" ")[0].split("(")[1].split(",")[0]);
+	y_tran = parseFloat(inner_svg.getAttribute("transform").split(" ")[0].split("(")[1].split(",")[1]);
+	if(parseFloat(BBox_top-element_height) != 0){
+		y_offset = parseFloat(BBox_top-element_height);
+	}
+	if(parseFloat(BBox_left - element_width) != 0){
+		x_offset = parseFloat(BBox_left - element_width);
+	}
+	inner_svg.setAttribute("transform", "translate("+(x_offset)+","+(y_offset)+") scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+}
+
+// Inserts the SVG into the RenderManager's BBox
+RenderManager.insert_teX = function(elem,BBox_div,width,height,index)
+{
+    var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,element_width;
+	var svg_root =  document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+	var use_tag_array = svg_root.getElementsByTagName("use");
+	var rect_tag_array = svg_root.getElementsByTagName("rect");
+	use_tag_array = Array.prototype.slice.call(use_tag_array);
+	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
+	var element = use_tag_array.concat(rect_tag_array); // should be only one symbol
+    var root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    root_svg.setAttribute("class", "RenderManager "+index);
+    root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
+    root_svg.setAttribute("width", "100%");
+    root_svg.setAttribute("height", "100%");
+    root_svg.setAttribute("opacity", "0.3");
+    var inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+	if(element[0].tagName.toString() == "use"){
+		path_tag = document.getElementById(element[0].getAttribute("href").split("#")[1]).cloneNode(true);
+		inner_svg.appendChild(path_tag);
+		root_svg.appendChild(inner_svg);
+		BBox_div.appendChild(root_svg);
+		svg_width = parseInt(path_tag.getBoundingClientRect().width);
+    	svg_height = parseInt(path_tag.getBoundingClientRect().height);
+	}else{
+		rect_tag = element[0].cloneNode();
+		rect_tag.removeAttribute("x");
+		rect_tag.removeAttribute("y");
+		inner_svg.appendChild(rect_tag);
+		root_svg.appendChild(inner_svg);
+		BBox_div.appendChild(root_svg);
+		svg_width = parseInt(rect_tag.getBoundingClientRect().width);
+    	svg_height = parseInt(rect_tag.getBoundingClientRect().height);
+	}
+	var scale_x = parseInt(BBox_div.getBoundingClientRect().width)/svg_width;
+	var scale_y = parseInt(BBox_div.getBoundingClientRect().height)/svg_height;
+	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+	
+	var BBox_top = $(BBox_div).offset().top;
+	var BBox_left = $(BBox_div).offset().left;
+	if(element[0].tagName.toString() == "use"){
+		element_height = $(path_tag).offset().top;
+		element_width = $(path_tag).offset().left;
+	}else{
+		element_height = $(rect_tag).offset().top;
+		element_width = $(rect_tag).offset().left;
+	}
+	if(parseFloat(BBox_top - element_height) != 0){
+		y_offset = parseFloat(BBox_top - element_height);
+	}
+	if(parseFloat(BBox_left - element_width) != 0){
+		x_offset = parseFloat(BBox_left - element_width);
+	}
+	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+	document.body.removeChild(elem);
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }
 
 RenderManager.unrender_set_field = function()

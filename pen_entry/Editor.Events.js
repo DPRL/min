@@ -292,16 +292,13 @@ Editor.align = function()
                 	mathjax supports. See website below:
                 	http://docs.mathjax.org/en/v1.1-latest/tex.html#supported-latex-commands
                 */
-                if(tex_math.search("vbox") != -1)
+                if(tex_math.search("vbox") != -1) // checks for tex error before MathJax yells!
                 	return;
                 var elem = document.createElement("div");
-				elem.setAttribute("id","Hidden_Tex");
+				elem.setAttribute("id","Alignment_Tex");
 				elem.style.visibility = "visible"; 		// Hide the element
 				elem.style.position = "absolute";
 				elem.style.fontSize = "800%";
-				/*var dim_tuple = Editor.get_canvas_elements_dimensions();
-				elem.style.width = dim_tuple.item1 + "px";
-				elem.style.height = dim_tuple.item2 + "px";*/
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
 				document.body.appendChild(elem); 		// don't forget to remove it later
 	
@@ -336,17 +333,30 @@ Editor.get_canvas_elements_dimensions = function(){
 }
 
 Editor.scale_tex = function(elem){
-	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0];
+	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
 	math_width = MathJax_div.offsetWidth;
 	math_height = MathJax_div.offsetHeight;
-	//target_width = dim_tuple.item1 * (math_width/math_height);
-	//target_height = dim_tuple.item2 * (math_width/math_height);
+	//target_width = dim_tuple.item1;
+	//target_height = dim_tuple.item2;
+	//console.log("Width: " + math_width + " Height: " + math_height);
+	if(math_width < target_width || math_height < target_height){ 
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 50) + "%";
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
+	}else{
+		return;
+	}
+}
+
+Editor.scale_tex2 = function(elem){
+	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
+	math_width = MathJax_div.offsetWidth;
+	math_height = MathJax_div.offsetHeight;
 	//target_width = dim_tuple.item1;
 	//target_height = dim_tuple.item2;
 	//console.log("Width: " + math_width + " Height: " + math_height);
 	if(math_width > target_width || math_height > target_height){ 
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex2(elem), this)]);
 	}else{
 		return;
 	}
@@ -354,14 +364,20 @@ Editor.scale_tex = function(elem){
 
 Editor.copy_tex = function(elem,data){
 	dim_tuple = Editor.get_canvas_elements_dimensions();
-	target_width = $("#equation_canvas")[0].offsetWidth;
+	/*target_width = $("#equation_canvas")[0].offsetWidth;
 	target_height = $("#equation_canvas")[0].offsetHeight;
+	Editor.scale_tex(elem);*/
+	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
+	math_width = MathJax_div.offsetWidth;
+	math_height = MathJax_div.offsetHeight;
+	target_width = dim_tuple.item1 * (math_width/math_height);
+	target_height = dim_tuple.item2 * (math_width/math_height);
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
 	
 	// Identify the segments and place them appropriately
-	var svg_root =  document.getElementById("Hidden_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+	var svg_root =  document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
-	var rect_tag_array = svg_root.getElementsByTagName("rect"); 
+	var rect_tag_array = svg_root.getElementsByTagName("rect");
 	use_tag_array = Array.prototype.slice.call(use_tag_array);
 	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
 	var elements = use_tag_array.concat(rect_tag_array);
@@ -385,7 +401,7 @@ Editor.copy_tex = function(elem,data){
 	Editor.add_action(transform_action);
 	x_pos = []; // Clear both arrays
 	y_pos = [];
-	document.body.removeChild(elem); // Remove elem from document body (Align done)
+	document.body.removeChild(elem); // Remove elem from document body (Alignment done)
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }
 
@@ -400,43 +416,23 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 		if(svg_symbol.getAttribute("href")){
 			var unicode = svg_symbol.getAttribute("href").split("-")[1];
 			text = String.fromCharCode(parseInt(unicode,16));
-			if(text == "−") // special case character. Has zero-width space -> Look it up you will be amazed
+			if(text == "−") // special case character. Has zero-width space -> Look it up
 				text = "-";
 		}else
 			text = "-"; // rect element is usually a division symbol which is a dash in Min
-		var prev_set_id = null;
-		var index = 0;
 		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
 		for(var j = 0; j < Editor.segments.length; j++){ // Find the segment on canvas
-			var segment_text = null;
-			if(Editor.segments[j].constructor != TeX_Input && Editor.segments[j].constructor != SymbolSegment && Editor.segments[j].set_id == prev_set_id){ // joined symbols
-				segment_text = RenderManager.segment_set_divs[index-1].innerHTML;
-			}else if(Editor.segments[j].constructor != TeX_Input && Editor.segments[j].constructor != SymbolSegment){ // PenStroke and Image Blobs
-				segment_text = RenderManager.segment_set_divs[index].innerHTML; 
-				index++;
-			}else if(Editor.segments[j].constructor == TeX_Input || Editor.segments[j].constructor == SymbolSegment){ // TeX_Input and SymbolSegment don't have text on their BBox
-				segment_text = Editor.segments[j].text; 
-				index++;
-			}
 			var set_id = Editor.segments[j].set_id;
-			if(text == "+")
-				segment_text = "+";
-			if(text == "-")
-				segment_text = "-";
-			if(segment_text == text && (!transformed_segments.contains(set_id))){
+			if(Editor.segments[j].text == text && (!transformed_segments.contains(set_id))){
 				transformed_segments.push(set_id);
 				segments = Editor.get_segment_by_id(set_id);
 				break;
 			}
-			prev_set_id = Editor.segments[j].set_id;
 		}
-		index--; // Reset to normal index
 		if(segments == null)
 			continue;
 		var joined_segs,joined_width,joined_height;
-		if(segments.length == 2){
-			segments[0].index = index;
-			segments[1].index = index;
+		if(segments.length == 2){ // Joined symbols have one width and height not two
 			var dim = Editor.get_joinedSeg_dimensions(segments);
 			joined_height = dim.item1;
 			joined_width = dim.item2;
@@ -449,13 +445,9 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
     	var svg_height = svg_symbol_rect.height;
 		for(var k = 0; k < segments.length; k++){ 
 			var s,s2,in_x,in_y;
-			segments[k].index = index; // Index used to retrieve RenderManager BBox height and width
 			var seg_rect = Editor.get_BBox(segments[k]);
     		var elementOncanvasWidth = seg_rect.width;
     		var elementOncanvasHeight = seg_rect.height;
-    		/*width_scale = svg_symbol_rect.width/svg_width;
-    		height_scale = svg_symbol_rect.height/svg_height;
-    		svg_symbol.setAttribute("transform", "scale("+width_scale+","+height_scale+")");*/
     		if(joined_segs){
     			s = svg_width/joined_width;
     			s2 = svg_height/joined_height;
@@ -464,12 +456,6 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 				s = svg_width/elementOncanvasWidth;
 				s2 = svg_height/elementOncanvasHeight;
 			}
-			/*new_height = svg_height * (elementOncanvasWidth/elementOncanvasHeight);
-			//new_width = dim_tuple.item1 * (svg_width/svg_height);
-			//s = parseFloat((svg_width/new_width).toFixed(2));
-			s2 =  new_height/svg_height;*/
-			
-			//s2 = parseFloat((dim_tuple.item2/elementOncanvasHeight).toFixed(2));
 			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0, scale);
@@ -569,7 +555,7 @@ Editor.check_collision = function(seg_rect,segment){
 	return offset;
 }
 
-// Returns the BBox of an element after applying scaling and translation
+// Returns the BBox of an element after applying scaling and translation to it
 Editor.get_position = function(rect, segment){
 	// Apply scale to rect element
 	var height = rect.height*segment.align_scale.y,
@@ -585,17 +571,12 @@ Editor.get_position = function(rect, segment){
 
 // Returns the BBox of an element
 Editor.get_BBox = function(seg){
-	/*var elem_rect;
+	var elem_rect;
 	if(seg.constructor == SymbolSegment)
 		elem_rect = seg.element.getBoundingClientRect();
 	else
 		elem_rect = seg.inner_svg.getBoundingClientRect();
-	return elem_rect;*/
-	var v = {'width':0,'height':0};
-	var t = RenderManager.segment_set_divs[seg.index];
-	v.width = parseInt(t.style.width);
-	v.height = parseInt(t.style.height);
-	return v;
+	return elem_rect;
 }
 
 //Sorts an array
