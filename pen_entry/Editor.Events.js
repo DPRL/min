@@ -364,15 +364,15 @@ Editor.scale_tex2 = function(elem){
 
 Editor.copy_tex = function(elem,data){
 	dim_tuple = Editor.get_canvas_elements_dimensions();
-	/*target_width = $("#equation_canvas")[0].offsetWidth;
+	target_width = $("#equation_canvas")[0].offsetWidth;
 	target_height = $("#equation_canvas")[0].offsetHeight;
-	Editor.scale_tex(elem);*/
-	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
+	Editor.scale_tex2(elem);
+	/*var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
 	math_width = MathJax_div.offsetWidth;
 	math_height = MathJax_div.offsetHeight;
 	target_width = dim_tuple.item1 * (math_width/math_height);
 	target_height = dim_tuple.item2 * (math_width/math_height);
-	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
+	Editor.scale_tex(elem); // scale to fit element on canvas dimensions*/
 	
 	// Identify the segments and place them appropriately
 	var svg_root =  document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
