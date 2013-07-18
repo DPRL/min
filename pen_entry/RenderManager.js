@@ -239,24 +239,20 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
-                set_segments[0].text = tex;
-                if(RenderManager.new_div){
+                if(RenderManager.new_div && (!set_segments[0].text)){
 					console.log("calling render_manager");
-					var elem = document.createElement("div");
-					elem.setAttribute("id","RenderManager_Tex");
-					elem.style.visibility = "hidden"; 		// Hide the element
-					elem.style.position = "absolute";
-					elem.style.fontSize = "500%";
-					elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
-					document.body.appendChild(elem);
+					set_segments[0].text = tex;
 					RenderManager.new_div = false;
-					var index = RenderManager.segment_set_divs.length;
-					MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],[function(){
-						MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
-							MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [RenderManager.insert_teX,elem,ss_div,rect_size.x,rect_size.y,index]);
-					}])}]);
+					RenderManager.start_display(ss_div,tex,rect_size);
 				}else{
-					RenderManager.render_svg(ss_div);// Update the SVG on BBox
+					if(set_segments[0].text == tex)
+						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
+					else{
+						for(var z = 0; z < set_segments.length; z++)
+							set_segments[z].text = tex;
+						ss_div.removeChild(ss_div.firstChild);
+						RenderManager.start_display(ss_div,tex,rect_size);
+					}	
 				}
                 /* TODO: This is a HACK, use the css transforms in the future
                 var min_dimension = Math.min(rect_size.y, rect_size.x);
@@ -290,6 +286,21 @@ RenderManager.render_set_field = function(in_context_id)
         RenderManager.segment_set_divs[k].style.visibility = "hidden";
         RenderManager.segment_set_divs[k].innerHTML = "";
     }
+}
+
+RenderManager.start_display = function(ss_div,tex,rect_size){
+	var elem = document.createElement("div");
+	elem.setAttribute("id","RenderManager_Tex");
+	elem.style.visibility = "hidden"; 		// Hide the element
+	elem.style.position = "absolute";
+	elem.style.fontSize = "500%";
+	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
+	document.body.appendChild(elem);
+	var index = RenderManager.segment_set_divs.length;
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],[function(){
+		MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
+			MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [RenderManager.insert_teX,elem,ss_div,rect_size.x,rect_size.y,index]);
+	}])}]);
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
