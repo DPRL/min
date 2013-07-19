@@ -236,7 +236,6 @@ RenderManager.render_set_field = function(in_context_id)
                 else
                     tex = recognition_result.symbols[0];
                 if(RenderManager.new_div && (!set_segments[0].text)){
-					console.log("calling render_manager_tex");
 					set_segments[0].text = tex;
 					RenderManager.new_div = false;
 					RenderManager.start_display(ss_div,tex);
@@ -369,6 +368,10 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 			var path_scale_y = elem_rect.height/path_rect.height;
 			var offset = $(element[i]).offset();
 			path_tag.setAttribute("transform", "translate("+offset.left+","+offset.top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+			if(element[i].getAttribute("x") && element[i].getAttribute("y")){
+				path_tag.removeAttribute("x");
+				path_tag.removeAttribute("y");
+			}
 			inner_svg.appendChild(path_tag);
 			document.body.removeChild(temp_root);
 		}else{
