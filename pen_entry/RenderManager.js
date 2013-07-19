@@ -230,20 +230,16 @@ RenderManager.render_set_field = function(in_context_id)
             {
                 // Lines 
                 var symbol = RecognitionManager.symbol_name_to_unicode[recognition_result.symbols[0]];
-                /*if(symbol != undefined)
-                    ss_div.innerHTML = symbol;
-                else
-                    ss_div.innerHTML = recognition_result.symbols[0];*/
                 var tex;
                 if(symbol != undefined)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
                 if(RenderManager.new_div && (!set_segments[0].text)){
-					console.log("calling render_manager");
+					console.log("calling render_manager_tex");
 					set_segments[0].text = tex;
 					RenderManager.new_div = false;
-					RenderManager.start_display(ss_div,tex,rect_size);
+					RenderManager.start_display(ss_div,tex);
 				}else{
 					if(set_segments[0].text == tex)
 						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
@@ -251,18 +247,9 @@ RenderManager.render_set_field = function(in_context_id)
 						for(var z = 0; z < set_segments.length; z++)
 							set_segments[z].text = tex;
 						ss_div.removeChild(ss_div.firstChild);
-						RenderManager.start_display(ss_div,tex,rect_size);
+						RenderManager.start_display(ss_div,tex);
 					}	
 				}
-                /* TODO: This is a HACK, use the css transforms in the future
-                var min_dimension = Math.min(rect_size.y, rect_size.x);
-                var max_dimension = (rect_size.y == min_dimension) ?
-                    rect_size.x : rect_size.y;
-                if(min_dimension < max_dimension / 2)
-                    min_dimension = max_dimension / 2;
-
-                ss_div.style.fontSize = (min_dimension * 1.25) + "px"; // scale font up to fill more of bb
-                ss_div.style.lineHeight = min_dimension + "px";*/
             }
             else {
                 // Typed characters ('SymbolSegments')
@@ -288,7 +275,10 @@ RenderManager.render_set_field = function(in_context_id)
     }
 }
 
-RenderManager.start_display = function(ss_div,tex,rect_size){
+/* Inserts Tex into a DOM element and calls MathJax to render it. When MathJax is done,
+	it calls insert_tex which inserts the tex into the BBox of the symbol on the canvas
+*/
+RenderManager.start_display = function(ss_div,tex){
 	var elem = document.createElement("div");
 	elem.setAttribute("id","RenderManager_Tex");
 	elem.style.visibility = "hidden"; 		// Hide the element
@@ -299,8 +289,21 @@ RenderManager.start_display = function(ss_div,tex,rect_size){
 	var index = RenderManager.segment_set_divs.length;
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],[function(){
 		MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
-			MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [RenderManager.insert_teX,elem,ss_div,rect_size.x,rect_size.y,index]);
+			MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [RenderManager.insert_teX,elem,ss_div,index]);
 	}])}]);
+}
+
+// Scales the rendered SVG to fit the BBox on the canvas
+RenderManager.scale_tex = function(elem,target_width,target_height){
+	var MathJax_div = document.getElementById("RenderManager_Tex").getElementsByTagName("g")[0].getBoundingClientRect();
+	var math_width = parseInt(MathJax_div.width);
+	var math_height = parseInt(MathJax_div.height);
+	if(math_width > target_width || math_height > target_height){ 
+		elem.style.fontSize =  (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [RenderManager.scale_tex,elem,target_width,target_height]);
+	}else{
+		return;
+	}
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
@@ -308,22 +311,16 @@ RenderManager.render_svg = function(BBox_div){
 	var element,x_offset,y_offset;
 	var svg_root = BBox_div.firstChild;
 	var inner_svg = svg_root.getElementsByTagName("g")[0];
-	var use_tag_array = svg_root.getElementsByTagName("path")[0];
-	var rect_tag_array = svg_root.getElementsByTagName("rect")[0];
-	if(rect_tag_array == null)
-		element = use_tag_array;
-	else
-		element = rect_tag_array;
 	inner_svg.removeAttribute("transform");
-	var svg_width = parseInt(element.getBoundingClientRect().width);
-	var svg_height = parseInt(element.getBoundingClientRect().height);
+	var svg_width = parseInt(inner_svg.getBoundingClientRect().width);
+	var svg_height = parseInt(inner_svg.getBoundingClientRect().height);
 	var scale_x = parseInt(BBox_div.getBoundingClientRect().width)/svg_width;
 	var scale_y = parseInt(BBox_div.getBoundingClientRect().height)/svg_height;
-	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+")");
 	var BBox_top = $(BBox_div).offset().top;
 	var BBox_left = $(BBox_div).offset().left;
-	element_height = $(element).offset().top;
-	element_width = $(element).offset().left;
+	element_height = $(inner_svg).offset().top;
+	element_width = $(inner_svg).offset().left;
 	x_tran = parseFloat(inner_svg.getAttribute("transform").split(" ")[0].split("(")[1].split(",")[0]);
 	y_tran = parseFloat(inner_svg.getAttribute("transform").split(" ")[0].split("(")[1].split(",")[1]);
 	if(parseFloat(BBox_top-element_height) != 0){
@@ -332,14 +329,18 @@ RenderManager.render_svg = function(BBox_div){
 	if(parseFloat(BBox_left - element_width) != 0){
 		x_offset = parseFloat(BBox_left - element_width);
 	}
-	inner_svg.setAttribute("transform", "translate("+(x_offset)+","+(y_offset)+") scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+	inner_svg.setAttribute("transform", "translate("+(x_offset)+","+(y_offset)+") scale("+scale_x+","+scale_y+")");
 }
 
-// Inserts the SVG into the RenderManager's BBox
-RenderManager.insert_teX = function(elem,BBox_div,width,height,index)
+// Inserts the SVG into the RenderManager's BBox for the symbol
+RenderManager.insert_teX = function(elem,BBox_div,index)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,element_width;
-	var svg_root =  document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+    var target_width = BBox_div.getBoundingClientRect().width;
+	var target_height = BBox_div.getBoundingClientRect().height;
+    RenderManager.scale_tex(elem,target_width,target_height);
+    
+	var svg_root = document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
 	var rect_tag_array = svg_root.getElementsByTagName("rect");
 	use_tag_array = Array.prototype.slice.call(use_tag_array);
@@ -353,43 +354,61 @@ RenderManager.insert_teX = function(elem,BBox_div,width,height,index)
     root_svg.setAttribute("height", "100%");
     root_svg.setAttribute("opacity", "0.3");
     var inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-	if(element[0].tagName.toString() == "use"){
-		path_tag = document.getElementById(element[0].getAttribute("href").split("#")[1]).cloneNode(true);
-		inner_svg.appendChild(path_tag);
-		root_svg.appendChild(inner_svg);
-		BBox_div.appendChild(root_svg);
-		svg_width = parseInt(path_tag.getBoundingClientRect().width);
-    	svg_height = parseInt(path_tag.getBoundingClientRect().height);
-	}else{
-		rect_tag = element[0].cloneNode();
-		rect_tag.removeAttribute("x");
-		rect_tag.removeAttribute("y");
-		inner_svg.appendChild(rect_tag);
-		root_svg.appendChild(inner_svg);
-		BBox_div.appendChild(root_svg);
-		svg_width = parseInt(rect_tag.getBoundingClientRect().width);
-    	svg_height = parseInt(rect_tag.getBoundingClientRect().height);
+    for(var i = 0; i < element.length; i++){
+    	var temp_root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    	temp_root.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    	temp_root.setAttribute("visibility", "hidden");
+		if(element[i].tagName.toString() == "use"){
+			path_tag = document.getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
+			path_tag.setAttribute("visibility","visible");
+			temp_root.appendChild(path_tag);
+			document.body.appendChild(temp_root);
+			var path_rect = path_tag.getBoundingClientRect();
+			var elem_rect = element[i].getBoundingClientRect();
+			var path_scale_x = elem_rect.width/path_rect.width;
+			var path_scale_y = elem_rect.height/path_rect.height;
+			var offset = $(element[i]).offset();
+			path_tag.setAttribute("transform", "translate("+offset.left+","+offset.top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+			inner_svg.appendChild(path_tag);
+			document.body.removeChild(temp_root);
+		}else{
+			rect_tag = element[i].cloneNode(true);
+			rect_tag.setAttribute("visibility","visible");
+			temp_root.appendChild(rect_tag);
+			document.body.appendChild(temp_root);
+			var path_rect = rect_tag.getBoundingClientRect();
+			var elem_rect = element[i].getBoundingClientRect();
+			var path_scale_x = elem_rect.width/path_rect.width;
+			var path_scale_y = elem_rect.height/path_rect.height;
+			var offset = $(element[i]).offset();
+			path_tag.setAttribute("transform", "translate("+offset.left+","+offset.top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+			rect_tag.removeAttribute("x");
+			rect_tag.removeAttribute("y");
+			inner_svg.appendChild(rect_tag);
+			document.body.removeChild(temp_root);
+		}
 	}
-	var scale_x = parseInt(BBox_div.getBoundingClientRect().width)/svg_width;
-	var scale_y = parseInt(BBox_div.getBoundingClientRect().height)/svg_height;
-	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+	root_svg.appendChild(inner_svg);
+	BBox_div.appendChild(root_svg);
+	svg_width = parseInt(inner_svg.getBoundingClientRect().width);
+	svg_height = parseInt(inner_svg.getBoundingClientRect().height);
+	
+	var BBox_rect = BBox_div.getBoundingClientRect();
+	var scale_x = parseInt(BBox_rect.width)/svg_width;
+	var scale_y = parseInt(BBox_rect.height)/svg_height;
+	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+")");
 	
 	var BBox_top = $(BBox_div).offset().top;
 	var BBox_left = $(BBox_div).offset().left;
-	if(element[0].tagName.toString() == "use"){
-		element_height = $(path_tag).offset().top;
-		element_width = $(path_tag).offset().left;
-	}else{
-		element_height = $(rect_tag).offset().top;
-		element_width = $(rect_tag).offset().left;
-	}
+	element_height = $(inner_svg).offset().top;
+	element_width = $(inner_svg).offset().left;
 	if(parseFloat(BBox_top - element_height) != 0){
 		y_offset = parseFloat(BBox_top - element_height);
 	}
 	if(parseFloat(BBox_left - element_width) != 0){
 		x_offset = parseFloat(BBox_left - element_width);
 	}
-	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+") matrix(1 0 0 -1 0 0)");
+	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+")");
 	document.body.removeChild(elem);
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }

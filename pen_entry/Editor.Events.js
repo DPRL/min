@@ -333,14 +333,24 @@ Editor.get_canvas_elements_dimensions = function(){
 }
 
 Editor.scale_tex = function(elem){
+	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+	var rect = root.getBoundingClientRect();
+	math_width = parseFloat(rect.width.toFixed(2));
+	math_height = parseFloat(rect.height.toFixed(2));
+	if(math_width < target_width || math_height < target_height){ 
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 20) + "%";
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
+	}else{
+		return;
+	}
+}
+
+Editor.scale_tex3 = function(elem){
 	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
 	math_width = MathJax_div.offsetWidth;
 	math_height = MathJax_div.offsetHeight;
-	//target_width = dim_tuple.item1;
-	//target_height = dim_tuple.item2;
-	//console.log("Width: " + math_width + " Height: " + math_height);
-	if(math_width < target_width || math_height < target_height){ 
-		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 50) + "%";
+	if(math_width > target_width || math_height > target_height){ 
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 20) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
 	}else{
 		return;
@@ -351,9 +361,6 @@ Editor.scale_tex2 = function(elem){
 	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
 	math_width = MathJax_div.offsetWidth;
 	math_height = MathJax_div.offsetHeight;
-	//target_width = dim_tuple.item1;
-	//target_height = dim_tuple.item2;
-	//console.log("Width: " + math_width + " Height: " + math_height);
 	if(math_width > target_width || math_height > target_height){ 
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex2(elem), this)]);
@@ -364,15 +371,18 @@ Editor.scale_tex2 = function(elem){
 
 Editor.copy_tex = function(elem,data){
 	dim_tuple = Editor.get_canvas_elements_dimensions();
-	target_width = $("#equation_canvas")[0].offsetWidth;
+	/*target_width = $("#equation_canvas")[0].offsetWidth;
 	target_height = $("#equation_canvas")[0].offsetHeight;
-	Editor.scale_tex2(elem);
-	/*var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
-	math_width = MathJax_div.offsetWidth;
-	math_height = MathJax_div.offsetHeight;
-	target_width = dim_tuple.item1 * (math_width/math_height);
-	target_height = dim_tuple.item2 * (math_width/math_height);
-	Editor.scale_tex(elem); // scale to fit element on canvas dimensions*/
+	Editor.scale_tex2(elem);*/
+	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+	var rect = root.getBoundingClientRect();
+	/*var width_ratio = dim_tuple.item1/rect.width;
+	var height_ratio = dim_tuple.item2/rect.height;
+	var ratio = width_ratio < height_ratio ? width_ration : height_ratio;*/
+	target_width = (rect.width/rect.height) * dim_tuple.item2;
+	//target_width = dim_tuple.item2 * (math_width/math_height);
+	target_height = dim_tuple.item2;
+	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
 	
 	// Identify the segments and place them appropriately
 	var svg_root =  document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
@@ -456,13 +466,14 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 				s = svg_width/elementOncanvasWidth;
 				s2 = svg_height/elementOncanvasHeight;
 			}
+			
 			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0, scale);
 			segments[k].align_scale = scale;
 			segments[k].align_old_translation = segments[k].translation;
             segments[k].freeze_transform();
-			
+            
 			var svg_vector_format = new Vector2(parseInt(svg_symbol_rect.left.toFixed(2)),parseInt(svg_symbol_rect.top.toFixed(2)));
             if(i == 0 && remove_duplicates)
     			initial_offset = svg_vector_format;
@@ -473,28 +484,8 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
     			in_x = parseInt(default_position.x.toFixed(2)) + svg_vector_format.x;
 				in_y = parseInt(default_position.y.toFixed(2)) + svg_vector_format.y;
     		}
-            
 			var translation = new Vector2(in_x,in_y);
 			translation.Subtract(initial_offset);
-            /*if(segments[k].already_aligned && Vector2.Equals(Vector2.Subtract(translation,svg_vector_format), default_position))
-    			continue;
-    		else{
-    			 if(!segments[k].already_aligned || !Vector2.Equals(Vector2.Subtract(translation,svg_vector_format), default_position) ){
-    				if(segments.length == 2){
-    					in_x = parseInt(Editor.default_position.x.toFixed(2)) + svg_vector_format.x;
-						in_y = parseInt(Editor.default_position.y.toFixed(2)) + svg_vector_format.y;
-    				}else{
-    					in_x = parseInt(Editor.default_position.x.toFixed(2)) + svg_vector_format.x;
-						in_y = parseInt(Editor.default_position.y.toFixed(2)) + svg_vector_format.y;
-    				}
-					translation = new Vector2(in_x,in_y);
-					translation.Subtract(initial_offset);
-				}
-				segments[k].translation = translation;
-				//var new_tran = Editor.check_collision(seg_rect,segments[k]);
-				//segments[k].translation.Add(new_tran);
-				segments[k].already_aligned = true;
-			}*/
 			segments[k].already_aligned = true;
 			segments[k].translation = translation;
         }
