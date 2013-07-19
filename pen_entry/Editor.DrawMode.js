@@ -110,7 +110,7 @@ DrawMode.onDownBase = function(e){
         
     Editor.state = EditorState.MiddleOfStroke;
 
-    //RenderManager.render();
+    RenderManager.render();
 }
 
 DrawMode.onUpBase = function(e){

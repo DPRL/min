@@ -281,7 +281,7 @@ RenderManager.render_set_field = function(in_context_id)
 RenderManager.start_display = function(ss_div,tex){
 	var elem = document.createElement("div");
 	elem.setAttribute("id","RenderManager_Tex");
-	elem.style.visibility = "hidden"; 		// Hide the element
+	elem.style.visibility = "visible"; 		// Hide the element
 	elem.style.position = "absolute";
 	elem.style.fontSize = "500%";
 	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
@@ -338,7 +338,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,element_width;
     var target_width = BBox_div.getBoundingClientRect().width;
 	var target_height = BBox_div.getBoundingClientRect().height;
-    RenderManager.scale_tex(elem,target_width,target_height);
+    //RenderManager.scale_tex(elem,target_width,target_height);
     
 	var svg_root = document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
