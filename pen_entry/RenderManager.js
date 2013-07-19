@@ -245,7 +245,8 @@ RenderManager.render_set_field = function(in_context_id)
 					else{
 						for(var z = 0; z < set_segments.length; z++)
 							set_segments[z].text = tex;
-						ss_div.removeChild(ss_div.firstChild);
+						if(ss_div.firstChild)
+							ss_div.removeChild(ss_div.firstChild);
 						RenderManager.start_display(ss_div,tex);
 					}	
 				}
@@ -336,9 +337,9 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
     	element_width,old_bottom;
-    var target_width = BBox_div.getBoundingClientRect().width;
+    /*var target_width = BBox_div.getBoundingClientRect().width;
 	var target_height = BBox_div.getBoundingClientRect().height;
-    //RenderManager.scale_tex(elem,target_width,target_height);
+    RenderManager.scale_tex(elem,target_width,target_height); // No need just one symbol*/
     
 	var svg_root = document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
@@ -352,7 +353,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
     root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     root_svg.setAttribute("width", "100%");
     root_svg.setAttribute("height", "100%");
-    root_svg.setAttribute("opacity", "0.3");
+    root_svg.setAttribute("opacity", "0.6");
     var inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     for(var i = 0; i < element.length; i++){
     	var temp_root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');

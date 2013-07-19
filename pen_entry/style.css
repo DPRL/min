@@ -467,7 +467,7 @@ div.bb_handle {
 /* This controls the appearance of overlaid recognition results. 
  * In the entry mode. */
 .segment_draw_mode {
-	background-color: rgba(126, 174, 235, 0.46);
+	//background-color: rgba(126, 174, 235, 0.46);
 	/* background-color: rgba(50, 50, 50, 0.6);  */
 }
 
