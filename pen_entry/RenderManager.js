@@ -334,7 +334,8 @@ RenderManager.render_svg = function(BBox_div){
 // Inserts the SVG into the RenderManager's BBox for the symbol
 RenderManager.insert_teX = function(elem,BBox_div,index)
 {
-    var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,element_width;
+    var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
+    	element_width,old_bottom;
     var target_width = BBox_div.getBoundingClientRect().width;
 	var target_height = BBox_div.getBoundingClientRect().height;
     //RenderManager.scale_tex(elem,target_width,target_height);
@@ -357,6 +358,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
     	var temp_root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     	temp_root.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     	temp_root.setAttribute("visibility", "hidden");
+    	var offset = element[i].getBoundingClientRect();
 		if(element[i].tagName.toString() == "use"){
 			path_tag = document.getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
 			path_tag.setAttribute("visibility","visible");
@@ -366,11 +368,11 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			var offset = $(element[i]).offset();
-			path_tag.setAttribute("transform", "translate("+offset.left+","+offset.top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
-			if(element[i].getAttribute("x") && element[i].getAttribute("y")){
-				path_tag.removeAttribute("x");
-				path_tag.removeAttribute("y");
+			if(old_bottom && old_bottom != parseInt(offset.bottom)){
+				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+			}else{
+				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+				old_bottom == parseInt(offset.bottom);
 			}
 			inner_svg.appendChild(path_tag);
 			document.body.removeChild(temp_root);
@@ -383,8 +385,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			var offset = $(element[i]).offset();
-			path_tag.setAttribute("transform", "translate("+offset.left+","+offset.top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+			path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
 			rect_tag.removeAttribute("x");
 			rect_tag.removeAttribute("y");
 			inner_svg.appendChild(rect_tag);
