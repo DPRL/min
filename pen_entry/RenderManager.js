@@ -335,7 +335,7 @@ RenderManager.render_svg = function(BBox_div){
 RenderManager.insert_teX = function(elem,BBox_div,index)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
-    	element_width,old_bottom;
+    	element_width,old_bottom,old_top;
     var target_width = BBox_div.getBoundingClientRect().width;
 	var target_height = BBox_div.getBoundingClientRect().height;
     //RenderManager.scale_tex(elem,target_width,target_height);
@@ -369,10 +369,11 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
 			if(old_bottom && old_bottom != parseInt(offset.bottom)){
-				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+				path_tag.setAttribute("transform", "translate("+offset.left+","+old_top+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
 			}else{
 				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
-				old_bottom == parseInt(offset.bottom);
+				old_bottom = parseInt(offset.bottom);
+				old_top = offset.top;
 			}
 			inner_svg.appendChild(path_tag);
 			document.body.removeChild(temp_root);
