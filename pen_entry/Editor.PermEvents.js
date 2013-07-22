@@ -80,20 +80,12 @@ PermEvents.setup_toolbar = function(){
 			e.preventDefault();
 			dropzone.removeClass('hover');
 			var file = e.originalEvent.dataTransfer.files;
-			if(e.originalEvent.dataTransfer.files.length == 0){
-				default_position_specified = true;
-				drop_position = new Vector2(e.originalEvent.pageX - Editor.div_position[0],
-					 e.originalEvent.pageY - Editor.div_position[1]);
-				tex = e.originalEvent.dataTransfer.getData("Text");
-				PermEvents.Start_TeX_Input(tex);
-			}else{
-				// Check if the type is a text file, if so parse it and get tex
-				default_position_specified = false;
-				if(file[0].type == "text/plain")
-					PermEvents.parse_text_file(file[0]);
-				else
-					Editor.ParseImage(file[0]);
-			}
+			// Check if the type is a text file, if so parse it and get tex
+			default_position_specified = false;
+			if(file[0].type == "text/plain")
+				PermEvents.parse_text_file(file[0]);
+			else
+				Editor.ParseImage(file[0]);
 			return false;
 		});
     }
@@ -234,3 +226,42 @@ function subclassOf(base){
     return new _subclassOf();
 }
 function _subclassOf() {};
+
+// Sets up the events that should happen upon clicking the slider
+PermEvents.slider_mouse_down = function(e){
+	PermEvents.drag_started = true;
+	document.getElementById("equation_canvas").addEventListener("mousemove", PermEvents.slider_dragging, true);
+	document.getElementById("equation_canvas").addEventListener("mouseup", PermEvents.drag_done, true);
+	if(Modernizr.touch){
+		document.getElementById("equation_canvas").addEventListener("touchmove", PermEvents.slider_dragging, true);
+		document.getElementById("equation_canvas").addEventListener("touchend", PermEvents.drag_done, true);
+	}
+	if(navigator.userAgent.search("Firefox") != -1)
+		Editor.canvas_div.style.cursor = "-moz-grabbing";
+	else
+		Editor.canvas_div.style.cursor = "-webkit-grabbing";
+}
+
+// Not really necessary but served a purpose during implementation
+PermEvents.slider_dragging = function(e){
+	e.stopPropagation();
+}
+
+// Gets called on mouse up and calls function that inserts tex into min and canvas
+PermEvents.drag_done = function(e){
+	console.log("drag done first"); 
+	if(PermEvents.drag_started){
+		e.stopPropagation();
+		document.getElementById("equation_canvas").removeEventListener("mousemove",PermEvents.slider_dragging,true);
+		document.getElementById("equation_canvas").removeEventListener("touchmove",PermEvents.slider_dragging,true);
+		PermEvents.drag_started = false;
+		default_position_specified = true;
+		drop_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+		tex = Editor.slider.getCurrentExpression();
+		Editor.canvas_div.style.cursor = "default";
+		PermEvents.Start_TeX_Input(tex);
+		$(".slider").trigger("mouseup");
+		if(Modernizr.touch)
+			$(".slider").trigger("touchend");
+	}
+}

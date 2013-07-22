@@ -291,6 +291,7 @@ RenderManager.start_display = function(ss_div,tex){
 		MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
 			MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [RenderManager.insert_teX,elem,ss_div,index]);
 	}])}]);
+	
 }
 
 // Scales the rendered SVG to fit the BBox on the canvas
