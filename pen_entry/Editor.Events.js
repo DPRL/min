@@ -55,7 +55,7 @@ Editor.setup_events = function()
 
 Editor.setStrokeView = function()
 {
-    var show = true;
+    var show = false;
     for (var i=0; i < Editor.segments.length; i++) {
         var nextSegment = Editor.segments[i];
         if (nextSegment.chalk_layer) {

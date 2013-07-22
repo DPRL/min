@@ -50,9 +50,10 @@ Slider.prototype.addSlide = function() {
 Slider.prototype.updateSlide = function(tex) {
 	var curSlide = this.slider_div.data('args').currentSlideNumber - 1;
 	$(this.slider_div.find('.slider>.item')[curSlide]).text('\\[' + tex + '\\]');
-	$(this.slider_div.find('.slider>.item')[curSlide]).on('mousedown',PermEvents.slider_mouse_down);
 	if(Modernizr.touch)
 		$(this.slider_div.find('.slider>.item')[curSlide]).on('touchstart',PermEvents.slider_mouse_down);
+	else
+		$(this.slider_div.find('.slider>.item')[curSlide]).on('mousedown',PermEvents.slider_mouse_down);
 	this.expressions[curSlide] = tex;
 	MathJax.Hub.Queue(["Typeset",MathJax.Hub]); // Calls MathJax to render the new slide
 	this.mathJaxUpdate();

@@ -235,6 +235,7 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
+                set_segments[0].inner_svg.setAttribute("visibility", "hidden");
                 if(RenderManager.new_div && (!set_segments[0].text)){
 					set_segments[0].text = tex;
 					RenderManager.new_div = false;
@@ -294,19 +295,6 @@ RenderManager.start_display = function(ss_div,tex){
 	
 }
 
-// Scales the rendered SVG to fit the BBox on the canvas
-RenderManager.scale_tex = function(elem,target_width,target_height){
-	var MathJax_div = document.getElementById("RenderManager_Tex").getElementsByTagName("g")[0].getBoundingClientRect();
-	var math_width = parseInt(MathJax_div.width);
-	var math_height = parseInt(MathJax_div.height);
-	if(math_width > target_width || math_height > target_height){ 
-		elem.style.fontSize =  (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [RenderManager.scale_tex,elem,target_width,target_height]);
-	}else{
-		return;
-	}
-}
-
 // Adjusts the SVG recognition result to fit the RenderManager's Box
 RenderManager.render_svg = function(BBox_div){
 	var element,x_offset,y_offset;
@@ -338,9 +326,6 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
     	element_width,old_bottom;
-    /*var target_width = BBox_div.getBoundingClientRect().width;
-	var target_height = BBox_div.getBoundingClientRect().height;
-    RenderManager.scale_tex(elem,target_width,target_height); // No need just one symbol*/
     
 	var svg_root = document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
@@ -362,6 +347,8 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
     	temp_root.setAttribute("visibility", "hidden");
     	var offset = element[i].getBoundingClientRect();
 		if(element[i].tagName.toString() == "use"){
+			if(document.getElementById(element[i].getAttribute("href").split("#")[1]) == null)
+				return;
 			path_tag = document.getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
 			path_tag.setAttribute("visibility","visible");
 			temp_root.appendChild(path_tag);
