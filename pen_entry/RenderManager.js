@@ -235,6 +235,7 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
+                set_segments[0].inner_svg.setAttribute("opacity","0");
                 if(RenderManager.new_div && (!set_segments[0].text)){
 					set_segments[0].text = tex;
 					RenderManager.new_div = false;
