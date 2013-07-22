@@ -79,14 +79,13 @@ PermEvents.setup_toolbar = function(){
 			e.stopPropagation();
 			e.preventDefault();
 			dropzone.removeClass('hover');
-			console.log("dropping");
-			/*var file = e.originalEvent.dataTransfer.files;
+			var file = e.originalEvent.dataTransfer.files;
 			// Check if the type is a text file, if so parse it and get tex
 			default_position_specified = false;
 			if(file[0].type == "text/plain")
 				PermEvents.parse_text_file(file[0]);
 			else
-				Editor.ParseImage(file[0]);*/
+				Editor.ParseImage(file[0]);
 			return false;
 		});
     }
@@ -229,10 +228,9 @@ function subclassOf(base){
 function _subclassOf() {};
 
 // Sets up the events that should happen upon clicking the slider
-PermEvents.slider_mouse_down = function(e, ui){
+PermEvents.slider_mouse_down = function(e){
 	PermEvents.drag_started = true;
-	console.log("drag started");
-	/*if(Modernizr.touch){
+	if(Modernizr.touch){
 		document.getElementById("equation_canvas").addEventListener("touchmove", PermEvents.slider_dragging, false);
 		document.getElementById("equation_canvas").addEventListener("touchend", PermEvents.drag_done, false);
 	}else{
@@ -242,8 +240,7 @@ PermEvents.slider_mouse_down = function(e, ui){
 	if(navigator.userAgent.search("Firefox") != -1)
 		Editor.canvas_div.style.cursor = "-moz-grabbing";
 	else
-		Editor.canvas_div.style.cursor = "-webkit-grabbing";*/
-	$("#equation_canvas").droppable();
+		Editor.canvas_div.style.cursor = "-webkit-grabbing";
 }
 
 // Not really necessary but served a purpose during implementation
@@ -252,9 +249,9 @@ PermEvents.slider_dragging = function(e){
 }
 
 // Gets called on mouse up and calls function that inserts tex into min and canvas
-PermEvents.drag_done = function(e, ui){
+PermEvents.drag_done = function(e){
 	console.log("drag done first"); 
-	/*if(PermEvents.drag_started){
+	if(PermEvents.drag_started){
 		e.stopPropagation();
 		PermEvents.drag_started = false;
 		default_position_specified = true;
@@ -269,5 +266,5 @@ PermEvents.drag_done = function(e, ui){
 			$(".slider").trigger("mouseup");
 			document.getElementById("equation_canvas").removeEventListener("mousemove",PermEvents.slider_dragging,false);
 		}
-	}*/
+	}
 }
