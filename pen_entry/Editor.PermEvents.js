@@ -230,11 +230,12 @@ function _subclassOf() {};
 // Sets up the events that should happen upon clicking the slider
 PermEvents.slider_mouse_down = function(e){
 	PermEvents.drag_started = true;
-	document.getElementById("equation_canvas").addEventListener("mousemove", PermEvents.slider_dragging, true);
-	document.getElementById("equation_canvas").addEventListener("mouseup", PermEvents.drag_done, true);
 	if(Modernizr.touch){
 		document.getElementById("equation_canvas").addEventListener("touchmove", PermEvents.slider_dragging, true);
 		document.getElementById("equation_canvas").addEventListener("touchend", PermEvents.drag_done, true);
+	}else{
+		document.getElementById("equation_canvas").addEventListener("mousemove", PermEvents.slider_dragging, true);
+		document.getElementById("equation_canvas").addEventListener("mouseup", PermEvents.drag_done, true);
 	}
 	if(navigator.userAgent.search("Firefox") != -1)
 		Editor.canvas_div.style.cursor = "-moz-grabbing";
@@ -252,16 +253,18 @@ PermEvents.drag_done = function(e){
 	console.log("drag done first"); 
 	if(PermEvents.drag_started){
 		e.stopPropagation();
-		document.getElementById("equation_canvas").removeEventListener("mousemove",PermEvents.slider_dragging,true);
-		document.getElementById("equation_canvas").removeEventListener("touchmove",PermEvents.slider_dragging,true);
 		PermEvents.drag_started = false;
 		default_position_specified = true;
 		drop_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
 		tex = Editor.slider.getCurrentExpression();
 		Editor.canvas_div.style.cursor = "default";
 		PermEvents.Start_TeX_Input(tex);
-		$(".slider").trigger("mouseup");
-		if(Modernizr.touch)
+		if(Modernizr.touch){
 			$(".slider").trigger("touchend");
+			document.getElementById("equation_canvas").removeEventListener("touchmove",PermEvents.slider_dragging,true);
+		}else{
+			$(".slider").trigger("mouseup");
+			document.getElementById("equation_canvas").removeEventListener("mousemove",PermEvents.slider_dragging,true);
+		}
 	}
 }
