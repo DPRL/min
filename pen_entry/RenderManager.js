@@ -235,9 +235,11 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
-                set_segments[0].inner_svg.setAttribute("opacity","0");
+                for(var p = 0; p < set_segments.length; p++)
+                	set_segments[p].inner_svg.setAttribute("opacity","0");
                 if(RenderManager.new_div && (!set_segments[0].text)){
-					set_segments[0].text = tex;
+					for(var w = 0; w < set_segments.length; w++)
+						set_segments[w].text = tex;
 					RenderManager.new_div = false;
 					RenderManager.start_display(ss_div,tex);
 				}else{
@@ -288,11 +290,8 @@ RenderManager.start_display = function(ss_div,tex){
 	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
 	document.body.appendChild(elem);
 	var index = RenderManager.segment_set_divs.length;
-	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],[function(){
-		MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
-			MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [RenderManager.insert_teX,elem,ss_div,index]);
-	}])}]);
-	
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],
+		["Typeset",MathJax.Hub,elem],[RenderManager.insert_teX,elem,ss_div,index]);
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
@@ -347,8 +346,6 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
     	temp_root.setAttribute("visibility", "hidden");
     	var offset = element[i].getBoundingClientRect();
 		if(element[i].tagName.toString() == "use"){
-			if(document.getElementById(element[i].getAttribute("href").split("#")[1]) == null)
-				return;
 			path_tag = document.getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
 			path_tag.setAttribute("visibility","visible");
 			temp_root.appendChild(path_tag);
@@ -357,7 +354,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			// ako9833: This is a hack, need to find a better way to place elements
+			
 			if(old_bottom && old_bottom != parseInt(offset.bottom)){
 				path_tag.setAttribute("transform", "translate("+offset.left+","+old_bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
 			}else{

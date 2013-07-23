@@ -89,10 +89,8 @@ SymbolSegment.prototype.finishEntry = function() {
 	// Change renderer to svg and make sure it has been processed before calling
 	// SymbolSegment's callBack
 	var translation = this.translation.clone();
-	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-    MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
-    		MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [SymbolSegment.stub,elem,translation]);
-    }]);
+	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],["Typeset",MathJax.Hub,elem], 
+			[SymbolSegment.stub,elem,translation]);
 
 };
 

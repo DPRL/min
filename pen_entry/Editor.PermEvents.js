@@ -229,6 +229,7 @@ function _subclassOf() {};
 
 // Sets up the events that should happen upon clicking the slider
 PermEvents.slider_mouse_down = function(e){
+	console.log("slide mouse down");
 	PermEvents.drag_started = true;
 	if(Modernizr.touch){
 		document.getElementById("equation_canvas").addEventListener("touchmove", PermEvents.slider_dragging, false);
@@ -236,16 +237,19 @@ PermEvents.slider_mouse_down = function(e){
 	}else{
 		document.getElementById("equation_canvas").addEventListener("mousemove", PermEvents.slider_dragging, false);
 		document.getElementById("equation_canvas").addEventListener("mouseup", PermEvents.drag_done, false);
+		if(navigator.userAgent.search("Firefox") != -1)
+			Editor.canvas_div.style.cursor = "-moz-grabbing";
+		else
+			Editor.canvas_div.style.cursor = "-webkit-grabbing";
 	}
-	if(navigator.userAgent.search("Firefox") != -1)
-		Editor.canvas_div.style.cursor = "-moz-grabbing";
-	else
-		Editor.canvas_div.style.cursor = "-webkit-grabbing";
+	e.preventDefault();
 }
 
 // Not really necessary but served a purpose during implementation
 PermEvents.slider_dragging = function(e){
+	console.log("moving hand");
 	e.stopPropagation();
+	e.preventDefault();
 }
 
 // Gets called on mouse up and calls function that inserts tex into min and canvas
@@ -253,6 +257,7 @@ PermEvents.drag_done = function(e){
 	console.log("drag done first"); 
 	if(PermEvents.drag_started){
 		e.stopPropagation();
+		e.preventDefault();
 		PermEvents.drag_started = false;
 		default_position_specified = true;
 		drop_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
@@ -260,7 +265,7 @@ PermEvents.drag_done = function(e){
 		Editor.canvas_div.style.cursor = "default";
 		PermEvents.Start_TeX_Input(tex);
 		if(Modernizr.touch){
-			$(".slider").trigger("touchend");
+			//$(".slider").trigger("touchend");
 			document.getElementById("equation_canvas").removeEventListener("touchmove",PermEvents.slider_dragging,false);
 		}else{
 			$(".slider").trigger("mouseup");
