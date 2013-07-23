@@ -231,12 +231,13 @@ function _subclassOf() {};
 PermEvents.slider_mouse_down = function(e){
 	console.log("slide mouse down");
 	PermEvents.drag_started = true;
+	Editor.current_mode.close_mode();
 	if(Modernizr.touch){
-		document.getElementById("equation_canvas").addEventListener("touchmove", PermEvents.slider_dragging, false);
-		document.getElementById("equation_canvas").addEventListener("touchend", PermEvents.drag_done, false);
+		$("#equation_canvas").on("touchmove", PermEvents.slider_dragging);
+		$("#equation_canvas").on("touchend", PermEvents.drag_done);
 	}else{
-		document.getElementById("equation_canvas").addEventListener("mousemove", PermEvents.slider_dragging, false);
-		document.getElementById("equation_canvas").addEventListener("mouseup", PermEvents.drag_done, false);
+		$("#equation_canvas").on("mousemove", PermEvents.slider_dragging);
+		$("#equation_canvas").on("mouseup", PermEvents.drag_done);
 		if(navigator.userAgent.search("Firefox") != -1)
 			Editor.canvas_div.style.cursor = "-moz-grabbing";
 		else
@@ -260,16 +261,36 @@ PermEvents.drag_done = function(e){
 		e.preventDefault();
 		PermEvents.drag_started = false;
 		default_position_specified = true;
-		drop_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
 		tex = Editor.slider.getCurrentExpression();
+		if(Modernizr.touch){
+			var first = e.originalEvent.changedTouches[0];
+			drop_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+			$("#equation_canvas").off("touchmove", PermEvents.slider_dragging);
+		}else{
+			drop_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+			$(".slider").trigger("mouseup");
+			$("#equation_canvas").off("mousemove", PermEvents.slider_dragging);
+		}
 		Editor.canvas_div.style.cursor = "default";
 		PermEvents.Start_TeX_Input(tex);
-		if(Modernizr.touch){
-			//$(".slider").trigger("touchend");
-			document.getElementById("equation_canvas").removeEventListener("touchmove",PermEvents.slider_dragging,false);
-		}else{
-			$(".slider").trigger("mouseup");
-			document.getElementById("equation_canvas").removeEventListener("mousemove",PermEvents.slider_dragging,false);
-		}
+		Editor.current_mode.init_mode();
 	}
+}
+
+// Initializes Editor.current_mode
+PermEvents.slider_end = function(e){
+	console.log("slide up!!!");
+	Editor.current_mode.close_mode();
+	if(Modernizr.touch){
+		$("#equation_canvas").off("touchmove", PermEvents.slider_dragging);
+		$("#equation_canvas").off("touchend", PermEvents.drag_done);
+	}else{
+		$(".slider").trigger("mouseup");
+		$("#equation_canvas").off("mousemove", PermEvents.slider_dragging);
+		$("#equation_canvas").off("mouseup", PermEvents.drag_done);
+	}
+	Editor.canvas_div.style.cursor = "default";
+	Editor.current_mode.init_mode();
+	e.stopPropagation();
+	e.preventDefault();
 }

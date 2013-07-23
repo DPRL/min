@@ -292,8 +292,10 @@ Editor.align = function()
                 	mathjax supports. See website below:
                 	http://docs.mathjax.org/en/v1.1-latest/tex.html#supported-latex-commands
                 */
-                if(tex_math.search("vbox") != -1 || tex_math.search("vtop") != -1) // checks for tex error before MathJax yells!
+                if(tex_math.search("vbox") != -1 || tex_math.search("vtop") != -1){ // checks for tex error before MathJax yells!
+                	console.log("DRACULAE Tex Output Error -  MathJax can't render commands in Tex");
                 	return;
+                }
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
 				elem.style.visibility = "visible"; 		// Hide the element
@@ -306,7 +308,7 @@ Editor.align = function()
 				// PermEvents.callBack
 				MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
     			MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
-    				MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [Editor.copy_tex,elem,data]);
+    				MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [Editor.copy_tex,elem]);
     			}]);
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -369,7 +371,7 @@ Editor.scale_tex2 = function(elem){
 	}
 }
 
-Editor.copy_tex = function(elem,data){
+Editor.copy_tex = function(elem){
 	dim_tuple = Editor.get_canvas_elements_dimensions();
 	/*target_width = $("#equation_canvas")[0].offsetWidth;
 	target_height = $("#equation_canvas")[0].offsetHeight;
@@ -391,28 +393,22 @@ Editor.copy_tex = function(elem,data){
 	use_tag_array = Array.prototype.slice.call(use_tag_array);
 	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
 	var elements = use_tag_array.concat(rect_tag_array);
+	var offset = elements[0].getBoundingClientRect();
+	var initial_offset = new Vector2(parseInt(offset.left), parseInt(offset.top));
 	
 	//var sorted_svg_elements = Editor.group_elements(elements,"MathJax");
-	var sorted_coordinates = Editor.sort_svg_positions(elements);
-	x_pos = sorted_coordinates[0];
-	y_pos = sorted_coordinates[1];
+	var x_pos = Editor.sort_svg_positions(elements);
 	var canvas_elements = Editor.sort_canvas_elements();
+	Editor.print_sorted(x_pos, "use");
+	Editor.print_sorted(canvas_elements,"canvas");
 	
 	var transform_action = new TransformSegments(Editor.segments);
-	// Save initial position of the first element
-	if(!Editor.align_first_click){
-		Editor.default_position = Editor.segments[0].translation;
-		Editor.align_first_click = true;
-	}
-	var initial_offset;
 	var default_position = Editor.segments[0].translation;
-	Editor.apply_alignment(x_pos,default_position,true);
-	Editor.apply_alignment(y_pos,default_position,false);
+	Editor.apply_alignment(x_pos,default_position,canvas_elements,initial_offset);
 	transform_action.add_new_transforms(Editor.segments);
 	transform_action.Apply();
 	Editor.add_action(transform_action);
-	x_pos = []; // Clear both arrays
-	y_pos = [];
+	x_pos = []; // Clear array
 	document.body.removeChild(elem); // Remove elem from document body (Alignment done)
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }
@@ -464,9 +460,13 @@ Editor.group_elements = function(array, type){
 	return grouped_elements;
 }
 
-// Identifies elements on canvas to MathJax rendered SVG and then moves to around to 
-// look just like the SVG
-Editor.apply_alignment = function(array,default_position,remove_duplicates){
+/* Identifies elements on canvas to MathJax rendered SVG and then moves to around to 
+   look just like the SVG.
+   Note: This methods relies on the fact that Canvas segments have their recognition result
+         as an instance. This is set in the RenderManager after recognition is gotten. 
+         Text - Recognition result of the segment
+*/
+Editor.apply_alignment = function(array,default_position,canvas_elements,initial_offset){
 	var transformed_segments = new Array(); // holds segment set_ids
 	for(var i = 0; i < array.length; i++){
 		var svg_symbol = array[i].item2;
@@ -477,16 +477,16 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
 			if(text == "−") // special case character. Has zero-width space -> Look it up
 				text = "-";
 		}else
-			text = "-"; // rect element is usually a division symbol which is a dash in Min
-			
+			text = "-"; // rect element is usually a division symbol which is a dash in Min	
 		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
-		for(var j = 0; j < Editor.segments.length; j++){ // Find the segment on canvas
-			var set_id = Editor.segments[j].set_id;
-			if(Editor.segments[j].text == "_dash")
-				Editor.segments[j].text = "-";
-			if(Editor.segments[j].text == text && (!transformed_segments.contains(set_id))){
+		for(var j = 0; j < canvas_elements.length; j++){ // Find the segment on canvas
+			var set_id = canvas_elements[j].item2.set_id;
+			if(canvas_elements[j].item2.text == "_dash")
+				canvas_elements[j].item2.text = "-";
+			if(canvas_elements[j].item2.text == text && (!transformed_segments.contains(set_id))){
 				transformed_segments.push(set_id);
 				segments = Editor.get_segment_by_id(set_id);
+				canvas_elements.splice(j,1); // remove segment from array
 				break;
 			}
 		}
@@ -525,27 +525,18 @@ Editor.apply_alignment = function(array,default_position,remove_duplicates){
             segments[k].freeze_transform();
             
 			var svg_vector_format = new Vector2(parseInt(svg_symbol_rect.left.toFixed(2)),parseInt(svg_symbol_rect.top.toFixed(2)));
-            if(i == 0 && remove_duplicates)
-    			initial_offset = svg_vector_format;
-    		if(segments.length == 2){
-    			in_x = parseInt(default_position.x.toFixed(2)) + svg_vector_format.x;
-				in_y = parseInt(default_position.y.toFixed(2)) + svg_vector_format.y;
+    		if(segments.length == 2){  // TODO: Add code to make joined segments the way they were originally
+    			in_x = default_position.x + svg_vector_format.x - initial_offset.x;
+				in_y = default_position.y + svg_vector_format.y - initial_offset.y;
     		}else{
-    			in_x = parseInt(default_position.x.toFixed(2)) + svg_vector_format.x;
-				in_y = parseInt(default_position.y.toFixed(2)) + svg_vector_format.y;
+    			in_x = default_position.x + svg_vector_format.x - initial_offset.x;
+				in_y = default_position.y + svg_vector_format.y - initial_offset.y;
     		}
 			var translation = new Vector2(in_x,in_y);
-			translation.Subtract(initial_offset);
+			//translation.Subtract(initial_offset);
 			segments[k].already_aligned = true;
 			segments[k].translation = translation;
         }
-        // Remove segment from y_pos array if remove_duplicates == true to reduce redundancy
-        if(remove_duplicates){
-			for(var l = 0; l < y_pos.length; l++){
-				if(y_pos[l].item2 == array[i].item2)
-					y_pos.splice(l,1);
-			}
-		}
 	}
 }
 
@@ -620,43 +611,74 @@ Editor.get_BBox = function(seg){
 	return elem_rect;
 }
 
-//Sorts an array
+/* Sorts the render svg from mathjax from left to right and any segment whose x coordinate
+   collides with another is sorted from top to bottom. Just compares the tops.
+*/
 Editor.sort_svg_positions = function(array){
-	var result = new Array();
 	var x_pos = new Array(); // all x coordinates
-	var y_pos = new Array(); // all y coordinates
-	
+	var last_x, last_y, current_x;
 	for(var i = 0; i < array.length; i++){
-		var tuple_x = new Tuple(parseInt(array[i].getBoundingClientRect().left.toFixed(2)), array[i]);
-		var tuple_y = new Tuple(parseInt(array[i].getBoundingClientRect().top.toFixed(2)), array[i]);
+		current_x = parseInt(array[i].getBoundingClientRect().left.toFixed(2));
+		current_y = parseInt(array[i].getBoundingClientRect().top.toFixed(2));
+		if(current_x == last_x){
+			if(current_y > last_y){
+				var tuple_x = new Tuple(current_x, array[i]);
+				x_pos.splice(x_pos.length-1,0, tuple_x);
+				continue;
+			}
+		}
+		var tuple_x = new Tuple(current_x, array[i]);
 		x_pos.push(tuple_x);
-		y_pos.push(tuple_y);
+		last_x = current_x;
+		last_y = current_y;
 	}
 	x_pos.sort(Editor.compare_numbers);
-	y_pos.sort(Editor.compare_numbers);
-	result[0] = x_pos;
-	result[1] = y_pos;
-	return result;
+	return x_pos;
 }
 
+Editor.print_sorted = function(array, type){
+	for(var l = 0; l < array.length; l++){
+		if(type == "use" && array[l].item2.tagName == "use"){
+			var unicode = array[l].item2.getAttribute("href").split("-")[1];
+			var text = String.fromCharCode(parseInt(unicode,16));
+			console.log("Use tag at: " + l + " is: " + text);
+		}else if(type == "use" && array[l].item2.tagName == "rect"){
+			console.log("Use tag at: " + l + " is: -");
+		}else{
+			console.log("Canvas Segments at: " + l + " is: " +  array[l].item2.text);
+		}
+	}
+}
 
 Editor.sort_canvas_elements = function(){
 	var sorted = new Array();
 	var sorted_set_ids = new Array();
+	var last_x,last_y;
 	for(var i = 0; i < Editor.segments.length; i++){
 		var seg = Editor.segments[i];
 		var seg_rect = Editor.get_BBox(seg);
+		/*if(parseInt(seg_rect.left.toFixed(2)) == last_x){
+			if(parseInt(seg_rect.top.toFixed(2)) > last_y){
+				
+			}
+		}*/
 		if(sorted_set_ids.contains(seg.set_id)){
-			sorted.push(new Tuple(parseInt(seg_rect.left.toFixed(2)),sorted.pop(),seg));
+			sorted.pop();
+			if(sorted[sorted.length-1].item1 < parseInt(seg_rect.left.toFixed(2)))
+				sorted.push(new Tuple(parseInt(seg_rect.left.toFixed(2)),seg));
+			else
+				sorted.push(new Tuple(sorted[sorted.length-1].item1,seg));
 		}else{
 			sorted.push(new Tuple(parseInt(seg_rect.left.toFixed(2)),seg));
 			sorted_set_ids.push(seg.set_id);
 		}
+		last_x = parseInt(seg_rect.left.toFixed(2));
+		last_y = parseInt(seg_rect.top.toFixed(2));
 	}
 	sorted.sort(Editor.compare_numbers);
 	return sorted;
 }
-// Compare parsed in tuples
+// Compare passed in tuples
 Editor.compare_numbers = function(a, b){
 	if(a.item1 < b.item1)
 		return -1;

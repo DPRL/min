@@ -235,6 +235,7 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
+                //console.log("Length of set_segments is: " + set_segments.length + " tex: " + tex);
                 for(var p = 0; p < set_segments.length; p++)
                 	set_segments[p].inner_svg.setAttribute("opacity","0");
                 if(RenderManager.new_div && (!set_segments[0].text)){
@@ -325,7 +326,6 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
     	element_width,old_bottom;
-    
 	var svg_root = document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
 	var rect_tag_array = svg_root.getElementsByTagName("rect");
@@ -354,7 +354,6 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			
 			if(old_bottom && old_bottom != parseInt(offset.bottom)){
 				path_tag.setAttribute("transform", "translate("+offset.left+","+old_bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
 			}else{
