@@ -227,15 +227,16 @@ function subclassOf(base){
 }
 function _subclassOf() {};
 
+/*
+	I had to separate the drag and drop because methods that works for the desktops
+	won't work for touch devices. All have the same basic structure though
+*/
+
 // Not really necessary but served a purpose during implementation
 PermEvents.slider_dragging = function(e){
-	console.log("moving hand");
-	e.stopPropagation();
-	e.preventDefault();
 	if(Modernizr.touch){
 		var first = e.originalEvent.changedTouches[0];
 		if(parseInt(first.pageY) > 85 && (!PermEvents.first_drag_over)){
-			console.log("Canvas!!!!");
 			$(e.currentTarget).on(Editor.current_mode.event_strings.onUp, PermEvents.slider_touch_done);
 			PermEvents.drag_started = PermEvents.first_drag_over = true;
 		}
@@ -245,13 +246,11 @@ PermEvents.slider_dragging = function(e){
 // Sets up the events that should happen upon clicking the slider
 PermEvents.slider_touch_mouse_down = function(e){
 	e.preventDefault();
-	console.log("slide mouse down");
 	$(e.currentTarget).on(Editor.current_mode.event_strings.onMove, PermEvents.slider_dragging);
 }
 
 // Gets called on mouse up and calls function that inserts tex into min and canvas
 PermEvents.slider_touch_done = function(e){
-	console.log("drag done first"); 
 	if(PermEvents.drag_started){
 		e.stopPropagation();
 		e.preventDefault();
