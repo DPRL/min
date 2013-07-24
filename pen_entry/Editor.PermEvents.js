@@ -20,7 +20,7 @@ PermEvents.setup_toolbar = function(){
     document.getElementById("remove").addEventListener("click", function() { Editor.slider.removeSlide(); }, true);
 	
     document.getElementById("pen").addEventListener("mouseover",Editor.showToolTip("pen", "Draw"), true);
-    document.getElementById("stroke_select").addEventListener("mouseover",Editor.showToolTip("stroke_select","Select primitives (e.g. strokes)"), true);
+    //document.getElementById("stroke_select").addEventListener("mouseover",Editor.showToolTip("stroke_select","Select primitives (e.g. strokes)"), true);
     document.getElementById("rectangle_select").addEventListener("mouseover",Editor.showToolTip("rectangle_select","Select symbols"), true);
     document.getElementById("upload_image").addEventListener("mouseover",Editor.showToolTip("upload_image","Upload image"), true);
     document.getElementById("undo").addEventListener("mouseover",Editor.showToolTip("undo","Undo"), true);

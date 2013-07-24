@@ -296,6 +296,8 @@ RenderManager.start_display = function(ss_div,tex){
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
+// Note: Subtracted 2 from the BBox width because the SVG were being slightly cut off
+// 		 It's not an error just that the BBox width is small
 RenderManager.render_svg = function(BBox_div){
 	var element,x_offset,y_offset;
 	var svg_root = BBox_div.firstChild;
@@ -303,7 +305,7 @@ RenderManager.render_svg = function(BBox_div){
 	inner_svg.removeAttribute("transform");
 	var svg_width = parseInt(inner_svg.getBoundingClientRect().width);
 	var svg_height = parseInt(inner_svg.getBoundingClientRect().height);
-	var scale_x = parseInt(BBox_div.getBoundingClientRect().width)/svg_width;
+	var scale_x = (parseInt(BBox_div.getBoundingClientRect().width)-2)/svg_width;
 	var scale_y = parseInt(BBox_div.getBoundingClientRect().height)/svg_height;
 	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+")");
 	var BBox_top = $(BBox_div).offset().top;
@@ -322,6 +324,8 @@ RenderManager.render_svg = function(BBox_div){
 }
 
 // Inserts the SVG into the RenderManager's BBox for the symbol
+// Note: Subtracted 2 from the BBox width because the SVG were being slightly cut off
+// 		 It's not an error just that the BBox width is small
 RenderManager.insert_teX = function(elem,BBox_div,index)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
@@ -384,7 +388,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 	svg_height = parseInt(inner_svg.getBoundingClientRect().height);
 	
 	var BBox_rect = BBox_div.getBoundingClientRect();
-	var scale_x = parseInt(BBox_rect.width)/svg_width;
+	var scale_x = (parseInt(BBox_rect.width)-2)/svg_width;
 	var scale_y = parseInt(BBox_rect.height)/svg_height;
 	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+")");
 	

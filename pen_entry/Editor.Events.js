@@ -501,7 +501,6 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 		}
 		// Apply transformation to segment
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
-		//Editor.draw_rect(svg_symbol_rect);
 		var svg_width = svg_symbol_rect.width;
     	var svg_height = svg_symbol_rect.height;
 		for(var k = 0; k < segments.length; k++){ 
@@ -526,31 +525,17 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
             
 			var svg_vector_format = new Vector2(parseInt(svg_symbol_rect.left.toFixed(2)),parseInt(svg_symbol_rect.top.toFixed(2)));
     		if(segments.length == 2){  // TODO: Add code to make joined segments the way they were originally
-    			in_x = default_position.x + svg_vector_format.x - initial_offset.x;
-				in_y = default_position.y + svg_vector_format.y - initial_offset.y;
+    			in_x = default_position.x + (svg_vector_format.x - initial_offset.x);
+				in_y = default_position.y + (svg_vector_format.y - initial_offset.y);
     		}else{
-    			in_x = default_position.x + svg_vector_format.x - initial_offset.x;
-				in_y = default_position.y + svg_vector_format.y - initial_offset.y;
+    			in_x = default_position.x + (svg_vector_format.x - initial_offset.x);
+				in_y = default_position.y + (svg_vector_format.y - initial_offset.y);
     		}
 			var translation = new Vector2(in_x,in_y);
-			//translation.Subtract(initial_offset);
 			segments[k].already_aligned = true;
 			segments[k].translation = translation;
         }
 	}
-}
-
-Editor.draw_rect = function(dim){
-	var div = document.createElement('div');
-	div.className = Editor.current_mode.segment_style_class;
-	div.style.visibility='visible';
-	document.body.appendChild(div)
-	div.style.visibility = "visible";
-	div.style.left = dim.left + "px";
-	div.style.top = dim.top + "px";
-	div.style.width = dim.width + "px";
-	div.style.height = dim.height + "px";
-	div.style.color = "red";
 }
 
 // Returns the maximum height and width of joined segments like a plus
@@ -616,16 +601,14 @@ Editor.get_BBox = function(seg){
 */
 Editor.sort_svg_positions = function(array){
 	var x_pos = new Array(); // all x coordinates
-	var last_x, last_y, current_x;
+	var last_x, last_y, current_x, current_y;
 	for(var i = 0; i < array.length; i++){
 		current_x = parseInt(array[i].getBoundingClientRect().left.toFixed(2));
 		current_y = parseInt(array[i].getBoundingClientRect().top.toFixed(2));
-		if(current_x == last_x){
-			if(current_y > last_y){
-				var tuple_x = new Tuple(current_x, array[i]);
-				x_pos.splice(x_pos.length-1,0, tuple_x);
-				continue;
-			}
+		if(current_x == last_x && current_y < last_y){
+			var tuple_x = new Tuple(current_x, array[i]);
+			x_pos.splice(x_pos.length-1, 0, tuple_x);
+			continue;
 		}
 		var tuple_x = new Tuple(current_x, array[i]);
 		x_pos.push(tuple_x);
@@ -653,27 +636,30 @@ Editor.print_sorted = function(array, type){
 Editor.sort_canvas_elements = function(){
 	var sorted = new Array();
 	var sorted_set_ids = new Array();
-	var last_x,last_y;
+	var last_x,last_y,current_x, current_y;
 	for(var i = 0; i < Editor.segments.length; i++){
 		var seg = Editor.segments[i];
 		var seg_rect = Editor.get_BBox(seg);
-		/*if(parseInt(seg_rect.left.toFixed(2)) == last_x){
-			if(parseInt(seg_rect.top.toFixed(2)) > last_y){
-				
-			}
-		}*/
+		current_x = parseInt(seg_rect.left.toFixed(2));
+		current_y = parseInt(seg_rect.top.toFixed(2))
+		if(current_x == last_x && current_y < last_y){
+			var tuple_x = new Tuple(parseInt(seg_rect.left.toFixed(2)),seg);
+			sorted.splice(sorted.length-1, 0, tuple_x);
+			sorted_set_ids.push(seg.set_id);
+			continue;
+		}
 		if(sorted_set_ids.contains(seg.set_id)){
 			sorted.pop();
-			if(sorted[sorted.length-1].item1 < parseInt(seg_rect.left.toFixed(2)))
-				sorted.push(new Tuple(parseInt(seg_rect.left.toFixed(2)),seg));
+			if(sorted[sorted.length-1].item1 < current_x)
+				sorted.push(new Tuple(current_x,seg));
 			else
 				sorted.push(new Tuple(sorted[sorted.length-1].item1,seg));
 		}else{
-			sorted.push(new Tuple(parseInt(seg_rect.left.toFixed(2)),seg));
+			sorted.push(new Tuple(current_x,seg));
 			sorted_set_ids.push(seg.set_id);
 		}
-		last_x = parseInt(seg_rect.left.toFixed(2));
-		last_y = parseInt(seg_rect.top.toFixed(2));
+		last_x = current_x;
+		last_y = current_y;
 	}
 	sorted.sort(Editor.compare_numbers);
 	return sorted;
