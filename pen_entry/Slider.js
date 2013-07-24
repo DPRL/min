@@ -51,11 +51,10 @@ Slider.prototype.updateSlide = function(tex) {
 	var curSlide = this.slider_div.data('args').currentSlideNumber - 1;
 	$(this.slider_div.find('.slider>.item')[curSlide]).text('\\[' + tex + '\\]');
 	if(Modernizr.touch){
-		$(this.slider_div.find('.slider>.item')[curSlide]).on('touchstart',PermEvents.slider_mouse_down);
-		$(this.slider_div.find('.slider>.item')[curSlide]).on('touchend',PermEvents.slider_end);
+		$(this.slider_div.find('.slider>.item')[curSlide]).on('touchstart',PermEvents.slider_touch_mouse_down);
 	}else{
-		$(this.slider_div.find('.slider>.item')[curSlide]).on('mousedown',PermEvents.slider_mouse_down);
-		$(this.slider_div.find('.slider>.item')[curSlide]).on('mouseup',PermEvents.slider_end);
+		$(this.slider_div.find('.slider>.item')[curSlide]).on('mousedown',PermEvents.slider_desktop_mouse_down);
+		$(this.slider_div.find('.slider>.item')[curSlide]).on('mouseup',PermEvents.slider_desktop_end);
 	}
 	this.expressions[curSlide] = tex;
 	MathJax.Hub.Queue(["Typeset",MathJax.Hub]); // Calls MathJax to render the new slide

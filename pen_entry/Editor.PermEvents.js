@@ -227,50 +227,70 @@ function subclassOf(base){
 }
 function _subclassOf() {};
 
-// Sets up the events that should happen upon clicking the slider
-PermEvents.slider_mouse_down = function(e){
-	console.log("slide mouse down");
-	PermEvents.drag_started = true;
-	Editor.current_mode.close_mode();
-	if(Modernizr.touch){
-		$("#equation_canvas").on("touchmove", PermEvents.slider_dragging);
-		$("#equation_canvas").on("touchend", PermEvents.drag_done);
-	}else{
-		$("#equation_canvas").on("mousemove", PermEvents.slider_dragging);
-		$("#equation_canvas").on("mouseup", PermEvents.drag_done);
-		if(navigator.userAgent.search("Firefox") != -1)
-			Editor.canvas_div.style.cursor = "-moz-grabbing";
-		else
-			Editor.canvas_div.style.cursor = "-webkit-grabbing";
-	}
-	e.preventDefault();
-}
-
 // Not really necessary but served a purpose during implementation
 PermEvents.slider_dragging = function(e){
 	console.log("moving hand");
 	e.stopPropagation();
 	e.preventDefault();
+	if(Modernizr.touch){
+		var first = e.originalEvent.changedTouches[0];
+		if(parseInt(first.pageY) > 85 && (!PermEvents.first_drag_over)){
+			console.log("Canvas!!!!");
+			$(e.currentTarget).on(Editor.current_mode.event_strings.onUp, PermEvents.slider_touch_done);
+			PermEvents.drag_started = PermEvents.first_drag_over = true;
+		}
+	}
+}
+
+// Sets up the events that should happen upon clicking the slider
+PermEvents.slider_touch_mouse_down = function(e){
+	e.preventDefault();
+	console.log("slide mouse down");
+	$(e.currentTarget).on(Editor.current_mode.event_strings.onMove, PermEvents.slider_dragging);
 }
 
 // Gets called on mouse up and calls function that inserts tex into min and canvas
-PermEvents.drag_done = function(e){
+PermEvents.slider_touch_done = function(e){
 	console.log("drag done first"); 
+	if(PermEvents.drag_started){
+		e.stopPropagation();
+		e.preventDefault();
+		PermEvents.drag_started = PermEvents.first_drag_over = false;
+		default_position_specified = true;
+		tex = Editor.slider.getCurrentExpression();
+		var first = e.originalEvent.changedTouches[0];
+		drop_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
+		$(e.currentTarget).off(Editor.current_mode.event_strings.onMove, PermEvents.slider_dragging);
+		Editor.canvas_div.style.cursor = "default";
+		PermEvents.Start_TeX_Input(tex);
+	}
+}
+
+/** Desktop Drop and Drag **/
+// Sets up the events that should happen upon clicking the slider
+PermEvents.slider_desktop_mouse_down = function(e){
+	PermEvents.drag_started = true;
+	Editor.current_mode.close_mode();
+	$("#equation_canvas").on(Editor.current_mode.event_strings.onMove, PermEvents.slider_dragging);
+	$("#equation_canvas").on(Editor.current_mode.event_strings.onUp, PermEvents.desktop_drag_done);
+	if(navigator.userAgent.search("Firefox") != -1)
+		Editor.canvas_div.style.cursor = "-moz-grabbing";
+	else
+		Editor.canvas_div.style.cursor = "-webkit-grabbing";
+	e.preventDefault();
+}
+
+// Gets called on mouse up and calls function that inserts tex into min and canvas
+PermEvents.desktop_drag_done = function(e){
 	if(PermEvents.drag_started){
 		e.stopPropagation();
 		e.preventDefault();
 		PermEvents.drag_started = false;
 		default_position_specified = true;
 		tex = Editor.slider.getCurrentExpression();
-		if(Modernizr.touch){
-			var first = e.originalEvent.changedTouches[0];
-			drop_position = new Vector2(first.pageX - Editor.div_position[0], first.pageY - Editor.div_position[1]);
-			$("#equation_canvas").off("touchmove", PermEvents.slider_dragging);
-		}else{
-			drop_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
-			$(".slider").trigger("mouseup");
-			$("#equation_canvas").off("mousemove", PermEvents.slider_dragging);
-		}
+		drop_position = new Vector2(e.pageX - Editor.div_position[0], e.pageY - Editor.div_position[1]);
+		$(".slider").trigger("mouseup");
+		$("#equation_canvas").off("mousemove", PermEvents.slider_dragging);
 		Editor.canvas_div.style.cursor = "default";
 		PermEvents.Start_TeX_Input(tex);
 		Editor.current_mode.init_mode();
@@ -278,17 +298,11 @@ PermEvents.drag_done = function(e){
 }
 
 // Initializes Editor.current_mode
-PermEvents.slider_end = function(e){
-	console.log("slide up!!!");
+PermEvents.slider_desktop_end = function(e){
 	Editor.current_mode.close_mode();
-	if(Modernizr.touch){
-		$("#equation_canvas").off("touchmove", PermEvents.slider_dragging);
-		$("#equation_canvas").off("touchend", PermEvents.drag_done);
-	}else{
-		$(".slider").trigger("mouseup");
-		$("#equation_canvas").off("mousemove", PermEvents.slider_dragging);
-		$("#equation_canvas").off("mouseup", PermEvents.drag_done);
-	}
+	$(".slider").trigger("mouseup");
+	$("#equation_canvas").off("mousemove", PermEvents.slider_dragging);
+	$("#equation_canvas").off("mouseup", PermEvents.desktop_drag_done);
 	Editor.canvas_div.style.cursor = "default";
 	Editor.current_mode.init_mode();
 	e.stopPropagation();
