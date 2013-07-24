@@ -52,8 +52,8 @@ DrawMode.prototype.init_mode = function(){
     // The boolean below is used to differentiate a click from a double click in the 
     // onDownBase function.
     this.single_click = false;
-    $(Editor.canvas_div).on('mousedown touchstart',  this.onDown);
-    $(Editor.canvas_div).on('mouseup touchend',  this.onUp);
+    $(Editor.canvas_div).on(this.event_strings.onDown,  this.onDown);
+    $(Editor.canvas_div).on(this.event_strings.onUp,  this.onUp);
     $(Editor.canvas_div).on('dblclick', this.onDoubleClick);
     $(document).on('keypress', this.onKeyPress);
 
@@ -65,9 +65,9 @@ DrawMode.prototype.close_mode = function(){
         $(Editor.canvas_div).off(this.event_strings.onDown, this.stopTextInput);
    }
 
-   $(Editor.canvas_div).off('mousedown touchstart', this.onDown); 
-   $(Editor.canvas_div).off('mouseup touchend', this.onUp); 
-   $(Editor.canvas_div).off('doubleclick', this.onDoubleClick);
+   $(Editor.canvas_div).off(this.event_strings.onDown, this.onDown); 
+   $(Editor.canvas_div).off(this.event_strings.onUp, this.onUp); 
+   $(Editor.canvas_div).off('dblclick', this.onDoubleClick);
    $(document).off('keypress', this.onKeyPress);
 }
 

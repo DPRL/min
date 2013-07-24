@@ -15,8 +15,7 @@ function SelectionMode(){
         SelectionMode.moveSegmentsFromMoveBase.bind( this);
     this.onUpAfterMove = SelectionMode.onUpAfterMoveBase.bind( this);
     this.touchAndHold = SelectionMode.touchAndHold.bind( this);
-    this.resizeSegmentsOnMove = $.proxy(SelectionMode.resizeSegmentsOnMoveBase,
-        this);
+    this.resizeSegmentsOnMove = SelectionMode.resizeSegmentsOnMoveBase.bind(this);
     this.onDoubleClick = SelectionMode.onDoubleClick.bind(this);
     this.onUpAfterResize = SelectionMode.onUpAfterResizeBase.bind(this);    
 
