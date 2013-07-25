@@ -468,9 +468,9 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
     			joined_segs = false;
     		}else{
     			if(elementOncanvasWidth == 0)
-    				elementOncanvasWidth = RenderManager.segment_set_divs[index].getBoundingClientRect().width;
+    				elementOncanvasWidth = parseInt(RenderManager.segment_set_divs[index].getBoundingClientRect().width);
     			if(elementOncanvasHeight == 0)
-    				elementOncanvasHeight = RenderManager.segment_set_divs[index].getBoundingClientRect().height;
+    				elementOncanvasHeight = parseInt(RenderManager.segment_set_divs[index].getBoundingClientRect().height);
 				s = svg_width/elementOncanvasWidth;
 				s2 = svg_height/elementOncanvasHeight;
 			}	
@@ -489,9 +489,19 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 				in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2));
     		}
 			var translation = new Vector2(in_x,in_y);
-			segments[k].already_aligned = true;
 			segments[k].translation = translation;
-			//Editor.check_collision(seg_rect, segments[k]);
+			/*var collision_offset = Editor.check_collision(seg_rect, segments[k]);
+			console.log(collision_offset);
+			console.log("X collision type: " + collision_type_x + " Y collision type: " + collision_type_y);
+			if(collision_type_y == "top")
+				segments[k].translation.y -= collision_offset.y;
+			if(collision_type_y == "bottom")
+				segments[k].translation.y += collision_offset.y;
+			if(collision_type_x == "right")
+				segments[k].translation.x += collision_offset.x;
+			if(collision_type_x == "left")
+				segments[k].translation.x -= collision_offset.x;*/
+			segments[k].already_aligned = true;
         }
 	}
 }
@@ -512,21 +522,35 @@ Editor.get_joinedSeg_dimensions = function(segments){
 // Makes sure the segment to be aligned doesn't collide with other aligned segments
 Editor.check_collision = function(seg_rect,segment){
 	var offset = new Vector2(0,0);
+	var x_offset = y_offset = 0;
+	collision_type_x = collision_type_y = "";
 	for(var i = 0; i < Editor.segments.length; i++){
 		if(Editor.segments[i].already_aligned){
 			var aligned_elem_rect = Editor.get_BBox(Editor.segments[i]);
-			var seg_rect = Editor.get_BBox(segment);
 			var aligned_elem_pos = Editor.get_position(aligned_elem_rect,Editor.segments[i]);
 			var seg_pos = Editor.get_position(seg_rect,segment);
+			
 			// Detect collision based on newly calculated BBoxs
-			if(seg_pos.item3 < aligned_elem_pos.item4){
-				offset.x = aligned_elem_pos.item4 - seg_pos.item3;
+			if(seg_pos.item4 > aligned_elem_pos.item4 && seg_pos.item3 < aligned_elem_pos.item4){ // Right Insertion
+				x_offset = aligned_elem_pos.item4 - seg_pos.item3;
+				collision_type_x = "right";
 			}
-			/*if(seg_pos.item4 > aligned_elem_pos.item3){
-				offset.y = seg_pos.item4 - aligned_elem_pos.item3;
-			}*/
+			if(seg_pos.item4 < aligned_elem_pos.item4 && seg_pos.item4 > aligned_elem_pos.item3){ // Left Insertion
+				x_offset = seg_pos.item4 - aligned_elem_pos.item3;
+				collision_type_x = "left";
+			}
+			if(seg_pos.item6 < aligned_elem_pos.item6 && seg_pos.item6 > aligned_elem_pos.item5 ){ // Top Insertion
+				y_offset = seg_pos.item6 - aligned_elem_pos.item5;
+				collision_type_y = "top";
+			}
+			if(seg_pos.item5 > aligned_elem_pos.item5 && seg_pos.item5 < aligned_elem_pos.item6){ // Bottom Insertion
+				y_offset = aligned_elem_pos.item6 - seg_pos.item5;
+				collision_type_y = "bottom";
+			}
 		}
 	}
+	offset.x = x_offset;
+	offset.y = y_offset;
 	return offset;
 }
 
