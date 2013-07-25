@@ -235,16 +235,16 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
-                //console.log("Length of set_segments is: " + set_segments.length + " tex: " + tex);
+                /*console.log("Length of set_segments is: " + set_segments.length + " tex: " + tex);
                 for(var p = 0; p < set_segments.length; p++)
-                	set_segments[p].inner_svg.setAttribute("opacity","0");
+                	set_segments[p].inner_svg.setAttribute("opacity","0");*/
                 if(RenderManager.new_div && (!set_segments[0].text)){
 					for(var w = 0; w < set_segments.length; w++)
 						set_segments[w].text = tex;
 					RenderManager.new_div = false;
 					RenderManager.start_display(ss_div,tex);
 				}else{
-					if(set_segments[0].text == tex)
+					if(set_segments[0].text == tex && ss_div.firstChild)
 						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
 					else{
 						for(var z = 0; z < set_segments.length; z++)

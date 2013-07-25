@@ -14,8 +14,8 @@ Editor.instance = null;
 
 Editor.modes = {
     "DrawMode": new DrawMode(),
-    "RectSelectMode": new RectSelectMode(),
-    "StrokeSelectMode": new StrokeSelectMode()
+    "RectSelectMode": new RectSelectMode()
+    //"StrokeSelectMode": new StrokeSelectMode()
 };
 
 // Code for modes/mode switching

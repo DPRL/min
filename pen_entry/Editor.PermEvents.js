@@ -8,7 +8,7 @@ function PermEvents(){}
 PermEvents.setup_toolbar = function(){
     $("#pen").click(EditorMode.mkModeSwitchFn(Editor.modes.DrawMode));
 
-    $("#stroke_select").click(EditorMode.mkModeSwitchFn(Editor.modes.StrokeSelectMode));
+    //$("#stroke_select").click(EditorMode.mkModeSwitchFn(Editor.modes.StrokeSelectMode));
     
     $("#rectangle_select").click(EditorMode.mkModeSwitchFn(Editor.modes.RectSelectMode));
 

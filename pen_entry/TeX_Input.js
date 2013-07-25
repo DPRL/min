@@ -30,6 +30,7 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
     this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     this.root_svg.setAttribute("width", "100%");
     this.root_svg.setAttribute("height", "100%");
+    this.root_svg.setAttribute("opacity", "0.6");
     this.inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
     var new_width = null;
