@@ -235,21 +235,21 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
+                var segs = set_segments.slice(0);
                 if(RenderManager.new_div && (!set_segments[0].text)){
 					for(var w = 0; w < set_segments.length; w++)
 						set_segments[w].text = tex;
 					RenderManager.new_div = false;
-					RenderManager.start_display(ss_div,tex);
+					RenderManager.start_display(ss_div,tex,segs);
 				}else{
-					if(set_segments[0].text == tex && ss_div.firstChild)
+					if(set_segments[0].text == tex && ss_div.firstChild){
 						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
-					else{
+					}else{
 						for(var z = 0; z < set_segments.length; z++)
 							set_segments[z].text = tex;
-						if(ss_div.firstChild){
+						if(ss_div.firstChild)
 							ss_div.removeChild(ss_div.firstChild);
-							RenderManager.start_display(ss_div,tex);
-						}
+						RenderManager.start_display(ss_div,tex,segs);
 					}	
 				}
             }
@@ -280,17 +280,17 @@ RenderManager.render_set_field = function(in_context_id)
 /* Inserts Tex into a DOM element and calls MathJax to render it. When MathJax is done,
 	it calls insert_tex which inserts the tex into the BBox of the symbol on the canvas
 */
-RenderManager.start_display = function(ss_div,tex){
+RenderManager.start_display = function(ss_div,tex,set_segments){
 	var elem = document.createElement("div");
 	elem.setAttribute("id","RenderManager_Tex");
-	elem.style.visibility = "visible"; 		// Hide the element
+	elem.style.visibility = "hidden"; 		// Hide the element
 	elem.style.position = "absolute";
 	elem.style.fontSize = "500%";
 	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
 	document.body.appendChild(elem);
 	var index = RenderManager.segment_set_divs.length;
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],
-		["Typeset",MathJax.Hub,elem],[RenderManager.insert_teX,elem,ss_div,index]);
+		["Typeset",MathJax.Hub,elem],[RenderManager.insert_teX,elem,ss_div,index,set_segments]);
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
@@ -324,7 +324,7 @@ RenderManager.render_svg = function(BBox_div){
 // Inserts the SVG into the RenderManager's BBox for the symbol
 // Note: Subtracted 2 from the BBox width because the SVG were being slightly cut off
 // 		 It's not an error just that the BBox width is small
-RenderManager.insert_teX = function(elem,BBox_div,index)
+RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
     	element_width,old_bottom;
@@ -340,7 +340,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
     root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     root_svg.setAttribute("width", "100%");
     root_svg.setAttribute("height", "100%");
-    root_svg.setAttribute("opacity", "0.6");
+    root_svg.setAttribute("opacity", "0");
     var inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     for(var i = 0; i < element.length; i++){
     	var temp_root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -348,7 +348,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
     	temp_root.setAttribute("visibility", "hidden");
     	var offset = element[i].getBoundingClientRect();
 		if(element[i].tagName.toString() == "use"){
-			path_tag = document.getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
+			path_tag = document.getElementsByTagName("svg")[0].getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
 			path_tag.setAttribute("visibility","visible");
 			temp_root.appendChild(path_tag);
 			document.body.appendChild(temp_root);
@@ -373,7 +373,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+			rect_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
 			rect_tag.removeAttribute("x");
 			rect_tag.removeAttribute("y");
 			inner_svg.appendChild(rect_tag);
@@ -401,6 +401,8 @@ RenderManager.insert_teX = function(elem,BBox_div,index)
 		x_offset = parseFloat(BBox_left - element_width);
 	}
 	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+")");
+	$(set_segments[0].inner_svg).fadeTo(200,0,function(){});
+	$(root_svg).fadeTo(400,1,function(){});
 	document.body.removeChild(elem);
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }

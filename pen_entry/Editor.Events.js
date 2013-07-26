@@ -481,13 +481,15 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
             segments[k].align_scale = segments[k].scale.clone();
             segments[k].align_old_translation = segments[k].translation.clone();
             
-			if(segments.length == 2 && k == 1){ 
+			/*if(segments.length == 2 && k == 1){ 
     			in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2)) - translation_difference.x;
 				in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2)) - translation_difference.y;
     		}else{
     			in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2));
 				in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2));
-    		}
+    		}*/
+    		in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2));
+			in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2));
 			var translation = new Vector2(in_x,in_y);
 			segments[k].translation = translation;
 			/*var collision_offset = Editor.check_collision(seg_rect, segments[k]);
