@@ -278,7 +278,7 @@ RenderManager.render_set_field = function(in_context_id)
 }
 
 /* Inserts Tex into a DOM element and calls MathJax to render it. When MathJax is done,
-	it calls insert_tex which inserts the tex into the BBox of the symbol on the canvas
+	it calls insert_teX which inserts the tex into the BBox of the symbol on the canvas
 */
 RenderManager.start_display = function(ss_div,tex,set_segments){
 	var elem = document.createElement("div");
@@ -294,8 +294,6 @@ RenderManager.start_display = function(ss_div,tex,set_segments){
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
-// Note: Subtracted 2 from the BBox width because the SVG were being slightly cut off
-// 		 It's not an error just that the BBox width is small
 RenderManager.render_svg = function(BBox_div){
 	var element,x_offset,y_offset;
 	var svg_root = BBox_div.firstChild;
@@ -321,9 +319,14 @@ RenderManager.render_svg = function(BBox_div){
 	inner_svg.setAttribute("transform", "translate("+(x_offset)+","+(y_offset)+") scale("+scale_x+","+scale_y+")");
 }
 
-// Inserts the SVG into the RenderManager's BBox for the symbol
-// Note: Subtracted 2 from the BBox width because the SVG were being slightly cut off
-// 		 It's not an error just that the BBox width is small
+/* Inserts the SVG into the RenderManager's BBox for the symbol
+   Note: Subtracted 2 from the BBox width because the SVG were being slightly cut off
+ 		 It's not an error just that the BBox width is small
+   		 Before an SVG is inserted into a BBox, I scale the individual symbols before 
+   		 scaling SVG's inner_svg to fit the BBox on the canvas. I did it because of 
+   		 symbols like log and 2. Scaling just the SVG's inner_svg to fit the BBox without
+   		 scaling the symbols congests the symbols.
+*/
 RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
@@ -340,7 +343,6 @@ RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
     root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     root_svg.setAttribute("width", "100%");
     root_svg.setAttribute("height", "100%");
-    root_svg.setAttribute("opacity", "0");
     var inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     for(var i = 0; i < element.length; i++){
     	var temp_root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -349,6 +351,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
     	var offset = element[i].getBoundingClientRect();
 		if(element[i].tagName.toString() == "use"){
 			path_tag = document.getElementsByTagName("svg")[0].getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
+			path_tag.removeAttribute("id");
 			path_tag.setAttribute("visibility","visible");
 			temp_root.appendChild(path_tag);
 			document.body.appendChild(temp_root);
