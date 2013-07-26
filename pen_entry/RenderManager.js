@@ -401,7 +401,8 @@ RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
 		x_offset = parseFloat(BBox_left - element_width);
 	}
 	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+")");
-	$(set_segments[0].inner_svg).fadeTo(200,0,function(){});
+	for(var z = 0; z < set_segments.length; z++)
+		$(set_segments[z].inner_svg).fadeTo(200,0,function(){});
 	$(root_svg).fadeTo(400,1,function(){});
 	document.body.removeChild(elem);
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
