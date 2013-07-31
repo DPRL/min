@@ -9,7 +9,7 @@ Buttons.COUNT = 0;
 Buttons.Pen = 0;
 //Buttons.Text = 1;
 Buttons.Rectangle = 1;
-//Buttons.Stroke = 2;
+Buttons.Reselect = 2;
 Buttons.UploadImage = 3;
 Buttons.Undo = 4;
 Buttons.Redo = 5;
@@ -22,7 +22,7 @@ function ButtonState(button_id)
 {
     this.overlay_div = document.getElementById(button_id).getElementsByClassName("toolbar_button_overlay").item(0);
     
-    console.log(button_id + " " + this.overlay_div.className);
+    //console.log(button_id + " " + this.overlay_div.className);
     Buttons.COUNT++;
     this.enabled = false;
     this.touched = false;
@@ -77,7 +77,7 @@ Editor.build_buttons = function(in_div_name)
     Editor.button_states = new Array();
     Editor.button_states.push(new ButtonState("pen"));
     Editor.button_states.push(new ButtonState("rectangle_select"));
-    //Editor.button_states.push(new ButtonState("stroke_select"));
+    Editor.button_states.push(new ButtonState("change_recognition"));
     Editor.button_states.push(new ButtonState("upload_image"));
     Editor.button_states.push(new ButtonState("undo"));
     Editor.button_states.push(new ButtonState("redo"));

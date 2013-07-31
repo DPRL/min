@@ -55,27 +55,6 @@ RenderManager.render_tools_layer = function()
     }
     else
         RenderManager.selection_box.style.visibility = "hidden";
-    
-    // render stroke select
-    if(Editor.state == EditorState.StrokeSelecting)
-    {
-        // render
-        var context = Editor.contexts[0];
-        context.strokeStyle = Editor.stroke_select_color;
-        context.lineWidth = Editor.stroke_select_width;
-        context.lineCap = "round";
-        context.lineJoin = "round";
-
-        var point_a = Editor.previous_stroke_position;
-        var point_b = Editor.mouse_position;
-        
-        
-        context.beginPath();
-        context.moveTo(point_a.x, point_a.y);
-        context.lineTo(point_b.x, point_b.y);
-        context.stroke();
-        context.closePath();
-    }
 }
 
 RenderManager.render = function()
@@ -211,8 +190,10 @@ RenderManager.render_set_field = function(in_context_id)
                 Editor.canvas_div.appendChild(div);
                 RenderManager.segment_set_divs.push(div);
                 RenderManager.new_div = true; // Signals when to create SVG or update it
+                console.log("New Div Created and new_div: true");
             }
-
+			for(var c = 0; c < set_segments.length; c++) // Ties each pen stroke to RenderManager's BBox
+				set_segments[c].render_manager_index = RenderManager.segment_set_divs.length-1;
 
             // Add the new div to the RenderManager data structures,
             // set visiblity and BB properties.
@@ -235,22 +216,28 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = symbol;
                 else
                     tex = recognition_result.symbols[0];
-                var segs = set_segments.slice(0);
-                if(RenderManager.new_div && (!set_segments[0].text)){
+                var segs = set_segments.slice(0, set_segments.length); // copy set_segments array
+                console.log("Length of set_segments is: " + set_segments.length);
+                if(RenderManager.new_div && (!set_segments[0].text)){ // Insert new recognition
 					for(var w = 0; w < set_segments.length; w++)
 						set_segments[w].text = tex;
+					console.log("New Segment, tex: " + tex + " and new_div: " + RenderManager.new_div);
 					RenderManager.new_div = false;
 					RenderManager.start_display(ss_div,tex,segs);
-				}else{
-					if(set_segments[0].text == tex && ss_div.firstChild){
+				}else if(set_segments[0].text == tex && set_segments[set_segments.length-1].text == tex && ss_div.firstChild){ // update recognition
+						console.log("Updating segment with tex: " + tex);
 						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
-					}else{
-						for(var z = 0; z < set_segments.length; z++)
-							set_segments[z].text = tex;
-						if(ss_div.firstChild)
-							ss_div.removeChild(ss_div.firstChild);
-						RenderManager.start_display(ss_div,tex,segs);
-					}	
+				}else{ // change recognition
+					for(var z = 0; z < set_segments.length; z++){
+						console.log("Old Tex: " + set_segments[z].text + ", Tex to be inserted: " + tex);
+						set_segments[z].text = tex;
+					}
+					if(ss_div.firstChild){
+						console.log("First svg tag has been removed "); 
+						ss_div.removeChild(ss_div.firstChild);
+					}
+					RenderManager.start_display(ss_div,tex,segs);
+					console.log("Not creating new div or making changes");	
 				}
             }
             else {
@@ -261,7 +248,6 @@ RenderManager.render_set_field = function(in_context_id)
             }
 
             // 'Empty' list of primitives for next object, add current object to list.
-            // Not sure why the length is being set to zero here.
             set_segments.length = 0;
             set_segments.push(seg);
         }
@@ -288,9 +274,8 @@ RenderManager.start_display = function(ss_div,tex,set_segments){
 	elem.style.fontSize = "500%";
 	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
 	document.body.appendChild(elem);
-	var index = RenderManager.segment_set_divs.length;
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],
-		["Typeset",MathJax.Hub,elem],[RenderManager.insert_teX,elem,ss_div,index,set_segments]);
+		["Typeset",MathJax.Hub,elem],[RenderManager.insert_teX,elem,ss_div,set_segments]);
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
@@ -327,7 +312,7 @@ RenderManager.render_svg = function(BBox_div){
    		 symbols like log and 2. Scaling just the SVG's inner_svg to fit the BBox without
    		 scaling the symbols congests the symbols.
 */
-RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
+RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
     	element_width,old_bottom;
@@ -338,9 +323,8 @@ RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
 	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
 	var element = use_tag_array.concat(rect_tag_array); // should be only one symbol
     var root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    root_svg.setAttribute("class", "RenderManager "+index);
     root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
+    root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px; opacity:0;");
     root_svg.setAttribute("width", "100%");
     root_svg.setAttribute("height", "100%");
     var inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -359,12 +343,16 @@ RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
 			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			if(old_bottom && old_bottom != parseInt(offset.bottom)){
-				path_tag.setAttribute("transform", "translate("+offset.left+","+old_bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
-			}else{
-				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
-				old_bottom = parseInt(offset.bottom);
-			}
+			if(element.length > 1){
+				if(old_bottom && old_bottom != parseInt(offset.bottom)){
+					path_tag.setAttribute("transform", "translate("+offset.left+","+old_bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+				}else{
+					path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+					old_bottom = parseInt(offset.bottom);
+				}
+			}else // makes single symbols like "-,2,3" look better.
+				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") matrix(1 0 0 -1 0 0)");
+			
 			inner_svg.appendChild(path_tag);
 			document.body.removeChild(temp_root);
 		}else{
@@ -376,7 +364,7 @@ RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
 			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			rect_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+			rect_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") matrix(1 0 0 -1 0 0)");
 			rect_tag.removeAttribute("x");
 			rect_tag.removeAttribute("y");
 			inner_svg.appendChild(rect_tag);
@@ -404,11 +392,29 @@ RenderManager.insert_teX = function(elem,BBox_div,index,set_segments)
 		x_offset = parseFloat(BBox_left - element_width);
 	}
 	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+")");
+	for(var u = 0; u < set_segments.length; u++)
+		console.log("Segs to remove: " +  set_segments[u].text + " index: " + u);
+	$(root_svg).fadeTo(450,1,function(){});
+	//console.log("Set_Segments length: " + set_segments.length);
 	for(var z = 0; z < set_segments.length; z++)
-		$(set_segments[z].inner_svg).fadeTo(200,0,function(){});
-	$(root_svg).fadeTo(400,1,function(){});
+		$(set_segments[z].inner_svg).animate({opacity:0},600,function(){});
 	document.body.removeChild(elem);
+	set_segments.length = 0; // clear array
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
+}
+
+// Increases the opacity of strokes when in selection mode
+RenderManager.increase_stroke_opacity = function(){
+	for(var i = 0; i < Editor.segments.length; i++){
+		$(Editor.segments[i].inner_svg).animate({opacity:0.6},600,function(){});
+	}
+}
+
+// Decreases the opacity of strokes when exiting selection mode
+RenderManager.decrease_stroke_opacity = function(){
+	for(var i = 0; i < Editor.segments.length; i++){
+		$(Editor.segments[i].inner_svg).animate({opacity:0},600,function(){});
+	}
 }
 
 RenderManager.unrender_set_field = function()

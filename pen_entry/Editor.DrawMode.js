@@ -55,8 +55,9 @@ DrawMode.prototype.init_mode = function(){
     $(Editor.canvas_div).on('mousedown touchstart',  this.onDown);
     $(Editor.canvas_div).on('mouseup touchend',  this.onUp);
     $(Editor.canvas_div).on('dblclick', this.onDoubleClick);
+    Editor.canvas_div.style.cursor = "crosshair";
     $(document).on('keypress', this.onKeyPress);
-
+	
 }
 
 DrawMode.prototype.close_mode = function(){
@@ -64,7 +65,7 @@ DrawMode.prototype.close_mode = function(){
         this.stopTextInput();
         $(Editor.canvas_div).off(this.event_strings.onDown, this.stopTextInput);
    }
-
+   Editor.canvas_div.style.cursor = "default";	
    $(Editor.canvas_div).off('mousedown touchstart', this.onDown); 
    $(Editor.canvas_div).off('mouseup touchend', this.onUp); 
    $(Editor.canvas_div).off('doubleclick', this.onDoubleClick);
@@ -109,7 +110,6 @@ DrawMode.onDownBase = function(e){
     Editor.add_segment(Editor.current_stroke);            
         
     Editor.state = EditorState.MiddleOfStroke;
-
     RenderManager.render();
 }
 
@@ -153,7 +153,7 @@ DrawMode.onMoveBase = function(e){
 DrawMode.onDoubleClick = function(e){
 	// All Editor Modes(RectSelect and StrokeSelect) call DrawMode's
 	// onDoubleClick when in the mode and an expression is double clicked on
-	// Simple unbind the events already attached in those modes.
+	// Simply unbind the events already attached in those modes.
 	var eq_canv = $("#equation_canvas").off(this.event_strings.onUp,
     this.onUpAfterMove).off(this.event_strings.onMove,
     this.beginMovingSegmentsFromMove).off(this.event_strings.onDown,

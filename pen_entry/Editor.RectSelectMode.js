@@ -27,6 +27,7 @@ RectSelectMode.prototype.init_mode = function(){
     $("#equation_canvas").css("cursor", "default");
     $("#equation_canvas").on(this.event_strings.onDown, this.onDownNoSelectedSegments);
     console.log("rect select");
+    RenderManager.increase_stroke_opacity();
 }
 
 RectSelectMode.prototype.close_mode = function(){
@@ -36,6 +37,7 @@ RectSelectMode.prototype.close_mode = function(){
     // selected segments
     Editor.clear_selected_segments();
     RenderManager.render();
+    RenderManager.decrease_stroke_opacity();
 }
 
 RectSelectMode.onDownNoSelectedSegmentsBase = function(e){
@@ -132,25 +134,6 @@ RectSelectMode.rectSelectTool = function()
     Editor.clearButtonOverlays();
     Editor.button_states[Buttons.Rectangle].setSelected(true);
 
-    // CMS: All this state stuff should be cut out; it should be the responsibility
-    // of the caller performing the switch to do this
-    // switch(Editor.state)
-    // {
-    // case EditorState.MiddleOfText:
-    //     Editor.current_text.finishEntry();
-    //     if(Editor.current_action.toString() == "EditText")
-    //         Editor.current_action.set_current_text(Editor.current_text.text);
-    //     else if(Editor.current_action.toString() == "AddSegments")
-    //         Editor.current_action.buildSegmentXML();                
-    //     Editor.current_text = null;
-    // }
-    
-    // if(Editor.selected_segments.length == 0)
-    //     Editor.state = EditorState.ReadyToRectangleSelect;
-    // else
-    //     Editor.state = EditorState.SegmentsSelected;
-
     RenderManager.colorOCRbbs(this.segment_style_class);
-    RenderManager.render();    
-    //Editor.selection_method = "Rectangle";
+    RenderManager.render();
 }

@@ -1,14 +1,9 @@
-// implements Segment
-
 // points are stored in local space
-
 PenStroke.count = 0;
 PenStroke.type_id = 2;
 PenStroke.chalk_layer = true;
-
 function PenStroke(in_x, in_y, in_line_width)
 {
-    console.log("creating a pen stroke");
     // identifiers to build unique id
     this.instance_id = Segment.count++;
     this.type_id = PenStroke.type_id;
@@ -32,12 +27,11 @@ function PenStroke(in_x, in_y, in_line_width)
     
     // transform information
     this.scale = new Vector2(1.0, 1.0);
-    this.translation = new Vector2(0.0, 0.0);
+    this.translation = new Vector2(in_x,in_y);
     
     this.temp_scale = new Vector2(1.0, 1.0);
     this.temp_translation = new Vector2(0.0, 0.0);
 
-    
     // used to determine extents
     this.size = new Vector2(0.0, 0.0);
     
@@ -46,16 +40,38 @@ function PenStroke(in_x, in_y, in_line_width)
     
     this.color = Editor.segment_color;
     this.stroke_width = Editor.stroke_width;
-    /*
-    this.root_div = document.createElement("div");
-        this.root_div.className = "pen_stroke";
-    Editor.canvas_div.appendChild(this.root_div);
-    */
+
     // if true we need to update the SVG transform
     this.dirty_flag = false;
     
     this.element = null;
     this.classification_server = "PenStrokeClassifier";
+    
+    // add svg and apply appropriate transform here
+    this.root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.root_svg.setAttribute("class", "pen_stroke");
+    this.root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
+    this.root_svg.setAttribute("width", "100%");
+    this.root_svg.setAttribute("height", "100%");
+    this.inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    
+    // Applies transformation to the SVG immediately
+    var sb = new StringBuilder();
+    sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
+    sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
+    sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
+    sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
+    this.inner_svg.setAttribute("transform", sb.toString());
+	
+	// build polyline
+	this.polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+	this.polyline.setAttribute("points", "");
+	this.polyline.setAttribute("style", "fill:none; stroke:" + this.color +
+	";stroke-width:" + Editor.stroke_width);
+	this.inner_svg.appendChild(this.polyline);
+    this.root_svg.appendChild(this.inner_svg);
+    Editor.canvas_div.appendChild(this.root_svg);
 }
 
 PenStroke.prototype.update_extents = function()
@@ -97,84 +113,52 @@ PenStroke.prototype.worldMaxDrawPosition = function()
 
 PenStroke.prototype.add_point = function(point_position)
 {
-    // just add the point to the list, render the line, and update the mins
-    this.points.push(point_position)
+     // just add the point to the list, render the line, and update the mins
+    this.points.push(point_position);
     this.world_mins.x = Math.min(this.world_mins.x, point_position.x);
     this.world_mins.y = Math.min(this.world_mins.y, point_position.y);
     this.world_maxs.x = Math.max(this.world_maxs.x, point_position.x);
     this.world_maxs.y = Math.max(this.world_maxs.y, point_position.y);
     
     this.size = Vector2.Subtract(this.world_maxs, this.world_mins);
-    
-    // render
-    var context = Editor.contexts[0];
-    context.strokeStyle = Editor.segment_color;
-    context.lineWidth = this.line_width;
-    context.lineCap = "round";
-    context.lineJoin = "round";
+    var point_a = this.points[this.points.length - 2].clone();
+	var point_b = this.points[this.points.length - 1].clone(); 
+	
+	// Converts the screen points to svg coordinates
+	var svg_point_a = this.fromScreenToSVG(point_a);
+	var svg_point_b = this.fromScreenToSVG(point_b);
 
-    var point_a = Vector2.Add(this.points[this.points.length - 2], this.translation);
-    var point_b = Vector2.Add(this.points[this.points.length - 1], this.translation);
-    
-    context.beginPath();
-        context.moveTo(point_a.x, point_a.y);
-        context.lineTo(point_b.x, point_b.y);
-    context.stroke();
-    context.closePath();
-    
+	// append points to polyline
+	var point = this.root_svg.createSVGPoint();
+	var point2 = this.root_svg.createSVGPoint();
+	point.x = svg_point_a.x;
+	point.y = svg_point_a.y;
+	point2.x = svg_point_b.x;
+	point2.y = svg_point_b.y;
+	this.polyline.points.appendItem(point);
+	this.polyline.points.appendItem(point2);	
+}
+//  Transforms a point from screen coordinates to svg coordinates
+PenStroke.prototype.fromScreenToSVG = function(point){
+	var pt = this.root_svg.createSVGPoint();
+	pt.x = point.x;
+	pt.y = point.y;
+	return pt.matrixTransform(this.inner_svg.getCTM().inverse());
 }
 
-PenStroke.prototype.finish_stroke = function()
-{
-    if(this.points.length == 1)
-    {
+PenStroke.prototype.finish_stroke = function(){
+    if(this.points.length == 1){
         console.log("points: " + this.points.length);
         return false;
     }
-
-    // add svg and apply appropriate transform here
-    this.root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    this.root_svg.setAttribute("class", "pen_stroke");
-    this.root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
-    this.root_svg.setAttribute("width", "100%");
-    this.root_svg.setAttribute("height", "100%");
-    
-    // build transform
-    
-    this.translation = this.world_mins.clone();
-    
-    this.inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-    var sb = new StringBuilder();
-    sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
-    sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
-    sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
-    sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
-    
-    this.inner_svg.setAttribute("transform", sb.toString());
-
-    // build polyline
-    
-    this.polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    
-    sb.clear();
     for(var k = 0; k < this.points.length; k++)
     {
         this.points[k] = Vector2.Subtract(this.points[k], this.world_mins);
-        sb.append(this.points[k].x).append(',').append(this.points[k].y).append(' ');
     }
-    
-    this.polyline.setAttribute("points", sb.toString());
-    this.polyline.setAttribute("style", "fill:none; stroke:" + this.color + ";stroke-width:" + this.stroke_width);
-
-    this.inner_svg.appendChild(this.polyline);
-    this.root_svg.appendChild(this.inner_svg);
-    Editor.canvas_div.appendChild(this.root_svg);
+    var start_position = this.translation.clone();
+    this.translation = this.world_mins;
+    this.diff = Vector2.Subtract(this.translation, start_position);
     this.element = this.root_svg;
-    
-    // clear the canvas
-    RenderManager.clear_canvas();
     return true;
 }
 
@@ -182,24 +166,52 @@ PenStroke.prototype.private_render = function(in_color, in_width)
 {
     $(this.element).toggle(this.expression_id == Editor.current_expression_id);
     if (this.dirty_flag == false && this.color == in_color && this.stroke_width == in_width) {
+    	console.log("Returning from private render");
         return;
     }
     this.dirty_flag = false;
     this.color = in_color;
     this.stroke_width = in_width;
-    
-    var sb = new StringBuilder();
-    sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
-    sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
-    sb.append("translate(").append(this.translation.x).append(',').append(this.translation.y).append(") ");
-    sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
-    
-    this.inner_svg.setAttribute("transform", sb.toString());
-
+    // Makes sure the SVG stays within the BBox after resizing
+    if(this.stay_within_bbox){
+    	this.apply_transformation();
+    	var overlay_height = $(RenderManager.segment_set_divs[this.render_manager_index]).offset().top;
+		var overlay_width = $(RenderManager.segment_set_divs[this.render_manager_index]).offset().left;
+		var element_height = $(this.inner_svg).offset().top;
+		var element_width = $(this.inner_svg).offset().left;
+		var x_offset = y_offset = 0;
+		if(parseFloat(overlay_height - element_height) != 0){
+			y_offset = parseFloat(overlay_height - element_height);
+		}
+		if(parseFloat(overlay_width - element_width) != 0){
+			x_offset = parseFloat(overlay_width - element_width);
+		}
+    	this.stay_within_bbox = false;
+    	var sb = new StringBuilder();
+    	sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
+    	sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
+    	sb.append("translate(").append(this.translation.x-this.diff.x+x_offset).append(',').append(this.translation.y-this.diff.y+y_offset).append(") ");
+    	sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
+    	this.inner_svg.setAttribute("transform", sb.toString());
+    }else{
+  		this.apply_transformation();
+	}
     // scale factor to give illusion of scale independent line width
     var mean_scale = (Math.abs(this.scale.x * this.temp_scale.x) + Math.abs(this.scale.y * this.temp_scale.y)) / 2.0;
-    this.polyline.setAttribute("style", "stroke:" + this.color + ";stroke-width:" + (this.stroke_width / mean_scale));
+    this.polyline.setAttribute("style", " fill:none; stroke:" + this.color + ";stroke-width:" + (this.stroke_width / mean_scale));
     
+}
+
+/* Applies transformation to the inner_svg while subtracting difference btw start position 
+   and world_mins.
+*/
+PenStroke.prototype.apply_transformation = function(){
+	var sb = new StringBuilder();
+	sb.append("translate(").append(this.temp_translation.x).append(',').append(this.temp_translation.y).append(") ");
+	sb.append("scale(").append(this.temp_scale.x).append(',').append(this.temp_scale.y).append(") ");
+	sb.append("translate(").append(this.translation.x-this.diff.x).append(',').append(this.translation.y-this.diff.y).append(") ");
+	sb.append("scale(").append(this.scale.x).append(',').append(this.scale.y).append(')');
+	this.inner_svg.setAttribute("transform", sb.toString());
 }
 
 // just draw using the given context
@@ -406,7 +418,6 @@ PenStroke.prototype.rectangle_collides = function(in_corner_a, in_corner_b)
 PenStroke.prototype.translate = function(in_offset)
 {
     this.translation.Add(in_offset);
-    
     this.update_extents();
     this.dirty_flag = true;
 }
@@ -429,6 +440,7 @@ PenStroke.prototype.freeze_transform = function()
     this.temp_scale = new Vector2(1,1);
     this.temp_translation = new Vector2(0,0);
     this.dirty_flag = true;
+    this.stay_within_bbox = true;
     this.update_extents();
 }
 

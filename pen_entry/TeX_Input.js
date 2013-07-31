@@ -156,6 +156,11 @@ TeX_Input.prototype.private_render = function(in_color, in_width)
     }
 }
 
+TeX_Input.prototype.update_extents = function()
+{
+    return;
+}
+
 // just draw using the given context
 TeX_Input.prototype.render = function()
 {
@@ -192,6 +197,15 @@ TeX_Input.prototype.worldMaxDrawPosition = function()
     result.x += this.line_width ;
     result.y += this.line_width ;
     return result;
+}
+
+// translate by this amount
+TeX_Input.prototype.translate = function(in_offset)
+{
+    this.translation.Add(in_offset);
+    
+    this.update_extents();
+    this.dirty_flag = true;
 }
 
 TeX_Input.prototype.resize = function(in_origin, in_scale)

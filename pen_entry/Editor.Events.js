@@ -1,8 +1,6 @@
 var EditorState = 
     {
         // select tool states
-        "ReadyToStrokeSelect" : 0,
-        "StrokeSelecting" : 1,
         "ReadyToRectangleSelect" : 2,
         "RectangleSelecting" : 3,
         
@@ -51,24 +49,6 @@ Editor.setup_events = function()
     // Select the pen tool
     Editor.button_states[Buttons.Pen].enabled = true;
 
-}
-
-Editor.setStrokeView = function()
-{
-    var show = false;
-    for (var i=0; i < Editor.segments.length; i++) {
-        var nextSegment = Editor.segments[i];
-        if (nextSegment.chalk_layer) {
-            if (!show){
-                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;");
-                nextSegment.element.style.visibility = "hidden";
-            }
-            else{
-                nextSegment.inner_svg.setAttribute("style", "fill:none;stroke-linecap:round;");
-                nextSegment.element.style.visibility = "visible";                
-            }
-        }
-    }
 }
 
 Editor.fit_to_screen = function(event)
@@ -298,7 +278,7 @@ Editor.align = function()
                 }
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "visible"; 		// Hide the element
+				elem.style.visibility = "hidden"; 		// Hide the element
 				elem.style.position = "absolute";
 				elem.style.fontSize = "800%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
@@ -347,42 +327,11 @@ Editor.scale_tex = function(elem){
 	}
 }
 
-Editor.scale_tex3 = function(elem){
-	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
-	math_width = MathJax_div.offsetWidth;
-	math_height = MathJax_div.offsetHeight;
-	if(math_width > target_width || math_height > target_height){ 
-		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 20) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
-	}else{
-		return;
-	}
-}
-
-Editor.scale_tex2 = function(elem){
-	var MathJax_div = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0];
-	math_width = MathJax_div.offsetWidth;
-	math_height = MathJax_div.offsetHeight;
-	if(math_width > target_width || math_height > target_height){ 
-		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex2(elem), this)]);
-	}else{
-		return;
-	}
-}
-
 Editor.copy_tex = function(elem){
 	dim_tuple = Editor.get_canvas_elements_dimensions();
-	/*target_width = $("#equation_canvas")[0].offsetWidth;
-	target_height = $("#equation_canvas")[0].offsetHeight;
-	Editor.scale_tex2(elem);*/
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.getBoundingClientRect();
-	/*var width_ratio = dim_tuple.item1/rect.width;
-	var height_ratio = dim_tuple.item2/rect.height;
-	var ratio = width_ratio < height_ratio ? width_ration : height_ratio;*/
 	target_width = (rect.width/rect.height) * dim_tuple.item2;
-	//target_width = dim_tuple.item2 * (math_width/math_height);
 	target_height = dim_tuple.item2;
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
 	
@@ -679,9 +628,7 @@ Editor.clearSelectedSegments = function(){
     Editor.clear_selected_segments();    
     RenderManager.render();
     console.log(Editor.selection_method);
-    if(Editor.selection_method == "Stroke")
-        Editor.state = EditorState.ReadyToStrokeSelect;
-    else if(Editor.selection_method == "Rectangle")
+    if(Editor.selection_method == "Rectangle")
         Editor.state = EditorState.ReadyToRectangleSelect;
 }
 

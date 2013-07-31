@@ -121,7 +121,6 @@ RecognitionManager.classify_queued = function(should_segment, should_assign_seti
 RecognitionManager.enqueueSegment = function(segment)
 {
     clearTimeout(RecognitionManager.timeout);
-    var timeOut = 1500; // milliseconds.
 
     RecognitionManager.segment_queue.push(segment);
     if(RecognitionManager.segment_queue.length >= RecognitionManager.max_segments)
@@ -130,7 +129,7 @@ RecognitionManager.enqueueSegment = function(segment)
     }
     else
     {
-        RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false," + ( segment.set_id == -1 ? "true" : "false" ) + ";", timeOut);
+        RecognitionManager.timeout = setTimeout("RecognitionManager.classify_queued(false," + ( segment.set_id == -1 ? "true" : "false" ) + ";", Editor.recognition_timeout);
     }
     
 }

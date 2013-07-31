@@ -26,6 +26,8 @@ Editor.ascender_chars = ['b','d','f','h','i','k','l','t'];
 Editor.x_height_chars = ['a','c','e','m','n','o','r','s','u','v','w','x','z'];
 Editor.descender_chars = ['g','j','p','q','y'];
 
+Editor.recognition_timeout = 1500; // In milliseconds, used in RecognitionManager line 132.
+
 // List of keycodes, I couldn't find a standard object for this
 KeyCode = {
     backspace: 8,

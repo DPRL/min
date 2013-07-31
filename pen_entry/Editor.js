@@ -368,19 +368,27 @@ Editor.clear_selected_segments = function()
 // adds a new canvas to the contexts list 
 Editor.add_canvas = function()
 {
-    var canvas = Editor.build_canvas();
+    /*var canvas = Editor.build_canvas();
         canvas.style.zIndex = Editor.canvases.length;
         Editor.canvases.push(canvas);
     
     Editor.canvas_div.appendChild(canvas);
 
     var context = canvas.getContext('2d');
-    Editor.contexts.push(context);
+    Editor.contexts.push(context);*/
+    
+    var svg_canvas = Editor.build_canvas();
+    svg_canvas.style.zIndex = Editor.canvases.length;
+	Editor.canvases.push(svg_canvas);
+    
+    Editor.canvas_div.appendChild(svg_canvas);
+
+    Editor.contexts.push(svg_canvas);
 }
 
 Editor.build_canvas = function()
 {
-    var canvas = document.createElement("canvas");
+    /*var canvas = document.createElement("canvas");
         canvas.setAttribute("onclick", "event.preventDefault();");
         canvas.setAttribute("ontouchmove", "event.preventDefault();");
         canvas.setAttribute("ontouchstart", "event.preventDefault();");
@@ -390,7 +398,19 @@ Editor.build_canvas = function()
         canvas.setAttribute("tabindex", "0");
         canvas.style.left = "0px";
         canvas.style.top = "0px";
-    return canvas;
+    return canvas;*/
+    
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	svg.setAttribute("onclick", "event.preventDefault();");
+	svg.setAttribute("ontouchmove", "event.preventDefault();");
+	svg.setAttribute("ontouchstart", "event.preventDefault();");
+	svg.setAttributeNS(null,"width", Editor.canvas_width);
+	svg.setAttributeNS(null,"height", Editor.canvas_height);
+	svg.style.position = "absolute";
+	svg.setAttributeNS(null,"tabindex", "0");
+	svg.style.left = "0px";
+	svg.style.top = "0px";
+	return svg;
 }
 
 Editor.add_action = function(action)
@@ -433,9 +453,6 @@ Editor.undo = function()
             Editor.redo_stack.push(action);
             switch(Editor.state)
             {
-                case EditorState.StrokeSelecting:
-                    Editor.state = EditorState.ReadyToStrokeSelect;
-                    break;
                 case EditorState.RectangleSelecting:
                     Editor.state = EditorState.ReadyToRectangleSelect;
                     break;
@@ -479,4 +496,18 @@ Editor.printUndoStack = function()
     {
         console.log(Editor.undo_stack[k].toXML());
     }
+}
+
+// Opens correction menu upon click on change recognition button
+Editor.open_correction_menu = function(e)
+{
+	if(Editor.selected_segments.length > 0){
+		var eq_canv = $("#equation_canvas").off(Editor.current_mode.event_strings.onUp,
+    	Editor.current_mode.onUpAfterMove).off(Editor.current_mode.event_strings.onMove,
+    	Editor.current_mode.beginMovingSegmentsFromMove).off(Editor.current_mode.event_strings.onDown,
+    	Editor.current_mode.onDownSegmentsSelected);
+		RenderManager.bounding_box.style.visibility = "visible";
+    	Editor.state = EditorState.SegmentsSelected;
+    	Editor.relabel();
+	}
 }

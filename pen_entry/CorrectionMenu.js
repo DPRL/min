@@ -373,7 +373,10 @@ CorrectionMenu.hide = function(){
     
     if(CorrectionMenu.hide_callback)
         CorrectionMenu.hide_callback();
-    Editor.current_mode.init_mode(); // reinitialize mode
+    // Keep the current mode's button selected
+    Editor.current_mode.init_mode();
+    Editor.clear_selected_segments();
+    RenderManager.render();
 }
 
 CorrectionMenu.touchstart = function(e)

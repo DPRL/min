@@ -263,20 +263,11 @@ SelectionMode.onDownSegmentsSelectedBase = function(e){
                 $("#equation_canvas").off(this.event_strings.onDown,
                 this.onDownSegmentsSelected).off(this.event_strings.onUp,
                 this.onUpAfterMove);
-
-                // TODO: This if can probably go after finishing stroke select
-                if(Editor.selection_method == "Stroke")
-                {
-                    Editor.previous_stroke_position = Editor.mouse_position.clone();
-                    Editor.state = EditorState.StrokeSelecting;
-                }
-                else
-                {
-                    Editor.start_rect_selection = Editor.mouse_position.clone();
-                    Editor.end_rect_selection  = Editor.mouse_position.clone();
-                    Editor.state = EditorState.RectangleSelecting;    
-
-                }
+				
+				// Rect Selection
+				Editor.start_rect_selection = Editor.mouse_position.clone();
+				Editor.end_rect_selection  = Editor.mouse_position.clone();
+				Editor.state = EditorState.RectangleSelecting;    
 
                 // Go back to whatever selection type we were using
                 $("#equation_canvas").on(this.event_strings.onDown,
