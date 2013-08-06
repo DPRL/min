@@ -367,16 +367,7 @@ Editor.clear_selected_segments = function()
 
 // adds a new canvas to the contexts list 
 Editor.add_canvas = function()
-{
-    /*var canvas = Editor.build_canvas();
-        canvas.style.zIndex = Editor.canvases.length;
-        Editor.canvases.push(canvas);
-    
-    Editor.canvas_div.appendChild(canvas);
-
-    var context = canvas.getContext('2d');
-    Editor.contexts.push(context);*/
-    
+{    
     var svg_canvas = Editor.build_canvas();
     svg_canvas.style.zIndex = Editor.canvases.length;
 	Editor.canvases.push(svg_canvas);
@@ -388,18 +379,6 @@ Editor.add_canvas = function()
 
 Editor.build_canvas = function()
 {
-    /*var canvas = document.createElement("canvas");
-        canvas.setAttribute("onclick", "event.preventDefault();");
-        canvas.setAttribute("ontouchmove", "event.preventDefault();");
-        canvas.setAttribute("ontouchstart", "event.preventDefault();");
-        canvas.setAttribute("width", Editor.canvas_width);
-        canvas.setAttribute("height", Editor.canvas_height);
-        canvas.style.position = "absolute";
-        canvas.setAttribute("tabindex", "0");
-        canvas.style.left = "0px";
-        canvas.style.top = "0px";
-    return canvas;*/
-    
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 	svg.setAttribute("onclick", "event.preventDefault();");
 	svg.setAttribute("ontouchmove", "event.preventDefault();");

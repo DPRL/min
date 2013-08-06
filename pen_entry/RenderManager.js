@@ -189,12 +189,8 @@ RenderManager.render_set_field = function(in_context_id)
                 
                 Editor.canvas_div.appendChild(div);
                 RenderManager.segment_set_divs.push(div);
-                RenderManager.new_div = true; // Signals when to create SVG or update it
-                console.log("New Div Created and new_div: true");
             }
-			for(var c = 0; c < set_segments.length; c++) // Ties each pen stroke to RenderManager's BBox
-				set_segments[c].render_manager_index = RenderManager.segment_set_divs.length-1;
-
+			
             // Add the new div to the RenderManager data structures,
             // set visiblity and BB properties.
             var ss_div = RenderManager.segment_set_divs[set_index++];
@@ -204,7 +200,7 @@ RenderManager.render_set_field = function(in_context_id)
             ss_div.style.width = rect_size.x + "px";
             ss_div.style.height = rect_size.y + "px";
             $(ss_div).toggle(is_visible);
-
+            
             // Recognition result/label
             var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
             if(recognition_result != null && set_segments[0].constructor != SymbolSegment && set_segments[0].constructor != TeX_Input)
@@ -217,34 +213,19 @@ RenderManager.render_set_field = function(in_context_id)
                 else
                     tex = recognition_result.symbols[0];
                 var segs = set_segments.slice(0, set_segments.length); // copy set_segments array
-                console.log("Length of set_segments is: " + set_segments.length);
-                if(RenderManager.new_div && (!set_segments[0].text)){ // Insert new recognition
-					for(var w = 0; w < set_segments.length; w++)
-						set_segments[w].text = tex;
-					console.log("New Segment, tex: " + tex + " and new_div: " + RenderManager.new_div);
-					RenderManager.new_div = false;
-					RenderManager.start_display(ss_div,tex,segs);
-				}else if(set_segments[0].text == tex && set_segments[set_segments.length-1].text == tex && ss_div.firstChild){ // update recognition
-						console.log("Updating segment with tex: " + tex);
+                if(is_visible){
+					if(set_segments[0].text == tex && set_segments[set_segments.length-1].text == tex && ss_div.firstChild && (!Editor.delete_segments)){ // update recognition		
 						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
-				}else{ // change recognition
-					for(var z = 0; z < set_segments.length; z++){
-						console.log("Old Tex: " + set_segments[z].text + ", Tex to be inserted: " + tex);
-						set_segments[z].text = tex;
+					}else{ // change recognition
+						for(var z = 0; z < set_segments.length; z++){
+							set_segments[z].text = tex;
+						}
+						while(ss_div.hasChildNodes()){
+							ss_div.removeChild(ss_div.lastChild);
+						}
+						RenderManager.start_display(ss_div,tex,segs);	
 					}
-					if(ss_div.firstChild){
-						console.log("First svg tag has been removed "); 
-						ss_div.removeChild(ss_div.firstChild);
-					}
-					RenderManager.start_display(ss_div,tex,segs);
-					console.log("Not creating new div or making changes");	
 				}
-            }
-            else {
-                // Typed characters ('SymbolSegments')
-                //ss_div.innerHTML = Editor.segments[k-1].text; //seg.text;
-                //ss_div.style.fontSize = (rect_size.y * 1.25) + "px"; // scale font up to fill more of bb
-                //ss_div.style.lineHeight = rect_size.y + "px";
             }
 
             // 'Empty' list of primitives for next object, add current object to list.
@@ -258,8 +239,11 @@ RenderManager.render_set_field = function(in_context_id)
 
     for(var k = set_index; k < RenderManager.segment_set_divs.length; k++)
     {
-        RenderManager.segment_set_divs[k].style.visibility = "hidden";
-        RenderManager.segment_set_divs[k].innerHTML = "";
+    	var ss_div = RenderManager.segment_set_divs[k];
+        ss_div.style.visibility = "hidden";
+        while(ss_div.hasChildNodes()){
+			ss_div.removeChild(ss_div.lastChild);
+		}
     }
 }
 
@@ -352,7 +336,8 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 				}
 			}else // makes single symbols like "-,2,3" look better.
 				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") matrix(1 0 0 -1 0 0)");
-			
+			path_tag.removeAttribute("visibility");
+			path_tag.setAttribute("fill", "#4A4A4A");
 			inner_svg.appendChild(path_tag);
 			document.body.removeChild(temp_root);
 		}else{
@@ -367,6 +352,8 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 			rect_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") matrix(1 0 0 -1 0 0)");
 			rect_tag.removeAttribute("x");
 			rect_tag.removeAttribute("y");
+			rect_tag.removeAttribute("visibility");
+			rect_tag.setAttribute("fill", "#4A4A4A");
 			inner_svg.appendChild(rect_tag);
 			document.body.removeChild(temp_root);
 		}
@@ -392,12 +379,11 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 		x_offset = parseFloat(BBox_left - element_width);
 	}
 	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+")");
-	for(var u = 0; u < set_segments.length; u++)
-		console.log("Segs to remove: " +  set_segments[u].text + " index: " + u);
 	$(root_svg).fadeTo(450,1,function(){});
-	//console.log("Set_Segments length: " + set_segments.length);
-	for(var z = 0; z < set_segments.length; z++)
-		$(set_segments[z].inner_svg).animate({opacity:0},600,function(){});
+	for(var z = 0; z < set_segments.length; z++){
+		if(set_segments[z].constructor == PenStroke)
+			$(set_segments[z].inner_svg).animate({opacity:0},600,function(){});
+	}
 	document.body.removeChild(elem);
 	set_segments.length = 0; // clear array
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
@@ -406,14 +392,16 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 // Increases the opacity of strokes when in selection mode
 RenderManager.increase_stroke_opacity = function(){
 	for(var i = 0; i < Editor.segments.length; i++){
-		$(Editor.segments[i].inner_svg).animate({opacity:0.6},600,function(){});
+		if(Editor.segments[i].constructor == PenStroke)
+			$(Editor.segments[i].inner_svg).animate({opacity:0.6},600,function(){});
 	}
 }
 
 // Decreases the opacity of strokes when exiting selection mode
 RenderManager.decrease_stroke_opacity = function(){
 	for(var i = 0; i < Editor.segments.length; i++){
-		$(Editor.segments[i].inner_svg).animate({opacity:0},600,function(){});
+		if(Editor.segments[i].constructor == PenStroke)
+			$(Editor.segments[i].inner_svg).animate({opacity:0},600,function(){});
 	}
 }
 

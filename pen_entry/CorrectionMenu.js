@@ -235,6 +235,7 @@ CorrectionMenu.show = function(callback)
     //    CorrectionMenu.center_panel.appendChild(CorrectionMenu.current_list);
     //} else {
     // Produce top-level list.
+	$("#tex_result")[0].disabled = true; // disable input field when correction menu pops up   
     CorrectionMenu.symbol_tree.current = CorrectionMenu.symbol_tree.root;
     CorrectionMenu.populateCategoryList(CorrectionMenu.current_list, CorrectionMenu.symbol_tree.current, 0);
 
@@ -373,7 +374,9 @@ CorrectionMenu.hide = function(){
     
     if(CorrectionMenu.hide_callback)
         CorrectionMenu.hide_callback();
+    $("#tex_result")[0].disabled = false;
     // Keep the current mode's button selected
+    Editor.current_mode.close_mode();
     Editor.current_mode.init_mode();
     Editor.clear_selected_segments();
     RenderManager.render();

@@ -123,6 +123,11 @@ Editor.onKeyPress = function(e)
     if (Editor.touchAndHoldFlag == TouchAndHoldState.MouseDownAndStationary)
         return;
 
+    if(e.keyCode == KeyCode.enter && Editor.state == EditorState.MiddleOfText) {
+        Editor.current_mode.stopTextInput();
+        return;
+    }
+    
     // RLAZ: map enter to issuing the search.
     // TODO: CMS, this will remain in the every keypress events
     if(e.keyCode == KeyCode.enter) {
@@ -278,7 +283,7 @@ Editor.align = function()
                 }
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "hidden"; 		// Hide the element
+				elem.style.visibility = "visible"; 		// Hide the element
 				elem.style.position = "absolute";
 				elem.style.fontSize = "800%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
@@ -327,6 +332,9 @@ Editor.scale_tex = function(elem){
 	}
 }
 
+/* Gets the MathJax rendered SVG from the div, sorts them and canvas segments before
+   applying alignment to the symbols on the canvas.
+*/
 Editor.copy_tex = function(elem){
 	dim_tuple = Editor.get_canvas_elements_dimensions();
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
@@ -335,7 +343,7 @@ Editor.copy_tex = function(elem){
 	target_height = dim_tuple.item2;
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
 	
-	// Identify the segments and place them appropriately
+	// Retrieve symbols from the div element
 	var svg_root =  document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
 	var rect_tag_array = svg_root.getElementsByTagName("rect");
@@ -345,11 +353,13 @@ Editor.copy_tex = function(elem){
 	var offset = elements[0].getBoundingClientRect();
 	var initial_offset = new Vector2(offset.left,offset.top);
 	
+	// Sort the svg and canvas elements
 	var x_pos = Editor.sort_svg_positions(elements);
 	var canvas_elements = Editor.sort_canvas_elements();
 	Editor.print_sorted(x_pos, "use");
 	Editor.print_sorted(canvas_elements,"canvas");
 	
+	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
 	var default_position = Editor.segments[0].translation;
 	Editor.apply_alignment(x_pos,default_position,canvas_elements,initial_offset);
@@ -379,7 +389,7 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 			if(text == "−")
 				text = "-";
 		}else
-			text = "-"; // rect element is usually a division symbol which is a dash in Min	
+			text = "-"; // rect element is usually a division symbol which is _dash in Min	
 		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
 		var index; // Used to index into RenderManager's segment_set_div to get height and width below
 		for(var j = 0; j < canvas_elements.length; j++){ // Find the segment on canvas
@@ -394,32 +404,35 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 		}
 		if(segments == null)
 			continue;
-		var joined_segs,joined_width,joined_height,translation_difference;
+		var joined_segs,joined_width,joined_height,translation_difference1,translation_difference2;
 		if(segments.length == 2){ // Joined symbols have one width and height not two
 			var dim = Editor.get_joinedSeg_dimensions(segments);
 			joined_height = dim.item1;
 			joined_width = dim.item2;
 			joined_segs = true;
-			translation_difference = Vector2.Subtract(segments[0].translation, segments[1].translation);
+			var BBox_rect = RenderManager.segment_set_divs[index].getBoundingClientRect();
+			var BBox_rect_vector = new Vector2(parseInt(BBox_rect.left), parseInt(BBox_rect.top));
+			translation_difference1 = Vector2.Subtract(segments[0].translation, BBox_rect_vector);
+			translation_difference2 = Vector2.Subtract(segments[1].translation, BBox_rect_vector);
 		}
 		// Apply transformation to segment
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
-		var svg_width = parseInt(svg_symbol_rect.width);
-    	var svg_height = parseInt(svg_symbol_rect.height);
+		var svg_width = svg_symbol_rect.width;
+    	var svg_height = svg_symbol_rect.height;
 		for(var k = 0; k < segments.length; k++){ 
 			var s,s2,in_x,in_y;
 			var seg_rect = Editor.get_BBox(segments[k]);
-    		var elementOncanvasWidth = parseInt(seg_rect.width);
-    		var elementOncanvasHeight = parseInt(seg_rect.height);
+    		var elementOncanvasWidth = seg_rect.width;
+    		var elementOncanvasHeight = seg_rect.height;
     		if(joined_segs){
     			s = svg_width/joined_width;
     			s2 = svg_height/joined_height;
     			joined_segs = false;
     		}else{
     			if(elementOncanvasWidth == 0)
-    				elementOncanvasWidth = parseInt(RenderManager.segment_set_divs[index].getBoundingClientRect().width);
+    				elementOncanvasWidth = RenderManager.segment_set_divs[index].getBoundingClientRect().width;
     			if(elementOncanvasHeight == 0)
-    				elementOncanvasHeight = parseInt(RenderManager.segment_set_divs[index].getBoundingClientRect().height);
+    				elementOncanvasHeight = RenderManager.segment_set_divs[index].getBoundingClientRect().height;
 				s = svg_width/elementOncanvasWidth;
 				s2 = svg_height/elementOncanvasHeight;
 			}	
@@ -430,31 +443,113 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
             segments[k].align_scale = segments[k].scale.clone();
             segments[k].align_old_translation = segments[k].translation.clone();
             
-			/*if(segments.length == 2 && k == 1){ 
-    			in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2)) - translation_difference.x;
-				in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2)) - translation_difference.y;
-    		}else{
-    			in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2));
-				in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2));
-    		}*/
     		in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2));
 			in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2));
 			var translation = new Vector2(in_x,in_y);
-			segments[k].translation = translation;
-			/*var collision_offset = Editor.check_collision(seg_rect, segments[k]);
-			console.log(collision_offset);
+			
+			var in_offset = Vector2.Subtract(translation, segments[k].translation);
+			segments[k].translate(in_offset);
+			segments[k].freeze_transform();
+			
+			/*if(segments.length == 2 && k == 0){
+				console.log("Translation calculated: " + translation);
+				console.log("Translation 1: " + translation_difference1);
+    			//segments[k].translate(translation_difference1);
+    		}else if(segments.length == 2 && k == 1){
+    			console.log("Translation 2: " + translation_difference2);
+    			//segments[k].translate(translation_difference2);
+    		}
+			segments[k].freeze_transform();*/
+			
+			/*var collision_offset = Editor.check_collision2(segments);
+			console.log("Returned Collision Values: " + collision_offset);
 			console.log("X collision type: " + collision_type_x + " Y collision type: " + collision_type_y);
+			var temp_in_offset = new Vector2(0,0);
 			if(collision_type_y == "top")
-				segments[k].translation.y -= collision_offset.y;
+				temp_in_offset.y = -1 * collision_offset.y;
 			if(collision_type_y == "bottom")
-				segments[k].translation.y += collision_offset.y;
+				temp_in_offset.y = collision_offset.y;
 			if(collision_type_x == "right")
-				segments[k].translation.x += collision_offset.x;
+				temp_in_offset.x = collision_offset.x;
 			if(collision_type_x == "left")
-				segments[k].translation.x -= collision_offset.x;*/
+				temp_in_offset.x = -1 * collision_offset.x;
+			//segments[k].translate(temp_in_offset);
+			segments[k].freeze_transform();*/
 			segments[k].already_aligned = true;
         }
 	}
+}
+
+Editor.check_collision2 = function(segments){
+	var offset = new Vector2(0,0);
+	var x_offset = y_offset = 0;
+	collision_type_x = collision_type_y = "";
+	var segs = Editor.segments.slice(0, Editor.segments.length);
+	for(var i = 0; i < segs.length; i++){
+		if(segs[i].already_aligned){
+			var seg_rect = Editor.get_seg_dimensions(segments);
+			var seg_rect_size = Vector2.Subtract(seg_rect.item2, seg_rect.item1);
+			var set_id = segs[i].set_id;
+			var aligned_seg_rect = Editor.get_seg_dimensions(Editor.get_segment_by_id(set_id));
+			var aligned_seg_rect_size = Vector2.Subtract(aligned_seg_rect.item2, aligned_seg_rect.item1);
+			for(var k = 0; k < segs.length; k++){
+        		if(segs[k].set_id == set_id)
+            		segs.splice(k,0);
+    		}
+    		var seg_rect_left = seg_rect.item1.x,
+    			seg_rect_top = seg_rect.item1.y,
+    			seg_rect_right = seg_rect_size.x + seg_rect_left,
+    			seg_rect_bottom = seg_rect_size.y + seg_rect_top,
+    			aligned_seg_rect_left = aligned_seg_rect.item1.x,
+    			aligned_seg_rect_top = aligned_seg_rect.item1.y,
+    			aligned_seg_rect_right = aligned_seg_rect_size.x + aligned_seg_rect_left,
+    			aligned_seg_rect_bottom = aligned_seg_rect_size.y + aligned_seg_rect_top;
+    		console.log("Segment being inserted -> R:"+seg_rect_right+" L:"+	seg_rect_left+" T:"+ seg_rect_top+" B:"+seg_rect_bottom);
+    		console.log("Segment already inserted -> R:"+aligned_seg_rect_right+" L:"+	aligned_seg_rect_left+" T:"+ aligned_seg_rect_top+" B:"+aligned_seg_rect_bottom);
+    		if(seg_rect_right > aligned_seg_rect_right && seg_rect_left < aligned_seg_rect_right){ // Right Insertion
+				x_offset = aligned_seg_rect_right - seg_rect_left;
+				collision_type_x = "right";
+			}
+			if(seg_rect_right < aligned_seg_rect_right && seg_rect_right > aligned_seg_rect_left){ // Left Insertion
+				x_offset = seg_rect_right - aligned_seg_rect_left;
+				collision_type_x = "left";
+			}
+			if(seg_rect_top < aligned_seg_rect_top && seg_rect_bottom > aligned_seg_rect_top){ // Top Insertion
+				y_offset = seg_rect_bottom - aligned_seg_rect_top;
+				collision_type_y = "top";
+			}
+			if(seg_rect_bottom > aligned_seg_rect_bottom && seg_rect_top < aligned_seg_rect_bottom){ // Bottom Insertion
+				y_offset = aligned_seg_rect_bottom - seg_rect_top;
+				collision_type_y = "bottom";
+			}
+		}
+	}
+	offset.x = x_offset;
+	offset.y = y_offset;
+	return offset;
+}
+
+
+Editor.get_seg_dimensions =  function(set_segments){
+	var mins = set_segments[0].worldMinDrawPosition();
+    var maxs = set_segments[0].worldMaxDrawPosition();
+            
+	// Find the extent of the symbol (BB)
+	for(var j = 1; j < set_segments.length; j++){
+		var seg_min = set_segments[j].worldMinDrawPosition();
+		var seg_max = set_segments[j].worldMaxDrawPosition();
+		
+		if(seg_min.x < mins.x)
+			mins.x = seg_min.x;
+		if(seg_min.y < mins.y)
+			mins.y = seg_min.y;
+		
+		if(seg_max.x > maxs.x)
+			maxs.x = seg_max.x;
+		if(seg_max.y > maxs.y)
+			maxs.y = seg_max.y;
+	}
+	return new Tuple(mins, maxs);
 }
 
 // Returns the maximum height and width of joined segments like a plus
@@ -468,55 +563,6 @@ Editor.get_joinedSeg_dimensions = function(segments){
 			width = seg_rect.width;
 	}
 	return new Tuple(height,width);
-}
-
-// Makes sure the segment to be aligned doesn't collide with other aligned segments
-Editor.check_collision = function(seg_rect,segment){
-	var offset = new Vector2(0,0);
-	var x_offset = y_offset = 0;
-	collision_type_x = collision_type_y = "";
-	for(var i = 0; i < Editor.segments.length; i++){
-		if(Editor.segments[i].already_aligned){
-			var aligned_elem_rect = Editor.get_BBox(Editor.segments[i]);
-			var aligned_elem_pos = Editor.get_position(aligned_elem_rect,Editor.segments[i]);
-			var seg_pos = Editor.get_position(seg_rect,segment);
-			
-			// Detect collision based on newly calculated BBoxs
-			if(seg_pos.item4 > aligned_elem_pos.item4 && seg_pos.item3 < aligned_elem_pos.item4){ // Right Insertion
-				x_offset = aligned_elem_pos.item4 - seg_pos.item3;
-				collision_type_x = "right";
-			}
-			if(seg_pos.item4 < aligned_elem_pos.item4 && seg_pos.item4 > aligned_elem_pos.item3){ // Left Insertion
-				x_offset = seg_pos.item4 - aligned_elem_pos.item3;
-				collision_type_x = "left";
-			}
-			if(seg_pos.item6 < aligned_elem_pos.item6 && seg_pos.item6 > aligned_elem_pos.item5 ){ // Top Insertion
-				y_offset = seg_pos.item6 - aligned_elem_pos.item5;
-				collision_type_y = "top";
-			}
-			if(seg_pos.item5 > aligned_elem_pos.item5 && seg_pos.item5 < aligned_elem_pos.item6){ // Bottom Insertion
-				y_offset = aligned_elem_pos.item6 - seg_pos.item5;
-				collision_type_y = "bottom";
-			}
-		}
-	}
-	offset.x = x_offset;
-	offset.y = y_offset;
-	return offset;
-}
-
-// Returns the BBox of an element after applying scaling and translation to it
-Editor.get_position = function(rect, segment){
-	// Apply scale to rect element
-	var height = rect.height*segment.align_scale.y,
-		width = rect.width*segment.align_scale.x,
-		left = rect.left,
-		right = width+left,
-		top = rect.top,
-		bottom = top+height;
-	var translation_diff = Vector2.Subtract(segment.align_old_translation,segment.translation);
-	return new Tuple(height, width, (left-translation_diff.x),(right-translation_diff.x),
-		(top-translation_diff.y), (bottom-translation_diff.y));
 }
 
 // Returns the BBox of an element
@@ -614,10 +660,12 @@ Editor.groupTool = function()
 // deletes the currently selected segments
 Editor.deleteTool = function()
 {
-    var action = new DeleteSegments(Editor.selected_segments)
+    var action = new DeleteSegments(Editor.selected_segments);
     action.Apply();
     Editor.add_action(action);
+    Editor.delete_segments = true;
     Editor.clearSelectedSegments();
+    Editor.delete_segments = false;
 }
 
 /**
@@ -628,8 +676,7 @@ Editor.clearSelectedSegments = function(){
     Editor.clear_selected_segments();    
     RenderManager.render();
     console.log(Editor.selection_method);
-    if(Editor.selection_method == "Rectangle")
-        Editor.state = EditorState.ReadyToRectangleSelect;
+    Editor.state = EditorState.ReadyToRectangleSelect;
 }
 
 Editor.typeTool = function()

@@ -27,10 +27,9 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
     this.root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     this.root_svg.setAttribute("class", "Tex_Input");
     this.root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
+    this.root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px; opacity:1;");
     this.root_svg.setAttribute("width", "100%");
     this.root_svg.setAttribute("height", "100%");
-    this.root_svg.setAttribute("opacity", "0.6");
     this.inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     
     var new_width = null;
@@ -39,7 +38,8 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
 		this.unicode = this.MathJax_element.getAttribute("href").split("-")[1];
 		this.text = String.fromCharCode(parseInt(this.unicode,16));
 		this.path_tag = document.getElementById(this.MathJax_element.getAttribute("href").split("#")[1]).cloneNode(true);
-		this.path_tag.setAttribute("id","query_symbol_" + (i+1));
+		this.path_tag.removeAttribute("id");
+		this.path_tag.setAttribute("fill", "#4A4A4A");
 		this.inner_svg.appendChild(this.path_tag);
 		
     	this.root_svg.appendChild(this.inner_svg);
@@ -54,7 +54,8 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
 		this.rect_tag.removeAttribute("x");
 		this.rect_tag.removeAttribute("y");
 		this.text = "-";
-		this.inner_svg.appendChild(this.rect_tag); // Append the rect element
+		this.rect_tag.setAttribute("fill", "#4A4A4A");
+		this.inner_svg.appendChild(this.rect_tag);
     	this.root_svg.appendChild(this.inner_svg);
    		Editor.canvas_div.appendChild(this.root_svg);
    		

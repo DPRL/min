@@ -172,7 +172,6 @@ DrawMode.onDoubleClick = function(e){
 DrawMode.onKeyPress = function(e){
     // TODO: See if there's a better way to do this that would eliminate 
     // reliance on an Editor state. Local flag?
-    
     if(Editor.state == EditorState.MiddleOfText){
         textBox = document.getElementById("tex_result");
         if (document.querySelector(":focus") != textBox &&
