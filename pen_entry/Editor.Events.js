@@ -283,7 +283,7 @@ Editor.align = function()
                 }
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "visible"; 		// Hide the element
+				elem.style.visibility = "hidden"; 		// Hide the element
 				elem.style.position = "absolute";
 				elem.style.fontSize = "800%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
@@ -395,6 +395,7 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 		for(var j = 0; j < canvas_elements.length; j++){ // Find the segment on canvas
 			var set_id = canvas_elements[j].item3.set_id;
 			if(canvas_elements[j].item3.text == text && (!transformed_segments.contains(set_id))){
+				console.log("Match found for tex: " + text);
 				transformed_segments.push(set_id);
 				segments = Editor.get_segment_by_id(set_id);
 				canvas_elements.splice(j,1); // remove segment from array
@@ -460,8 +461,10 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
     			//segments[k].translate(translation_difference2);
     		}
 			segments[k].freeze_transform();*/
-			
-			/*var collision_offset = Editor.check_collision2(segments);
+			/*
+			// Don't think this code is needed because canvas symbols are scaled to look
+			// like the mathjax symbols.
+			var collision_offset = Editor.check_collision2(segments);
 			console.log("Returned Collision Values: " + collision_offset);
 			console.log("X collision type: " + collision_type_x + " Y collision type: " + collision_type_y);
 			var temp_in_offset = new Vector2(0,0);
@@ -528,7 +531,6 @@ Editor.check_collision2 = function(segments){
 	offset.y = y_offset;
 	return offset;
 }
-
 
 Editor.get_seg_dimensions =  function(set_segments){
 	var mins = set_segments[0].worldMinDrawPosition();

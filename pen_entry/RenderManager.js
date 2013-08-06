@@ -214,9 +214,10 @@ RenderManager.render_set_field = function(in_context_id)
                     tex = recognition_result.symbols[0];
                 var segs = set_segments.slice(0, set_segments.length); // copy set_segments array
                 if(is_visible){
-					if(set_segments[0].text == tex && set_segments[set_segments.length-1].text == tex && ss_div.firstChild && (!Editor.delete_segments)){ // update recognition		
+					if(set_segments[0].text == tex && set_segments[set_segments.length-1].text == tex && ss_div.firstChild && (!Editor.delete_segments)){		
+						// update recognition - usually for resizing and movement
 						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
-					}else{ // change recognition
+					}else{ // change recognition or insert new recognition
 						for(var z = 0; z < set_segments.length; z++){
 							set_segments[z].text = tex;
 						}
