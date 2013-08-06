@@ -663,9 +663,7 @@ Editor.deleteTool = function()
     var action = new DeleteSegments(Editor.selected_segments);
     action.Apply();
     Editor.add_action(action);
-    Editor.delete_segments = true;
     Editor.clearSelectedSegments();
-    Editor.delete_segments = false;
 }
 
 /**
@@ -673,8 +671,10 @@ Editor.deleteTool = function()
    set the editor mode to the proper selection method.
 **/
 Editor.clearSelectedSegments = function(){
+	Editor.delete_segments = true;
     Editor.clear_selected_segments();    
     RenderManager.render();
+    Editor.delete_segments = false;
     console.log(Editor.selection_method);
     Editor.state = EditorState.ReadyToRectangleSelect;
 }
