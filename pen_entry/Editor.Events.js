@@ -277,13 +277,13 @@ Editor.align = function()
                 	mathjax supports. See website below:
                 	http://docs.mathjax.org/en/v1.1-latest/tex.html#supported-latex-commands
                 */
-                if(tex_math.search("vbox") != -1 || tex_math.search("vtop") != -1){ // checks for tex error before MathJax yells!
+                if(tex_math.search("vbox") != -1 || tex_math.search("vtop") != -1 || tex_math == ""){ // checks for tex error before MathJax yells!
                 	console.log("DRACULAE Tex Output Error -  MathJax can't render commands in Tex");
                 	return;
                 }
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "hidden"; 		// Hide the element
+				elem.style.visibility = "visible"; 		// Hide the element
 				elem.style.position = "absolute";
 				elem.style.fontSize = "800%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
@@ -332,6 +332,23 @@ Editor.scale_tex = function(elem){
 	}
 }
 
+/* 	A function that just changes the X position of the start translation for
+	first symbol during alignment.
+*/
+Editor.getDefaultPosition = function(canvasElementsWidth, default_position){
+	var start_position = default_position;
+	var x_decrement = 60;
+	var canvasWidthFromDefaultPosition = $(Editor.canvas_div)[0].getBoundingClientRect().width - start_position.x;
+	var spaceLeft = canvasWidthFromDefaultPosition - canvasElementsWidth;
+	if(canvasElementsWidth < canvasWidthFromDefaultPosition && spaceLeft > 80){
+		return start_position;
+	}else{
+		start_position.x -= x_decrement;
+		Editor.getDefaultPosition(canvasElementsWidth-x_decrement, start_position);
+		return start_position;
+	}
+}
+
 /* Gets the MathJax rendered SVG from the div, sorts them and canvas segments before
    applying alignment to the symbols on the canvas.
 */
@@ -351,18 +368,22 @@ Editor.copy_tex = function(elem){
 	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
 	var elements = use_tag_array.concat(rect_tag_array);
 	var offset = elements[0].getBoundingClientRect();
-	var initial_offset = new Vector2(offset.left,offset.top);
+	var initial_offset = new Vector2(offset.left, offset.top); 
 	
 	// Sort the svg and canvas elements
 	var x_pos = Editor.sort_svg_positions(elements);
 	var canvas_elements = Editor.sort_canvas_elements();
 	Editor.print_sorted(x_pos, "use");
-	Editor.print_sorted(canvas_elements,"canvas");
+	Editor.print_sorted(canvas_elements, "canvas");
 	
 	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
 	var default_position = Editor.segments[0].translation;
-	Editor.apply_alignment(x_pos,default_position,canvas_elements,initial_offset);
+	if(default_position.x > 100)
+		default_position = Editor.getDefaultPosition(dim_tuple.item1, default_position);
+	//var default_position = Editor.segments[0].translation;
+	//var default_position = new Vector2(400,150);
+	Editor.apply_alignment(x_pos, default_position, canvas_elements, initial_offset);
 	transform_action.add_new_transforms(Editor.segments);
 	transform_action.Apply();
 	Editor.add_action(transform_action);
@@ -375,10 +396,10 @@ Editor.copy_tex = function(elem){
    look just like the SVG.
    Note: This methods relies on the fact that Canvas segments have their recognition result
          as an instance. This is set in the RenderManager after recognition is gotten. 
-         Text - Recognition result of the segment
+         "PenStroke_Object".Text - Recognition result for the PenStroke
 */
-Editor.apply_alignment = function(array,default_position,canvas_elements,initial_offset){
-	var transformed_segments = new Array(); // holds segment set_ids
+Editor.apply_alignment = function(array, default_position, canvas_elements, initial_offset){
+	var transformed_segments = new Array(); // holds segment set_ids found
 	for(var i = 0; i < array.length; i++){
 		var svg_symbol = array[i].item3;
 		var text = null;
@@ -388,8 +409,11 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 			// special case character. Has zero-width space -> Look it up
 			if(text == "−")
 				text = "-";
+			if(text == "¯") // Min doesn't have support for overlays
+				text = "-";
 		}else
 			text = "-"; // rect element is usually a division symbol which is _dash in Min	
+		console.log("Tex: " +  text);
 		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
 		var index; // Used to index into RenderManager's segment_set_div to get height and width below
 		for(var j = 0; j < canvas_elements.length; j++){ // Find the segment on canvas
@@ -416,7 +440,7 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 			translation_difference1 = Vector2.Subtract(segments[0].translation, BBox_rect_vector);
 			translation_difference2 = Vector2.Subtract(segments[1].translation, BBox_rect_vector);
 		}
-		// Apply transformation to segment
+		// Apply transformation to segment - resize and move
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
 		var svg_width = svg_symbol_rect.width;
     	var svg_height = svg_symbol_rect.height;
@@ -441,8 +465,6 @@ Editor.apply_alignment = function(array,default_position,canvas_elements,initial
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0,scale);
             segments[k].freeze_transform();
-            segments[k].align_scale = segments[k].scale.clone();
-            segments[k].align_old_translation = segments[k].translation.clone();
             
     		in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2));
 			in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2));

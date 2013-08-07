@@ -338,7 +338,7 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 			}else // makes single symbols like "-,2,3" look better.
 				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") matrix(1 0 0 -1 0 0)");
 			path_tag.removeAttribute("visibility");
-			path_tag.setAttribute("fill", "#4A4A4A");
+			path_tag.setAttribute("fill", Editor.segment_fill);
 			inner_svg.appendChild(path_tag);
 			document.body.removeChild(temp_root);
 		}else{
@@ -354,7 +354,7 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 			rect_tag.removeAttribute("x");
 			rect_tag.removeAttribute("y");
 			rect_tag.removeAttribute("visibility");
-			rect_tag.setAttribute("fill", "#4A4A4A");
+			rect_tag.setAttribute("fill", Editor.segment_fill);
 			inner_svg.appendChild(rect_tag);
 			document.body.removeChild(temp_root);
 		}

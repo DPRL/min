@@ -39,7 +39,7 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
 		this.text = String.fromCharCode(parseInt(this.unicode,16));
 		this.path_tag = document.getElementById(this.MathJax_element.getAttribute("href").split("#")[1]).cloneNode(true);
 		this.path_tag.removeAttribute("id");
-		this.path_tag.setAttribute("fill", "#4A4A4A");
+		this.path_tag.setAttribute("fill", Editor.segment_fill);
 		this.inner_svg.appendChild(this.path_tag);
 		
     	this.root_svg.appendChild(this.inner_svg);
@@ -54,7 +54,7 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
 		this.rect_tag.removeAttribute("x");
 		this.rect_tag.removeAttribute("y");
 		this.text = "-";
-		this.rect_tag.setAttribute("fill", "#4A4A4A");
+		this.rect_tag.setAttribute("fill", Editor.segment_fill);
 		this.inner_svg.appendChild(this.rect_tag);
     	this.root_svg.appendChild(this.inner_svg);
    		Editor.canvas_div.appendChild(this.root_svg);

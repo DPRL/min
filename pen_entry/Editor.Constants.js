@@ -8,6 +8,7 @@ Editor.control_point_radius = 16;
 Editor.control_point_line_width = 1.5;
 
 Editor.recognition_result_color = "#111111";
+Editor.segment_fill = "#4A4A4A";
 
 Editor.stroke_width = 4;
 Editor.selected_stroke_width = 4;

@@ -114,6 +114,8 @@ DrawMode.onDownBase = function(e){
 }
 
 DrawMode.onUpBase = function(e){
+	if(Editor.current_stroke == null)
+		return;
 	this.single_click = false; // reset the boolean used to differentiate click and a dblclick
 	
     DrawMode.prototype.onUp.call(this, e);
