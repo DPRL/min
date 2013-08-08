@@ -281,6 +281,7 @@ Editor.align = function()
                 	console.log("DRACULAE Tex Output Error -  MathJax can't render commands in Tex");
                 	return;
                 }
+                console.log("Alignment -> Tex_math: " + tex_math);
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
 				elem.style.visibility = "visible"; 		// Hide the element
@@ -381,8 +382,6 @@ Editor.copy_tex = function(elem){
 	var default_position = Editor.segments[0].translation;
 	if(default_position.x > 100)
 		default_position = Editor.getDefaultPosition(dim_tuple.item1, default_position);
-	//var default_position = Editor.segments[0].translation;
-	//var default_position = new Vector2(400,150);
 	Editor.apply_alignment(x_pos, default_position, canvas_elements, initial_offset);
 	transform_action.add_new_transforms(Editor.segments);
 	transform_action.Apply();
@@ -435,10 +434,10 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			joined_height = dim.item1;
 			joined_width = dim.item2;
 			joined_segs = true;
-			var BBox_rect = RenderManager.segment_set_divs[index].getBoundingClientRect();
+			/*var BBox_rect = RenderManager.segment_set_divs[index].getBoundingClientRect();
 			var BBox_rect_vector = new Vector2(parseInt(BBox_rect.left), parseInt(BBox_rect.top));
 			translation_difference1 = Vector2.Subtract(segments[0].translation, BBox_rect_vector);
-			translation_difference2 = Vector2.Subtract(segments[1].translation, BBox_rect_vector);
+			translation_difference2 = Vector2.Subtract(segments[1].translation, BBox_rect_vector);*/
 		}
 		// Apply transformation to segment - resize and move
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
@@ -461,6 +460,7 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 				s = svg_width/elementOncanvasWidth;
 				s2 = svg_height/elementOncanvasHeight;
 			}	
+			
 			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0,scale);
@@ -486,7 +486,7 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			/*
 			// Don't think this code is needed because canvas symbols are scaled to look
 			// like the mathjax symbols.
-			var collision_offset = Editor.check_collision2(segments);
+			var collision_offset = Editor.check_collision(segments);
 			console.log("Returned Collision Values: " + collision_offset);
 			console.log("X collision type: " + collision_type_x + " Y collision type: " + collision_type_y);
 			var temp_in_offset = new Vector2(0,0);
@@ -505,7 +505,7 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 	}
 }
 
-Editor.check_collision2 = function(segments){
+Editor.check_collision = function(segments){
 	var offset = new Vector2(0,0);
 	var x_offset = y_offset = 0;
 	collision_type_x = collision_type_y = "";
