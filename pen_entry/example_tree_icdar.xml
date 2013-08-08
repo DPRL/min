@@ -13,9 +13,9 @@
 			<Symbol name="9" unicode="9"/>
 		</Category>
 		<Category name="Operators">
-			<Symbol name="_plus" unicode="+"/>
-			<Symbol name="_dash" unicode="-"/>
-			<Symbol name="_equal" unicode="="/>
+			<Symbol name="plus" unicode="+"/>
+			<Symbol name="dash" unicode="-"/>
+			<Symbol name="equal" unicode="="/>
 			<Symbol name="geq" unicode="&#x2265;"/>
 			<Symbol name="lt" unicode="&amp;lt;"/>
 			<!--<Symbol name="lt" unicode="&#x003C;"/>-->
@@ -25,7 +25,7 @@
 			<!-- <Symbol name="times" unicode="&#x2A09;"/> -->
 			<Symbol name="times" unicode="x"/> <!-- &#x00D7;"/> -->
                         <!-- <Symbol name="times" unicode="&#x00D7;"/> -->
-			<Symbol name="sum" unicode="&#x3A3;"/>
+			<sYMBOL name="sum" unicode="&#x3A3;"/>
 			<Symbol name="sqrt" unicode="&#x221A;"/>
 			<Symbol name="lim" unicode="lim"/>
 			<Symbol name="log" unicode="log"/>
@@ -36,38 +36,39 @@
 			<Symbol name="cos" unicode="cos"/>
 			<Symbol name="pm" unicode="&#x00B1;"/>
 			<Symbol name="div" unicode="&#x00F7;"/>
-			<Symbol name="_excl" unicode="!"/>
+			<Symbol name="excl" unicode="!"/>
 		</Category>
 		<Category name="Brackets">
-			<Symbol name="left_bracket" unicode="["/>
-			<Symbol name="right_bracket" unicode="]"/>
-			<Symbol name="_lparen" unicode="("/>
-			<Symbol name="_rparen" unicode=")"/>
+			<Symbol name="leftbracket" unicode="["/>
+			<Symbol name="rightbracket" unicode="]"/>
+			<Symbol name="lparen" unicode="("/>
+			<Symbol name="rparen" unicode=")"/>
 		</Category>
 		<Category name="Special">
 			<Symbol name="infty" unicode="&#x221E;"/>
 		</Category>
 		<Category name="Letters">
 			<Category name="Lower Case">
-				<Symbol name="a_lower" unicode="a"/>
-				<Symbol name="b_lower" unicode="b"/>
-				<Symbol name="c_lower" unicode="c"/>
-				<Symbol name="d_lower" unicode="d"/>
-				<Symbol name="e_lower" unicode="e"/>
-				<Symbol name="i_lower" unicode="i"/>
-				<Symbol name="j_lower" unicode="j"/>
-				<Symbol name="k_lower" unicode="k"/>
-				<Symbol name="n_lower" unicode="n"/>
-				<Symbol name="x_lower" unicode="x"/>
-				<Symbol name="y_lower" unicode="y"/>
-				<Symbol name="z_lower" unicode="z"/>
+				<Symbol name="alower" unicode="a"/>
+				<Symbol name="blower" unicode="b"/>
+				<Symbol name="clower" unicode="c"/>
+				<Symbol name="dlower" unicode="d"/>
+				<Symbol name="elower" unicode="e"/>
+				<Symbol name="ilower" unicode="i"/>
+				<Symbol name="jlower" unicode="j"/>
+				<Symbol name="klower" unicode="k"/>
+				<Symbol name="nlower" unicode="n"/>
+				<Symbol name="xlower" unicode="x"/>
+				<Symbol name="ylower" unicode="y"/>
+				<Symbol name="zlower" unicode="z"/>
 			</Category>
 			<Category name="Upper Case">
-				<Symbol name="A_upper" unicode="A"/>
-				<Symbol name="B_upper" unicode="B"/>
-				<Symbol name="C_upper" unicode="C"/>
-				<Symbol name="F_upper" unicode="F"/>		
-				<Symbol name="X_upper" unicode="X"/>
+				<Symbol name="Aupper" unicode="A"/>
+				<Symbol name="Bupper" unicode="B"/>
+				<Symbol name="Cupper" unicode="C"/>
+				<Symbol name="Fupper" unicode="F"/>		
+				<Symbol name="Xupper" unicode="X"/>
+				<Symbol name="Gupper" unicode="G"/>
 			</Category>
 		</Category>
 		<Category name="Greek Letters">
