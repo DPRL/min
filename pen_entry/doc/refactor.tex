@@ -3,8 +3,10 @@
 \usepackage{graphicx}
 \usepackage{alltt}
 \usepackage{float}
+\usepackage[normalem]{ulem}
 
 \DeclareGraphicsExtensions{.pdf}
+
 \begin{document}
 \author{Christopher Sasarak, Awelemdy Orakwue, Justin Kelly} \title{Summary of Min Refactor} 
 \maketitle
@@ -18,7 +20,7 @@ checkout Min by using \begin{verbatim} git checkout master \end{verbatim}
 
 I will also make reference to \textbf{editing modes} in both Min and Min Classic.
 When I refer to an editing mode, I am referring to a state of the editor that is
-visible by the user. For example, when the pen icon is shaded and the user can
+visible to the user. For example, when the pen icon is shaded and the user can
 draw/type symbols into the system I will refer to it as 'pen mode'.
 
 \section*{Event System Descriptions}
@@ -352,12 +354,13 @@ To display the Tex equation, we append the Tex to a hidden div in the body of Mi
 render the Tex to an SVG and we scale the rendered Tex so that the height and width always 
 fit the height and width of Min's canvas not the whole page. Once the scaling is done, the rendered Tex is 
 copied over to Min by determining the screen position of each symbol in the rendered SVG by looping through
-the SVG use tag MathJax uses to reference the \verb+MathJax_SVG_glyphs that holds the paths for each element.
+the SVG use tag MathJax uses to reference the \verb+MathJax_SVG_glyphs+ which hold the paths for each element.
 The SVG use tag has a href which is one of the internal naming convention used by MathJax to identify each 
 symbol. Here is an example of the use tag:
 
 \begin{verbatim}
-<use xmlns="http://www.w3.org/2000/svg" xlink:href="#MJMAIN-32" xmlns="http://www.w3.org/1999/xlink"/>
+<use xmlns="http://www.w3.org/2000/svg" xlink:href="#MJMAIN-32" 
+xmlns="http://www.w3.org/1999/xlink"/>
 \end{verbatim}
 
 The use tag's href in addition to containing the internal representation of each symbol contains the
@@ -402,7 +405,7 @@ the event system refactoring.
         to more appropriate places if possible. It might also be worth
         investigating if mapCanvasBackspace is still necessary, or if there's a
         better way to do it.
-    \item[Replace *.proxy Calls with .bind] This is a fairly trivial change. I
+    \item[Replace *.proxy Calls with .bind] \sout{This is a fairly trivial change. I
         make heavy use of jQuery's .proxy method to make sure that when an event
         is called, the special 'this' reference refers to the EditorMode object
         that is currently active. By default, in Javascript and event handler
@@ -412,7 +415,7 @@ the event system refactoring.
         used .proxy, not knowing that modern browsers have a function called
         bind which does the same thing. We should use this method where possible
         since it will likely be a bit faster. See Editor.SelectionMode.js and
-        its constructor for an example of both.
+    its constructor for an example of both.} \textbf{COMPLETE!}
     \item[Further Separate Event Functions into Modes] It might be
         possible to further separate concerns in some of the larger functions of
         the *Mode objects even further. 

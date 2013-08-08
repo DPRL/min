@@ -6,6 +6,7 @@ digraph min_process {
     PS1 [label="Pen Stroke",shape="plaintext"];
     IM1 [label="Image",shape="plaintext"];
     TT1 [label="Typed Text",shape="plaintext"];
+    LURL [label="LaTeX URL",shape="plaintext"];
     DM [label="DrawMode"];
     RM [label="RecognitionManager"];
     CL [label="Classifier"];
@@ -18,22 +19,33 @@ digraph min_process {
     EIM [label="Matlab is used to\nclassify Images.",shape="box"];
     EPS [label="LeiClassifier is used to\nclassify Pen Strokes.",shape="box"];    
     TT2 [label="Typed Text",shape="plaintext"];
+    OUT [label="Recognized Symbol\nLayout",shape="box"];
+    
 	subgraph cluster_align {
+        label="DRACULAE";
+        labelloc="b";
         PA [label="Parse"];
         AL [label="Align"];
         PA -> AL;
     }
 
+    {rank=same; ETT EPS EIM}
+
     ETT -> PA [lhead=cluster_align];
     EPS -> PA [lhead=cluster_align];
     EIM -> PA [lhead=cluster_align];
+
+    {rank=same; OUT AL}
     AL -> OUT [ltail=cluster_align];
-    {rank=same; PS1 IM1 TT1}
+
+    {rank=same; LURL PS1 IM1 TT1}
     
     UI -> EE;
     EE -> PS1 [arrowhead="none"];
     EE -> IM1 [arrowhead="none"];
     EE -> TT1 [arrowhead="none"];
+    UI -> LURL [arrowhead="none"];
+    LURL -> OUT;
 
     PS1 -> DM;
     TT1 -> DM;

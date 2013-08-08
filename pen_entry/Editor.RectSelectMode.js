@@ -9,9 +9,9 @@ RectSelectMode.prototype = new SelectionMode();
 RectSelectMode.prototype.segment_style_class = "segment_rect_select";
 
 function RectSelectMode(){
-    this.onDownNoSelectedSegments = $.proxy(RectSelectMode.onDownNoSelectedSegmentsBase, this);
-    this.onMoveNoSelectedSegments = $.proxy(RectSelectMode.onMoveNoSelectedSegmentsBase, this);
-    this.onUpNoSelectedSegments = $.proxy(RectSelectMode.onUpNoSelectedSegmentsBase, this);
+    this.onDownNoSelectedSegments = RectSelectMode.onDownNoSelectedSegmentsBase.bind( this);
+    this.onMoveNoSelectedSegments = RectSelectMode.onMoveNoSelectedSegmentsBase.bind( this);
+    this.onUpNoSelectedSegments = RectSelectMode.onUpNoSelectedSegmentsBase.bind( this);
     this.displaySelectionTool = RectSelectMode.rectSelectTool.bind(this);
 
     if(Modernizr.touch){

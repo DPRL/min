@@ -17,7 +17,7 @@ Editor.stroke_select_width = 2;
 
 /* Symbol classification and attributes */
 // Hierarchical tree of available symbol classes
-Editor.symbol_tree = "example_tree_icdar.xml";
+Editor.symbol_tree = "example_tree.xml";
 
 // The number of events to store in the event queue for momentum tracking
 Editor.moveQueueLength = 2;
@@ -54,8 +54,9 @@ Editor.editor_root = "http://129.21.34.109:";
 
 /* Recognition servers and ports */
 var saskatoon = "http://129.21.34.109:";
-Editor.connected_components_server_url = saskatoon + "20000";
-Editor.align_server_url = saskatoon + "1000";
+Editor.align_server_url = saskatoon + "1000"; 
+// These two server URLs aren't used for normal operation, but 
+// are used for collecting data such as for the CROHME competition.
 Editor.data_server_url = saskatoon + "500"
 Editor.inkml_save_server_url = saskatoon + "4205"
 
