@@ -284,7 +284,7 @@ Editor.align = function()
                 console.log("Alignment -> Tex_math: " + tex_math);
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "visible"; 		// Hide the element
+				elem.style.visibility = "hidden"; 		// Hide the element
 				elem.style.position = "absolute";
 				elem.style.fontSize = "800%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
