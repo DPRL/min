@@ -177,11 +177,7 @@ SymbolTree.parseXml = function(in_xml)
                             {
                                 var sym = new SymbolNode();
                                 sym.parent = tree_node;
-                                sym.name = child_elements[k].getAttribute("name");
                                 sym.symbol = child_elements[k].getAttribute("unicode");
-                                
-                                RecognitionManager.symbol_name_to_unicode[sym.name] = sym.symbol;
-                                RecognitionManager.unicode_to_symbol_name[sym.symbol] = sym.name; 
                                 sym.parent.children.push(sym);
                             }
                             else
