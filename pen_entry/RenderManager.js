@@ -205,13 +205,7 @@ RenderManager.render_set_field = function(in_context_id)
             var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
             if(recognition_result != null && set_segments[0].constructor != SymbolSegment && set_segments[0].constructor != TeX_Input)
             {
-                // Lines 
-                var symbol = RecognitionManager.symbol_name_to_unicode[recognition_result.symbols[0]];
-                var tex;
-                if(symbol != undefined)
-                    tex = symbol;
-                else
-                    tex = recognition_result.symbols[0];
+                var tex = recognition_result.symbols[0];
                 var segs = set_segments.slice(0, set_segments.length); // copy set_segments array
                 if(is_visible){
 					if(set_segments[0].text == tex && set_segments[set_segments.length-1].text == tex && ss_div.firstChild && (!Editor.delete_segments)){		
@@ -220,9 +214,6 @@ RenderManager.render_set_field = function(in_context_id)
 					}else{ // change recognition or insert new recognition
 						for(var z = 0; z < set_segments.length; z++){
 							set_segments[z].text = tex;
-						}
-						while(ss_div.hasChildNodes()){
-							ss_div.removeChild(ss_div.lastChild);
 						}
 						RenderManager.start_display(ss_div,tex,segs);	
 					}
@@ -358,6 +349,9 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 			inner_svg.appendChild(rect_tag);
 			document.body.removeChild(temp_root);
 		}
+	}
+	while(BBox_div.hasChildNodes()){ // removes previous recognition svg
+		BBox_div.removeChild(BBox_div.lastChild);
 	}
 	root_svg.appendChild(inner_svg);
 	BBox_div.appendChild(root_svg);

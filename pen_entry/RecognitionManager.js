@@ -72,8 +72,6 @@ RecognitionManager.initialize = function()
     RecognitionManager.segment_queue = new Array();
     RecognitionManager.timeout = null;
     RecognitionManager.max_segments = 1;
-    RecognitionManager.symbol_name_to_unicode = {};
-    RecognitionManager.unicode_to_symbol_name = {};
 }
 
 RecognitionManager.classify = function(in_set_id, should_segment)
@@ -153,7 +151,7 @@ RecognitionManager.addRecognitionForText = function(textSegment) {
     RecognitionManager.removeRecognition(textSegment.set_id);
     
     result = new RecognitionResult();
-    symbol = this.unicode_to_symbol_name[textSegment.text];
+    symbol = textSegment.text;
     if (symbol === undefined) {
         symbol = textSegment.text;
     }
