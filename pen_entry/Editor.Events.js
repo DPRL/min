@@ -237,9 +237,9 @@ Editor.align = function()
         var t = data[k];
         sb.append("<Segment symbol=\"");
         if(t.item1.symbols.length == 0)
-            sb.append("x\" min=\"");
+            sb.append(encodeURIComponent("x")+"\" min=\"");
         else
-            sb.append(t.item1.symbols[0]).append("\" min=\"");
+            sb.append(encodeURIComponent(t.item1.symbols[0] + "")).append("\" min=\"");
         sb.append(new Vector2(Math.floor(t.item2.x), Math.floor(t.item2.y)).toString()).append("\" max=\"");
         sb.append(new Vector2(Math.floor(t.item3.x), Math.floor(t.item3.y)).toString()).append("\" id=\"");
         sb.append(t.item1.set_id).append("\"/>");
