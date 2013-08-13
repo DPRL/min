@@ -18,6 +18,7 @@ Editor.stroke_select_width = 2;
 /* Symbol classification and attributes */
 // Hierarchical tree of available symbol classes
 Editor.symbol_tree = "example_tree.xml";
+Editor.generic_symbol_table = "generic_symbol_table.csv";
 
 // The number of events to store in the event queue for momentum tracking
 Editor.moveQueueLength = 2;

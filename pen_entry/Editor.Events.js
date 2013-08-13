@@ -239,7 +239,7 @@ Editor.align = function()
         if(t.item1.symbols.length == 0)
             sb.append("x\" min=\"");
         else
-            sb.append(t.item1.symbols[0]).append("\" min=\"");
+            sb.append(RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ]).append("\" min=\"");
         sb.append(new Vector2(Math.floor(t.item2.x), Math.floor(t.item2.y)).toString()).append("\" max=\"");
         sb.append(new Vector2(Math.floor(t.item3.x), Math.floor(t.item3.y)).toString()).append("\" id=\"");
         sb.append(t.item1.set_id).append("\"/>");
