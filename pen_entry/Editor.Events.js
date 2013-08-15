@@ -857,7 +857,7 @@ Editor.getInkML = function() {
 }
 
 /*
-  This method is complicated so let me explain what's going on:
+  This method(ParseImage) is complicated so let me explain what's going on:
   FileReader's readAsDataURL method and apparently Image's .src property are
   Asynchrynous, so we need to fire an event to do work instead of doing it sequentially.
   When the file is read as a data url, the first method is called which sets the data url
@@ -869,8 +869,10 @@ Editor.getInkML = function() {
 Editor.onImageLoad = function(e)
 {
     var file_list = e.target.files;
-    var file = file_list[0];
-    Editor.ParseImage(file);
+    if(file_list[0].type == "text/plain")
+		PermEvents.parse_text_file(file_list[0]);
+	else
+    	Editor.ParseImage(file_list[0]);
 }
 // This function is called when the user clicks on the upload image button
 // And also when the user drags and drops a file on the canvas.

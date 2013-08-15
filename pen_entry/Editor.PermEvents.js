@@ -81,7 +81,6 @@ PermEvents.setup_toolbar = function(){
 			dropzone.removeClass('hover');
 			var file = e.originalEvent.dataTransfer.files;
 			// Check if the type is a text file, if so parse it and get tex
-			default_position_specified = false;
 			if(file[0].type == "text/plain")
 				PermEvents.parse_text_file(file[0]);
 			else
@@ -106,6 +105,7 @@ PermEvents.setup_document = function(){
 
 // Parses a text file for Tex
 PermEvents.parse_text_file = function(file){
+	default_position_specified = false;
 	var reader = new FileReader();
 	reader.onload = function(e){
 		tex = e.target.result;
@@ -130,8 +130,6 @@ PermEvents.check_url = function(){
 
 // Inputs TeX from any source(Text files, URL parameter) into Min using MathJax
 PermEvents.Start_TeX_Input = function(tex){
-	console.log("Latex is: " + tex);
-	
 	var elem = document.createElement("div");
 	elem.setAttribute("id","Hidden_Tex");
 	elem.style.visibility = "hidden"; 		// Hide the element
