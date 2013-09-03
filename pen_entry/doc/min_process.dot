@@ -18,7 +18,7 @@ digraph min_process {
     ETT [label="Unicode is used to\nclassify Text.",shape="box"];
     EIM [label="Matlab is used to\nclassify Images.",shape="box"];
     EPS [label="LeiClassifier is used to\nclassify Pen Strokes.",shape="box"];    
-    TT2 [label="Typed Text",shape="plaintext"];
+    TT2 [label="Typed Text\nor Latex URL",shape="plaintext"];
     OUT [label="Recognized Symbol\nLayout",shape="box"];
     
 	subgraph cluster_align {
@@ -45,7 +45,7 @@ digraph min_process {
     EE -> IM1 [arrowhead="none"];
     EE -> TT1 [arrowhead="none"];
     UI -> LURL [arrowhead="none"];
-    LURL -> OUT;
+    LURL -> RM;
 
     PS1 -> DM;
     TT1 -> DM;

@@ -292,43 +292,6 @@ implemented by David Stalnaker and pushed onto a different branch in the Git rep
 We are currently not making use of this solution because it broke a lot things in min. 
 In all, the \verb+CollisionManager+ file will be there for now. 
 
-\subsection*{Notes on importing Tex into Min using MathJax}
-We came up with a method that will allow us to import Tex into Min by using MathJax. 
-MathJax is an open source javascript display engine for mathematics that works in all 
-browsers. In simple terms, it goes through a web page and displays the math equations on 
-the page while paying attention to the surrounding text. Its input types are Tex, MathML, 
-and ASCIIMathML. Its output types are HTML-CSS, SVG and Native MathML. These input and output 
-types are specified before MathJax loads. When MathJax run through the page and detects a 
-math equation on the page, it identifies the math with their own tag which helps them during
-the retrieval phase. Once the math equation is retrieved and math input type is specified 
-say Tex for instance, it parses the Tex equation symbol by symbol and converts it into an 
-internal representation and processes it. During the output phase, it determines the output
-format and displays the Math in that output format. MathJax keeps a dictionary of all possible
-math symbol in their code base and uses it during the output phase to display the Math. 
-This dictionary is big, each output format has it's own dictionary for instance an SVG output
-has all the path tags depending on the font of the math (Bold,italics, etc). In the HTML, 
-MathJax creates a div with id called \verb+MathJax_SVG_glyphs+ which
-holds all the path elements needed to render the equation as an SVG. Each symbol's path 
-element has to be manually flipped horizontally by MathJax because they symbol's path element
-tag when displayed as is in the div is up side down. Minor problem but worth mentioning.
-
-To display the Tex equation, we append the Tex to a hidden div in the body of Min and have MathJax 
-render the Tex to an SVG and we scale the rendered Tex so that the height and width always 
-fit the height and width of Min's canvas. Once the scaling is done, the rendered Tex is 
-copied over to Min by determining the screen position of each symbol in the rendered SVG 
-and positioning it on the canvas using a new class called \verb+Tex_Input+. \verb+Tex_Input+ is a sub 
-class of the \verb+pen_stroke+ class and allows us to import each symbol to Min. Upon initialization,
-\verb+Tex_Input+ initializes the super class and creates a new SVG element and appends the 
-symbol's SVG element. MathJax displays each symbol's SVG using the SVG path element which 
-they already defined in their code base and copy it over to the HTML body like stated above,
-but for some math symbols like the division symbol for a fraction for instance, MathJax 
-doesn't have a path element predefined for it but displays it using SVG's rectangle element
-with a width and height that properly fits. 
-
-Once the math symbol has been imported into Min, the next step is to have the slider display 
-the Tex which is not trivial. In all, the hidden div which MathJan originally rendered the 
-Tex in is removed from the HTML body. 	
-\newpage
 
 \subsection*{Notes on importing Tex into Min using MathJax}
 We came up with a method that will allow us to import Tex into Min by using MathJax. 
