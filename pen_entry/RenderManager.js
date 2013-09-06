@@ -208,13 +208,15 @@ RenderManager.render_set_field = function(in_context_id)
                 var tex = recognition_result.symbols[0];
                 var segs = set_segments.slice(0, set_segments.length); // copy set_segments array
                 if(is_visible){
-					if(set_segments[0].text == tex && set_segments[set_segments.length-1].text == tex && ss_div.firstChild && (!Editor.delete_segments)){		
+                	var recognition = ss_div.getAttribute("data-recognition");
+					if(recognition != null && recognition == tex && ss_div.firstChild){		
 						// update recognition - usually for resizing and movement
 						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
 					}else{ // change recognition or insert new recognition
 						for(var z = 0; z < set_segments.length; z++){
 							set_segments[z].text = tex;
 						}
+						ss_div.setAttribute("data-recognition", tex);
 						RenderManager.start_display(ss_div,tex,segs);	
 					}
 				}

@@ -379,7 +379,7 @@ Editor.copy_tex = function(elem){
 	
 	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
-	var default_position = Editor.segments[0].translation;
+	var default_position = canvas_elements[0].item3.translation;
 	if(default_position.x > 100)
 		default_position = Editor.getDefaultPosition(dim_tuple.item1, default_position);
 	Editor.apply_alignment(x_pos, default_position, canvas_elements, initial_offset);
@@ -695,10 +695,8 @@ Editor.deleteTool = function()
    set the editor mode to the proper selection method.
 **/
 Editor.clearSelectedSegments = function(){
-	Editor.delete_segments = true;
     Editor.clear_selected_segments();    
     RenderManager.render();
-    Editor.delete_segments = false;
     console.log(Editor.selection_method);
     Editor.state = EditorState.ReadyToRectangleSelect;
 }
