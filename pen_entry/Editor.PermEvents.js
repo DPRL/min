@@ -132,7 +132,7 @@ PermEvents.check_url = function(){
 PermEvents.Start_TeX_Input = function(tex){
 	var elem = document.createElement("div");
 	elem.setAttribute("id","Hidden_Tex");
-	elem.style.visibility = "hidden"; 		// Hide the element
+	elem.style.visibility = "hidden";
 	elem.style.position = "absolute";
 	elem.style.fontSize = "800%";
 	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
@@ -150,9 +150,9 @@ PermEvents.Start_TeX_Input = function(tex){
 PermEvents.scale_tex = function(elem){
 	var equation_canvas_width = $("#equation_canvas")[0].offsetWidth;
 	var equation_canvas_height = $("#equation_canvas")[0].offsetHeight;
-	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0];
-	var math_width = MathJax_div.offsetWidth;
-	var math_height = MathJax_div.offsetHeight;
+	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0].firstChild.getBoundingClientRect();
+	var math_width = Math.round(MathJax_div.width);
+	var math_height = Math.round(MathJax_div.height);
 	if(math_width > equation_canvas_width || math_height > equation_canvas_height){ 
 		elem.style.fontSize =  (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(PermEvents.scale_tex(elem), this)]);
@@ -191,15 +191,8 @@ PermEvents.MoveSVGSegmentsToCanvas = function(elem){
 			initial_offset = offset;
 		// Set up prototype inheritance chain and call query reformation 
 		TeX_Input.prototype.__proto__ = subclassOf(PenStroke);
-		var in_x = null;
-		var in_y = null;
-		if(default_position_specified){
-			in_x = parseInt((default_position.x + offset.left-initial_offset.left).toFixed(2));
-			in_y = parseInt((default_position.y + offset.top-initial_offset.top).toFixed(2));
-		}else{
-			in_x = parseInt((default_position.x + offset.left).toFixed(2));
-			in_y = parseInt((default_position.y + offset.top).toFixed(2));
-		}
+		var in_x = Math.round(default_position.x + offset.left-initial_offset.left);
+		var in_y = Math.round(default_position.y + offset.top-initial_offset.top);
 		var pen_stroke = new TeX_Input(elements_array[i], in_x, in_y, 6, null);
 		pen_stroke.initialize(svg_root, i, elements_array[i].tagName.toString());
 		

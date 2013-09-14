@@ -73,6 +73,7 @@ RecognitionManager.initialize = function()
     RecognitionManager.timeout = null;
     RecognitionManager.max_segments = 1;
     RecognitionManager.symbol_to_latex = {};
+    RecognitionManager.unicode_to_symbol = {};
     RecognitionManager.build_symbol_table();
 }
 
@@ -87,6 +88,7 @@ RecognitionManager.build_symbol_table = function(){
         		var temp = array[i].split(",");
         		if(temp[0] != "Codepoint"){
         			RecognitionManager.symbol_to_latex[temp[1]] = temp[3];
+        			RecognitionManager.unicode_to_symbol[temp[0]] = temp[1];
         		}
         	}
         }

@@ -36,7 +36,11 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
     var new_height = null;
     if(type == "use"){
 		this.unicode = this.MathJax_element.getAttribute("href").split("-")[1];
-		this.text = String.fromCharCode(parseInt(this.unicode,16));
+		var result = RecognitionManager.unicode_to_symbol["&#x"+this.unicode+";"];
+		if(result == null)
+			this.text = String.fromCharCode(parseInt(this.unicode,16));
+		else
+			this.text = result;
 		this.path_tag = document.getElementById(this.MathJax_element.getAttribute("href").split("#")[1]).cloneNode(true);
 		this.path_tag.removeAttribute("id");
 		this.path_tag.setAttribute("fill", Editor.segment_fill);
@@ -105,6 +109,7 @@ TeX_Input.prototype.correct_flip = function(){
 	var overlay_width = $(RenderManager.segment_set_divs[this.index]).offset().left;
 	var element_height = null;
 	var element_width = null;
+	this.x_offset = this.flip_offset = 0; // initial values
 	if(this.element_type == "path"){
 		element_height = $(this.path_tag).offset().top;
 		element_width = $(this.path_tag).offset().left;

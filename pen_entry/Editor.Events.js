@@ -238,8 +238,13 @@ Editor.align = function()
         sb.append("<Segment symbol=\"");
         if(t.item1.symbols.length == 0)
             sb.append("x\" min=\"");
-        else
-            sb.append(RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ]).append("\" min=\"");
+        else{
+        	var latex = RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ];
+        	if(latex == null)
+            	sb.append(t.item1.symbols[0]).append("\" min=\""); // symbols not in our generic table
+            else
+            	sb.append(latex).append("\" min=\"");
+        }
         sb.append(new Vector2(Math.floor(t.item2.x), Math.floor(t.item2.y)).toString()).append("\" max=\"");
         sb.append(new Vector2(Math.floor(t.item3.x), Math.floor(t.item3.y)).toString()).append("\" id=\"");
         sb.append(t.item1.set_id).append("\"/>");
@@ -284,9 +289,9 @@ Editor.align = function()
                 console.log("Alignment -> Tex_math: " + tex_math);
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "hidden"; 		// Hide the element
+				elem.style.visibility = "visible";
 				elem.style.position = "absolute";
-				elem.style.fontSize = "800%";
+				elem.style.fontSize = "100%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
 				document.body.appendChild(elem); 		// don't forget to remove it later
 	
@@ -309,12 +314,12 @@ Editor.align = function()
 
 // Returns the total width and height of elements on the canvas from their BBox
 Editor.get_canvas_elements_dimensions = function(){
-	var start_width = parseFloat(RenderManager.segment_set_divs[0].getBoundingClientRect().left.toFixed(2));
-	var end_width = parseFloat(RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-1].getBoundingClientRect().right.toFixed(2));
+	var start_width = Math.round(RenderManager.segment_set_divs[0].getBoundingClientRect().left);
+	var end_width = Math.round(RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-1].getBoundingClientRect().right);
 	var height = 0;
 	for(var i = 0; i < RenderManager.segment_set_divs.length; i++){
 		var h = RenderManager.segment_set_divs[i].getBoundingClientRect();
-		if(h.height >= height)
+		if(h.height > height)
 			height = h.height;
 	}
 	return new Tuple(end_width-start_width, height);
@@ -323,8 +328,8 @@ Editor.get_canvas_elements_dimensions = function(){
 Editor.scale_tex = function(elem){
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.getBoundingClientRect();
-	math_width = parseFloat(rect.width.toFixed(2));
-	math_height = parseFloat(rect.height.toFixed(2));
+	math_width = Math.round(rect.width);
+	math_height = Math.round(rect.height);
 	if(math_width < target_width || math_height < target_height){ 
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 20) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
@@ -354,9 +359,10 @@ Editor.getDefaultPosition = function(canvasElementsWidth, default_position){
    applying alignment to the symbols on the canvas.
 */
 Editor.copy_tex = function(elem){
-	dim_tuple = Editor.get_canvas_elements_dimensions();
+	dim_tuple = Editor.get_canvas_elements_dimensions(); // need to scale to fit canvas
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.getBoundingClientRect();
+	//target_width = (rect.width/rect.height) * dim_tuple.item2;
 	target_width = (rect.width/rect.height) * dim_tuple.item2;
 	target_height = dim_tuple.item2;
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
@@ -403,8 +409,13 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 		var svg_symbol = array[i].item3;
 		var text = null;
 		if(svg_symbol.getAttribute("href")){
-			var unicode = svg_symbol.getAttribute("href").split("-")[1];
-			text = String.fromCharCode(parseInt(unicode,16));
+			var unicode = svg_symbol.getAttribute("href").split("-")[1].toLowerCase();
+			// Check our symbol table. If not there just convert the unicode
+			var result = RecognitionManager.unicode_to_symbol["&#x"+unicode+";"];
+			if(result == null)
+				text = String.fromCharCode(parseInt(unicode,16));
+			else
+				text = result;
 			// special case character. Has zero-width space -> Look it up
 			if(text == "−")
 				text = "-";
