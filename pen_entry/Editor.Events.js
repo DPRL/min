@@ -291,7 +291,7 @@ Editor.align = function()
 				elem.setAttribute("id","Alignment_Tex");
 				elem.style.visibility = "visible";
 				elem.style.position = "absolute";
-				elem.style.fontSize = "100%";
+				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
 				document.body.appendChild(elem); 		// don't forget to remove it later
 	
@@ -315,7 +315,12 @@ Editor.align = function()
 // Returns the total width and height of elements on the canvas from their BBox
 Editor.get_canvas_elements_dimensions = function(){
 	var start_width = Math.round(RenderManager.segment_set_divs[0].getBoundingClientRect().left);
-	var end_width = Math.round(RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-1].getBoundingClientRect().right);
+	var ss_div = RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-1];
+	var div = ss_div.getAttribute("data-recognition");
+	if(div == null){
+		ss_div = RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-2];
+	}
+	var end_width = Math.round(ss_div.getBoundingClientRect().right);
 	var height = 0;
 	for(var i = 0; i < RenderManager.segment_set_divs.length; i++){
 		var h = RenderManager.segment_set_divs[i].getBoundingClientRect();
@@ -328,14 +333,14 @@ Editor.get_canvas_elements_dimensions = function(){
 Editor.scale_tex = function(elem){
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.getBoundingClientRect();
-	math_width = Math.round(rect.width);
-	math_height = Math.round(rect.height);
-	if(math_width < target_width || math_height < target_height){ 
+	var math_width = Math.round(rect.width);
+	var math_height = Math.round(rect.height);
+	if(math_width < target_width || math_height < target_height){
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 20) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
 	}else{
 		return;
-	}
+	} 
 }
 
 /* 	A function that just changes the X position of the start translation for
@@ -362,9 +367,8 @@ Editor.copy_tex = function(elem){
 	dim_tuple = Editor.get_canvas_elements_dimensions(); // need to scale to fit canvas
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.getBoundingClientRect();
-	//target_width = (rect.width/rect.height) * dim_tuple.item2;
-	target_width = (rect.width/rect.height) * dim_tuple.item2;
-	target_height = dim_tuple.item2;
+	target_width = (rect.width / rect.height) * dim_tuple.item2;
+	target_height = dim_tuple.item2; 
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
 	
 	// Retrieve symbols from the div element

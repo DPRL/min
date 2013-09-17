@@ -57,7 +57,7 @@ DrawMode.prototype.init_mode = function(){
     $(Editor.canvas_div).on('dblclick', this.onDoubleClick);
     Editor.canvas_div.style.cursor = "crosshair";
     $(document).on('keypress', this.onKeyPress);
-	
+    RenderManager.decrease_stroke_opacity();
 }
 
 DrawMode.prototype.close_mode = function(){
