@@ -124,6 +124,7 @@ Editor.onKeyPress = function(e)
         return;
 
     if(e.keyCode == KeyCode.enter && Editor.state == EditorState.MiddleOfText) {
+    	$(Editor.canvas_div).off(Editor.current_mode.event_strings.onDown, Editor.current_mode.stopTextInput);
         Editor.current_mode.stopTextInput();
         return;
     }
