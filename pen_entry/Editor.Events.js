@@ -287,10 +287,9 @@ Editor.align = function()
                 	console.log("DRACULAE Tex Output Error -  MathJax can't render commands in Tex");
                 	return;
                 }
-                console.log("Alignment -> Tex_math: " + tex_math);
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "visible";
+				elem.style.visibility = "hidden";
 				elem.style.position = "absolute";
 				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
@@ -451,7 +450,7 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			joined_width = dim.item2;
 			joined_segs = true;
 			/*var BBox_rect = RenderManager.segment_set_divs[index].getBoundingClientRect();
-			var BBox_rect_vector = new Vector2(parseInt(BBox_rect.left), parseInt(BBox_rect.top));
+			var BBox_rect_vector = new Vector2(Math.round(BBox_rect.left), Math.round(BBox_rect.top));
 			translation_difference1 = Vector2.Subtract(segments[0].translation, BBox_rect_vector);
 			translation_difference2 = Vector2.Subtract(segments[1].translation, BBox_rect_vector);*/
 		}
@@ -482,23 +481,14 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			segments[k].resize(min_0,scale);
             segments[k].freeze_transform();
             
-    		in_x = parseInt((default_position.x + svg_symbol_rect.left - initial_offset.x).toFixed(2));
-			in_y = parseInt((default_position.y + svg_symbol_rect.top - initial_offset.y).toFixed(2));
+    		in_x = Math.round(default_position.x + svg_symbol_rect.left - initial_offset.x);
+			in_y = Math.round(default_position.y + svg_symbol_rect.top - initial_offset.y);
 			var translation = new Vector2(in_x,in_y);
 			
 			var in_offset = Vector2.Subtract(translation, segments[k].translation);
 			segments[k].translate(in_offset);
 			segments[k].freeze_transform();
 			
-			/*if(segments.length == 2 && k == 0){
-				console.log("Translation calculated: " + translation);
-				console.log("Translation 1: " + translation_difference1);
-    			//segments[k].translate(translation_difference1);
-    		}else if(segments.length == 2 && k == 1){
-    			console.log("Translation 2: " + translation_difference2);
-    			//segments[k].translate(translation_difference2);
-    		}
-			segments[k].freeze_transform();*/
 			/*
 			// Don't think this code is needed because canvas symbols are scaled to look
 			// like the mathjax symbols.
@@ -520,6 +510,7 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
         }
 	}
 }
+
 
 Editor.check_collision = function(segments){
 	var offset = new Vector2(0,0);
