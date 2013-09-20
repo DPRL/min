@@ -874,7 +874,9 @@ Editor.getInkML = function() {
 Editor.onImageLoad = function(e)
 {
     var file_list = e.target.files;
-    if(file_list[0].type == "text/plain")
+    if(file_list[0].type == null)
+    	return;
+    else if(file_list[0].type == "text/plain")
 		PermEvents.parse_text_file(file_list[0]);
 	else
     	Editor.ParseImage(file_list[0]);
