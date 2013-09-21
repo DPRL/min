@@ -211,7 +211,7 @@ RenderManager.render_set_field = function(in_context_id)
                 	var recognition = ss_div.getAttribute("data-recognition");
 					if(recognition != null && recognition == tex && ss_div.firstChild){		
 						// update recognition - usually for resizing and movement
-						RenderManager.render_svg(ss_div);// Update the SVG on BBox	
+						RenderManager.render_svg(ss_div,segs);// Update the SVG on BBox	
 					}else{ // change recognition or insert new recognition
 						for(var z = 0; z < set_segments.length; z++){
 							set_segments[z].text = tex;
@@ -257,7 +257,7 @@ RenderManager.start_display = function(ss_div,tex,set_segments){
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
-RenderManager.render_svg = function(BBox_div){
+RenderManager.render_svg = function(BBox_div, set_segments){
 	var element,x_offset,y_offset;
 	var svg_root = BBox_div.firstChild;
 	var inner_svg = svg_root.getElementsByTagName("g")[0];
