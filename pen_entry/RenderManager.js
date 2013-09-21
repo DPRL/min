@@ -280,6 +280,15 @@ RenderManager.render_svg = function(BBox_div){
 		x_offset = parseFloat(BBox_left - element_width);
 	}
 	inner_svg.setAttribute("transform", "translate("+(x_offset)+","+(y_offset)+") scale("+scale_x+","+scale_y+")");
+	// Hide strokes by making sure we are in DrawMode and making sure the opacity is not set 
+	// before hiding the stroke.
+	if(Editor.current_mode.segment_style_class == "segment_draw_mode"){ 
+		for(var z = 0; z < set_segments.length; z++){
+			if(set_segments[z].constructor == PenStroke && set_segments[z].inner_svg.style.opacity == "")
+				$(set_segments[z].inner_svg).animate({opacity:0},600,function(){});
+		}		
+	}
+	set_segments.length = 0;
 }
 
 /* Inserts the SVG into the RenderManager's BBox for the symbol
