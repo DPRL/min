@@ -456,8 +456,8 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 		}
 		// Apply transformation to segment - resize and move
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
-		var svg_width = svg_symbol_rect.width;
-    	var svg_height = svg_symbol_rect.height;
+		var svg_width = Math.round(svg_symbol_rect.width);
+    	var svg_height = Math.round(svg_symbol_rect.height);
 		for(var k = 0; k < segments.length; k++){ 
 			var s,s2,in_x,in_y;
 			var seg_rect = Editor.get_BBox(segments[k]);
@@ -476,36 +476,21 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 				s2 = svg_height/elementOncanvasHeight;
 			}	
 			
+			// Scale segment[k]
 			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0,scale);
             segments[k].freeze_transform();
             
+            // Determine translation
     		in_x = Math.round(default_position.x + svg_symbol_rect.left - initial_offset.x);
 			in_y = Math.round(default_position.y + svg_symbol_rect.top - initial_offset.y);
 			var translation = new Vector2(in_x,in_y);
 			
+			// Apply new translation segment[k]
 			var in_offset = Vector2.Subtract(translation, segments[k].translation);
 			segments[k].translate(in_offset);
 			segments[k].freeze_transform();
-			
-			/*
-			// Don't think this code is needed because canvas symbols are scaled to look
-			// like the mathjax symbols.
-			var collision_offset = Editor.check_collision(segments);
-			console.log("Returned Collision Values: " + collision_offset);
-			console.log("X collision type: " + collision_type_x + " Y collision type: " + collision_type_y);
-			var temp_in_offset = new Vector2(0,0);
-			if(collision_type_y == "top")
-				temp_in_offset.y = -1 * collision_offset.y;
-			if(collision_type_y == "bottom")
-				temp_in_offset.y = collision_offset.y;
-			if(collision_type_x == "right")
-				temp_in_offset.x = collision_offset.x;
-			if(collision_type_x == "left")
-				temp_in_offset.x = -1 * collision_offset.x;
-			//segments[k].translate(temp_in_offset);
-			segments[k].freeze_transform();*/
 			segments[k].already_aligned = true;
         }
 	}
@@ -623,17 +608,23 @@ Editor.sort_svg_positions = function(array){
 }
 
 Editor.print_sorted = function(array, type){
+	var s;
+	if(type == "use")
+		s = "Use tag: ";
+	else
+		s = "Canvas tag: ";
 	for(var l = 0; l < array.length; l++){
 		if(type == "use" && array[l].item3.tagName == "use"){
 			var unicode = array[l].item3.getAttribute("href").split("-")[1];
 			var text = String.fromCharCode(parseInt(unicode,16));
-			console.log("Use tag at: " + l + " is: " + text);
+			s += text;
 		}else if(type == "use" && array[l].item3.tagName == "rect"){
-			console.log("Use tag at: " + l + " is: -");
+			s += "-";
 		}else{
-			console.log("Canvas Segments at: " + l + " is: " +  array[l].item3.text);
+			s += array[l].item3.text;
 		}
 	}
+	console.log(s);
 }
 
 // Sorts all svg elements by x and y
