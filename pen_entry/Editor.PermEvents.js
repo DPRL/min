@@ -200,7 +200,6 @@ PermEvents.MoveSVGSegmentsToCanvas = function(elem){
 		Editor.add_action(new AddSegments(new Array(pen_stroke)));
 		Editor.add_segment(pen_stroke);
 		RenderManager.render();
-		pen_stroke.index = RenderManager.segment_set_divs.length-1;
 		pen_stroke.correct_flip();
 		Editor.state = EditorState.ReadyToStroke;
 		RecognitionManager.addRecognitionForText(pen_stroke);
