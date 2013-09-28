@@ -9,6 +9,11 @@ function TeX_Input(MathJax_symbol, in_x, in_y, in_line_width, index){
 
 	// create a subclass of PenStroke
 	PenStroke.call(this, in_x, in_y, 6);
+	
+	// Remove div inserted during call to super class
+    Editor.canvas_div.removeChild(this.root_svg);
+    this.root_svg = this.polyline = this.inner_svg = this.classification_server = null;
+	
 	this.MathJax_element =  MathJax_symbol; 	// use_tag_array
 	this.screen_position = new Vector2(in_x, in_y);
 	this.translation = new Vector2(in_x, in_y);
