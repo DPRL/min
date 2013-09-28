@@ -201,6 +201,10 @@ RenderManager.render_set_field = function(in_context_id)
             ss_div.style.height = rect_size.y + "px";
             $(ss_div).toggle(is_visible);
             
+            // Create a connection between the bounding boxes and the segments
+            for(var i = 0; i < set_segments.length; i++)
+            	set_segments[i].index = set_index - 1;
+            
             // Recognition result/label
             var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
             if(recognition_result != null && set_segments[0].constructor != SymbolSegment && set_segments[0].constructor != TeX_Input)
