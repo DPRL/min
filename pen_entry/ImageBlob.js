@@ -56,7 +56,7 @@ ImageBlob.prototype.initialize_blob = function(x, y, context_size){
     this.svg.setAttribute("style", "position: absolute; left: 0px; top: 0px;");
     this.svg.setAttribute("width", "100%");
     this.svg.setAttribute("height", "100%");
-    this.svg.setAttribute("opacity", "0.3");
+    this.svg.setAttribute("opacity", "0"); // Hide image blob
     this.element = this.svg; // Compatibility with code that expects this object to have an 'element' member
 
     this.svg_image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
