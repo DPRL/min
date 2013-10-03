@@ -235,20 +235,28 @@ Editor.align = function()
     sb.append("?segments=<SegmentList>");
     for(var k = 0; k < data.length; k++)
     {
-        var t = data[k];
-        sb.append("<Segment symbol=\"");
-        if(t.item1.symbols.length == 0)
-            sb.append("x\" min=\"");
-        else{
-        	var latex = RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ];
-        	if(latex == null)
-            	sb.append(t.item1.symbols[0]).append("\" min=\""); // symbols not in our generic table
-            else
-            	sb.append(latex).append("\" min=\"");
-        }
-        sb.append(new Vector2(Math.floor(t.item2.x), Math.floor(t.item2.y)).toString()).append("\" max=\"");
-        sb.append(new Vector2(Math.floor(t.item3.x), Math.floor(t.item3.y)).toString()).append("\" id=\"");
-        sb.append(t.item1.set_id).append("\"/>");
+	    var t = data[k];
+	    sb.append("<Segment symbol=\"");
+	    if(t.item1.symbols.length == 0){
+		    sb.append("x\" min=\"");
+            }	
+	    else{
+		    var latex = RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ];
+		    if(latex == null){
+			    latex = RecognitionManager.symbol_to_latex[RecognitionManager.unicode_to_symbol[ t.item1.symbols[0] ]];
+			    console.log("latex: " + latex);
+			    if(latex == null)
+				    sb.append("X").append("\" min=\""); // symbols not in our generic table
+			    else
+				    sb.append(latex).append("\" min=\"");
+		    }
+	            else
+			    sb.append(latex).append("\" min=\"");
+	    }
+	
+	    sb.append(new Vector2(Math.floor(t.item2.x), Math.floor(t.item2.y)).toString()).append("\" max=\"");
+	    sb.append(new Vector2(Math.floor(t.item3.x), Math.floor(t.item3.y)).toString()).append("\" id=\"");
+	    sb.append(t.item1.set_id).append("\"/>");
     }
     sb.append("</SegmentList>");
     
