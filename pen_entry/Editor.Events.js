@@ -954,7 +954,8 @@ Editor.search = function(e)
         break
     }
     searchString = encodeURIComponent(searchString);
-    window.open(url + searchString);
+    //window.open(url + searchString);
+	window.location = url + searchString;
 }
 
 Editor.goDPRL = function ()

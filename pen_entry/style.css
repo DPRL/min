@@ -461,7 +461,9 @@ div.bb_handle {
    rectangle selection mode.
    */
 .segment_rect_select {
-	background-color: rgba(113, 168, 99, 0.41); 
+	/* background-color: rgba(113, 168, 99, 0.10); 
+	*/
+	background-color: rgba(113, 113, 113, 0.12); 
 }
 
 /* This controls the appearance of overlaid recognition results. 

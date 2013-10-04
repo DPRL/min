@@ -1,18 +1,24 @@
 /* Colors (3 byte hex) */
-Editor.segment_color = "#BBBBBB"; 
-Editor.selected_segment_color = "#BBBBBB";
+//Editor.segment_color = "#BBBBBB"; 
+Editor.segment_color = "#FF4444"; 
+//Editor.selected_segment_color = "#BBBBBB";
+Editor.selected_segment_color = "#FF0101";
 
 Editor.control_point_fill_color = "#FFAA00";
-Editor.control_point_line_color = "#111111";
+
+Editor.control_point_line_color =  "#FF6666"; 
+//Editor.control_point_line_color = "#111111";
 Editor.control_point_radius = 16;
-Editor.control_point_line_width = 1.5;
+Editor.control_point_line_width = 2.5;
+//1.5;
 
 Editor.recognition_result_color = "#111111";
 Editor.segment_fill = "#4A4A4A";
 
 Editor.stroke_width = 4;
 Editor.selected_stroke_width = 4;
-Editor.stroke_select_color = "#44F"
+//Editor.stroke_select_color = "#44F";
+Editor.stroke_select_color = "#FF6666";
 Editor.stroke_select_width = 2;
 
 /* Symbol classification and attributes */
@@ -28,7 +34,7 @@ Editor.ascender_chars = ['b','d','f','h','i','k','l','t'];
 Editor.x_height_chars = ['a','c','e','m','n','o','r','s','u','v','w','x','z'];
 Editor.descender_chars = ['g','j','p','q','y'];
 
-Editor.recognition_timeout = 1500; // In milliseconds, used in RecognitionManager line 132.
+Editor.recognition_timeout = 2500; // In milliseconds, used in RecognitionManager line 132.
 
 // List of keycodes, I couldn't find a standard object for this
 KeyCode = {
