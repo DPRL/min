@@ -502,9 +502,11 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
     	var max_f = new Vector2(Math.round(svg_symbol_rect.right), Math.round(svg_symbol_rect.bottom));
     	var size_f = Vector2.Subtract(max_f, min_f);
 		for(var k = 0; k < segments.length; k++){ 
-			var s,s2,in_x,in_y;
+			var in_x,in_y;
 			var scale, min_0, max_0;
     		if(joined_segs){
+    			min_0 = segments[k].world_mins;
+    			max_0 = segments[k].world_maxs;
 				scale = new Vector2(size_f.x / joined_size.x, size_f.y / joined_size.y);
     		}else{	
     			min_0 = segments[k].world_mins;
@@ -514,7 +516,6 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			}	
 
 			// Scale segment[k]
-			var min_0 = segments[k].world_mins;
 			segments[k].resize(min_0, scale);
             segments[k].freeze_transform();
             

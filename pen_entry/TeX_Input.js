@@ -96,6 +96,11 @@ TeX_Input.prototype.initialize = function(svg_root, i, type){
     this.element = this.root_svg;
 	RenderManager.clear_canvas();
 	
+	// set world_min and world_max
+	var rect = this.inner_svg.getBoundingClientRect();
+	this.world_mins = new Vector2(rect.left,rect.top);
+    this.world_maxs = new Vector2(rect.right,rect.bottom);
+	
 	if(type == "use"){
 		/* 	Handles all SVG Path computations. It includes: Converting the Path data
 			commands to absolute positions, applying path transformation to path data
