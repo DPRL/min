@@ -298,10 +298,10 @@ Editor.align = function()
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
 				elem.style.visibility = "hidden";
-				elem.style.position = "absolute";
+				elem.style.position = "position";
 				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
-				document.body.appendChild(elem); 		// don't forget to remove it later
+				document.body.appendChild(elem);
 	
 				// Change renderer to svg and make sure it has been processed before calling
 				// PermEvents.callBack
@@ -321,7 +321,8 @@ Editor.align = function()
 }
 
 // Returns the total width and height of elements on the canvas from their BBox
-Editor.get_canvas_elements_dimensions = function(){
+Editor.get_canvas_elements_dimensions = function()
+{
 	var start_width = Math.round(RenderManager.segment_set_divs[0].getBoundingClientRect().left);
 	var ss_div = RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-1];
 	var div = ss_div.getAttribute("data-recognition");
@@ -338,7 +339,8 @@ Editor.get_canvas_elements_dimensions = function(){
 	return new Tuple(end_width-start_width, height);
 }
 
-Editor.scale_tex = function(elem){
+Editor.scale_tex = function(elem)
+{
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.getBoundingClientRect();
 	var math_width = Math.round(rect.width);
@@ -351,27 +353,11 @@ Editor.scale_tex = function(elem){
 	} 
 }
 
-/* 	A function that just changes the X position of the start translation for
-	first symbol during alignment.
-*/
-Editor.getDefaultPosition = function(canvasElementsWidth, default_position){
-	var start_position = default_position;
-	var x_decrement = 60;
-	var canvasWidthFromDefaultPosition = $(Editor.canvas_div)[0].getBoundingClientRect().width - start_position.x;
-	var spaceLeft = canvasWidthFromDefaultPosition - canvasElementsWidth;
-	if(canvasElementsWidth < canvasWidthFromDefaultPosition && spaceLeft > 80){
-		return start_position;
-	}else{
-		start_position.x -= x_decrement;
-		Editor.getDefaultPosition(canvasElementsWidth-x_decrement, start_position);
-		return start_position;
-	}
-}
-
 /* Gets the MathJax rendered SVG from the div, sorts them and canvas segments before
    applying alignment to the symbols on the canvas.
 */
-Editor.copy_tex = function(elem){
+Editor.copy_tex = function(elem)
+{
 	dim_tuple = Editor.get_canvas_elements_dimensions(); // need to scale to fit canvas
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.getBoundingClientRect();
@@ -398,15 +384,62 @@ Editor.copy_tex = function(elem){
 	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
 	var default_position = canvas_elements[0].item3.translation;
-	if(default_position.x > 100)
-		default_position = Editor.getDefaultPosition(dim_tuple.item1, default_position);
+	default_position = Editor.center_position(default_position, svg_root);
 	Editor.apply_alignment(x_pos, default_position, canvas_elements, initial_offset);
 	transform_action.add_new_transforms(Editor.segments);
 	transform_action.Apply();
 	Editor.add_action(transform_action);
 	x_pos = []; // Clear array
-	document.body.removeChild(elem); // Remove elem from document body (Alignment done)
+	document.body.removeChild(elem);
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
+}
+
+// A small function that returns a new position to start placing segments
+Editor.center_position = function(default_position, svg_root)
+{
+	var canvas_rect = Editor.canvas_div.getBoundingClientRect();
+	var mid_x = Math.round(canvas_rect.width / 2);
+	var mid_y = Math.round(canvas_rect.height / 2);
+	var svg_root_rect = svg_root.getBoundingClientRect();
+	var expre_width = Math.round(svg_root_rect.width);
+	var expre_height = Math.round(svg_root_rect.height);
+	var x = default_position.x;
+	var y = default_position.y;
+	
+	// X position determination
+	if( (default_position.x + expre_width) < mid_x){
+		for(var i = default_position.x; i <= mid_x; i+=30){
+			if( (i < mid_x) && (mid_x < (i+expre_width)) ){
+				x = i+30;
+				break;
+			}
+		}
+	}else{
+		for(var i = default_position.x; i >= mid_x; i-=30){
+			if( ((i-30) < mid_x) && (mid_x < (i+expre_width)) ){
+				x = (i-30);
+				break;
+			}
+		}
+	}
+	// Y position determination
+	if( (default_position.y +  expre_height) < mid_y){
+		for(var i = default_position.y; i <= mid_y; i+=30){
+			if( (i < mid_y) && (mid_y < (i+expre_height)) ){
+				y = i+30;
+				break;
+			}
+		}
+	}else{
+		for(var i = default_position.y; i >= mid_y; i-=30){
+			if( ((i-30) < mid_y) && (mid_y < (i+expre_height)) ){
+				y = (i-30);
+				break;
+			}
+		}
+	}
+	//console.log("New x and y position is: (" + x + "," + y + ")");
+	return new Vector2(x,y);
 }
 
 /* Identifies elements on canvas to MathJax rendered SVG and then moves to around to 
@@ -415,7 +448,8 @@ Editor.copy_tex = function(elem){
          as an instance. This is set in the RenderManager after recognition is gotten. 
          "PenStroke_Object".Text - Recognition result for the PenStroke
 */
-Editor.apply_alignment = function(array, default_position, canvas_elements, initial_offset){
+Editor.apply_alignment = function(array, default_position, canvas_elements, initial_offset)
+{
 	var transformed_segments = new Array(); // holds segment set_ids found
 	for(var i = 0; i < array.length; i++){
 		var svg_symbol = array[i].item3;
@@ -505,7 +539,8 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 }
 
 
-Editor.check_collision = function(segments){
+Editor.check_collision = function(segments)
+{
 	var offset = new Vector2(0,0);
 	var x_offset = y_offset = 0;
 	collision_type_x = collision_type_y = "";
@@ -554,7 +589,8 @@ Editor.check_collision = function(segments){
 	return offset;
 }
 
-Editor.get_seg_dimensions =  function(set_segments){
+Editor.get_seg_dimensions =  function(set_segments)
+{
 	var mins = set_segments[0].worldMinDrawPosition();
     var maxs = set_segments[0].worldMaxDrawPosition();
             
@@ -577,7 +613,8 @@ Editor.get_seg_dimensions =  function(set_segments){
 }
 
 // Returns the maximum height and width of joined segments like a plus
-Editor.get_joinedSeg_dimensions = function(segments){
+Editor.get_joinedSeg_dimensions = function(segments)
+{
 	var height = width = 0;
 	for(var i = 0; i < segments.length; i++){
 		var seg_rect = Editor.get_BBox(segments[i]);
@@ -590,7 +627,8 @@ Editor.get_joinedSeg_dimensions = function(segments){
 }
 
 // Returns the BBox of an element
-Editor.get_BBox = function(seg){
+Editor.get_BBox = function(seg)
+{
 	var elem_rect;
 	if(seg.constructor == SymbolSegment)
 		elem_rect = seg.element.getBoundingClientRect();
@@ -602,7 +640,8 @@ Editor.get_BBox = function(seg){
 /* Sorts the render svg from mathjax from left to right and any segment whose x coordinate
    collides with another is sorted from top to bottom. Just compares the tops.
 */
-Editor.sort_svg_positions = function(array){
+Editor.sort_svg_positions = function(array)
+{
 	var x_pos = new Array(); // all x coordinates
 	var current_x, current_y;
 	for(var i = 0; i < array.length; i++){
@@ -615,7 +654,8 @@ Editor.sort_svg_positions = function(array){
 	return x_pos;
 }
 
-Editor.print_sorted = function(array, type){
+Editor.print_sorted = function(array, type)
+{
 	var s;
 	if(type == "use")
 		s = "Use tag: ";
@@ -636,7 +676,8 @@ Editor.print_sorted = function(array, type){
 }
 
 // Sorts all svg elements by x and y
-Editor.sort_canvas_elements = function(){
+Editor.sort_canvas_elements = function()
+{
 	var sorted = new Array();
 	var sorted_set_ids = new Array();
 	var current_x, current_y;
@@ -660,7 +701,8 @@ Editor.sort_canvas_elements = function(){
 	return sorted;
 }
 // Compares passed in tuples by sorting by x and y
-Editor.compare_numbers = function(a, b){
+Editor.compare_numbers = function(a, b)
+{
 	if (a.item1 == b.item1 && a.item2 == b.item2) return 0;
   	else if (a.item1 == b.item1) return a.item2 > b.item2 ? 1 : -1;
   	else return a.item1 > b.item1 ? 1 : -1;
