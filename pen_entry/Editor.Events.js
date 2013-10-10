@@ -496,6 +496,7 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			translation_difference1 = Vector2.Subtract(segments[0].translation, BBox_rect_vector);
 			translation_difference2 = Vector2.Subtract(segments[1].translation, BBox_rect_vector);*/
 		}
+		
 		// Apply transformation to segment - resize and move
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
     	var min_f = new Vector2(Math.round(svg_symbol_rect.left), Math.round(svg_symbol_rect.top));
@@ -530,7 +531,8 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			segments[k].freeze_transform();
 			segments[k].already_aligned = true;
         }
-        joined_segs = false;
+        if(joined_segs)
+        	joined_segs = false;
 	}
 }
 
