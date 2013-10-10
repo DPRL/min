@@ -297,7 +297,7 @@ Editor.align = function()
                 }
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "hidden";
+				elem.style.visibility = "visible";
 				elem.style.position = "position";
 				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
@@ -486,11 +486,11 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 		if(segments == null)
 			continue;
 		var joined_segs,joined_width,joined_height,translation_difference1,translation_difference2;
+		var joined_size;
 		if(segments.length == 2){ // Joined symbols have one width and height not two
-			var dim = Editor.get_joinedSeg_dimensions(segments);
-			joined_height = dim.item1;
-			joined_width = dim.item2;
 			joined_segs = true;
+			var joined_dimensions = Editor.get_seg_dimensions(segments);
+			joined_size = Vector2.Subtract(joined_dimensions.item2, joined_dimensions.item1);
 			/*var BBox_rect = RenderManager.segment_set_divs[index].getBoundingClientRect();
 			var BBox_rect_vector = new Vector2(Math.round(BBox_rect.left), Math.round(BBox_rect.top));
 			translation_difference1 = Vector2.Subtract(segments[0].translation, BBox_rect_vector);
@@ -498,30 +498,24 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 		}
 		// Apply transformation to segment - resize and move
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
-		var svg_width = Math.round(svg_symbol_rect.width);
-    	var svg_height = Math.round(svg_symbol_rect.height);
+    	var min_f = new Vector2(Math.round(svg_symbol_rect.left), Math.round(svg_symbol_rect.top));
+    	var max_f = new Vector2(Math.round(svg_symbol_rect.right), Math.round(svg_symbol_rect.bottom));
+    	var size_f = Vector2.Subtract(max_f, min_f);
 		for(var k = 0; k < segments.length; k++){ 
 			var s,s2,in_x,in_y;
-			var seg_rect = Editor.get_BBox(segments[k]);
-    		var elementOncanvasWidth = seg_rect.width;
-    		var elementOncanvasHeight = seg_rect.height;
+			var scale, min_0, max_0;
     		if(joined_segs){
-    			s = svg_width/joined_width;
-    			s2 = svg_height/joined_height;
-    			joined_segs = false;
-    		}else{
-    			if(elementOncanvasWidth == 0)
-    				elementOncanvasWidth = RenderManager.segment_set_divs[index].getBoundingClientRect().width;
-    			if(elementOncanvasHeight == 0)
-    				elementOncanvasHeight = RenderManager.segment_set_divs[index].getBoundingClientRect().height;
-				s = svg_width/elementOncanvasWidth;
-				s2 = svg_height/elementOncanvasHeight;
+				scale = new Vector2(size_f.x / joined_size.x, size_f.y / joined_size.y);
+    		}else{	
+    			min_0 = segments[k].world_mins;
+    			max_0 = segments[k].world_maxs;
+    			var size_0 = Vector2.Subtract(max_0, min_0);
+				scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y)
 			}	
-			
+
 			// Scale segment[k]
-			var scale = new Vector2(s,s2);
 			var min_0 = segments[k].world_mins;
-			segments[k].resize(min_0,scale);
+			segments[k].resize(min_0, scale);
             segments[k].freeze_transform();
             
             // Determine translation
@@ -535,9 +529,9 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			segments[k].freeze_transform();
 			segments[k].already_aligned = true;
         }
+        joined_segs = false;
 	}
 }
-
 
 Editor.check_collision = function(segments)
 {
@@ -589,6 +583,10 @@ Editor.check_collision = function(segments)
 	return offset;
 }
 
+/*
+	A function that returns the world min and max position for joined segments like the 
+	the plus symbol.
+*/
 Editor.get_seg_dimensions =  function(set_segments)
 {
 	var mins = set_segments[0].worldMinDrawPosition();
@@ -610,20 +608,6 @@ Editor.get_seg_dimensions =  function(set_segments)
 			maxs.y = seg_max.y;
 	}
 	return new Tuple(mins, maxs);
-}
-
-// Returns the maximum height and width of joined segments like a plus
-Editor.get_joinedSeg_dimensions = function(segments)
-{
-	var height = width = 0;
-	for(var i = 0; i < segments.length; i++){
-		var seg_rect = Editor.get_BBox(segments[i]);
-		if(seg_rect.height > height)
-			height = seg_rect.height;
-		if(seg_rect.width > width)
-			width = seg_rect.width;
-	}
-	return new Tuple(height,width);
 }
 
 // Returns the BBox of an element
