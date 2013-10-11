@@ -499,8 +499,8 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 		
 		// Apply transformation to segment - resize and move
 		var svg_symbol_rect = svg_symbol.getBoundingClientRect(); // get svg symbol's position
-    	var min_f = new Vector2(Math.round(svg_symbol_rect.left), Math.round(svg_symbol_rect.top));
-    	var max_f = new Vector2(Math.round(svg_symbol_rect.right), Math.round(svg_symbol_rect.bottom));
+    	var min_f = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
+    	var max_f = new Vector2(svg_symbol_rect.right, svg_symbol_rect.bottom);
     	var size_f = Vector2.Subtract(max_f, min_f);
 		for(var k = 0; k < segments.length; k++){ 
 			var in_x,in_y;
@@ -509,13 +509,13 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
     			min_0 = segments[k].world_mins;
     			max_0 = segments[k].world_maxs;
 				scale = new Vector2(size_f.x / joined_size.x, size_f.y / joined_size.y);
-    		}else{	
+    		}else{
     			min_0 = segments[k].world_mins;
     			max_0 = segments[k].world_maxs;
+    			
     			var size_0 = Vector2.Subtract(max_0, min_0);
 				scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y)
-			}	
-
+			}
 			// Scale segment[k]
 			segments[k].resize(min_0, scale);
             segments[k].freeze_transform();
@@ -530,6 +530,12 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			segments[k].translate(in_offset);
 			segments[k].freeze_transform();
 			segments[k].already_aligned = true;
+			
+			// Reset the world_min and world_max variables
+			xmin_0 = segments[k].worldMinDrawPosition();
+    		ymax_0 = segments[k].worldMaxDrawPosition();
+    		segments[k].world_mins = xmin_0;
+    		segments[k].world_maxs = ymax_0;
         }
         if(joined_segs)
         	joined_segs = false;
