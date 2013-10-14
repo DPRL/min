@@ -514,7 +514,11 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
     			max_0 = segments[k].world_maxs;
     			
     			var size_0 = Vector2.Subtract(max_0, min_0);
-				scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y)
+    			if(size_0.y == 0)
+    				size_0.y = min_0.y;
+    			if(size_0.x == 0)
+    				size_0.x = min_0.x;
+				scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
 			}
 			// Scale segment[k]
 			segments[k].resize(min_0, scale);
@@ -540,56 +544,6 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
         if(joined_segs)
         	joined_segs = false;
 	}
-}
-
-Editor.check_collision = function(segments)
-{
-	var offset = new Vector2(0,0);
-	var x_offset = y_offset = 0;
-	collision_type_x = collision_type_y = "";
-	var segs = Editor.segments.slice(0, Editor.segments.length);
-	for(var i = 0; i < segs.length; i++){
-		if(segs[i].already_aligned){
-			var seg_rect = Editor.get_seg_dimensions(segments);
-			var seg_rect_size = Vector2.Subtract(seg_rect.item2, seg_rect.item1);
-			var set_id = segs[i].set_id;
-			var aligned_seg_rect = Editor.get_seg_dimensions(Editor.get_segment_by_id(set_id));
-			var aligned_seg_rect_size = Vector2.Subtract(aligned_seg_rect.item2, aligned_seg_rect.item1);
-			for(var k = 0; k < segs.length; k++){
-        		if(segs[k].set_id == set_id)
-            		segs.splice(k,0);
-    		}
-    		var seg_rect_left = seg_rect.item1.x,
-    			seg_rect_top = seg_rect.item1.y,
-    			seg_rect_right = seg_rect_size.x + seg_rect_left,
-    			seg_rect_bottom = seg_rect_size.y + seg_rect_top,
-    			aligned_seg_rect_left = aligned_seg_rect.item1.x,
-    			aligned_seg_rect_top = aligned_seg_rect.item1.y,
-    			aligned_seg_rect_right = aligned_seg_rect_size.x + aligned_seg_rect_left,
-    			aligned_seg_rect_bottom = aligned_seg_rect_size.y + aligned_seg_rect_top;
-    		console.log("Segment being inserted -> R:"+seg_rect_right+" L:"+	seg_rect_left+" T:"+ seg_rect_top+" B:"+seg_rect_bottom);
-    		console.log("Segment already inserted -> R:"+aligned_seg_rect_right+" L:"+	aligned_seg_rect_left+" T:"+ aligned_seg_rect_top+" B:"+aligned_seg_rect_bottom);
-    		if(seg_rect_right > aligned_seg_rect_right && seg_rect_left < aligned_seg_rect_right){ // Right Insertion
-				x_offset = aligned_seg_rect_right - seg_rect_left;
-				collision_type_x = "right";
-			}
-			if(seg_rect_right < aligned_seg_rect_right && seg_rect_right > aligned_seg_rect_left){ // Left Insertion
-				x_offset = seg_rect_right - aligned_seg_rect_left;
-				collision_type_x = "left";
-			}
-			if(seg_rect_top < aligned_seg_rect_top && seg_rect_bottom > aligned_seg_rect_top){ // Top Insertion
-				y_offset = seg_rect_bottom - aligned_seg_rect_top;
-				collision_type_y = "top";
-			}
-			if(seg_rect_bottom > aligned_seg_rect_bottom && seg_rect_top < aligned_seg_rect_bottom){ // Bottom Insertion
-				y_offset = aligned_seg_rect_bottom - seg_rect_top;
-				collision_type_y = "bottom";
-			}
-		}
-	}
-	offset.x = x_offset;
-	offset.y = y_offset;
-	return offset;
 }
 
 /*
