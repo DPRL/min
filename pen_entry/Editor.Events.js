@@ -280,7 +280,7 @@ Editor.align = function()
                 }
                 
                 // Update the current slide with the TeX.
-                var tex_math = "";
+                tex_math = "";
                 if ( tex_nodes.length != 0 ) {
                     var tex_string = tex_nodes[ 0 ].textContent;
                     // get just the math, removing spaces
@@ -366,7 +366,7 @@ Editor.copy_tex = function(elem)
 	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
 	
 	// Retrieve symbols from the div element
-	var svg_root =  document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+	svg_root =  document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var use_tag_array = svg_root.getElementsByTagName("use");
 	var rect_tag_array = svg_root.getElementsByTagName("rect");
 	use_tag_array = Array.prototype.slice.call(use_tag_array);
@@ -381,7 +381,7 @@ Editor.copy_tex = function(elem)
 	x_pos = Editor.group_svg([], svg_root.firstChild);
 	x_pos.sort(Editor.compare_numbers);
 	Editor.print_sorted(x_pos, "use");
-	Editor.print_sorted(canvas_elements, "canvas");
+	Editor.print_sorted(canvas_elements, "canvas");	
 	
 	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
@@ -394,6 +394,48 @@ Editor.copy_tex = function(elem)
 	x_pos = []; // Clear array
 	document.body.removeChild(elem);
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
+}
+
+Editor.create_segment = function(root, x_pos){
+	var sqrt;
+	var horizontal_bar;
+	var found = false;
+	var data = String.fromCharCode(parseInt("221A",16));
+	var segs = x_pos.slice(0, x_pos.length);
+	for(var i = 0; i < x_pos.length; i++){
+		if(x_pos[i].item3.getAttribute("href") == "#MJMAIN-221A"){
+			sqrt = x_pos[i].item3.getBoundingClientRect();
+			for(var j = 0; j < segs.length; j++){
+				var rect = segs[j].item3.getBoundingClientRect();
+				if(rect.left < sqrt.right && segs[j].item3.tagName == "rect" && rect.top > sqrt.top){
+					found = true;
+					horizontal_bar = segs[j];
+					break;
+				}
+			}
+		}
+		if(found)
+			break;
+	}
+	
+	if(found){
+		// copy rect element and put in RenderManager div
+		for(var k = 0; k < RenderManager.segment_set_divs.length; k++){
+			if(RenderManager.segment_set_divs[k].getAttribute("data-recognition") == data){
+				var BBox_rect = RenderManager.segment_set_divs[k].getBoundingClientRect();
+				var clone = horizontal_bar.item3.cloneNode(true);
+				clone.removeAttribute("x");
+				clone.removeAttribute("y");
+				clone.removeAttribute("stroke");
+				clone.setAttribute("fill", Editor.segment_fill);
+				var x = BBox_rect.right;
+				var y = BBox_rect.top;
+				clone.setAttribute("transform", "translate(" + x + "," + y + ")");
+				RenderManager.segment_set_divs[k].getElementsByTagName("g")[0].appendChild(clone);
+			}
+		}
+		
+	}
 }
 
 /* Joins SVG segments as one because MathJax splits some of them up sometimes
@@ -443,12 +485,6 @@ Editor.group_svg = function(elements, g){
 	
 	}
 	return elements;
-}
-
-// A function that creates a new segment type
-Editor.create_segments = function(type){
-
-	
 }
 
 // A small function that returns a new position to start placing segments
@@ -507,6 +543,7 @@ Editor.center_position = function(default_position, svg_root)
 */
 Editor.apply_alignment = function(array, default_position, canvas_elements, initial_offset)
 {
+	var sqrt_text = String.fromCharCode(parseInt("221A",16));
 	var transformed_segments = new Array(); // holds segment set_ids found
 	for(var i = 0; i < array.length; i++){
 		var svg_symbol = array[i].item3;
@@ -542,13 +579,6 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 		}
 		if(segments == null)
 			continue;
-		var joined_segs,joined_width,joined_height,translation_difference1,translation_difference2;
-		var joined_size;
-		if(segments.length == 2){ // Joined symbols have one width and height not two
-			joined_segs = true;
-			var joined_dimensions = Editor.get_seg_dimensions(segments);
-			joined_size = Vector2.Subtract(joined_dimensions.item2, joined_dimensions.item1);
-		}
 		
 		// Apply transformation to segment - resize and move
 		var size_f = new Vector2(0,0);
@@ -561,32 +591,25 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 		}
 		
 		for(var k = 0; k < segments.length; k++){ 
-			var in_x,in_y;
-			var scale, min_0, max_0;
-    		if(joined_segs){
-    			min_0 = segments[k].world_mins;
-    			max_0 = segments[k].world_maxs;
-				scale = new Vector2(size_f.x / joined_size.x, size_f.y / joined_size.y);
-    		}else{
-    			min_0 = segments[k].world_mins;
-    			max_0 = segments[k].world_maxs;
-    			min_0.x -= 6;
-    			
-    			var size_0 = Vector2.Subtract(max_0, min_0);
-    			if(size_0.y == 0)
-    				size_0.y = min_0.y;
-    			if(size_0.x == 0)
-    				size_0.x = min_0.x;
-				scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
-			}
+
+			var min_0 = segments[k].world_mins;
+			var max_0 = segments[k].world_maxs;
+			min_0.x -= 10;
+			
+			var size_0 = Vector2.Subtract(max_0, min_0);
+			if(size_0.y == 0)
+				size_0.y = min_0.y;
+			if(size_0.x == 0)
+				size_0.x = min_0.x;
+			var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
 			
 			// Scale segment[k]
 			segments[k].resize(min_0, scale);
             segments[k].freeze_transform();
             
             // Determine translation
-    		in_x = Math.round(default_position.x + svg_symbol_rect.left - initial_offset.x);
-			in_y = Math.round(default_position.y + svg_symbol_rect.top - initial_offset.y);
+    		var in_x = default_position.x + svg_symbol_rect.left - initial_offset.x;
+			var in_y = default_position.y + svg_symbol_rect.top - initial_offset.y;
 			var translation = new Vector2(in_x,in_y);
 			
 			// Apply new translation segment[k]
@@ -595,13 +618,14 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			segments[k].freeze_transform();
 			
 			// Reset the world_min and world_max variables
-			xmin_0 = segments[k].worldMinDrawPosition();
-    		ymax_0 = segments[k].worldMaxDrawPosition();
+			var xmin_0 = segments[k].worldMinDrawPosition();
+    		var ymax_0 = segments[k].worldMaxDrawPosition();
     		segments[k].world_mins = xmin_0;
     		segments[k].world_maxs = ymax_0;
         }
-        if(joined_segs)
-        	joined_segs = false;
+        if(tex_math.search("sqrt") != -1 && segments[0].text == sqrt_text){
+				Editor.create_segment(svg_root, array);
+		}
 	}
 }
 
