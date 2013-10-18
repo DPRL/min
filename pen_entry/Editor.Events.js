@@ -295,19 +295,28 @@ Editor.align = function()
                 	console.log("DRACULAE Tex Output Error -  MathJax can't render commands in Tex");
                 	return;
                 }
+                
+                // Divs used for alignment
+                var outer_div = document.createElement("div");
+                outer_div.setAttribute("id","outer_div");
+                var middle_div = document.createElement("div");
+                middle_div.setAttribute("id","middle_div");
+                
+                // Main div with content in it
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
 				elem.style.visibility = "visible";
-				elem.style.position = "position";
 				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
-				document.body.appendChild(elem);
+				
+				middle_div.appendChild(elem);
+				outer_div.appendChild(middle_div);
+				Editor.canvas_div.appendChild(outer_div);
 	
-				// Change renderer to svg and make sure it has been processed before calling
-				// PermEvents.callBack
+				// Change rendered to SVG and have MathJax display it
 				MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
     			MathJax.Hub.Queue(["Rerender", MathJax.Hub,elem], [function(){ 
-    				MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [Editor.copy_tex,elem]);
+    				MathJax.Hub.Queue(["Typeset",MathJax.Hub,elem], [Editor.copy_tex,elem,outer_div]);
     			}]);
             },
             error: function(jqXHR, textStatus, errorThrown)
@@ -323,30 +332,35 @@ Editor.align = function()
 // Returns the total width and height of elements on the canvas from their BBox
 Editor.get_canvas_elements_dimensions = function()
 {
-	var start_width = Math.round(RenderManager.segment_set_divs[0].getBoundingClientRect().left);
-	var ss_div = RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-1];
-	var div = ss_div.getAttribute("data-recognition");
-	if(div == null){
-		ss_div = RenderManager.segment_set_divs[RenderManager.segment_set_divs.length-2];
-	}
-	var end_width = Math.round(ss_div.getBoundingClientRect().right);
-	var height = 0;
+	var max_height = 0;
+	var max_width = 0;
+	var min_height = 9999;
+	var min_width = 9999;
 	for(var i = 0; i < RenderManager.segment_set_divs.length; i++){
 		var h = RenderManager.segment_set_divs[i].getBoundingClientRect();
-		if(h.height > height)
-			height = h.height;
+		if(h.bottom > max_height)
+			max_height = h.bottom;
+		if(h.top < min_height)
+			min_height = h.top;
+		if(h.right > max_width)
+			max_width = h.right;
+		if(h.left < min_width)
+			min_width = h.left;		
 	}
-	return new Tuple(end_width-start_width, height);
+	//console.log("Computed width: " +  (max_width - min_width) + "  height: " + (max_height - min_height));
+	return new Tuple((max_width - min_width), (max_height - min_height));
 }
 
-Editor.scale_tex = function(elem)
-{
+/*
+	Scale the SVG to fit the canvas by decreasing its font size by 5%
+*/
+Editor.scale_tex = function(elem){
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
-	var rect = root.getBoundingClientRect();
-	var math_width = Math.round(rect.width);
-	var math_height = Math.round(rect.height);
-	if(math_width < target_width || math_height < target_height){
-		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) + 20) + "%";
+	var rect = root.firstChild.getBoundingClientRect();
+	var math_width = rect.width;
+	var math_height = rect.height;
+	if(math_width > Editor.canvas_width || math_height > Editor.canvas_height){
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 5) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
 	}else{
 		return;
@@ -356,43 +370,48 @@ Editor.scale_tex = function(elem)
 /* Gets the MathJax rendered SVG from the div, sorts them and canvas segments before
    applying alignment to the symbols on the canvas.
 */
-Editor.copy_tex = function(elem)
+Editor.copy_tex = function(elem, outer_div)
 {
-	dim_tuple = Editor.get_canvas_elements_dimensions(); // need to scale to fit canvas
+	var dim_tuple = Editor.get_canvas_elements_dimensions(); // need to scale to fit canvas
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
-	var rect = root.getBoundingClientRect();
-	target_width = (rect.width / rect.height) * dim_tuple.item2;
-	target_height = dim_tuple.item2; 
-	Editor.scale_tex(elem); // scale to fit element on canvas dimensions
+	var rect = root.firstChild.getBoundingClientRect();
+	var target_width = (rect.width / rect.height) * dim_tuple.item2;
+	var target_height = dim_tuple.item2; 
 	
-	// Retrieve symbols from the div element
-	svg_root =  document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
-	var use_tag_array = svg_root.getElementsByTagName("use");
-	var rect_tag_array = svg_root.getElementsByTagName("rect");
+	// Calculate scale and append to g element of MathJax
+	var scale = new Vector2( (target_width / rect.width), (target_height / rect.height) );
+	var group = root.getElementsByTagName("g")[0]; // First group tag groups all MathJax SVGs
+	group.setAttribute("transform", "scale("+scale.x+","+scale.y+") matrix(1 0 0 -1 0 0)");
+	
+	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
+	group = root.getElementsByTagName("g")[0];
+	elem.style.width = group.getBoundingClientRect().width + "px";
+	
+	// Make sure it fits the canvas
+	Editor.scale_tex(elem); // Just reduces the font size by 5%
+	
+	// Retrieve symbols from the div element in previous routine
+	var use_tag_array = root.getElementsByTagName("use");
+	var rect_tag_array = root.getElementsByTagName("rect");
 	use_tag_array = Array.prototype.slice.call(use_tag_array);
 	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
 	var elements = use_tag_array.concat(rect_tag_array);
-	var offset = elements[0].getBoundingClientRect();
-	var initial_offset = new Vector2(offset.left, offset.top); 
 	
 	// Sort the svg and canvas elements
-	//var x_pos = Editor.sort_svg_positions(elements);
 	var canvas_elements = Editor.sort_canvas_elements();
-	x_pos = Editor.group_svg([], svg_root.firstChild);
+	x_pos = Editor.group_svg([], root.firstChild);
 	x_pos.sort(Editor.compare_numbers);
 	Editor.print_sorted(x_pos, "use");
 	Editor.print_sorted(canvas_elements, "canvas");	
 	
 	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
-	var default_position = canvas_elements[0].item3.translation;
-	default_position = Editor.center_position(default_position, svg_root);
-	Editor.apply_alignment(x_pos, default_position, canvas_elements, initial_offset);
+	Editor.apply_alignment(x_pos, canvas_elements);
 	transform_action.add_new_transforms(Editor.segments);
 	transform_action.Apply();
 	Editor.add_action(transform_action);
-	x_pos = []; // Clear array
-	document.body.removeChild(elem);
+	x_pos = [];
+	Editor.canvas_div.removeChild(outer_div);
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }
 
@@ -487,53 +506,6 @@ Editor.group_svg = function(elements, g){
 	return elements;
 }
 
-// A small function that returns a new position to start placing segments
-Editor.center_position = function(default_position, svg_root)
-{
-	var canvas_rect = Editor.canvas_div.getBoundingClientRect();
-	var mid_x = Math.round(canvas_rect.width / 2);
-	var mid_y = Math.round(canvas_rect.height / 2);
-	var svg_root_rect = svg_root.getBoundingClientRect();
-	var expre_width = Math.round(svg_root_rect.width);
-	var expre_height = Math.round(svg_root_rect.height);
-	var x = default_position.x;
-	var y = default_position.y;
-	
-	// X position determination
-	if( (default_position.x + expre_width) < mid_x){
-		for(var i = default_position.x; i <= mid_x; i+=30){
-			if( (i < mid_x) && (mid_x < (i+expre_width)) ){
-				x = i+30;
-				break;
-			}
-		}
-	}else{
-		for(var i = default_position.x; i >= mid_x; i-=30){
-			if( ((i-30) < mid_x) && (mid_x < (i+expre_width)) ){
-				x = (i-30);
-				break;
-			}
-		}
-	}
-	// Y position determination
-	if( (default_position.y +  expre_height) < mid_y){
-		for(var i = default_position.y; i <= mid_y; i+=30){
-			if( (i < mid_y) && (mid_y < (i+expre_height)) ){
-				y = i+30;
-				break;
-			}
-		}
-	}else{
-		for(var i = default_position.y; i >= mid_y; i-=30){
-			if( ((i-30) < mid_y) && (mid_y < (i+expre_height)) ){
-				y = (i-30);
-				break;
-			}
-		}
-	}
-	console.log("New x and y position is: (" + x + "," + y + ")");
-	return new Vector2(x,y);
-}
 
 /* Identifies elements on canvas to MathJax rendered SVG and then moves to around to 
    look just like the SVG.
@@ -541,7 +513,7 @@ Editor.center_position = function(default_position, svg_root)
          as an instance. This is set in the RenderManager after recognition is gotten. 
          "PenStroke_Object".Text - Recognition result for the PenStroke
 */
-Editor.apply_alignment = function(array, default_position, canvas_elements, initial_offset)
+Editor.apply_alignment = function(array, canvas_elements)
 {
 	var sqrt_text = String.fromCharCode(parseInt("221A",16));
 	var transformed_segments = new Array(); // holds segment set_ids found
@@ -563,6 +535,7 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 				text = "-";
 		}else
 			text = "-"; // rect element is usually a division symbol which is _dash in Min	
+		
 		console.log("Tex: " +  text);
 		var segments = null; // Segment that matched a given set_id. Can also contain joined strokes
 		var index; // Used to index into RenderManager's segment_set_div to get height and width below
@@ -594,7 +567,6 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 
 			var min_0 = segments[k].world_mins;
 			var max_0 = segments[k].world_maxs;
-			min_0.x -= 10;
 			
 			var size_0 = Vector2.Subtract(max_0, min_0);
 			if(size_0.y == 0)
@@ -606,11 +578,8 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			// Scale segment[k]
 			segments[k].resize(min_0, scale);
             segments[k].freeze_transform();
-            
-            // Determine translation
-    		var in_x = default_position.x + svg_symbol_rect.left - initial_offset.x;
-			var in_y = default_position.y + svg_symbol_rect.top - initial_offset.y;
-			var translation = new Vector2(in_x,in_y);
+			
+			var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
 			
 			// Apply new translation segment[k]
 			var in_offset = Vector2.Subtract(translation, segments[k].translation);
@@ -618,10 +587,8 @@ Editor.apply_alignment = function(array, default_position, canvas_elements, init
 			segments[k].freeze_transform();
 			
 			// Reset the world_min and world_max variables
-			var xmin_0 = segments[k].worldMinDrawPosition();
-    		var ymax_0 = segments[k].worldMaxDrawPosition();
-    		segments[k].world_mins = xmin_0;
-    		segments[k].world_maxs = ymax_0;
+    		segments[k].world_mins = segments[k].worldMinDrawPosition();
+    		segments[k].world_maxs = segments[k].worldMaxDrawPosition();
         }
         if(tex_math.search("sqrt") != -1 && segments[0].text == sqrt_text){
 				Editor.create_segment(svg_root, array);

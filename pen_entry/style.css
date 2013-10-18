@@ -571,3 +571,26 @@ div#equation_canvas.hover{
 	font-weight: bold;
 	display:none;
 }
+
+#outer_div{
+	width: 100%;
+	padding: 0;
+	display: table;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0 auto;
+}
+
+#middle_div{
+	padding: 0;
+	vertical-align: middle;
+	display: table-cell;
+	margin: 0;
+}
+#Alignment_Tex{
+	background-color: grey;
+	margin: 0 auto;
+	text-align: left;
+}
