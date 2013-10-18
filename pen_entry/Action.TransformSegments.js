@@ -6,9 +6,11 @@ function TransformSegments(in_segments)
     this.segments = new Array();
     this.backup_scale = new Array();
     this.backup_translation = new Array();
+    this.backup_world = new Array(); // Tuple representing world_mins, world_maxs
     
     this.new_scale = new Array();
     this.new_translation = new Array();
+    this.new_world = new Array();
     
     for(var k = 0; k < in_segments.length; k++)
     {
@@ -16,6 +18,7 @@ function TransformSegments(in_segments)
         this.segments.push(segment);
         this.backup_scale.push(segment.scale.clone());
         this.backup_translation.push(segment.translation.clone());
+        this.backup_world.push(new Tuple(segment.world_mins.clone(), segment.world_maxs.clone()));
     }
     
     this.frames = 0.0;
@@ -39,6 +42,7 @@ TransformSegments.prototype.add_new_transforms = function(in_segments)
         
         this.new_scale.push(segment.scale.clone());
         this.new_translation.push(segment.translation.clone());
+        this.new_world.push(new Tuple(segment.world_mins.clone(), segment.world_maxs.clone()));
     }
 }
 
@@ -62,6 +66,8 @@ TransformSegments.prototype.rescale = function(elapsed, utc_ms)
             var segment = this.segments[j];    
             segment.scale.Set(Vector2.Add(this.new_scale[j],Vector2.Multiply(fraction, Vector2.Subtract(this.backup_scale[j], this.new_scale[j]))));
             segment.translation.Set(Vector2.Add(this.new_translation[j],Vector2.Multiply(fraction, Vector2.Subtract(this.backup_translation[j], this.new_translation[j]))));
+            segment.world_mins.Set(Vector2.Add(this.new_world[j].item1,Vector2.Multiply(fraction, Vector2.Subtract(this.backup_world[j].item1, this.new_world[j].item1))));
+            segment.world_maxs.Set(Vector2.Add(this.new_world[j].item2,Vector2.Multiply(fraction, Vector2.Subtract(this.backup_world[j].item2, this.new_world[j].item2))));
             segment.update_extents();
         }
     }
@@ -72,6 +78,8 @@ TransformSegments.prototype.rescale = function(elapsed, utc_ms)
             var segment = this.segments[j];    
             segment.scale.Set(Vector2.Add(this.backup_scale[j],Vector2.Multiply(fraction, Vector2.Subtract(this.new_scale[j], this.backup_scale[j]))));
             segment.translation.Set(Vector2.Add(this.backup_translation[j],Vector2.Multiply(fraction, Vector2.Subtract(this.new_translation[j], this.backup_translation[j]))));
+            segment.world_mins.Set(Vector2.Add(this.backup_world[j].item1,Vector2.Multiply(fraction, Vector2.Subtract(this.new_world[j].item1, this.backup_world[j].item1))));
+            segment.world_maxs.Set(Vector2.Add(this.backup_world[j].item2,Vector2.Multiply(fraction, Vector2.Subtract(this.new_world[j].item2, this.backup_world[j].item2))));
             segment.update_extents();
         }    
     }
@@ -129,7 +137,7 @@ TransformSegments.prototype.Undo = function()
 TransformSegments.prototype.shouldKeep = function()
 {
     return this.should_keep;
-    
+    // TODO: The block below isn't necessary. Comment left by ako9833
     for(var k = 0; k < this.segments.length; k++)
     {
         var segment = this.segments[k];
@@ -160,6 +168,7 @@ TransformSegments.prototype.toXML = function()
         var segment = this.segments[k];
         sb.append("\t").append("<Transform instanceID=\"").append(String(segment.instance_id)).append("\" ");
         sb.append("scale=\"").append(this.new_scale[k].toString()).append("\" translation=\"").append(this.new_translation[k].toString()).append("\"/>");
+        sb.append("world_mins=\"").append(this.new_world[k].item1.toString()).append("\" world_maxs=\"").append(this.new_world[k].item2.toString()).append("\"/>");
         sb.appendLine();
         
     }

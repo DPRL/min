@@ -567,8 +567,10 @@ Editor.apply_alignment = function(array, canvas_elements)
 
 			var min_0 = segments[k].world_mins;
 			var max_0 = segments[k].world_maxs;
-			
+			min_0.x -= 6;
+
 			var size_0 = Vector2.Subtract(max_0, min_0);
+		
 			if(size_0.y == 0)
 				size_0.y = min_0.y;
 			if(size_0.x == 0)
@@ -586,7 +588,7 @@ Editor.apply_alignment = function(array, canvas_elements)
 			segments[k].translate(in_offset);
 			segments[k].freeze_transform();
 			
-			// Reset the world_min and world_max variables
+			// Reset the world_min and world_max variables to reflect right dimensions
     		segments[k].world_mins = segments[k].worldMinDrawPosition();
     		segments[k].world_maxs = segments[k].worldMaxDrawPosition();
         }
