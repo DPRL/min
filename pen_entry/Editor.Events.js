@@ -337,15 +337,17 @@ Editor.get_canvas_elements_dimensions = function()
 	var min_height = 9999;
 	var min_width = 9999;
 	for(var i = 0; i < RenderManager.segment_set_divs.length; i++){
-		var h = RenderManager.segment_set_divs[i].getBoundingClientRect();
-		if(h.bottom > max_height)
-			max_height = h.bottom;
-		if(h.top < min_height)
-			min_height = h.top;
-		if(h.right > max_width)
-			max_width = h.right;
-		if(h.left < min_width)
-			min_width = h.left;		
+		if(RenderManager.segment_set_divs[i].style.visibility == "visible"){
+			var h = RenderManager.segment_set_divs[i].getBoundingClientRect();
+			if(h.bottom > max_height)
+				max_height = h.bottom;
+			if(h.top < min_height)
+				min_height = h.top;
+			if(h.right > max_width)
+				max_width = h.right;
+			if(h.left < min_width)
+				min_width = h.left;	
+		}	
 	}
 	//console.log("Computed width: " +  (max_width - min_width) + "  height: " + (max_height - min_height));
 	return new Tuple((max_width - min_width), (max_height - min_height));
@@ -389,6 +391,7 @@ Editor.copy_tex = function(elem, outer_div)
 	
 	// Make sure it fits the canvas
 	Editor.scale_tex(elem); // Just reduces the font size by 5%
+	root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	
 	// Retrieve symbols from the div element in previous routine
 	var use_tag_array = root.getElementsByTagName("use");
@@ -406,7 +409,7 @@ Editor.copy_tex = function(elem, outer_div)
 	
 	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
-	Editor.apply_alignment(x_pos, canvas_elements);
+	Editor.apply_alignment(x_pos, canvas_elements, root);
 	transform_action.add_new_transforms(Editor.segments);
 	transform_action.Apply();
 	Editor.add_action(transform_action);
@@ -415,7 +418,7 @@ Editor.copy_tex = function(elem, outer_div)
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }
 
-Editor.create_segment = function(root, x_pos){
+Editor.create_segment = function(x_pos){
 	var sqrt;
 	var horizontal_bar;
 	var found = false;
@@ -513,7 +516,7 @@ Editor.group_svg = function(elements, g){
          as an instance. This is set in the RenderManager after recognition is gotten. 
          "PenStroke_Object".Text - Recognition result for the PenStroke
 */
-Editor.apply_alignment = function(array, canvas_elements)
+Editor.apply_alignment = function(array, canvas_elements, root)
 {
 	var sqrt_text = String.fromCharCode(parseInt("221A",16));
 	var transformed_segments = new Array(); // holds segment set_ids found
@@ -562,15 +565,75 @@ Editor.apply_alignment = function(array, canvas_elements)
 		}else{
 			size_f = new Vector2(svg_symbol_rect.width, svg_symbol_rect.height);
 		}
-		
+		console.log("i : " +  i + " size_f: " + size_f);
+		//continue;
 		for(var k = 0; k < segments.length; k++){ 
+			var min_0, max_0, size_0;
+			if(segments[k].constructor == TeX_Input){ // try scaling TeX_Input like you did when creating TeX_Input
+				/*min_0 = segments[k].worldMinDrawPosition();
+				max_0 = segments[k].worldMaxDrawPosition();
+				
+				size_0 = Vector2.Subtract(max_0, min_0);
+				var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
+				segments[k].resize(min_0, scale);
+           		segments[k].freeze_transform();
+           		
+				var original_width =  segments[k].inner_svg.getBBox().width;
+				var original_height = segments[k].inner_svg.getBBox().height;
 
-			var min_0 = segments[k].world_mins;
-			var max_0 = segments[k].world_maxs;
+				size_0 = new Vector2((size_f.x/original_width),(size_f.y/original_height));
+				//segments[k].resize(segments[k].world_mins, size_0);
+           		//segments[k].freeze_transform();
+				segments[k].scale = size_0.clone();
+				console.log("Scale: " + size_0);*/
+				
+			}else{
+				//min_0 = segments[k].world_mins;
+				//max_0 = segments[k].world_maxs;
+				//min_0.x -= 6;
+				
+				/*var rect = segments[k].inner_svg.getBoundingClientRect();
+				var new_width = (size_f.x / size_f.y) * rect.height;
+				var new_height = (size_f.x / size_f.y) * rect.width;
+				
+				var scale = new Vector2(size_f.x / new_width, size_f.y / new_height);
+				segments[k].scale = scale.clone();*/
+				
+				/*var x_factor = size_f.x / rect.width;
+				var y_factor = size_f.y / rect.height;
+				
+				
+				var scale = new Vector2(x_factor, y_factor);
+				segments[k].resize(min_0, scale);
+           		segments[k].freeze_transform();	*/			
+				
+				
+				/*size_0 = new Vector2(segments[k].inner_svg.getBBox().width, segments[k].inner_svg.getBBox().height);
+				var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);*/
+				
+				/*	SCREEN CTM METHOD
+				var m = root.getTransformToElement(svg_symbol);
+				//var CTM = svg_symbol.getCTM();
+				var scale = new Vector2(Math.abs(m.a), Math.abs(m.d));
+				console.log("Scale penstroke: " + scale);
+				//segments[k].scale = scale.clone();
+				
+				segments[k].resize(min_0, scale);
+           		segments[k].freeze_transform();*/
+           		
+           		//Scale factor again
+           		/*var rect = Vector2.Subtract(segments[k].worldMaxDrawPosition(), segments[k].worldMinDrawPosition());
+           		//var factor = Math.min(size_f.x/rect.width, size_f.y/ rect.height);
+				var scale = new Vector2(size_f.x / (rect.x), size_f.y / (rect.y));
+				segments[k].scale = scale.clone();*/
+			}
+			
+			min_0 = segments[k].world_mins;
+			max_0 = segments[k].world_maxs;
 			min_0.x -= 6;
 
-			var size_0 = Vector2.Subtract(max_0, min_0);
-		
+			size_0 = Vector2.Subtract(max_0, min_0);
+			
 			if(size_0.y == 0)
 				size_0.y = min_0.y;
 			if(size_0.x == 0)
@@ -589,11 +652,13 @@ Editor.apply_alignment = function(array, canvas_elements)
 			segments[k].freeze_transform();
 			
 			// Reset the world_min and world_max variables to reflect right dimensions
+			
     		segments[k].world_mins = segments[k].worldMinDrawPosition();
     		segments[k].world_maxs = segments[k].worldMaxDrawPosition();
+    		
         }
         if(tex_math.search("sqrt") != -1 && segments[0].text == sqrt_text){
-				Editor.create_segment(svg_root, array);
+				Editor.create_segment(array);
 		}
 	}
 }
