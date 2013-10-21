@@ -305,7 +305,7 @@ Editor.align = function()
                 // Main div with content in it
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "visible";
+				elem.style.visibility = "hidden";
 				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
 				
@@ -409,7 +409,7 @@ Editor.copy_tex = function(elem, outer_div)
 	
 	// Start transformation process and alignment process.
 	var transform_action = new TransformSegments(Editor.segments);
-	Editor.apply_alignment(x_pos, canvas_elements, root);
+	Editor.apply_alignment(x_pos, canvas_elements);
 	transform_action.add_new_transforms(Editor.segments);
 	transform_action.Apply();
 	Editor.add_action(transform_action);
@@ -516,7 +516,7 @@ Editor.group_svg = function(elements, g){
          as an instance. This is set in the RenderManager after recognition is gotten. 
          "PenStroke_Object".Text - Recognition result for the PenStroke
 */
-Editor.apply_alignment = function(array, canvas_elements, root)
+Editor.apply_alignment = function(array, canvas_elements)
 {
 	var sqrt_text = String.fromCharCode(parseInt("221A",16));
 	var transformed_segments = new Array(); // holds segment set_ids found
@@ -565,84 +565,44 @@ Editor.apply_alignment = function(array, canvas_elements, root)
 		}else{
 			size_f = new Vector2(svg_symbol_rect.width, svg_symbol_rect.height);
 		}
-		console.log("i : " +  i + " size_f: " + size_f);
-		//continue;
+
 		for(var k = 0; k < segments.length; k++){ 
-			var min_0, max_0, size_0;
-			if(segments[k].constructor == TeX_Input){ // try scaling TeX_Input like you did when creating TeX_Input
-				/*min_0 = segments[k].worldMinDrawPosition();
-				max_0 = segments[k].worldMaxDrawPosition();
-				
-				size_0 = Vector2.Subtract(max_0, min_0);
-				var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
-				segments[k].resize(min_0, scale);
-           		segments[k].freeze_transform();
-           		
-				var original_width =  segments[k].inner_svg.getBBox().width;
-				var original_height = segments[k].inner_svg.getBBox().height;
-
-				size_0 = new Vector2((size_f.x/original_width),(size_f.y/original_height));
-				//segments[k].resize(segments[k].world_mins, size_0);
-           		//segments[k].freeze_transform();
-				segments[k].scale = size_0.clone();
-				console.log("Scale: " + size_0);*/
-				
+			
+			if(!segments[k].align_size){
+				var rect = segments[k].inner_svg.firstChild.getBBox();
+				if(rect.width == 0)
+					rect.width = segments[k].world_mins.x;
+				if(rect.height == 0)
+					rect.height = segments[k].world_mins.y;
+				rect.width += 12;
+				var scale = new Vector2(size_f.x/ rect.width, size_f.y / rect.height);
+				segments[k].scale = scale.clone();
+				segments[k].align_size = true;
 			}else{
-				//min_0 = segments[k].world_mins;
-				//max_0 = segments[k].world_maxs;
-				//min_0.x -= 6;
-				
-				/*var rect = segments[k].inner_svg.getBoundingClientRect();
-				var new_width = (size_f.x / size_f.y) * rect.height;
-				var new_height = (size_f.x / size_f.y) * rect.width;
-				
-				var scale = new Vector2(size_f.x / new_width, size_f.y / new_height);
-				segments[k].scale = scale.clone();*/
-				
-				/*var x_factor = size_f.x / rect.width;
-				var y_factor = size_f.y / rect.height;
-				
-				
-				var scale = new Vector2(x_factor, y_factor);
-				segments[k].resize(min_0, scale);
-           		segments[k].freeze_transform();	*/			
-				
-				
-				/*size_0 = new Vector2(segments[k].inner_svg.getBBox().width, segments[k].inner_svg.getBBox().height);
-				var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);*/
-				
-				/*	SCREEN CTM METHOD
-				var m = root.getTransformToElement(svg_symbol);
-				//var CTM = svg_symbol.getCTM();
-				var scale = new Vector2(Math.abs(m.a), Math.abs(m.d));
-				console.log("Scale penstroke: " + scale);
-				//segments[k].scale = scale.clone();
-				
-				segments[k].resize(min_0, scale);
-           		segments[k].freeze_transform();*/
-           		
-           		//Scale factor again
-           		/*var rect = Vector2.Subtract(segments[k].worldMaxDrawPosition(), segments[k].worldMinDrawPosition());
-           		//var factor = Math.min(size_f.x/rect.width, size_f.y/ rect.height);
-				var scale = new Vector2(size_f.x / (rect.x), size_f.y / (rect.y));
-				segments[k].scale = scale.clone();*/
-			}
 			
-			min_0 = segments[k].world_mins;
-			max_0 = segments[k].world_maxs;
-			min_0.x -= 6;
+				var new_mins = segments[k].worldMinDrawPosition();
+				var new_maxs = segments[k].worldMaxDrawPosition();
+				var min_0 = segments[k].world_mins;
+				var max_0 = segments[k].world_maxs;
+				if(!Vector2.Subtract(max_0, min_0).equals(Vector2.Subtract(new_maxs, new_mins))){
+					min_0 = new_mins;
+					max_0 = new_maxs;
+				}
+				min_0.x -= 6;
 
-			size_0 = Vector2.Subtract(max_0, min_0);
+				var size_0 = Vector2.Subtract(max_0, min_0);
+		
+				if(size_0.y == 0)
+					size_0.y = min_0.y;
+				if(size_0.x == 0)
+					size_0.x = min_0.x;
+				var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
+		
+				// Scale segment[k]
+				segments[k].resize(min_0, scale);
+				segments[k].freeze_transform();
 			
-			if(size_0.y == 0)
-				size_0.y = min_0.y;
-			if(size_0.x == 0)
-				size_0.x = min_0.x;
-			var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
-			
-			// Scale segment[k]
-			segments[k].resize(min_0, scale);
-            segments[k].freeze_transform();
+			}
 			
 			var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
 			

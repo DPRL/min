@@ -63,7 +63,8 @@ TransformSegments.prototype.rescale = function(elapsed, utc_ms)
     {
         for(var j = 0; j < this.segments.length; j++)
         {
-            var segment = this.segments[j];    
+            var segment = this.segments[j]; 
+            segment.align_size = false;
             segment.scale.Set(Vector2.Add(this.new_scale[j],Vector2.Multiply(fraction, Vector2.Subtract(this.backup_scale[j], this.new_scale[j]))));
             segment.translation.Set(Vector2.Add(this.new_translation[j],Vector2.Multiply(fraction, Vector2.Subtract(this.backup_translation[j], this.new_translation[j]))));
             segment.world_mins.Set(Vector2.Add(this.new_world[j].item1,Vector2.Multiply(fraction, Vector2.Subtract(this.backup_world[j].item1, this.new_world[j].item1))));
