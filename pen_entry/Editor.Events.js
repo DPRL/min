@@ -305,7 +305,7 @@ Editor.align = function()
                 // Main div with content in it
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "hidden";
+				elem.style.visibility = "visible";
 				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
 				
@@ -418,6 +418,7 @@ Editor.copy_tex = function(elem, outer_div)
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }
 
+// Creates a square root horizontal line and appends it to RenderManager's div for the sqrt
 Editor.create_segment = function(x_pos){
 	var sqrt;
 	var horizontal_bar;
@@ -565,7 +566,8 @@ Editor.apply_alignment = function(array, canvas_elements)
 		}else{
 			size_f = new Vector2(svg_symbol_rect.width, svg_symbol_rect.height);
 		}
-
+		console.log("Size_f: " + size_f);
+		//Editor.draw_rect(svg_symbol_rect);
 		for(var k = 0; k < segments.length; k++){ 
 			
 			if(!segments[k].align_size){
@@ -621,6 +623,20 @@ Editor.apply_alignment = function(array, canvas_elements)
 				Editor.create_segment(array);
 		}
 	}
+}
+
+Editor.draw_rect = function(dim){
+	var div = document.createElement('div');
+	div.className = Editor.current_mode.segment_style_class;
+	div.style.visibility='visible';
+	document.body.appendChild(div)
+	div.style.visibility = "visible";
+	div.style.left = dim.left + "px";
+	div.style.top = dim.top + "px";
+	div.style.width = dim.width + "px";
+	div.style.height = dim.height + "px";
+	div.style.backgroundColor = "red";
+	div.style.opacity = "0.4";
 }
 
 /*
