@@ -1,4 +1,8 @@
-
+/*
+	As the name suggests, this file holds the correction menu's symbol tree.
+   	It's essentially responsible for created a tree node which is used by pop up
+ 	correction menu when the user wants to correct a mis-recognized symbol.
+*/
 NodeType = {Symbol:0, Category:1}
 
 function Node()

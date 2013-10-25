@@ -1,3 +1,6 @@
+/*
+	Defines a command object which deletes segments from the canvas when applied.
+*/
 DeleteSegments = function(in_segments)
 {
     this.segments = in_segments.clone();

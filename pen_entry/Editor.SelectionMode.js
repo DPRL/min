@@ -1,6 +1,6 @@
 /*
-This file contains events handlers that are used in Selection modes (Box/Stroke) 
-of Min
+	This file contains events handlers that are used in Selection modes specifically the 
+	rectangle selection mode currently present.
 */
 
 SelectionMode.prototype = new EditorMode();

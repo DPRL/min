@@ -1,7 +1,11 @@
-/// BoundinggBox
+/*
+	This file defines an object which represents the bounding box which surrounds objects
+    on the canvas when they are clicked or selected.
 
-//input: two opposing corners (a.x != b.x and a.y != b.y)
-
+    Methods:
+		translate - translates the bounding box on the screen by a given offset.
+		edge_clicked - determine which edge of the box was clicked based on a given point.
+*/
 function BoundingBox(corner_a, corner_b, render_corner_a, render_corner_b)
 {
     // set up logical mins for resizing

@@ -1,3 +1,6 @@
+/*
+	Defines a command object to undo/redo text additions to the canvas via keyboard.
+*/
 EditText = function(in_text_segment)
 {
     this.text_segment = in_text_segment;

@@ -1,3 +1,7 @@
+/*
+	These objects represent redo actions, but are never, and should never actually
+    be used.
+*/
 function Redo()
 {
 

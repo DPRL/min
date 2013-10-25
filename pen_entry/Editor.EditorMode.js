@@ -1,10 +1,10 @@
 /*
-This object is the parent of all modes for the editor.
-It defines the interface that an editor mode should have and also
-contains code to be used by all events descended from it.
+	This object is the parent of all modes for the editor.
+	It defines the interface that an editor mode should have and also
+	contains code to be used by all events descended from it.
 
-This constructor will check if we're on a touch device or a computer
-and then select the appropriate events from that.
+	This constructor will check if we're on a touch device or a computer
+	and then select the appropriate events from that.
 */
 function EditorMode(){
     if(Modernizr.touch){

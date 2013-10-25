@@ -1,5 +1,15 @@
-// a datastructure representing the top N recognition results
+/*
+This file contains objects used for recognition results. It manages the classification
+        queue, and also keeps a list of recognitions for display on Min's canvas.
 
+        Some methods are:
+			enqueue_segment: add a segment to the classification queue.
+			classify_queued: Classify each object in the queue.
+			fromXML: Give a RecognitionResult XML element and add the recognition to the system.
+			addRecognitionForText: Add a recognition for a SymbolSegment.
+			getRecognition: Returns the recognition associated with a set.
+			addRecognitionForText: Adds a recognition for a SymbolSegment.
+*/
 function RecognitionResult()
 {
     // list of symbols

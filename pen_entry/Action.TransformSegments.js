@@ -1,4 +1,9 @@
-
+/*
+	This file is responsible for handling all the animation that occurs when undo, redoing 
+	, and resizing segments on the canvas.
+	It does some of it job by storing the old translation, scale and any other object that
+	is needed and also applying the new values to the canvas segment(s).
+*/
 TransformSegments.animation_length = 0.25;
 
 function TransformSegments(in_segments)

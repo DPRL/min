@@ -1,5 +1,5 @@
 /*
-This file contains events and information specific to rectangle selection.
+	This file contains events and information specific to rectangle selection.
 */
 
 // CMS: Perhaps just use the object in Editor.modes instead of making another

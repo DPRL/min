@@ -1,4 +1,9 @@
 /*
+	This file contains methods that display and render the expression on the slider.
+	The slider widget was adopted from the famous iosSlider widget out there.
+*/
+
+/*
  * Initializes iosSlider.
  */
 function Slider() {

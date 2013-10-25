@@ -1,4 +1,13 @@
-// NOTE: this is the class for characters.
+/*
+	This file contains objects which represent segments added to the canvas via keyboard.
+
+    Methods:
+		addCharacter: Add another character to this SymbolSegment.
+		popCharacter: Remove a character from this SymbolSegment.
+		finishEntry: This function takes the string in this SymbolSegment and uses the 
+					TeX_Input class to render the typed in expression.
+
+*/
 
 SymbolSegment.count = 0;
 SymbolSegment.type_id = 3;

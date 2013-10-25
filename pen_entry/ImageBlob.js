@@ -1,3 +1,15 @@
+/*
+	Represents an image that has been uploaded to Min from the user's desktop.
+
+    Methods:
+		initialize_blob: take coordinates for the image blob to be displayed at and add
+		   it to the canvas. This needs to be run after the ImageBlob constructor to work.
+		populateCanvasFromCCs: Takes an xmldoc coming from the image recognition server
+		containing image blobs and populates the screen with them. This takes care of the
+		fact that one ImageBlob will probably turn into many ImageBlobs after being sent
+		through the recognition server.
+
+*/
 ImageBlob.count = 0;
 ImageBlob.type_id = 4;    // unique per class
 ImageBlob.chalk_layer = true;

@@ -1,3 +1,20 @@
+/*
+	This class contains some of the logic and events for the Editor as a whole. 
+        
+        Events are defined for the following:
+			onImageLoad (browsers supporting FileReader only)
+        Methods that change the state of the editor are:
+               1. groupTool - Adds selected segments to one segment group.
+               2. deleteTool
+               3. typeTool
+               4. relabel
+               5. clear
+        Other methods:
+               1. align - Align objects on the canvas and populate the query bar with a LaTeX
+               string.
+               2. search - submit the LaTeX query to a search engine.
+    		      etc
+*/
 var EditorState = 
     {
         // select tool states

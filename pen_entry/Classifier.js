@@ -1,3 +1,9 @@
+/*
+	This file, Classifier, sends the collected points from the user to the classifier.
+	When the result is returned, it parses the recognition result and adds it to the 
+	RecognitionManager's result table.
+*/
+
 function Classifier()
 {
     

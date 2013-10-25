@@ -1,6 +1,10 @@
 /*
-This file contains event handlers for use in the drawing
-mode of Min.
+	This file contains event handlers for use in the drawing
+	mode of Min.
+	
+	The onDownBase, onMoveBase and onUpBase methods are responsible for collecting the 
+	user's mouse movement coordinates and passing that coordinate to the PenStroke object
+	associated with the particular user action.
 */
 
 // For now this hierarchy doesn't matter, as we don't make instances

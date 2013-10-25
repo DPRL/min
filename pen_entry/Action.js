@@ -1,4 +1,8 @@
- /** Actions are things the user can undo (adding segments, deleting segments, moving segments, and resizing segments) **/
+/*
+ 	Defines the interface for command objects that can be undone/redone.
+  	Actions are things the user can undo (adding segments, deleting segments,
+  	moving segments, and resizing segments).
+*/
  
  Action = function()
  {

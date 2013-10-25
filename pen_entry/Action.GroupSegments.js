@@ -1,3 +1,8 @@
+/*
+	Defines and object to group segments together into a single set. For example,
+    selecting multiple strokes with stroke select, then clicking/touching and holding
+    them creates and applies a GroupSegments object.
+*/
 GroupSegments = function(in_segments, in_new_set_id)
 {
     this.segments = new Array();

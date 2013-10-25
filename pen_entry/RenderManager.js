@@ -1,18 +1,14 @@
-// IMPORTANT NOTE:
-//
-// The function that controls which objects are rendered in which layer is controlled
-// by a switch statement in the RenderManager.render_set_field() function.a
-//
-// (rlaz)
+/* 
+	This file has objects and functions for drawing objects on the canvas. Mainly 
+	responsible for the visible bounding boxes that appear in rect select mode
 
-/*
-  5 layers:
-
-  0 pen strokes
-  1 equation image blobs
-  2 typed text
-  3 math recognition layer
-  4 tools layer
+    Major methods are:
+		render_tools_layer: Render the boudning box, segments, rectangle selection box etc.
+		render: Go through all object on screen and render them, this mainly updates SVG
+		values, the browser actually draws the object on screen.
+		colorOCRbbs: Set the color of the translucent blue/red boxes based on the Editor's
+		state.
+		render_set_field: Creates and renders the OCR layer above a symbol.
 */
 
 function RenderManager()

@@ -1,6 +1,6 @@
-/**
+/*
    Composite Actions are comprised of several other actions.
-**/
+*/
 CompositeAction.prototype = new Action();
 
 function CompositeAction(){

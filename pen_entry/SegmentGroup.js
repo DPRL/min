@@ -1,5 +1,6 @@
-// this is a group of segments
-
+/* 
+	This file contains methods for grouped segments
+*/
 SegmentGroup.count = 0;
 SegmentGroup.type_id = 1;
 function SegmentGroup()

@@ -1,5 +1,7 @@
-// This is the interface for all elements in the expression (image, stroke, text, etc)
-
+/* 
+	This file defines the interface for Segments.
+	The interface for all elements in the expression (image, stroke, text, etc)
+*/
 Segment.count = 0;
 Segment.set_count = 0;
 Segment.chalk_layer = true; // Whether or not this segment belongs to the chalk layer

@@ -1,5 +1,7 @@
-// collision manager stores all of our Segments and tests for point collisions from mouse
-
+/*
+	Defines an object which stores Segments and can test if the mouse's position collides with
+    one of the segments on the canvas. 
+*/
 function CollisionManager()
 {
     

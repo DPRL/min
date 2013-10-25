@@ -1,9 +1,7 @@
-/* IMPORTANT!
- *
+/* 
+ * This file contains the CSS rules used while Min is running.
  * See also the file Editor.Constants.js, where a number of other color attributes
  * are defined. URLs for recognition services are also defined there.
- *
- * (rlaz)
  */
 body {
 	background-color: #BBBBBB;

@@ -1,7 +1,7 @@
 /*
   This is the menu that appears to allow the user to manually enter the symbol that they want.
 */
-// CMS: TODO: Consider making the correct menu an editor state in and of itself
+
 function CorrectionMenu()
 {
     

@@ -1,3 +1,9 @@
+/*
+ 	Anything that has to do with the pen strokes and the points resides in this file.
+  	It's instantiated whenever there is a mouse down event by the user.
+  	The pen strokes points are collected and inserted inside an SVG object and then DOM. 
+*/
+
 // points are stored in local space
 PenStroke.count = 0;
 PenStroke.type_id = 2;

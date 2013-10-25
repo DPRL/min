@@ -1,4 +1,7 @@
-
+/*
+	This file is responsible for adding new segments into min. It's called whenever 
+	a new segment is created either a PenStroke, TeX_Input or Image object.
+*/
 
 AddSegments = function(in_segments)
 {

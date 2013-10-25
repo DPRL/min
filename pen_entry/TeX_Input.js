@@ -2,7 +2,9 @@
 	This file is responsible for transferring the MathJax rendered SVG in the 
 	div with id Hidden_Tex to the canvas. It is a sub class of the PenStroke file.
 	Note: The polyline gotten from the path element has to be converted to an image in order
-		  to allow for reclassification. Don't really think editing is gonna happen.
+		  to allow for reclassification.
+	Software: Uses the Raphael software to successfully convert the SVG path element to 
+			  equivalent polyline representation.
 */
 TeX_Input.type_id = 5;    // unique per class
 function TeX_Input(MathJax_symbol, in_x, in_y, in_line_width, index){

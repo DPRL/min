@@ -1,3 +1,12 @@
+/*
+	This file contains event handlers and methods for changing the state of the buttons that
+    appear along the top of min.
+
+    ButtonState: An object which holds and manages the state of a button (enabled, touched).
+
+    Methods:
+        Editor.build_buttons - Add ButtonStates for each of the buttons at the top of min.
+*/
 function Buttons()
 {
 

@@ -1,12 +1,19 @@
-// editor object will have multiple layers (each a canvas):
-    // imported image layer
-    // stroke layer
-    // bounding box layer
+/*
+		Contains code for managing the canvas. Originally there was supposed to be a canvas for each
+        layer (image layer, stroke layer, bounding box layer), but currently Min is implemented with
+        only one.
 
-//  multiple tools
-    // pen
-    // select
-
+        Methods:
+                1. save_state/restore_state: Save and restore Min states in their
+                entirety. Currently not used.
+                2. 
+                3. add_selected_segment - Mark a segment as selected so the bounding box appears
+                around it.
+                4. update_selected_bb - Update the location and size of the bounding box based on
+                the location and sizes of the selected segments.
+                5. remove_segment/remove_selected_segment
+                6. add_canvas - create a canvas and add it to the list of contexts (canvases)
+*/
 function Editor() {}
     
 Editor.instance = null;

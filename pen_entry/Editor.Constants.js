@@ -1,3 +1,8 @@
+/*
+*	This file contains a set of constants affecting how min behaves such as the list of
+    recognition servers and the server which performs alignment.
+*/
+
 /* Colors (3 byte hex) */
 //Editor.segment_color = "#BBBBBB"; 
 Editor.segment_color = "#FF4444"; 

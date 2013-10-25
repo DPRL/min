@@ -1,4 +1,15 @@
-/// TUPLE
+/* 
+ 	Contains the Vector2 object which is used to create vectors of length 2 and methods for
+    doing math on them. Vector2s are typically used in Min to represent (x,y) coordinates.
+
+    Methods includes but not limited to:
+		Pointwise
+		SquareDistance
+		Distance
+		Subtract
+		Multiply
+		transform: Translates and scales a Vector2
+*/
 function Tuple(a,b,c,d,e,f,g,h)
 {
     this.item1 = a;

@@ -1,6 +1,12 @@
 /* 
-This file contains events that are permanent and remain unchanged
-throughout throughout a run of Min. e.g. buttons
+	This file contains events that are permanent and remain unchanged
+	throughout throughout a run of Min. e.g. buttons and their event handlers.
+	
+	This method also handles URL argument passing which currently only works with TeX. 
+	It retrieves the TeX from the URL, renders it using MathJax, creates a new TeX_Input 
+	object for each character and adds it to the canvas.
+	
+	This file is also responsible for all drag and drop operations in Min.
 */
 
 function PermEvents(){}
