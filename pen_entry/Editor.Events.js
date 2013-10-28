@@ -575,9 +575,12 @@ Editor.apply_alignment = function(array, canvas_elements)
 				if(rect.height == 0)
 					rect.height = segments[k].world_mins.y;
 				var s = Math.max(size_f.x/ rect.width, size_f.y / rect.height);
+				var s2 = Math.min(size_f.x/ rect.width, size_f.y / rect.height);
 				rect.width += 12;
 				var scale = new Vector2(size_f.x/ rect.width, size_f.y / rect.height);
-				if(segments[k].constructor == TeX_Input)
+				if(segments[k].constructor == TeX_Input && text == "-")
+					segments[k].scale = new Vector2(s2,s);
+				else if(segments[k].constructor == TeX_Input && text != "-")
 					segments[k].scale = new Vector2(s,s);
 				else
 					segments[k].scale = scale.clone();
