@@ -566,8 +566,6 @@ Editor.apply_alignment = function(array, canvas_elements)
 		}else{
 			size_f = new Vector2(svg_symbol_rect.width, svg_symbol_rect.height);
 		}
-		console.log("Size_f: " + size_f);
-		//Editor.draw_rect(svg_symbol_rect);
 		for(var k = 0; k < segments.length; k++){ 
 			
 			if(!segments[k].align_size){
@@ -576,12 +574,15 @@ Editor.apply_alignment = function(array, canvas_elements)
 					rect.width = segments[k].world_mins.x;
 				if(rect.height == 0)
 					rect.height = segments[k].world_mins.y;
+				var s = Math.max(size_f.x/ rect.width, size_f.y / rect.height);
 				rect.width += 12;
 				var scale = new Vector2(size_f.x/ rect.width, size_f.y / rect.height);
-				segments[k].scale = scale.clone();
+				if(segments[k].constructor == TeX_Input)
+					segments[k].scale = new Vector2(s,s);
+				else
+					segments[k].scale = scale.clone();
 				segments[k].align_size = true;
 			}else{
-			
 				var new_mins = segments[k].worldMinDrawPosition();
 				var new_maxs = segments[k].worldMaxDrawPosition();
 				var min_0 = segments[k].world_mins;
@@ -590,31 +591,25 @@ Editor.apply_alignment = function(array, canvas_elements)
 					min_0 = new_mins;
 					max_0 = new_maxs;
 				}
-				min_0.x -= 6;
-
 				var size_0 = Vector2.Subtract(max_0, min_0);
-		
 				if(size_0.y == 0)
 					size_0.y = min_0.y;
 				if(size_0.x == 0)
 					size_0.x = min_0.x;
 				var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
-		
-				// Scale segment[k]
 				segments[k].resize(min_0, scale);
 				segments[k].freeze_transform();
-			
 			}
-			
+
 			var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
-			
+			if(segments[k].constructor == TeX_Input)
+				translation.y -= 12;
 			// Apply new translation segment[k]
 			var in_offset = Vector2.Subtract(translation, segments[k].translation);
 			segments[k].translate(in_offset);
 			segments[k].freeze_transform();
 			
 			// Reset the world_min and world_max variables to reflect right dimensions
-			
     		segments[k].world_mins = segments[k].worldMinDrawPosition();
     		segments[k].world_maxs = segments[k].worldMaxDrawPosition();
     		
@@ -625,6 +620,7 @@ Editor.apply_alignment = function(array, canvas_elements)
 	}
 }
 
+// Utility function used to see the bounding rectangle
 Editor.draw_rect = function(dim){
 	var div = document.createElement('div');
 	div.className = Editor.current_mode.segment_style_class;
