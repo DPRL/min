@@ -305,7 +305,7 @@ Editor.align = function()
                 // Main div with content in it
                 var elem = document.createElement("div");
 				elem.setAttribute("id","Alignment_Tex");
-				elem.style.visibility = "visible";
+				elem.style.visibility = "hidden";
 				elem.style.fontSize = "500%";
 				elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
 				
