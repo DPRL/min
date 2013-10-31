@@ -96,15 +96,15 @@ SymbolSegment.prototype.finishEntry = function() {
 
 // Scales the Tex to fit canvas width and height before insertion
 // Moved here because many classes will make use of it
-SymbolSegment.scale_tex = function(elem){
+SymbolSegment.scale_tex = function(elem,translation){
 	var equation_canvas_width = $("#equation_canvas")[0].offsetWidth;
 	var equation_canvas_height = $("#equation_canvas")[0].offsetHeight;
 	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0].firstChild.getBoundingClientRect();
-	var math_width = Math.round(MathJax_div.width);
-	var math_height = Math.round(MathJax_div.height);
+	var math_width = Math.round(MathJax_div.width) + translation.x;
+	var math_height = Math.round(MathJax_div.height) + translation.y;
 	if(math_width > equation_canvas_width || math_height > equation_canvas_height){ 
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
-		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(SymbolSegment.scale_tex(elem), this)]);
+		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(SymbolSegment.scale_tex(elem, translation), this)]);
 	}else{
 		return;
 	}
@@ -112,7 +112,7 @@ SymbolSegment.scale_tex = function(elem){
 
 // Method that just helps with the recursion in scale_tex
 SymbolSegment.stub = function(elem,translation){
-	SymbolSegment.scale_tex(elem); // scale tex
+	SymbolSegment.scale_tex(elem, translation); // scale tex
 	SymbolSegment.switch_to_svg(elem,translation);
 	document.body.removeChild(elem); // Remove elem from document body (Import done)
 }
