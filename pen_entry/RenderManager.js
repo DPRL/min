@@ -15,6 +15,7 @@ function RenderManager()
 {
 }
 
+// Called when Min starts up. It just initializes the RenderManager
 RenderManager.initialize = function(in_width, in_height, in_layers)
 {
     RenderManager.width = in_width;
@@ -100,6 +101,7 @@ RenderManager.render_selection_box = function(in_min, in_max, in_context_id)
     RenderManager.selection_box.style.visibility = "visible";
 }
 
+// render the bounding box
 RenderManager.render_bb = function(in_bb, in_context_id)
 {
     // rlaz: Modified to clean up appearance of selection boxes.
@@ -137,6 +139,8 @@ RenderManager.colorOCRbbs = function(classname) {
 
 /*
 	This method is responsible for displaying the bounding box over a segment
+	and the SVG that's in the bounding box div.
+	Each bounding box is a div 
 */
 RenderManager.render_set_field = function(in_context_id)
 {
@@ -263,6 +267,7 @@ RenderManager.start_display = function(ss_div,tex,set_segments){
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
+// Called when user is resizing a bounding box or a group of them
 RenderManager.render_svg = function(BBox_div, set_segments){
 	var element,x_offset,y_offset;
 	var svg_root = BBox_div.firstChild;
@@ -425,6 +430,7 @@ RenderManager.decrease_stroke_opacity = function(){
 
 }
 
+// Hide bounding boxes that are not used
 RenderManager.unrender_set_field = function()
 {
     for(var k = 0; k < RenderManager.segment_set_divs.length; k++)

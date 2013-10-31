@@ -147,7 +147,7 @@ Editor.onKeyPress = function(e)
         return;
 }
 /*
-	Performs alignment to the segments on the canvas
+	Performs alignment to the segments on the canvas, sends request to Draculae
 */
 Editor.align = function()
 {

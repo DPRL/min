@@ -43,6 +43,7 @@ function DrawMode(){
     // DrawMode.prototype.onDown.call(this, e);
 }
 
+// DrawMode's init method. Called when entering DrawMode
 DrawMode.prototype.init_mode = function(){  
     RenderManager.colorOCRbbs(this.segment_style_class);
     this.selectPenTool();
@@ -66,6 +67,7 @@ DrawMode.prototype.init_mode = function(){
     RenderManager.decrease_stroke_opacity();
 }
 
+// DrawMode's close method. Called when leaving DrawMode
 DrawMode.prototype.close_mode = function(){
    if(Editor.current_text != null){
         this.stopTextInput();
@@ -78,11 +80,7 @@ DrawMode.prototype.close_mode = function(){
    $(document).off('keypress', this.onKeyPress);
 }
 
-//var saveMouseState = function(){
-//}
-//
-//DrawMode.prototype.getPosAndState = 
-
+// Called when user is done typing on the canvas
 DrawMode.prototype.stopTextInput = function(e){
     Editor.current_text.finishEntry();
     if(Editor.current_action.toString() == "EditText")
@@ -96,6 +94,7 @@ DrawMode.prototype.stopTextInput = function(e){
     RenderManager.render();
 }
 
+// Called when user clicks on the canvas, binds move events too
 DrawMode.onDownBase = function(e){
 
 	if(this.single_click)
@@ -119,6 +118,8 @@ DrawMode.onDownBase = function(e){
     RenderManager.render();
 }
 
+// Called when user lifts mouse or hand. Finishes stroke point collection and tests
+// for collision
 DrawMode.onUpBase = function(e){
 	if(Editor.current_stroke == null)
 		return;
@@ -151,6 +152,7 @@ DrawMode.onUpBase = function(e){
     $(Editor.canvas_div).off(this.event_strings.onMove, this.onMove);
 }
 
+// Collects pen stroke points and passes it to the pen stroke object for insertion
 DrawMode.onMoveBase = function(e){
     DrawMode.prototype.onMove.call(this, e);
     // add a new point to this pen stroke
@@ -158,6 +160,7 @@ DrawMode.onMoveBase = function(e){
     Editor.current_stroke.add_point(Editor.mouse_position);
 }
 
+// Called when the user double clicks on a segment. Opens correction menu
 DrawMode.onDoubleClick = function(e){
 	// All Editor Modes(RectSelect and StrokeSelect) call DrawMode's
 	// onDoubleClick when in the mode and an expression is double clicked on
@@ -177,6 +180,8 @@ DrawMode.onDoubleClick = function(e){
     
 }
 
+// Used for typing on the canvas. Gets each typed character or keyboard stroke and 
+// processes it by passing stroke to SymbolSegment object that was created.
 DrawMode.onKeyPress = function(e){
     // TODO: See if there's a better way to do this that would eliminate 
     // reliance on an Editor state. Local flag?
@@ -213,6 +218,7 @@ DrawMode.onKeyPress = function(e){
 
 }
 
+// Selects the pen tool from the toolbar 
 DrawMode.selectPenTool = function()
 {
     Editor.clearButtonOverlays();

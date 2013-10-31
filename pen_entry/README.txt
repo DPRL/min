@@ -240,16 +240,6 @@ connected components and then classified. When an ImageBlob is sent to the class
 returned as multiple connected components and multiple recognitions which are then added to the
 canvas.
 
-									Min's Ports
-									-----------
-Min makes use of two ports when online:
-	Port 1: 1504 used for stroke classification and recognition.
-	Port 2: 7006 used for image classification and recognition.
-To change any of the ports, the port number and remote address can be changed in the 
-Editor.Constants.js file. Currently, min's remote address is: "http://129.21.34.109:" with
-the port number appended to the remote address based on the classification type.
-
-
 									Alignment Operation
 									-------------------
 The alignment operation starts when the align button is clicked on by the user which fires
@@ -270,8 +260,9 @@ elements shown visually. The first is the blob or stroke which are both SVG obje
 Adjacent to them in the document and displayed on top of them on the canvas is the OCR 
 overlay. The OCR overlay is a div with a translucent background color(depending on the 
 editor state) which is displayed over the blob or penstroke. Its innerHTML is the 
-classification for that symbol. The overlay is added by the RenderManager in the 
-render_set_field() function of RenderManager.js.
+classification for that symbol in some cases an SVG. We retrieve the SVG for each recognition
+from MathJax and insert it into the overlay div. The overlay is added by the RenderManager 
+in the render_set_field() function of RenderManager.js.
 
 The background color layout is the same for TeX_Input objects as well.
 
