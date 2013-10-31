@@ -3,8 +3,10 @@
 	mode of Min.
 	
 	The onDownBase, onMoveBase and onUpBase methods are responsible for collecting the 
-	user's mouse movement coordinates and passing that coordinate to the PenStroke object
-	associated with the particular user action.
+	user's mouse movement coordinates and passing each coordinate to the PenStroke object
+	associated with the particular user action. It also handles the typing input medium.
+	The KeyPress method retrieves each character and send them to the SymbolSegment object
+	created upon keyboard stroke detection.
 */
 
 // For now this hierarchy doesn't matter, as we don't make instances

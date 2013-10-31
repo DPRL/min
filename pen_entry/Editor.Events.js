@@ -51,6 +51,7 @@ Editor.lastEvent = null;
 Editor.moveQueue = null;
 Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold;
 
+// Called when Min is starting up. Just calls other methods
 Editor.setup_events = function()
 {
     var button_index = 0; // Sets default initial state (pen/touch entry)
@@ -81,18 +82,6 @@ Editor.fit_to_screen = function(event)
     
     window.scroll(0,0);
 }
-
-//--------------------------------------------------
-// 
-// User Input Events
-//   - touchAndHold (called using timeout)
-//   - onDoubleClick (called on touchAndHold as well)
-//
-//   - onMouseDown
-//   - onMouseMove
-//   - onMouseUp
-//   - onKeyPress
-//-------------------------------------------------- 
 
 Editor.mapCanvasBackspace = function(e)
 {
@@ -157,13 +146,9 @@ Editor.onKeyPress = function(e)
     if(e.keyCode == KeyCode.backspace || e.keyCode == KeyCode.del)
         return;
 }
-
-//--------------------------------------------------
-// 
-// Editing modes/states
-// 
-//-------------------------------------------------- 
-
+/*
+	Performs alignment to the segments on the canvas
+*/
 Editor.align = function()
 {
     switch(Editor.state)
@@ -642,6 +627,7 @@ Editor.apply_alignment = function(array, canvas_elements)
 	}
 }
 
+// Used for debugging alignment. Just draws a BBox
 Editor.draw_rect = function(dim){
 	var div = document.createElement('div');
 	div.className = Editor.current_mode.segment_style_class;
@@ -719,6 +705,7 @@ Editor.sort_svg_positions = function(array)
 	return x_pos;
 }
 
+// Prints the sorted SVG and canvas segments
 Editor.print_sorted = function(array, type)
 {
 	var s;
@@ -841,7 +828,7 @@ Editor.typeTool = function()
 }
 
 /*
-   cb is a callback to call after thei Correction hides itself.  
+   cb is a callback to call after the Correction hides itself.  
 */
 Editor.relabel = function(callback)
 {
@@ -881,8 +868,6 @@ Editor.clear = function()
         }
     );
     
-    // reset editor
-    // ?????
 }
 
 Editor.getInkML = function() {
@@ -1032,6 +1017,9 @@ Editor.ParseImage = function(file){
     }
 }
 
+/* Methods that performs the search on expression on canvas.
+	Retrieves the TeX and searches with it
+*/
 Editor.search = function(e) 
 {
     // NOTE: CURRENTLY EXPERIMENTING WITH ONLY ONE TEXT BOX.
@@ -1043,8 +1031,6 @@ Editor.search = function(e)
 		searchString += ' ' + keywords;
 	}
 
-
-    /* INCOMPLETE */
     switch (engineType)
     {
     case 'LaTeX Search':
@@ -1078,6 +1064,7 @@ Editor.goDPRL = function ()
     window.location = "http://www.cs.rit.edu/~dprl"
 }
 
+// Shows tool tips
 Editor.showToolTip = function(target, use){
 	if (!Modernizr.touch) {
 		$('#' + target).tooltip({content: use, items: '#' + target});

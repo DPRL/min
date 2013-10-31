@@ -463,6 +463,7 @@ TeX_Input.prototype.get_bezier_points = function(data, order){
 	return points;
 }
 
+// Retrieves the polyline points corresponding to each SVG path element
 TeX_Input.prototype.get_polyline_points = function(){
 	// Get the path tag, flip it horizontally because transformation is only applied to 
 	// g element which the 'this.path_tag' is inside of, then convert all to their absolute coordinates

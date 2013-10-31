@@ -11,6 +11,9 @@
 
 function PermEvents(){}
 
+/* 	Add events to buttons, checks for window.filereader and if available insert the 
+	image upload button also adds keyboard shortcuts
+*/
 PermEvents.setup_toolbar = function(){
     $("#pen").click(EditorMode.mkModeSwitchFn(Editor.modes.DrawMode));
 

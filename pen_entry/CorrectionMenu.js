@@ -1,5 +1,5 @@
 /*
-  This is the menu that appears to allow the user to manually enter the symbol that they want.
+  This is the menu that allows the user to manually select the symbol that they want.
 */
 
 function CorrectionMenu()

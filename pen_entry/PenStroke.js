@@ -109,6 +109,9 @@ PenStroke.prototype.worldMaxDrawPosition = function()
     return result;
 }
 
+/*
+	Method that adds each point while the user is drawing into the polyline object
+*/
 PenStroke.prototype.add_point = function(point_position)
 {
      // just add the point to the list, render the line, and update the mins
@@ -133,6 +136,10 @@ PenStroke.prototype.add_point = function(point_position)
 	this.polyline.points.appendItem(point2);	
 }
 
+/*
+	Method is called when the user is done drawing on the canvas.
+	It finalizes the segment drawing and sets its translation and scale
+*/
 PenStroke.prototype.finish_stroke = function(){
     if(this.points.length == 1){
         console.log("points: " + this.points.length);
@@ -159,6 +166,10 @@ PenStroke.prototype.finish_stroke = function(){
     this.element = this.root_svg;
     return true;
 }
+/*
+	This method is responsible for re-rendering the SVG by changing its translation
+	and scale.
+*/
 PenStroke.prototype.private_render = function(in_color, in_width)
 {
     $(this.element).toggle(this.expression_id == Editor.current_expression_id);
@@ -183,12 +194,17 @@ PenStroke.prototype.private_render = function(in_color, in_width)
     
 }
 
-// just draw using the given context
+/*
+	Called to re-render the SVG object
+*/
 PenStroke.prototype.render = function()
 {
     this.private_render(Editor.segment_color, Editor.stroke_width);
 }
 
+/*
+	Called when the penstroke object is selected and needs re-rendering
+*/
 PenStroke.prototype.render_selected = function(in_context)
 {
     this.private_render(Editor.selected_segment_color, Editor.selected_stroke_width);
@@ -228,6 +244,7 @@ PenStroke.prototype.point_collides = function(click_point)
     return false;
 }
 
+// Determines if the SVG collides with line from point_a to point_b
 PenStroke.prototype.line_collides = function(point_a, point_b)
 {
     //if(this.point_collides(point_a) || this.point_collides(point_b))
@@ -392,6 +409,10 @@ PenStroke.prototype.translate = function(in_offset)
     this.dirty_flag = true;
 }
 
+/* Resizes the SVG object to scale
+	Note that the temp variables are used during resizing and moving. When resizing is 
+	done, its values are moved to the original scale and translation variables
+*/
 PenStroke.prototype.resize = function(in_origin, in_scale)
 {
     this.temp_scale = new Vector2(in_scale.x, in_scale.y);
@@ -400,7 +421,7 @@ PenStroke.prototype.resize = function(in_origin, in_scale)
     this.update_extents();
     this.dirty_flag = true;
 }
-
+// Moves values from temps to original scale and translation variables
 PenStroke.prototype.freeze_transform = function()
 {
     // here we move the temp transform info to the final transform
@@ -413,6 +434,7 @@ PenStroke.prototype.freeze_transform = function()
     this.update_extents();
 }
 
+// Converts the penstroke object to XML. Used when sending the stroke to Lei_Classifier
 PenStroke.prototype.toXML = function()
 {
     var sb = new StringBuilder();
@@ -431,6 +453,10 @@ PenStroke.prototype.toXML = function()
     return sb.toString();
 }
 
+/*
+	The methods sava_state and restore_state are for debugging purposes only.
+	Used during debugging to accurately test the same segments across browsers
+*/
 PenStroke.prototype.save_state = function() 
 {
     var state = {

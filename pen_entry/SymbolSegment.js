@@ -48,7 +48,7 @@ function SymbolSegment(in_position) {
     this.element = this.textDiv[0];
     this.render();
 }
-
+// adds a character to the div
 SymbolSegment.prototype.addCharacter = function(in_char) {
     this.is_empty = false;
     this.text += in_char;
@@ -58,7 +58,7 @@ SymbolSegment.prototype.addCharacter = function(in_char) {
     this.render();
 };
 
-
+// adds a space to the div
 SymbolSegment.prototype.addSpace = function() {
     this.is_empty = false;
     this.text += '-';
@@ -68,7 +68,7 @@ SymbolSegment.prototype.addSpace = function() {
     this.render();
     this.textDiv.text(' ');
 };
-
+// removes the last character added
 SymbolSegment.prototype.popCharacter = function() {
     if(this.text.length > 0) {
         this.text = this.text.substring(0, this.text.length - 1);

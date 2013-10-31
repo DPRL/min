@@ -18,16 +18,18 @@ function Editor() {}
     
 Editor.instance = null;
 
-
+// Possible EditorModes
 Editor.modes = {
     "DrawMode": new DrawMode(),
     "RectSelectMode": new RectSelectMode()
-    //"StrokeSelectMode": new StrokeSelectMode()
 };
 
 // Code for modes/mode switching
 Editor.current_mode = null;
 
+/*
+	The method that initializes Min by calling all necessary methods that needs to run
+*/
 Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 {
     if(Modernizr.touch == true)
@@ -144,6 +146,9 @@ Editor.set_current_expression_id = function(id) {
     Editor.clear_selected_segments();
 }
 
+/* 
+	Saves the segments on the canvas used for debugging purposes only
+*/
 Editor.save_state = function(clear)
 {
     var state = {
@@ -164,6 +169,10 @@ Editor.save_state = function(clear)
     return JSON.stringify(state);
 }
 
+/* 
+	Restores the segments in the json_string on the canvas
+	Used for debugging purposes only
+*/
 Editor.restore_state = function(json_string)
 {
     var state = JSON.parse(json_string);
@@ -345,7 +354,7 @@ Editor.remove_segment = function(in_segment)
         }
     }
 }
-
+// removes segment from selected segments list
 Editor.remove_selected_segment = function(in_segment)
 {
     if(in_segment == null) return;
@@ -384,6 +393,7 @@ Editor.add_canvas = function()
     Editor.contexts.push(svg_canvas);
 }
 
+// Builds the canvas which is an SVG object
 Editor.build_canvas = function()
 {
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

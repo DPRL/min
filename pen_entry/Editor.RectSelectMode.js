@@ -21,6 +21,7 @@ function RectSelectMode(){
     }
 }
 
+// RectSelectMode's init method. Called when entering RectSelectMode
 RectSelectMode.prototype.init_mode = function(){
     SelectionMode.prototype.init_mode.call(this); 
     this.displaySelectionTool();
@@ -29,7 +30,7 @@ RectSelectMode.prototype.init_mode = function(){
     console.log("rect select");
     RenderManager.increase_stroke_opacity();
 }
-
+// RectSelectMode's close method. Called when leaving RectSelectMode
 RectSelectMode.prototype.close_mode = function(){
     SelectionMode.prototype.close_mode.call(this);
     $("#equation_canvas").off(this.event_strings.onDown, this.onDownNoSelectedSegments);

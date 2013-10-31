@@ -29,6 +29,10 @@ Classifier.prototype.group_by_server = function(in_segments){
     return classification_groups;
 }
 
+/*
+	Sends the request to the appropriate classifier. Inserts response in the RecognitionManager's
+	result_table and can be looked up using the set_id
+*/
 Classifier.prototype.request_classification = function(server_url, in_segments, should_segment){
     // change this to an asynchronous thing later
 
@@ -92,6 +96,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
     );
 }
 
+// Request classification by calling the request_classification method
 Classifier.prototype.classify = function(in_segments, should_segment)
 {
     var classification_groups = this.group_by_server(in_segments);

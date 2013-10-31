@@ -32,7 +32,7 @@ RenderManager.initialize = function(in_width, in_height, in_layers)
     RenderManager.segment_set_divs = new Array();
 }
 
-// render the helper grahics (bounding box, segments ets, rectangle select etc)
+// render the helper graphics (bounding box, segments ets, rectangle select etc)
 RenderManager.render_tools_layer = function()
 {
 	RenderManager.render_set_field(4);
@@ -53,6 +53,7 @@ RenderManager.render_tools_layer = function()
         RenderManager.selection_box.style.visibility = "hidden";
 }
 
+// Render all the segments on the canvas
 RenderManager.render = function()
 {    
     var setid = -1;
@@ -134,6 +135,9 @@ RenderManager.colorOCRbbs = function(classname) {
     }
 }
 
+/*
+	This method is responsible for displaying the bounding box over a segment
+*/
 RenderManager.render_set_field = function(in_context_id)
 {
     // Uses fact that primitive are sorted according to set (segment)
