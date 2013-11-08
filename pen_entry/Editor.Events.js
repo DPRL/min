@@ -243,12 +243,12 @@ Editor.align = function()
 	    else{
 		    var latex = RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ];
 		    if(latex == null){
-			    latex = RecognitionManager.symbol_to_latex[RecognitionManager.unicode_to_symbol[ t.item1.symbols[0] ]];
-			    console.log("latex: " + latex);
+			    latex = RecognitionManager.symbol_to_latex[RecognitionManager.unicode_to_symbol[ t.item1.symbols[0].toLowerCase() ]];
 			    if(latex == null)
-				    sb.append("X").append("\" min=\""); // symbols not in our generic table
+				    sb.append("x").append("\" min=\""); // symbols not in our generic table
 			    else
 				    sb.append(latex).append("\" min=\"");
+				console.log("latex: " + latex);
 		    }
 	            else
 			    sb.append(latex).append("\" min=\"");
@@ -569,18 +569,24 @@ Editor.apply_alignment = function(array, canvas_elements)
 		for(var k = 0; k < segments.length; k++){ 
 			
 			if(!segments[k].align_size){
-				var rect = segments[k].inner_svg.firstChild.getBBox();
+				var rect;
+				if(segments[k].constructor == ImageBlob)
+					rect = segments[k].inner_svg.getBBox();
+				else
+					rect = segments[k].inner_svg.firstChild.getBBox();
 				if(rect.width == 0)
 					rect.width = segments[k].world_mins.x;
 				if(rect.height == 0)
 					rect.height = segments[k].world_mins.y;
+				//if(segments[k].constructor != ImageBlob)
+				//rect.width += 12;
 				var s = Math.max(size_f.x/ rect.width, size_f.y / rect.height);
 				var s2 = Math.min(size_f.x/ rect.width, size_f.y / rect.height);
 				rect.width += 12;
 				var scale = new Vector2(size_f.x/ rect.width, size_f.y / rect.height);
 				if(segments[k].constructor == TeX_Input && text == "-")
 					segments[k].scale = new Vector2(s2,s);
-				else if(segments[k].constructor == TeX_Input && text != "-")
+				else if((segments[k].constructor == TeX_Input && text != "-") || segments[k].constructor == ImageBlob)
 					segments[k].scale = new Vector2(s,s);
 				else
 					segments[k].scale = scale.clone();
@@ -607,6 +613,8 @@ Editor.apply_alignment = function(array, canvas_elements)
 			var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
 			if(segments[k].constructor == TeX_Input)
 				translation.y -= 12;
+			if(segments[k].constructor == ImageBlob)
+				translation.y -= 6;
 			// Apply new translation segment[k]
 			var in_offset = Vector2.Subtract(translation, segments[k].translation);
 			segments[k].translate(in_offset);

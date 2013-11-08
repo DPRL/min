@@ -214,7 +214,14 @@ RenderManager.render_set_field = function(in_context_id)
                 if(is_visible){
                 	var recognition = ss_div.getAttribute("data-recognition");
                 	for(var z = 0; z < set_segments.length; z++){
-						set_segments[z].text = tex;
+                		if(set_segments[0].constructor == ImageBlob){
+                			var latex = RecognitionManager.unicode_to_symbol[tex.toLowerCase()];
+                			var unicode = tex.split("x")[1].split(";")[0];
+                			if(latex == null)
+                				latex = String.fromCharCode(parseInt(unicode,16));
+                			set_segments[z].text = latex;
+                		}else	
+							set_segments[z].text = tex;
 					}
 					if(recognition != null && recognition == tex && ss_div.firstChild){		
 						// update recognition - usually for resizing and movement
