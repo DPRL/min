@@ -584,9 +584,9 @@ Editor.apply_alignment = function(array, canvas_elements)
 				var s2 = Math.min(size_f.x/ rect.width, size_f.y / rect.height);
 				rect.width += 12;
 				var scale = new Vector2(size_f.x/ rect.width, size_f.y / rect.height);
-				if(segments[k].constructor == TeX_Input && text == "-")
+				if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && text == "-")
 					segments[k].scale = new Vector2(s2,s);
-				else if((segments[k].constructor == TeX_Input && text != "-") || segments[k].constructor == ImageBlob)
+				else if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && text != "-")
 					segments[k].scale = new Vector2(s,s);
 				else
 					segments[k].scale = scale.clone();
