@@ -362,7 +362,7 @@ Editor.scale_tex = function(elem){
 	var math_width = rect.width;
 	var math_height = rect.height;
 	if(math_width > Editor.canvas_width || math_height > Editor.canvas_height){
-		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 5) + "%";
+		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
 	}else{
 		return;
