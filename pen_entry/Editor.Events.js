@@ -359,8 +359,8 @@ Editor.get_canvas_elements_dimensions = function()
 Editor.scale_tex = function(elem){
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.firstChild.getBoundingClientRect();
-	var math_width = rect.width;
-	var math_height = rect.height;
+	var math_width = rect.left+rect.width;
+	var math_height = rect.top+rect.height;
 	if(math_width > Editor.canvas_width || math_height > Editor.canvas_height){
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(Editor.scale_tex(elem), this)]);
@@ -584,9 +584,9 @@ Editor.apply_alignment = function(array, canvas_elements)
 				var s2 = Math.min(size_f.x/ rect.width, size_f.y / rect.height);
 				rect.width += 12;
 				var scale = new Vector2(size_f.x/ rect.width, size_f.y / rect.height);
-				if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && text == "-")
+				if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && (text == "-" || text == "="))
 					segments[k].scale = new Vector2(s2,s);
-				else if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && text != "-")
+				else if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && (text != "-" && text != "="))
 					segments[k].scale = new Vector2(s,s);
 				else
 					segments[k].scale = scale.clone();

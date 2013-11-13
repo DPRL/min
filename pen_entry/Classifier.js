@@ -55,7 +55,6 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                                                                                   in_segments[0].image.height)); 
             }
 
-
             f = function(){
                 for(var k = 0; k < result_list.length; k++)
                 {
@@ -79,8 +78,11 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                     RenderManager.render();
                 }
             }
-            
-            setTimeout(f, 300); // Give enough time for images to load, there's probably a better way to do this
+            if(xmldoc.getElementsByTagName("ConnectedComponents").length == 0){
+            	f();
+            }else{
+        		setTimeout(f, 300); // Give enough time for images to load, there's probably a better way to do this
+        	}
       
         }
     );

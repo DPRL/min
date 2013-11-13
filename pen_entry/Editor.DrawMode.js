@@ -57,6 +57,7 @@ DrawMode.prototype.init_mode = function(){
     $(Editor.canvas_div).on('dblclick', this.onDoubleClick);
     Editor.canvas_div.style.cursor = "crosshair";
     $(document).on('keypress', this.onKeyPress);
+    Editor.sent_request = false;
     RenderManager.decrease_stroke_opacity();
 }
 
@@ -121,28 +122,33 @@ DrawMode.onUpBase = function(e){
     DrawMode.prototype.onUp.call(this, e);
     var set_id_changes = [];
     Editor.state = EditorState.ReadyToStroke;
-    if(Editor.current_stroke.finish_stroke()) {
-        set_id_changes = Editor.current_stroke.test_collisions();
-        RecognitionManager.enqueueSegment(Editor.current_stroke);
-    } else {
-        // This make sure that we remove the exact element of the array
-        Editor.segments.splice(Editor.segments.indexOf(Editor.current_stroke), 1);
-    }
-    
-    var stroke = Editor.current_stroke;
-    Editor.current_stroke = null;
-    Editor.current_action.set_id_changes = set_id_changes;
-    Editor.current_action.buildSegmentXML();
-    // bind the last penstroke's bounding box to a dblclick event
-    var seg_array = $('.segment_draw_mode');
-    if(seg_array.length > 0){
-    	seg_array[seg_array.length-1].ondblclick = function(){
-    		DrawMode.segment_clicked(stroke);
-    		$.proxy(DrawMode.onDoubleClick, this);}; // bind last seg to dblclick
-	}
 
-    // Unbind the move action
-    $(Editor.canvas_div).off(this.event_strings.onMove, this.onMove);
+	f = function(){ 
+		if(Editor.current_stroke.finish_stroke()) {
+			set_id_changes = Editor.current_stroke.test_collisions();
+			RecognitionManager.enqueueSegment(Editor.current_stroke);
+		} else {
+			// This make sure that we remove the exact element of the array
+			Editor.segments.splice(Editor.segments.indexOf(Editor.current_stroke), 1);
+		}
+	
+		var stroke = Editor.current_stroke;
+		Editor.current_stroke = null;
+		Editor.current_action.set_id_changes = set_id_changes;
+		Editor.current_action.buildSegmentXML();
+		// bind the last penstroke's bounding box to a dblclick event
+		var seg_array = $('.segment_draw_mode');
+		if(seg_array.length > 0){
+			seg_array[seg_array.length-1].ondblclick = function(){
+				DrawMode.segment_clicked(stroke);
+				$.proxy(DrawMode.onDoubleClick, this);
+			}; // bind last seg to dblclick
+		}
+
+		// Unbind the move action
+		$(Editor.canvas_div).off(Editor.current_mode.event_strings.onMove, Editor.current_mode.onMove);
+	}
+	setTimeout(f, 80); // Creates time for strokes to test collisions
 }
 
 DrawMode.onMoveBase = function(e){
