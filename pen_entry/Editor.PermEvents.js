@@ -157,7 +157,7 @@ PermEvents.scale_tex = function(elem){
 		math_width += drop_position.x;
 		math_height += drop_position.y;
 	}
-	if(math_width > equation_canvas_width || math_height > equation_canvas_height){ 
+	if(math_width > (equation_canvas_width-15) || math_height > (equation_canvas_height-15)){ 
 		elem.style.fontSize =  (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(PermEvents.scale_tex(elem), this)]);
 	}else{
