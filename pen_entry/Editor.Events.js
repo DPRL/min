@@ -272,6 +272,7 @@ Editor.align = function()
                 var xmldoc = in_data;
                 var segment_nodes = xmldoc.getElementsByTagName("Segment");
                 var tex_nodes = xmldoc.getElementsByTagName( "TexString" );
+                var joined_nodes = xmldoc.getElementsByTagName("JoinedSegments");
                 
                 if(segment_nodes.length == 0)
                 {
@@ -284,7 +285,7 @@ Editor.align = function()
                 if ( tex_nodes.length != 0 ) {
                     var tex_string = tex_nodes[ 0 ].textContent;
                     // get just the math, removing spaces
-                    tex_math = tex_string.split("$").slice(1,-1).join("").replace( /\s*/g, "" );
+                    tex_math = tex_string.split("$").slice(1,-1).join("").replace(/\n*/g,"").replace("/\s*","");
 					Editor.slider.updateSlide(tex_math);
                 }
                 /* Assuming the latex is correctly rendered - Need to use macro commands that
@@ -294,6 +295,28 @@ Editor.align = function()
                 if(tex_math.search("vbox") != -1 || tex_math.search("vtop") != -1 || tex_math == ""){ // checks for tex error before MathJax yells!
                 	console.log("DRACULAE Tex Output Error -  MathJax can't render commands in Tex");
                 	return;
+                }
+                
+                // Go through and change text attribute of segments for JoinedSegments
+                if(joined_nodes.length != 0){
+                	for(var i = 0; i < joined_nodes.length; i++){
+                		var str = joined_nodes[i].attributes.getNamedItem("id").value;
+                		var ids = str.substring(0,str.length-1).split(",");
+                		var symbol = RecognitionManager.latex_to_symbol[joined_nodes[i].attributes.getNamedItem("symbol").value];
+                		if(symbol == null)
+                			symbol = joined_nodes[i].attributes.getNamedItem("symbol").value;
+                		var new_set_id = Segment.set_count++;
+                		var new_recognition = null;
+                		for(var j = 0; j < ids.length; j++){
+                			var seg = Editor.get_segment_by_id( parseInt(ids[j]) )[0];
+							seg.text = symbol;
+							if(new_recognition == null) 
+								new_recognition = RecognitionManager.getRecognition(seg.set_id);
+							RecognitionManager.removeRecognition(seg.set_id);
+							seg.set_id = new_set_id;
+                		}
+                		Editor.join_segments(new_recognition, symbol, new_set_id);
+                	}
                 }
                 
                 // Divs used for alignment
@@ -327,6 +350,35 @@ Editor.align = function()
             }
         }
     );
+}
+
+Editor.join_segments = function(new_recognition, symbol, set_id){
+	var set_from_symbols_list = false;
+        for ( var i = 0; i < new_recognition.symbols.length; i++ ) {
+            if ( new_recognition.symbols[ i ] == symbol ) {
+                var sym = symbol;
+                var cer = new_recognition.certainties[ i ];
+                new_recognition.symbols.splice( i, 1 );
+                new_recognition.certainties.splice( i, 1 );
+                new_recognition.symbols.unshift( sym );
+                new_recognition.certainties.unshift( cer );
+                new_recognition.set_id = set_id;
+                RecognitionManager.result_table.push( new_recognition );
+                set_from_symbols_list = true;
+                break;
+            }
+        }
+        // If no recognition was found in the result list, force the new symbol
+        if(!set_from_symbols_list){
+            var sym = symbol;
+            var cer = 1;
+            new_recognition.symbols.splice( 0, 1 );
+            new_recognition.certainties.splice( 0, 1 );
+            new_recognition.symbols.unshift( sym );
+            new_recognition.certainties.unshift( cer );
+            new_recognition.set_id = set_id;
+            RecognitionManager.result_table.push( new_recognition );
+        }
 }
 
 // Returns the total width and height of elements on the canvas from their BBox
@@ -578,8 +630,7 @@ Editor.apply_alignment = function(array, canvas_elements)
 					rect.width = segments[k].world_mins.x;
 				if(rect.height == 0)
 					rect.height = segments[k].world_mins.y;
-				//if(segments[k].constructor != ImageBlob)
-				//rect.width += 12;
+				
 				var s = Math.max(size_f.x/ rect.width, size_f.y / rect.height);
 				var s2 = Math.min(size_f.x/ rect.width, size_f.y / rect.height);
 				rect.width += 12;
@@ -609,7 +660,6 @@ Editor.apply_alignment = function(array, canvas_elements)
 				segments[k].resize(min_0, scale);
 				segments[k].freeze_transform();
 			}
-
 			var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
 			if(segments[k].constructor == TeX_Input)
 				translation.y -= 12;
@@ -623,7 +673,6 @@ Editor.apply_alignment = function(array, canvas_elements)
 			// Reset the world_min and world_max variables to reflect right dimensions
     		segments[k].world_mins = segments[k].worldMinDrawPosition();
     		segments[k].world_maxs = segments[k].worldMaxDrawPosition();
-    		
         }
         if(tex_math.search("sqrt") != -1 && segments[0].text == sqrt_text){
 				Editor.create_segment(array);
