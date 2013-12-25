@@ -241,7 +241,13 @@ Editor.align = function()
 		    sb.append("x\" min=\"");
             }	
 	    else{
-		    var latex = RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ];
+	    	var latex;
+	    	if(t.item1.symbols[0] == "&lt;")
+    			latex = "lt";
+    		else if(t.item1.symbols[0] == ">")
+    			latex = "gt";
+    		else
+		    	latex = RecognitionManager.symbol_to_latex[ t.item1.symbols[0] ];
 		    if(latex == null){
 			    latex = RecognitionManager.symbol_to_latex[RecognitionManager.unicode_to_symbol[ t.item1.symbols[0].toLowerCase() ]];
 			    if(latex == null)
@@ -354,31 +360,31 @@ Editor.align = function()
 
 Editor.join_segments = function(new_recognition, symbol, set_id){
 	var set_from_symbols_list = false;
-        for ( var i = 0; i < new_recognition.symbols.length; i++ ) {
-            if ( new_recognition.symbols[ i ] == symbol ) {
-                var sym = symbol;
-                var cer = new_recognition.certainties[ i ];
-                new_recognition.symbols.splice( i, 1 );
-                new_recognition.certainties.splice( i, 1 );
-                new_recognition.symbols.unshift( sym );
-                new_recognition.certainties.unshift( cer );
-                new_recognition.set_id = set_id;
-                RecognitionManager.result_table.push( new_recognition );
-                set_from_symbols_list = true;
-                break;
-            }
-        }
-        // If no recognition was found in the result list, force the new symbol
-        if(!set_from_symbols_list){
-            var sym = symbol;
-            var cer = 1;
-            new_recognition.symbols.splice( 0, 1 );
-            new_recognition.certainties.splice( 0, 1 );
-            new_recognition.symbols.unshift( sym );
-            new_recognition.certainties.unshift( cer );
-            new_recognition.set_id = set_id;
-            RecognitionManager.result_table.push( new_recognition );
-        }
+	for ( var i = 0; i < new_recognition.symbols.length; i++ ) {
+		if ( new_recognition.symbols[ i ] == symbol ) {
+			var sym = symbol;
+			var cer = new_recognition.certainties[ i ];
+			new_recognition.symbols.splice( i, 1 );
+			new_recognition.certainties.splice( i, 1 );
+			new_recognition.symbols.unshift( sym );
+			new_recognition.certainties.unshift( cer );
+			new_recognition.set_id = set_id;
+			RecognitionManager.result_table.push( new_recognition );
+			set_from_symbols_list = true;
+			break;
+		}
+	}
+	// If no recognition was found in the result list, force the new symbol
+	if(!set_from_symbols_list){
+		var sym = symbol;
+		var cer = 1;
+		new_recognition.symbols.splice( 0, 1 );
+		new_recognition.certainties.splice( 0, 1 );
+		new_recognition.symbols.unshift( sym );
+		new_recognition.certainties.unshift( cer );
+		new_recognition.set_id = set_id;
+		RecognitionManager.result_table.push( new_recognition );
+	}
 }
 
 // Returns the total width and height of elements on the canvas from their BBox
