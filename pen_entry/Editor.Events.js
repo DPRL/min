@@ -124,8 +124,9 @@ Editor.onKeyPress = function(e)
         return;
 
     if(e.keyCode == KeyCode.enter && Editor.state == EditorState.MiddleOfText) {
+    	Editor.current_mode.stopTextInput();
     	$(Editor.canvas_div).off(Editor.current_mode.event_strings.onDown, Editor.current_mode.stopTextInput);
-        Editor.current_mode.stopTextInput();
+    	e.stopPropagation();
         return;
     }
     
@@ -311,6 +312,8 @@ Editor.align = function()
                 		var symbol = RecognitionManager.latex_to_symbol[joined_nodes[i].attributes.getNamedItem("symbol").value];
                 		if(symbol == null)
                 			symbol = joined_nodes[i].attributes.getNamedItem("symbol").value;
+                		if(symbol == "")
+                			break;
                 		var new_set_id = Segment.set_count++;
                 		var new_recognition = null;
                 		for(var j = 0; j < ids.length; j++){
@@ -387,30 +390,6 @@ Editor.join_segments = function(new_recognition, symbol, set_id){
 	}
 }
 
-// Returns the total width and height of elements on the canvas from their BBox
-Editor.get_canvas_elements_dimensions = function()
-{
-	var max_height = 0;
-	var max_width = 0;
-	var min_height = 9999;
-	var min_width = 9999;
-	for(var i = 0; i < RenderManager.segment_set_divs.length; i++){
-		if(RenderManager.segment_set_divs[i].style.visibility == "visible"){
-			var h = RenderManager.segment_set_divs[i].getBoundingClientRect();
-			if(h.bottom > max_height)
-				max_height = h.bottom;
-			if(h.top < min_height)
-				min_height = h.top;
-			if(h.right > max_width)
-				max_width = h.right;
-			if(h.left < min_width)
-				min_width = h.left;	
-		}	
-	}
-	//console.log("Computed width: " +  (max_width - min_width) + "  height: " + (max_height - min_height));
-	return new Tuple((max_width - min_width), (max_height - min_height));
-}
-
 /*
 	Scale the SVG to fit the canvas by decreasing its font size by 5%
 */
@@ -432,7 +411,10 @@ Editor.scale_tex = function(elem){
 */
 Editor.copy_tex = function(elem, outer_div)
 {
-	var dim_tuple = Editor.get_canvas_elements_dimensions(); // need to scale to fit canvas
+	var s = Editor.get_seg_dimensions(Editor.segments);
+	var rect_size = Vector2.Subtract(s.item2, s.item1);
+	var dim_tuple = new Tuple(rect_size.x, rect_size.y); // need to scale to fit canvas elements
+	//console.log("Canvas element width: " + dim_tuple.item1 + " height: " + dim_tuple.item2);
 	var root = document.getElementById("Alignment_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	var rect = root.firstChild.getBoundingClientRect();
 	var target_width = (rect.width / rect.height) * dim_tuple.item2;
@@ -624,69 +606,28 @@ Editor.apply_alignment = function(array, canvas_elements)
 		}else{
 			size_f = new Vector2(svg_symbol_rect.width, svg_symbol_rect.height);
 		}
+		var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
+		var dimensions = Editor.get_seg_dimensions(segments);
+		var rect_size = Vector2.Subtract(dimensions.item2, dimensions.item1);
 		for(var k = 0; k < segments.length; k++){ 
-			
-			if(!segments[k].align_size){
-				var rect;
-				if(segments[k].constructor == ImageBlob)
-					rect = segments[k].inner_svg.getBBox();
-				else
-					rect = segments[k].inner_svg.firstChild.getBBox();
-				if(rect.width == 0)
-					rect.width = segments[k].world_mins.x;
-				if(rect.height == 0)
-					rect.height = segments[k].world_mins.y;
-				
-				var s = Math.max(size_f.x/ rect.width, size_f.y / rect.height);
-				var s2 = Math.min(size_f.x/ rect.width, size_f.y / rect.height);
-				rect.width += 12;
-				var scale = new Vector2(size_f.x/ rect.width, size_f.y / rect.height);
-				if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && (text == "-" || text == "="))
-					segments[k].scale = new Vector2(s2,s);
-				else if((segments[k].constructor == TeX_Input || segments[k].constructor == ImageBlob) && (text != "-" && text != "="))
-					segments[k].scale = new Vector2(s,s);
-				else
-					segments[k].scale = scale.clone();
-				segments[k].align_size = true;
-			}else{
-				var new_mins = segments[k].worldMinDrawPosition();
-				var new_maxs = segments[k].worldMaxDrawPosition();
-				var min_0 = segments[k].world_mins;
-				var max_0 = segments[k].world_maxs;
-				if(!Vector2.Subtract(max_0, min_0).equals(Vector2.Subtract(new_maxs, new_mins))){
-					min_0 = new_mins;
-					max_0 = new_maxs;
-				}
-				var size_0 = Vector2.Subtract(max_0, min_0);
-				if(size_0.y == 0)
-					size_0.y = min_0.y;
-				if(size_0.x == 0)
-					size_0.x = min_0.x;
-				var scale = new Vector2(size_f.x / size_0.x, size_f.y / size_0.y);
-				segments[k].resize(min_0, scale);
-				segments[k].freeze_transform();
-			}
-			var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
-			if(segments[k].constructor == TeX_Input)
-				translation.y -= 12;
-			if(segments[k].constructor == ImageBlob)
-				translation.y -= 6;
-			// Apply new translation segment[k]
-			var in_offset = Vector2.Subtract(translation, segments[k].translation);
+			var in_offset = Vector2.Subtract(translation, dimensions.item1);
 			segments[k].translate(in_offset);
 			segments[k].freeze_transform();
 			
-			// Reset the world_min and world_max variables to reflect right dimensions
-    		segments[k].world_mins = segments[k].worldMinDrawPosition();
-    		segments[k].world_maxs = segments[k].worldMaxDrawPosition();
+			dimensions = Editor.get_seg_dimensions(segments);
+			var rect_size = Vector2.Subtract(dimensions.item2, dimensions.item1);
+			var scale = new Vector2(size_f.x / rect_size.x, size_f.y / rect_size.y);
+			segments[k].resize(dimensions.item1, scale);
+			segments[k].freeze_transform();
         }
-        if(tex_math.search("sqrt") != -1 && segments[0].text == sqrt_text){
+        /*if(tex_math.search("sqrt") != -1 && segments[0].text == sqrt_text){
 				Editor.create_segment(array);
-		}
+		}*/
 	}
 }
 
-// Utility function used to see the bounding rectangle
+// Utility function used to see the bounding rectangle. Not being used, was used for debugging
+// alignment during scaling and translation.
 Editor.draw_rect = function(dim){
 	var div = document.createElement('div');
 	div.className = Editor.current_mode.segment_style_class;
@@ -699,6 +640,19 @@ Editor.draw_rect = function(dim){
 	div.style.height = dim.height + "px";
 	div.style.backgroundColor = "red";
 	div.style.opacity = "0.4";
+	
+	// version 2
+	/*var div = document.createElement('div');
+	div.className = Editor.current_mode.segment_style_class;
+	div.style.visibility='visible';
+	Editor.canvas_div.appendChild(div)
+	div.style.visibility = "visible";
+	div.style.left = dimensions.item1.x + "px";
+	div.style.top = dimensions.item1.y + "px";
+	div.style.width = rect_size.x + "px";
+	div.style.height = rect_size.y + "px";
+	div.style.backgroundColor = "green";
+	div.style.opacity = "0";*/
 }
 
 /*

@@ -25,7 +25,7 @@ Codepoint,Symbol,Classifier,LaTeX,Draculae
 &#x2227;,∧,land,land,land|conjunction,
 &#x2264;,≤,less_than_or_equal,leq,leq|lessThanEqualTo|less-equal,
 &#x2225;,||,parallel,parallel,parallel|parallelLines,
-&#x222b;,∫,Integralupper,integral|int,
+&#x222b;,∫,Integralupper,integral|int,integral|int
 &#x2229;,∩,bigcap,bigcap|intersection|intersect,bigcap,bigcap|intersection|intersect,
 &#x222a;,∩,bigcup,bigcup|union,bigcup|union,
 &#x3a0;,Π,product,Pi,Pi,
@@ -36,7 +36,7 @@ Codepoint,Symbol,Classifier,LaTeX,Draculae
 &#x28;,(,lparenlower,left-paren,left-paren|(
 &#x29;,),rparenlower,right-paren,right-paren|)
 &#x221e;,∞,infinlower,infinity,infinity|infty,
-&#x2205;,∅,Emptyset, Emptyset, Emptyset|EmptySet|emptyset|empty-set,
+&#x2205;,∅,Emptyset,Emptyset,Emptyset|EmptySet|emptyset|empty-set,
 &#x2209;,∉,notin,notin,notin|notElement|not-element,
 &#x2208;,∈,in,in,element,
 &#x2203;,∃,exists,exists,exists,
@@ -106,7 +106,7 @@ Codepoint,Symbol,Classifier,LaTeX,Draculae
 &#x3b7;,η,etalower,eta,eta,
 &#x3b8;,θ,thetalower,theta,theta,
 &#x3b9;,ι,iotalower,iota,iota,
-&#x3ba;,κ,kappalower,kappa,,kappa,
+&#x3ba;,κ,kappalower,kappa,kappa,
 &#x3bb;,λ,lambdalower,lambda,lambda,
 &#x3bc;,μ,mulower,mu,mu,
 &#x3bd;,ν,nulower,nu,nu,
@@ -125,7 +125,7 @@ Codepoint,Symbol,Classifier,LaTeX,Draculae
 &#x392;,Beta,Betaupper,Beta,Beta,
 &#x393;,Γ,Gammaupper,Gamma,Gamma,
 &#x394;,Δ,Deltaupper,Delta,Delta,
-&#x395;,Εpsilon,Epsilonupper,Epsilon,
+&#x395;,Εpsilon,Epsilonupper,Epsilon,Epsilon
 &#x396;,Ζeta,Zetaupper,Zeta,Zeta,
 &#x397;,Eta,Etaupper,Eta,Eta,
 &#x398;,Θ,Thetaupper,Theta,Theta,
@@ -142,6 +142,6 @@ Codepoint,Symbol,Classifier,LaTeX,Draculae
 &#x3a4;,Τau,Tauupper,tau,tau,
 &#x3a5;,Upsilon,Upsilonupper,Upsilon,Upsilon,
 &#x3a6;,Φ,Phiupper,Phi,Phi,
-&#x3a7;,Chi,Chiupper,Chi,
+&#x3a7;,Χ,Chiupper,Chi,Chi
 &#x3a8;,Ψ,Psiupper,Psi,Psi,
 &#x3a9;,Ω,Omegaupper,Omega,Omega,

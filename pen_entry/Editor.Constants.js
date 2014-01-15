@@ -61,7 +61,7 @@ Editor.editor_root = "http://129.21.34.109:";
 
 /* Recognition servers and ports */
 var saskatoon = "http://129.21.34.109:";
-Editor.align_server_url = saskatoon + "1000"; 
+Editor.align_server_url = saskatoon + "6500"; 
 // These two server URLs aren't used for normal operation, but 
 // are used for collecting data such as for the CROHME competition.
 Editor.data_server_url = saskatoon + "500"
