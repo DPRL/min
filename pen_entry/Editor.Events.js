@@ -609,17 +609,21 @@ Editor.apply_alignment = function(array, canvas_elements)
 		var translation = new Vector2(svg_symbol_rect.left, svg_symbol_rect.top);
 		var dimensions = Editor.get_seg_dimensions(segments);
 		var rect_size = Vector2.Subtract(dimensions.item2, dimensions.item1);
+		
+		// Scale and translate segments
+		var in_offset = Vector2.Subtract(translation, dimensions.item1);
 		for(var k = 0; k < segments.length; k++){ 
-			var in_offset = Vector2.Subtract(translation, dimensions.item1);
 			segments[k].translate(in_offset);
 			segments[k].freeze_transform();
-			
-			dimensions = Editor.get_seg_dimensions(segments);
-			var rect_size = Vector2.Subtract(dimensions.item2, dimensions.item1);
-			var scale = new Vector2(size_f.x / rect_size.x, size_f.y / rect_size.y);
+		}
+		dimensions = Editor.get_seg_dimensions(segments);
+		var rect_size = Vector2.Subtract(dimensions.item2, dimensions.item1);
+		var scale = new Vector2(size_f.x / rect_size.x, size_f.y / rect_size.y);
+		for(var k = 0; k < segments.length; k++){
 			segments[k].resize(dimensions.item1, scale);
 			segments[k].freeze_transform();
-        }
+		}
+		
         /*if(tex_math.search("sqrt") != -1 && segments[0].text == sqrt_text){
 				Editor.create_segment(array);
 		}*/
