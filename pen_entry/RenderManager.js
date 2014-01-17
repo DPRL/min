@@ -232,8 +232,12 @@ RenderManager.render_set_field = function(in_context_id)
 						RenderManager.start_display(ss_div,tex,segs);	
 					}
 				}
-            }else
+            }else{
             	ss_div.setAttribute("data-recognition", set_segments[0].text);
+            	while(ss_div.hasChildNodes()){
+					ss_div.removeChild(ss_div.lastChild);
+				}
+            }
             	
 
             // 'Empty' list of primitives for next object, add current object to list.
