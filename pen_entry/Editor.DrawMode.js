@@ -73,10 +73,6 @@ DrawMode.prototype.close_mode = function(){
    $(document).off('keypress', this.onKeyPress);
 }
 
-//var saveMouseState = function(){
-//}
-//
-//DrawMode.prototype.getPosAndState = 
 
 DrawMode.prototype.stopTextInput = function(e){
     Editor.current_text.finishEntry();
@@ -180,6 +176,12 @@ DrawMode.onDoubleClick = function(e){
 DrawMode.onKeyPress = function(e){
     // TODO: See if there's a better way to do this that would eliminate 
     // reliance on an Editor state. Local flag?
+    
+    if(e.keyCode == KeyCode.enter && Editor.enterHit){
+    	// detects if user used enter to stopTextInput
+    	Editor.enterHit = false;
+    	return;
+    }
     if(Editor.state == EditorState.MiddleOfText){
         textBox = document.getElementById("tex_result");
         if (document.querySelector(":focus") != textBox &&
