@@ -102,7 +102,7 @@ SymbolSegment.scale_tex = function(elem,translation){
 	var MathJax_div = document.getElementsByClassName("MathJax_SVG")[0].firstChild.getBoundingClientRect();
 	var math_width = Math.round(MathJax_div.width) + translation.x;
 	var math_height = Math.round(MathJax_div.height) + translation.y;
-	if(math_width > equation_canvas_width || math_height > equation_canvas_height){ 
+	if(math_width > (equation_canvas_width-20) || math_height > (equation_canvas_height-20)){ 
 		elem.style.fontSize = (parseInt(elem.style.fontSize.split("%")[0]) - 10) + "%";
 		MathJax.Hub.Queue(["Rerender",MathJax.Hub,elem], [$.proxy(SymbolSegment.scale_tex(elem, translation), this)]);
 	}else{
