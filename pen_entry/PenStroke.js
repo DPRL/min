@@ -477,7 +477,7 @@ PenStroke.prototype.test_collisions = function() {
         for ( var j = 0; j < Editor.segments.length; j++ ) {
             if ( Editor.segments[ j ].instance_id == this.instance_id ) continue;
             
-            if ( Editor.segments[ j ].rectangle_collides( pa, pb ) ) {
+            if ( Editor.segments[ j ].rectangle_collides( pa, pb )  && Editor.segments[j].constructor != TeX_Input) {
                 // console.log( Editor.segments[ j ] );
                 if ( !collided_segments.contains( Editor.segments[ j ] ) ) collided_segments.push( Editor.segments[ j ] );
             }

@@ -27,6 +27,7 @@ function DrawMode(){
 
     this.onUp = $.proxy(DrawMode.onUpBase, this);
     this.onMove = $.proxy(DrawMode.onMoveBase, this);
+    this.onMouseOut = $.proxy(DrawMode.onMouseOut, this);
     this.onKeyPress = $.proxy(DrawMode.onKeyPress, this);
     this.onDoubleClick = $.proxy(DrawMode.onDoubleClick, this);
     this.selectPenTool = DrawMode.selectPenTool.bind(this);
@@ -93,11 +94,13 @@ DrawMode.onDownBase = function(e){
     { // double click
     	this.single_click = false;
     	$(Editor.canvas_div).off('mousemove touchmove', this.onMove);
+    	$(Editor.canvas_div).off('mouseleave', this.onMouseOut);
     	
     }else
     { // single click
     	this.single_click = true;
     	$(Editor.canvas_div).on('mousemove touchmove', this.onMove);
+    	$(Editor.canvas_div).on('mouseleave', this.onMouseOut);
     }
 
     DrawMode.prototype.onDown.call(this, e);
@@ -122,6 +125,7 @@ DrawMode.onUpBase = function(e){
 	f = function(){ 
 		if(Editor.current_stroke.finish_stroke()) {
 			set_id_changes = Editor.current_stroke.test_collisions();
+			console.log("New set_ids: " + set_id_changes);
 			RecognitionManager.enqueueSegment(Editor.current_stroke);
 		} else {
 			// This make sure that we remove the exact element of the array
@@ -143,12 +147,19 @@ DrawMode.onUpBase = function(e){
 
 		// Unbind the move action
 		$(Editor.canvas_div).off(Editor.current_mode.event_strings.onMove, Editor.current_mode.onMove);
+		$(Editor.canvas_div).off('mouseleave', this.onMouseOut);
 	}
 	setTimeout(f, 80); // Creates time for strokes to test collisions
 }
 
+DrawMode.onMouseOut = function(e){
+    $(Editor.canvas_div).off(Editor.current_mode.event_strings.onMove, Editor.current_mode.onMove);
+	$(Editor.canvas_div).trigger({type:Editor.current_mode.event_strings.onUp+''});
+}
+
 DrawMode.onMoveBase = function(e){
     DrawMode.prototype.onMove.call(this, e);
+
     // add a new point to this pen stroke
     // pen automatically draws stroke when point added
     Editor.current_stroke.add_point(Editor.mouse_position);

@@ -31,6 +31,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
     sb.append("?segmentList=<SegmentList>");
     for(var k = 0; k < in_segments.length; k++)
         sb.append(in_segments[k].toXML());
+    
     sb.append("</SegmentList>");
     if(should_segment == true)
         sb.append("&segment=true");

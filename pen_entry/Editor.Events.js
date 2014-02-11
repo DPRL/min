@@ -203,7 +203,8 @@ Editor.align = function()
             var origMaxs = maxs.clone();
             var recognition_result = RecognitionManager.getRecognition(set_segments[0].set_id);
             // If it's a text segment, account for the draculae making x's smaller than t's, etc
-            
+            if(recognition_result == null)
+            	continue;
             if (set_segments[0].constructor == SymbolSegment) {
                 size = Vector2.Subtract(maxs, mins);
                 if (-1 != $.inArray(set_segments[0].text, Editor.x_height_chars)) {
@@ -1043,6 +1044,7 @@ Editor.search = function(e)
     var engineType = document.getElementById("engineSelector").value;
 	var keywords = document.getElementById("tex_result").value;
     var searchString = Editor.slider.getCurrentExpression();
+    searchString = searchString.replace(/\s/g, "");
 	if (keywords) {
 		searchString += ' ' + keywords;
 	}
@@ -1073,8 +1075,8 @@ Editor.search = function(e)
         break
     }
     searchString = encodeURIComponent(searchString);
-    //window.open(url + searchString);
-	window.location = url + searchString;
+    window.open(url + searchString);
+	//window.location = url + searchString;
 }
 
 Editor.goDPRL = function ()
