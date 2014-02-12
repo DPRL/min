@@ -1,6 +1,6 @@
-#m<sub>in</sub>  
+# m<sub>in</sub>  
 	
-##System Description
+## System Description
 The name of the interface is called m<sub>in</sub> short for Math Input. m<sub>in</sub> is 
 designed to make it easier to include mathematical expressions in your search
 queries. Math expressions are drawn on the canvas, with keywords entered in a
@@ -23,7 +23,7 @@ box or clicking microscope starts the search process in a new window.
 
 Currently supported engines are: Tangent, NIST DLMF, Wolfram Alpha, Google, Wikipedia, and LaTeX Search.
 
-##Documentation
+## Documentation
 This file should serve as a starting point for developers who are interested in
 understanding the underlying operations that occur within m<sub>in</sub>. Each file associated with 
 m<sub>in</sub> has a brief and concise overview of major operations of the file and how it is used 
@@ -33,7 +33,7 @@ folder that summarizes how m<sub>in</sub> works.
 Also, visit m<sub>in</sub>'s [tutorial page](http://saskatoon.cs.rit.edu/min_instructions/) to watch
 video instructions on how to use m<sub>in</sub>.
 
-##Installation / Download
+## Installation / Download
 m<sub>in</sub>'s front end is web application hence it doesn't require any installation. However, 
 the back end runs runs a series of web services that the front end needs to function like the two 
 classifiers and draculae. Commands required to start them up are:
@@ -46,16 +46,16 @@ All files and services relating to m<sub>in</sub> can be downloaded from the
 [software tab of the lab](http://www.cs.rit.edu/~dprl/Software.html) or via this GitHub account. 
 
 
-##Supported Input Media
+## Supported Input Media
 m<sub>in</sub> supports three different input media and they are: drawing, images, and typing
 on the canvas. Any of these input media can be combined during a single session, thereby 
 making m<sub>in</sub> a multimodal system. These input media are discussed documentation readme file.
 
-##Browser Compatibility
+## Browser Compatibility
 m<sub>in</sub> has been works on all dominant webkit and gecko based browsers, and has bee tested on Chrome, 
 Firefox, and Safari.
 
-##m<sub>in</sub>'s Ports
+## m<sub>in</sub>'s Ports
 m<sub>in</sub> makes use of two ports when online:
 
 * Pen Recognition: Port 1504 is used for stroke classification and recognition.
@@ -66,7 +66,7 @@ To change any of these ports, the port numbers and remote address can be changed
 Editor.Constants.js file in the pen_entry folder. Currently, m<sub>in</sub>'s remote address is: 
 <http://129.21.34.109:> with the port number appended to the remote address based on the classification type.
 
-##How to use m<sub>in</sub>
+## How to use m<sub>in</sub>
 There are two ways to run m<sub>in</sub>:
 
 * Downloading the project and opening the index.xhtml in any browser, and gosting the server services on a server.
@@ -87,7 +87,7 @@ keywords box, and finally hit the giant glass button. When the search button is 
 m<sub>in</sub> opens a new tab and sends the expression on the canvas as LaTeX to the chosen search
 engine.
 
-##Dependencies
+## Dependencies
 m<sub>in</sub>'s front end depends on the following libraries and will be included project upon download: 
 
 * The library that is responsible for both making the symbols on the canvas look pretty is the MathJax library and
