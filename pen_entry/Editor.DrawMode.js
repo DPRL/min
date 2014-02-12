@@ -125,7 +125,6 @@ DrawMode.onUpBase = function(e){
 	f = function(){ 
 		if(Editor.current_stroke.finish_stroke()) {
 			set_id_changes = Editor.current_stroke.test_collisions();
-			console.log("New set_ids: " + set_id_changes);
 			RecognitionManager.enqueueSegment(Editor.current_stroke);
 		} else {
 			// This make sure that we remove the exact element of the array
