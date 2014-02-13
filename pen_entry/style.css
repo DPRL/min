@@ -224,7 +224,7 @@ div.equation_canvas_stroke {
 div.toolbar {
 	position: relative;
 	display: block; 
-	
+	min-width: 1366px;
 	
 	/** background color **/
 	background: #eeeeee; /* old browsers */
