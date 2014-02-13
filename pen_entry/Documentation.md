@@ -1,4 +1,5 @@
-#Front End Description
+# Front End Description
+* * *
 
 m<sub>in</sub> can be broken down into these major parts:
 
@@ -14,7 +15,8 @@ m<sub>in</sub> can be broken down into these major parts:
 Each one of these categories are discussed below.
 							
  
-##EDITOR MODES
+## EDITOR MODES
+* * *
 
 m<sub>in</sub> currently supports two main modes; `DrawMode` and `RectSelectMode`. m<sub>in</sub> switches to the 
 `DrawMode` by default when it start up, switches to a different mode when the user clicks 
@@ -42,7 +44,8 @@ Files responsible for implementing the description above are:
 * `Editor.RectSelectMode.js`
 * `Editor.SelectionMode.js`
 
-##Event System
+## Event System
+* * *
 									
 As m<sub>in</sub> initializes upon window load, it defaults its mode to `DrawMode` which binds
 events like mouse down, touchstart, mouse up and touchend events to the canvas. 
@@ -89,12 +92,14 @@ called. Pen strokes are handled in  `Editor.DrawMode.js` which records the posit
 when the user moves cursor or hand on the canvas. Image file upload will trigger 
 `Editor.Events.onImageLoad` when the image upload button is clicked on the interface toolbar.
 
-##Segments Types
+## Segments Types
+* * *
 m<sub>in</sub> currently supports three kinds of input objects. There are PenStroke, Images, TeX\_Input. 
 TeX\_Input is the class that supports the typing input medium, and these objects are 
 discussed in detail below:
  
-###PEN STROKES
+### PEN STROKES
+* * *
 
 It is possible to draw directly on a canvas. Strokes drawn in pen mode are displayed as
 SVG element elements with a nested polyline (a list of points) displayed on the canvas element.
@@ -113,7 +118,8 @@ with each other on the canvas, the colliding segments share a `set_id`. This way
 identify and perform operations on the segments as a group. 
 
 
-###Images
+### Images
+* * *
 
 Image objects have similar characteristics that PenStroke objects have but some differences
 like the fact that ImageBlobs are generated for image inputs. ImageBlobs are classified
@@ -122,7 +128,8 @@ connected components and then classified. When an ImageBlob is sent to the class
 it is returned as multiple connected components and multiple recognitions which are then
 added to the canvas.
 
-###TeX_Input
+### TeX_Input
+* * *
 
 TeX_Input objects require the assistance of a third party library called MathJax to function 
 properly. We use MathJax to render the TeX we retrieved from the user and copying the SVG
@@ -131,7 +138,8 @@ SVG. Note that the SVG returned by MathJax is flipped horizontally so care shoul
 by the programmer.
 
 
-##Classification and Recognition
+## Classification and Recognition
+* * *
 
 After an object is added to the canvas, (except TeX\_Input objects i.e typed symbols) it
 is enqueued to be classified using the `RecognitionManager.enqueueSegment()` function which
@@ -172,7 +180,8 @@ Below is an example response from the pen stroke classifier when a two is drawn:
     <\RecognitionResult>`
 
 
-###Alignment Operation
+### Alignment Operation
+* * *
 The alignment operation starts when the align button is clicked on by the user which fires
 the `Editor.align()` method. The method collects all properties of the segments like translation,
 scale, `world_mins` and `world_maxs` and sends it to Draculae which returns a TeX representation
@@ -183,7 +192,8 @@ the div with the SVG is position in the center of the canvas and each m<sub>in</
 the SVG segment is scaled and moved to the location of the SVG segment. 
 
 
-##CANVAS OBJECT LAYOUT
+## CANVAS OBJECT LAYOUT
+* * *
 
 When an ImageBlob or PenStroke is drawn on the canvas, there are actually two separate
 elements shown visually. The first is the blob or stroke which are both SVG objects. 
@@ -199,7 +209,8 @@ This operation is done by the `RenderManager.render_set_field()` function in`Ren
 
 The background color layout is the same for TeX\_Input objects as well.
 
-##CORRECTION MENU
+## CORRECTION MENU
+* * *
 
 The CorrectionMenu is displayed when the user clicks/touches on a symbol or symbol set and
 holds. The menu allows the user to select a different recognition result for a recognized symbol.
@@ -214,11 +225,13 @@ The XML tree is loaded with m<sub>in</sub> and is started via an AJAX request. T
 file local to m<sub>in</sub> or on a remote server. As of this writing, `example_tree.xml` in the pen\_entry
 directory is used.
 
-##UTILITIES
+## UTILITIES
+* * *
 
 Many functions in m<sub>in</sub> make use of the Vector2 object, which is like a Python 2-tuple but in our case 8-tuple. Most often they are used to represent x,y coordinates. This file also includes many functions for doing math on Vector2s and they are defined in the `Util.js`
 
-##ACTIONS
+## ACTIONS
+* * *
 
 Many operations that users can perform using m<sub>in</sub> can be encapsulated in an action object.
 Action is an interface defined in Action.js which includes the `Undo()` and `Apply()` methods.
