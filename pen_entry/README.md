@@ -105,7 +105,7 @@ keywords box, and finally hit the giant glass button. When the search button is 
 min opens a new tab and sends the expression on the canvas as LaTeX to the chosen search
 engine.
 
-##Dependencies
+## Dependencies
 * * *
 min's front end depends on the following libraries and will be included project upon download:
 
@@ -120,6 +120,7 @@ In addition, the back end depends on the following programming languages:
 * MatLab
 * Python
 * C Sharp
+
 * * *
 
 *Visit the DPRL page for more information about the lab and projects.*
