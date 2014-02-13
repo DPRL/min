@@ -1,4 +1,6 @@
-me of the interface is called min short for Math Input. min is 
+# min
+* * *
+The name of the interface is called min short for Math Input. min is 
 designed to make it easier to include mathematical expressions in your search
 queries. Math expressions are drawn on the canvas, with keywords entered in a
 standard text box. Recognized expressions are converted to text and combined
@@ -119,6 +121,7 @@ In addition, the back end depends on the following programming languages:
 * Python
 * C Sharp
 * * *
+
 *Visit the DPRL page for more information about the lab and projects.*
 
 *Contributors: Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker, Christopher Sasarak, Robert LiVolsi,
