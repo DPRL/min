@@ -1,24 +1,41 @@
-// IMPORTANT NOTE:
-//
-// The function that controls which objects are rendered in which layer is controlled
-// by a switch statement in the RenderManager.render_set_field() function.a
-//
-// (rlaz)
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/* 
+	This file has objects and functions for drawing objects on the canvas. Mainly 
+	responsible for the visible bounding boxes that appear in rect select mode
 
-/*
-  5 layers:
-
-  0 pen strokes
-  1 equation image blobs
-  2 typed text
-  3 math recognition layer
-  4 tools layer
+    Major methods are:
+		render_tools_layer: Render the boudning box, segments, rectangle selection box etc.
+		render: Go through all object on screen and render them, this mainly updates SVG
+		values, the browser actually draws the object on screen.
+		colorOCRbbs: Set the color of the translucent blue/red boxes based on the Editor's
+		state.
+		render_set_field: Creates and renders the OCR layer above a symbol.
 */
 
 function RenderManager()
 {
 }
 
+// Called when Min starts up. It just initializes the RenderManager
 RenderManager.initialize = function(in_width, in_height, in_layers)
 {
     RenderManager.width = in_width;
@@ -36,7 +53,7 @@ RenderManager.initialize = function(in_width, in_height, in_layers)
     RenderManager.segment_set_divs = new Array();
 }
 
-// render the helper grahics (bounding box, segments ets, rectangle select etc)
+// render the helper graphics (bounding box, segments ets, rectangle select etc)
 RenderManager.render_tools_layer = function()
 {
 	RenderManager.render_set_field(4);
@@ -57,6 +74,7 @@ RenderManager.render_tools_layer = function()
         RenderManager.selection_box.style.visibility = "hidden";
 }
 
+// Render all the segments on the canvas
 RenderManager.render = function()
 {    
     var setid = -1;
@@ -103,6 +121,7 @@ RenderManager.render_selection_box = function(in_min, in_max, in_context_id)
     RenderManager.selection_box.style.visibility = "visible";
 }
 
+// render the bounding box
 RenderManager.render_bb = function(in_bb, in_context_id)
 {
     // rlaz: Modified to clean up appearance of selection boxes.
@@ -138,6 +157,11 @@ RenderManager.colorOCRbbs = function(classname) {
     }
 }
 
+/*
+	This method is responsible for displaying the bounding box over a segment
+	and the SVG that's in the bounding box div.
+	Each bounding box is a div 
+*/
 RenderManager.render_set_field = function(in_context_id)
 {
     // Uses fact that primitive are sorted according to set (segment)
@@ -275,6 +299,7 @@ RenderManager.start_display = function(ss_div,tex,set_segments){
 }
 
 // Adjusts the SVG recognition result to fit the RenderManager's Box
+// Called when user is resizing a bounding box or a group of them
 RenderManager.render_svg = function(BBox_div, set_segments){
 	var element,x_offset,y_offset;
 	var svg_root = BBox_div.firstChild;
@@ -437,6 +462,7 @@ RenderManager.decrease_stroke_opacity = function(){
 
 }
 
+// Hide bounding boxes that are not used
 RenderManager.unrender_set_field = function()
 {
     for(var k = 0; k < RenderManager.segment_set_divs.length; k++)

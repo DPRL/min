@@ -1,8 +1,30 @@
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
 /*  
 	This file is responsible for transferring the MathJax rendered SVG in the 
 	div with id Hidden_Tex to the canvas. It is a sub class of the PenStroke file.
 	Note: The polyline gotten from the path element has to be converted to an image in order
-		  to allow for reclassification. Don't really think editing is gonna happen.
+		  to allow for reclassification.
+	Software: Uses the Raphael software to successfully convert the SVG path element to 
+			  equivalent polyline representation.
 */
 TeX_Input.type_id = 5;    // unique per class
 function TeX_Input(MathJax_symbol, in_x, in_y, in_line_width, index){
@@ -461,6 +483,7 @@ TeX_Input.prototype.get_bezier_points = function(data, order){
 	return points;
 }
 
+// Retrieves the polyline points corresponding to each SVG path element
 TeX_Input.prototype.get_polyline_points = function(){
 	// Get the path tag, flip it horizontally because transformation is only applied to 
 	// g element which the 'this.path_tag' is inside of, then convert all to their absolute coordinates

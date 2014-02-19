@@ -1,5 +1,35 @@
-// a datastructure representing the top N recognition results
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/*
+This file contains objects used for recognition results. It manages the classification
+        queue, and also keeps a list of recognitions for display on Min's canvas.
 
+        Some methods are:
+			enqueue_segment: add a segment to the classification queue.
+			classify_queued: Classify each object in the queue.
+			fromXML: Give a RecognitionResult XML element and add the recognition to the system.
+			addRecognitionForText: Add a recognition for a SymbolSegment.
+			getRecognition: Returns the recognition associated with a set.
+			addRecognitionForText: Adds a recognition for a SymbolSegment.
+*/
 function RecognitionResult()
 {
     // list of symbols

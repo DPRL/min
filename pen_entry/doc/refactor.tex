@@ -77,7 +77,7 @@ with a (hopefully) cleaner approach. The main goals of this refactoring were:
 
 The new Min event system is designed under the idea that the functionality of
 Min can be separated into several discrete modes: \textbf{Draw Mode},
-\textbf{Stroke Selection Mode}, and \textbf{Rectangle Selection Mode}. By
+and \textbf{Rectangle Selection Mode}. By
 keeping track of the modes, we know which functionality should be active and
 which should not be. Thus when the user switches from one mode to another, we know
 exactly which mouse events are bound and which ones are not. To incorporate
@@ -108,9 +108,6 @@ Important files in the new setup are:
         chain for selection modes.
     \item[Editor.RectangleSelectionMode.js] This contains code specific to
         rectangle selection. When a segment is selected, SelectionMode takes
-        over.
-    \item[Editor.StrokeSelectionMode.js] This contains code specific to stroke
-        selection. When a segment is selected, the events in SelectionMode take
         over.
 \end{description}
 

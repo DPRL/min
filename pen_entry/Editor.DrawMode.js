@@ -1,6 +1,32 @@
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
 /*
-This file contains event handlers for use in the drawing
-mode of Min.
+	This file contains event handlers for use in the drawing
+	mode of Min.
+	
+	The onDownBase, onMoveBase and onUpBase methods are responsible for collecting the 
+	user's mouse movement coordinates and passing each coordinate to the PenStroke object
+	associated with the particular user action. It also handles the typing input medium.
+	The KeyPress method retrieves each character and send them to the SymbolSegment object
+	created upon keyboard stroke detection.
 */
 
 // For now this hierarchy doesn't matter, as we don't make instances
@@ -38,6 +64,7 @@ function DrawMode(){
     // DrawMode.prototype.onDown.call(this, e);
 }
 
+// DrawMode's init method. Called when entering DrawMode
 DrawMode.prototype.init_mode = function(){  
     RenderManager.colorOCRbbs(this.segment_style_class);
     this.selectPenTool();
@@ -62,6 +89,7 @@ DrawMode.prototype.init_mode = function(){
     RenderManager.decrease_stroke_opacity();
 }
 
+// DrawMode's close method. Called when leaving DrawMode
 DrawMode.prototype.close_mode = function(){
    if(Editor.current_text != null){
         this.stopTextInput();
@@ -74,7 +102,7 @@ DrawMode.prototype.close_mode = function(){
    $(document).off('keypress', this.onKeyPress);
 }
 
-
+// Called when user is done typing on the canvas
 DrawMode.prototype.stopTextInput = function(e){
     Editor.current_text.finishEntry();
     if(Editor.current_action.toString() == "EditText")
@@ -87,23 +115,24 @@ DrawMode.prototype.stopTextInput = function(e){
 
     RenderManager.render();
 }
-
-DrawMode.onDownBase = function(e){
-
-	if(this.single_click)
-    { // double click
-    	this.single_click = false;
-    	$(Editor.canvas_div).off('mousemove touchmove', this.onMove);
-    	$(Editor.canvas_div).off('mouseleave', this.onMouseOut);
-    	
-    }else
-    { // single click
-    	this.single_click = true;
-    	$(Editor.canvas_div).on('mousemove touchmove', this.onMove);
-    	$(Editor.canvas_div).on('mouseleave', this.onMouseOut);
-    }
-
-    DrawMode.prototype.onDown.call(this, e);
+* 
+* // Called when user clicks on the canvas, binds move events too
+* DrawMode.onDownBase = function(e){
+* 
+* 	if(this.single_click)
+*     { // double click
+*     	this.single_click = false;
+*     	$(Editor.canvas_div).off('mousemove touchmove', this.onMove);
+*     	$(Editor.canvas_div).off('mouseleave', this.onMouseOut);
+*     	
+*     }else
+*     { // single click
+*     	this.single_click = true;
+*     	$(Editor.canvas_div).on('mousemove touchmove', this.onMove);
+*     	$(Editor.canvas_div).on('mouseleave', this.onMouseOut);
+*     }
+* 
+*     DrawMode.prototype.onDown.call(this, e);
     // build a new stroke object and save reference so we can add new points
     Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
     Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
@@ -113,6 +142,8 @@ DrawMode.onDownBase = function(e){
     RenderManager.render();
 }
 
+// Called when user lifts mouse or hand. Finishes stroke point collection and tests
+// for collision
 DrawMode.onUpBase = function(e){
 	if(Editor.current_stroke == null)
 		return;
@@ -156,6 +187,7 @@ DrawMode.onMouseOut = function(e){
 	$(Editor.canvas_div).trigger({type:Editor.current_mode.event_strings.onUp+''});
 }
 
+// Collects pen stroke points and passes it to the pen stroke object for insertion
 DrawMode.onMoveBase = function(e){
     DrawMode.prototype.onMove.call(this, e);
 
@@ -164,6 +196,7 @@ DrawMode.onMoveBase = function(e){
     Editor.current_stroke.add_point(Editor.mouse_position);
 }
 
+// Called when the user double clicks on a segment. Opens correction menu
 DrawMode.onDoubleClick = function(e){
 	// All Editor Modes(RectSelect and StrokeSelect) call DrawMode's
 	// onDoubleClick when in the mode and an expression is double clicked on
@@ -183,6 +216,8 @@ DrawMode.onDoubleClick = function(e){
     
 }
 
+// Used for typing on the canvas. Gets each typed character or keyboard stroke and 
+// processes it by passing stroke to SymbolSegment object that was created.
 DrawMode.onKeyPress = function(e){
     // TODO: See if there's a better way to do this that would eliminate 
     // reliance on an Editor state. Local flag?
@@ -225,6 +260,7 @@ DrawMode.onKeyPress = function(e){
 
 }
 
+// Selects the pen tool from the toolbar 
 DrawMode.selectPenTool = function()
 {
     Editor.clearButtonOverlays();

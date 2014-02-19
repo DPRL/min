@@ -1,4 +1,33 @@
-// NOTE: this is the class for characters.
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/*
+	This file contains objects which represent segments added to the canvas via keyboard.
+
+    Methods:
+		addCharacter: Add another character to this SymbolSegment.
+		popCharacter: Remove a character from this SymbolSegment.
+		finishEntry: This function takes the string in this SymbolSegment and uses the 
+					TeX_Input class to render the typed in expression.
+
+*/
 
 SymbolSegment.count = 0;
 SymbolSegment.type_id = 3;
@@ -39,7 +68,7 @@ function SymbolSegment(in_position) {
     this.element = this.textDiv[0];
     this.render();
 }
-
+// adds a character to the div
 SymbolSegment.prototype.addCharacter = function(in_char) {
     this.is_empty = false;
     this.text += in_char;
@@ -49,7 +78,7 @@ SymbolSegment.prototype.addCharacter = function(in_char) {
     this.render();
 };
 
-
+// adds a space to the div
 SymbolSegment.prototype.addSpace = function() {
     this.is_empty = false;
     this.text += '-';
@@ -59,7 +88,7 @@ SymbolSegment.prototype.addSpace = function() {
     this.render();
     this.textDiv.text(' ');
 };
-
+// removes the last character added
 SymbolSegment.prototype.popCharacter = function() {
     if(this.text.length > 0) {
         this.text = this.text.substring(0, this.text.length - 1);

@@ -1,7 +1,31 @@
-/// BoundinggBox
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/*
+	This file defines an object which represents the bounding box which surrounds objects
+    on the canvas when they are clicked or selected.
 
-//input: two opposing corners (a.x != b.x and a.y != b.y)
-
+    Methods:
+		translate - translates the bounding box on the screen by a given offset.
+		edge_clicked - determine which edge of the box was clicked based on a given point.
+*/
 function BoundingBox(corner_a, corner_b, render_corner_a, render_corner_b)
 {
     // set up logical mins for resizing

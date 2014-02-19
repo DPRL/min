@@ -1,10 +1,39 @@
 /* 
-This file contains events that are permanent and remain unchanged
-throughout throughout a run of Min. e.g. buttons
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/* 
+	This file contains events that are permanent and remain unchanged
+	throughout throughout a run of Min. e.g. buttons and their event handlers.
+	
+	This method also handles URL argument passing which currently only works with TeX. 
+	It retrieves the TeX from the URL, renders it using MathJax, creates a new TeX_Input 
+	object for each character and adds it to the canvas.
+	
+	This file is also responsible for all drag and drop operations in Min.
 */
 
 function PermEvents(){}
 
+/* 	Add events to buttons, checks for window.filereader and if available insert the 
+	image upload button also adds keyboard shortcuts
+*/
 PermEvents.setup_toolbar = function(){
     $("#pen").click(EditorMode.mkModeSwitchFn(Editor.modes.DrawMode));
 

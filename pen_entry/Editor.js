@@ -1,26 +1,55 @@
-// editor object will have multiple layers (each a canvas):
-    // imported image layer
-    // stroke layer
-    // bounding box layer
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/*
+		Contains code for managing the canvas. Originally there was supposed to be a canvas for each
+        layer (image layer, stroke layer, bounding box layer), but currently Min is implemented with
+        only one.
 
-//  multiple tools
-    // pen
-    // select
-
+        Methods:
+                1. save_state/restore_state: Save and restore Min states in their
+                entirety. Currently not used.
+                2. 
+                3. add_selected_segment - Mark a segment as selected so the bounding box appears
+                around it.
+                4. update_selected_bb - Update the location and size of the bounding box based on
+                the location and sizes of the selected segments.
+                5. remove_segment/remove_selected_segment
+                6. add_canvas - create a canvas and add it to the list of contexts (canvases)
+*/
 function Editor() {}
     
 Editor.instance = null;
 
-
+// Possible EditorModes
 Editor.modes = {
     "DrawMode": new DrawMode(),
     "RectSelectMode": new RectSelectMode()
-    //"StrokeSelectMode": new StrokeSelectMode()
 };
 
 // Code for modes/mode switching
 Editor.current_mode = null;
 
+/*
+	The method that initializes Min by calling all necessary methods that needs to run
+*/
 Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 {
     if(Modernizr.touch == true)
@@ -137,6 +166,9 @@ Editor.set_current_expression_id = function(id) {
     Editor.clear_selected_segments();
 }
 
+/* 
+	Saves the segments on the canvas used for debugging purposes only
+*/
 Editor.save_state = function(clear)
 {
     var state = {
@@ -157,6 +189,10 @@ Editor.save_state = function(clear)
     return JSON.stringify(state);
 }
 
+/* 
+	Restores the segments in the json_string on the canvas
+	Used for debugging purposes only
+*/
 Editor.restore_state = function(json_string)
 {
     var state = JSON.parse(json_string);
@@ -338,7 +374,7 @@ Editor.remove_segment = function(in_segment)
         }
     }
 }
-
+// removes segment from selected segments list
 Editor.remove_selected_segment = function(in_segment)
 {
     if(in_segment == null) return;
@@ -377,6 +413,7 @@ Editor.add_canvas = function()
     Editor.contexts.push(svg_canvas);
 }
 
+// Builds the canvas which is an SVG object
 Editor.build_canvas = function()
 {
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");

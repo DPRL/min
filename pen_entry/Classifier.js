@@ -1,3 +1,29 @@
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/*
+	This file, Classifier, sends the collected points from the user to the classifier.
+	When the result is returned, it parses the recognition result and adds it to the 
+	RecognitionManager's result table.
+*/
+
 function Classifier()
 {
     
@@ -23,6 +49,10 @@ Classifier.prototype.group_by_server = function(in_segments){
     return classification_groups;
 }
 
+/*
+	Sends the request to the appropriate classifier. Inserts response in the RecognitionManager's
+	result_table and can be looked up using the set_id
+*/
 Classifier.prototype.request_classification = function(server_url, in_segments, should_segment){
     // change this to an asynchronous thing later
 
@@ -89,6 +119,7 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
     );
 }
 
+// Request classification by calling the request_classification method
 Classifier.prototype.classify = function(in_segments, should_segment)
 {
     var classification_groups = this.group_by_server(in_segments);

@@ -1,3 +1,40 @@
+/* 
+* This file is part of Min.
+* 
+* Min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* Min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with Min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright 2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+*/
+/*
+	This class contains some of the logic and events for the Editor as a whole. 
+        
+        Events are defined for the following:
+			onImageLoad (browsers supporting FileReader only)
+        Methods that change the state of the editor are:
+               1. groupTool - Adds selected segments to one segment group.
+               2. deleteTool
+               3. typeTool
+               4. relabel
+               5. clear
+        Other methods:
+               1. align - Align objects on the canvas and populate the query bar with a LaTeX
+               string.
+               2. search - submit the LaTeX query to a search engine.
+    		      etc
+*/
 var EditorState = 
     {
         // select tool states
@@ -34,6 +71,7 @@ Editor.lastEvent = null;
 Editor.moveQueue = null;
 Editor.touchAndHoldFlag = TouchAndHoldState.NoTouchAndHold;
 
+// Called when Min is starting up. Just calls other methods
 Editor.setup_events = function()
 {
     var button_index = 0; // Sets default initial state (pen/touch entry)
@@ -64,18 +102,6 @@ Editor.fit_to_screen = function(event)
     
     window.scroll(0,0);
 }
-
-//--------------------------------------------------
-// 
-// User Input Events
-//   - touchAndHold (called using timeout)
-//   - onDoubleClick (called on touchAndHold as well)
-//
-//   - onMouseDown
-//   - onMouseMove
-//   - onMouseUp
-//   - onKeyPress
-//-------------------------------------------------- 
 
 Editor.mapCanvasBackspace = function(e)
 {
@@ -142,13 +168,9 @@ Editor.onKeyPress = function(e)
     if(e.keyCode == KeyCode.backspace || e.keyCode == KeyCode.del)
         return;
 }
-
-//--------------------------------------------------
-// 
-// Editing modes/states
-// 
-//-------------------------------------------------- 
-
+/*
+	Performs alignment to the segments on the canvas, sends request to Draculae
+*/
 Editor.align = function()
 {
     switch(Editor.state)
@@ -634,6 +656,7 @@ Editor.apply_alignment = function(array, canvas_elements)
 
 // Utility function used to see the bounding rectangle. Not being used, was used for debugging
 // alignment during scaling and translation.
+// Used for debugging alignment. Just draws a BBox
 Editor.draw_rect = function(dim){
 	var div = document.createElement('div');
 	div.className = Editor.current_mode.segment_style_class;
@@ -724,6 +747,7 @@ Editor.sort_svg_positions = function(array)
 	return x_pos;
 }
 
+// Prints the sorted SVG and canvas segments
 Editor.print_sorted = function(array, type)
 {
 	var s;
@@ -846,7 +870,7 @@ Editor.typeTool = function()
 }
 
 /*
-   cb is a callback to call after thei Correction hides itself.  
+   cb is a callback to call after the Correction hides itself.  
 */
 Editor.relabel = function(callback)
 {
@@ -886,8 +910,6 @@ Editor.clear = function()
         }
     );
     
-    // reset editor
-    // ?????
 }
 
 Editor.getInkML = function() {
@@ -1037,6 +1059,9 @@ Editor.ParseImage = function(file){
     }
 }
 
+/* Methods that performs the search on expression on canvas.
+	Retrieves the TeX and searches with it
+*/
 Editor.search = function(e) 
 {
     // NOTE: CURRENTLY EXPERIMENTING WITH ONLY ONE TEXT BOX.
@@ -1049,8 +1074,6 @@ Editor.search = function(e)
 		searchString += ' ' + keywords;
 	}
 
-
-    /* INCOMPLETE */
     switch (engineType)
     {
     case 'LaTeX Search':
@@ -1084,6 +1107,7 @@ Editor.goDPRL = function ()
     window.location = "http://www.cs.rit.edu/~dprl"
 }
 
+// Shows tool tips
 Editor.showToolTip = function(target, use){
 	if (!Modernizr.touch) {
 		$('#' + target).tooltip({content: use, items: '#' + target});
