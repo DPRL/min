@@ -115,24 +115,24 @@ DrawMode.prototype.stopTextInput = function(e){
 
     RenderManager.render();
 }
-* 
-* // Called when user clicks on the canvas, binds move events too
-* DrawMode.onDownBase = function(e){
-* 
-* 	if(this.single_click)
-*     { // double click
-*     	this.single_click = false;
-*     	$(Editor.canvas_div).off('mousemove touchmove', this.onMove);
-*     	$(Editor.canvas_div).off('mouseleave', this.onMouseOut);
-*     	
-*     }else
-*     { // single click
-*     	this.single_click = true;
-*     	$(Editor.canvas_div).on('mousemove touchmove', this.onMove);
-*     	$(Editor.canvas_div).on('mouseleave', this.onMouseOut);
-*     }
-* 
-*     DrawMode.prototype.onDown.call(this, e);
+ 
+ // Called when user clicks on the canvas, binds move events too
+ DrawMode.onDownBase = function(e){
+ 
+ 	if(this.single_click)
+     { // double click
+     	this.single_click = false;
+     	$(Editor.canvas_div).off('mousemove touchmove', this.onMove);
+     	$(Editor.canvas_div).off('mouseleave', this.onMouseOut);
+     	
+     }else
+     { // single click
+     	this.single_click = true;
+     	$(Editor.canvas_div).on('mousemove touchmove', this.onMove);
+     	$(Editor.canvas_div).on('mouseleave', this.onMouseOut);
+     }
+ 
+     DrawMode.prototype.onDown.call(this, e);
     // build a new stroke object and save reference so we can add new points
     Editor.current_stroke = new PenStroke(Editor.mouse_position.x,Editor.mouse_position.y, 6);
     Editor.add_action(new AddSegments(new Array(Editor.current_stroke)));
