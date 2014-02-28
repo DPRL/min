@@ -41,6 +41,7 @@ Also, visit min's tutorial page at http://saskatoon.cs.rit.edu/min_instructions 
 min's front end is web application hence it doesn't require any installation. However, the back end runs runs a series of web services that the front end needs to function like the two classifiers and draculae. Each back end service has a start script, `start.sh` that starts the classifier on a specific port supplied in the arguments Below are the run commands:
 
 * Draculae:
+        
         nohup draculae_server.exe > server.out 2> server.err &
 * Lei Classifier: 
         
@@ -51,6 +52,7 @@ min's front end is web application hence it doesn't require any installation. Ho
         
         nohup mono lei_classifier.exe CLASSIFIER_PORT CLASSIFIER_ROOT $MATLAB_BINARY "$MATLAB_ARGS" > classify.out 2> classify.err &
 * Image Recognition:
+        
         nohup python ImageRecognitionServer.py 7006 > server.out 2> server.err &
 
 Where `server.out and classify.out` are output files and `server.err and classify.err` are error log files.
