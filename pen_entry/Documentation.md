@@ -1,30 +1,34 @@
-# Front End Description
+# Front End Description of min
+Author: Awelemdy Orakwue, February 21, 2014
+
+*Contributors: Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker, Christopher Sasarak, Robert LiVolsi,
+Awelemdy Orakwue, and Richard Zanibbi Document and Pattern Recognition Lab, RIT*
 * * *
 
-m<sub>in</sub> can be broken down into these major parts:
+min can be broken down into these major parts:
 
-* <b>Editor Modes:</b> m<sub>in</sub>'s mode switching mechanism.
-* <b>Event System:</b> m<sub>in</sub>'s response to user actions.
+* <b>Editor Modes:</b> min's mode switching mechanism.
+* <b>Event System:</b> min's response to user actions.
 * <b>Segments Types:</b> Currently allows segment types.
 * <b>Classification and Recognition:</b> Classification of segment types.
 * <b>Canvas object layout:</b> Rendering of bounding boxes on segments.
 * <b>Correction menu:</b>Allows user to correct or change recognition.
-* <b>Utilities:</b> Includes data structures like Tuples used in m<sub>in</sub>.
-* <b>Actions:</b> Defines all possible actions users can perform in m<sub>in</sub>.
+* <b>Utilities:</b> Includes data structures like Tuples used in min.
+* <b>Actions:</b> Defines all possible actions users can perform in min.
 
 Each one of these categories are discussed below.
-							
+    						
  
 ## EDITOR MODES
 * * *
 
-m<sub>in</sub> currently supports two main modes; `DrawMode` and `RectSelectMode`. m<sub>in</sub> switches to the 
+min currently supports two main modes; `DrawMode` and `RectSelectMode`. min switches to the 
 `DrawMode` by default when it start up, switches to a different mode when the user clicks 
 on the button representing that mode.
 
 In the `DrawMode`, the available operations are: drawing on the canvas, double clicking on
 the drawn symbol to change recognition, and typing on the canvas using the keyboard. 
-When the user clicks on the canvas, m<sub>in</sub> determines if the user is typing by listening for
+When the user clicks on the canvas, min determines if the user is typing by listening for
 keyboard strokes and if the user is drawing by listening to mouse move events. Events are
 listened to using jQuery. The event system is described in the next section.
 
@@ -46,16 +50,16 @@ Files responsible for implementing the description above are:
 
 ## Event System
 * * *
-									
-As m<sub>in</sub> initializes upon window load, it defaults its mode to `DrawMode` which binds
+	
+As min initializes upon window load, it defaults its mode to `DrawMode` which binds
 events like mouse down, touchstart, mouse up and touchend events to the canvas. 
 To differentiate between touch and desktop devices, we use a third party software called
-Modernizr which detects touch devices like the iPad. Upon detection, m<sub>in</sub> figures
+Modernizr which detects touch devices like the iPad. Upon detection, min figures
 out which events to bind automatically by using the `Editor.current_mode.event_strings`
-data structure defined in the `EditorMode.js` file. This data structure allows m<sub>in</sub> to keep
+data structure defined in the `EditorMode.js` file. This data structure allows min to keep
 track of the events that should be active based on the type of device.
 
-The event system is designed under the idea that the functionality of m<sub>in</sub> can be separated
+The event system is designed under the idea that the functionality of min can be separated
 into two discrete modes: draw mode, and rectangle selection mode. By keeping track of
 the modes, we know which functionality should be active and which should not be. Thus when
 the user switches from one mode to another, we know exactly which mouse events are bound
@@ -67,22 +71,11 @@ the user has just clicked a segment.
 
 Important files in the new setup are:
 
-* `Editor.PermEvents.js`: This file contains events which are bound when
-        m<sub>in</sub> starts and then left alone. This is where the events attached to the
-        buttons on the top-bar are located. It also includes code for all drag and drop 
-        functionality in m<sub>in</sub>.
-* `Editor.EditorMode.js`: This file contains code that will be used by
-        all EditorModes. All *Mode style objects have an instance of this object
-        at the top of their prototype chain.
-* `Editor.DrawMode.js`: This file contains the objects that are used for
-        behavior that is active in DrawMode, such as the typing tool and the
-        drawing tool.
-* `Editor.SelectionMode.js`: This file contains methods that are used when the user is 
-      resizing or moving any segment. This is part of the prototype
-        chain for selection modes.
-* `Editor.RectangleSelectionMode.js`: This contains code specific to
-        rectangle selection. When a segment is selected, SelectionMode takes
-        over.
+* `Editor.PermEvents.js`: This file contains events which are bound when min starts and then left alone. This is where the events attached to the buttons on the top-bar are located. It also includes code for all drag and drop functionality in min.
+* `Editor.EditorMode.js`: This file contains code that will be used by all EditorModes. All Mode style objects have an instance of this object at the top of their prototype chain.
+* `Editor.DrawMode.js`: This file contains the objects that are used for behavior that is active in DrawMode, such as the typing tool and the drawing tool.
+* `Editor.SelectionMode.js`: This file contains methods that are used when the user is resizing or moving any segment. This is part of the prototype chain for selection modes.
+* `Editor.RectangleSelectionMode.js`: This contains code specific to rectangle selection. When a segment is selected, SelectionMode takesover.
     
 The event system accepts three types of input: keyboard inputs, pen stroke clicks, and
 image files. Each type of input will fire a different function. Keyboard inputs will be
@@ -94,7 +87,7 @@ when the user moves cursor or hand on the canvas. Image file upload will trigger
 
 ## Segments Types
 * * *
-m<sub>in</sub> currently supports three kinds of input objects. There are PenStroke, Images, TeX\_Input. 
+min currently supports three kinds of input objects. There are PenStroke, Images, TeX\_Input. 
 TeX\_Input is the class that supports the typing input medium, and these objects are 
 discussed in detail below:
  
@@ -151,7 +144,7 @@ classification_server set to "PenStrokeClassifier".
 
 Classification requests are sent using AJAX. The requests are XML, each object is
 responsible for generating an XML representation of itself by defining a `toXML()` function.
-Responses from the classification servers come back as XML and are used by m<sub>in</sub> to
+Responses from the classification servers come back as XML and are used by min to
 match the SVG objects to their segment equivalents.
 
 Each object has a unique object ID as well as a set ID that can be shared between
@@ -161,8 +154,7 @@ Objects can manually be grouped together by selecting them and clicking/touching
 
 Here is an example for each segment type's XML that is to be sent for classification:
 
-* Pen strokes: The XML includes the scale and translation for the stroke. A list of the
-				 X and Y coordinates for the points of the stroke is also created.
+* Pen strokes: The XML includes the scale and translation for the stroke. A list of the X and Y coordinates for the points of the stroke is also created.
          
          `<Segment type="pen_stroke" instanceID="0" scale="1,1" translation="401,232"points="0,7|0,6|8,0|9,0|...|32,29|32,30"/>`
          
@@ -188,9 +180,40 @@ scale, `world_mins` and `world_maxs` and sends it to Draculae which returns a Te
 of the input. `world_mins` and `world_maxs` are the lowest coordinate and highest coordinate 
 respectively. With the response from Draculae, the front end appends the TeX into a div and 
 uses MathJax to render the TeX into an SVG format. To align the segment(s) on the canvas, 
-the div with the SVG is position in the center of the canvas and each m<sub>in</sub> segment that matches
+the div with the SVG is position in the center of the canvas and each min segment that matches
 the SVG segment is scaled and moved to the location of the SVG segment. 
 
+The alignment service we currently use makes use of the open source FFES/DRACULAE software by Richard Zanibbi.
+
+Below is an sample XML request sent to draculae:
+
+    <SegmentList>
+        <Segment symbol="2" min="349,208" max="407,286" id="2"/>
+        <Segment symbol="5" min="496,250" max="554,328" id="14"/>
+        <Segment symbol="phi" min="439,216" max="478,255" id="17"/>
+    <\SegmentList>
+And here is the response from draculae:
+
+    <AlignResponse>
+        <TexString> 
+    		\documentclass[12pt,letter]{article}
+    		\usepackage{amssymb}
+            
+    		\begin{document}
+    		\pagestyle{empty}
+    		\begin{Huge}
+    		$
+    			2
+    			x
+    		$
+    		\end{Huge}
+    		\end{document}
+    	</TexString>
+        <Joined></Joined>
+	    <SegmentList id="2" min = "355,31" max = "421,199"></SegmentList>
+	    <SegmentList id="9" min = "439,75" max = "483,199"></SegmentList>
+    </AlignResponse>
+where `<Joined></Joined>` is used to represent symbols draculae merged together in a single symbol based on each symbol's position.
 
 ## CANVAS OBJECT LAYOUT
 * * *
@@ -198,7 +221,7 @@ the SVG segment is scaled and moved to the location of the SVG segment.
 When an ImageBlob or PenStroke is drawn on the canvas, there are actually two separate
 elements shown visually. The first is the blob or stroke which are both SVG objects. 
 Adjacent to them in the document and displayed on top of them on the canvas is the OCR 
-overlay(bounding box). The OCR overlay is a div with a translucent background color(
+overlay(bounding box). The OCR overlay is a div that defines a division or a section in an HTML document and used to group HTML elements. The div with a translucent background color(
 depending on the editor state) which is displayed over the blob or penstroke. Its innerHTML 
 is the classification for that symbol in some cases an SVG. In some cases means that the 
 TeX\_Input segment type doesn't require an SVG to be inserted into its OCR overlay. For 
@@ -207,7 +230,7 @@ recognition result for the segment is retrieved and inserted into a div for Math
 When MathJax is done rendering, the SVG is retrieved and insert into the overlay div. 
 This operation is done by the `RenderManager.render_set_field()` function in`RenderManager.js`.
 
-The background color layout is the same for TeX\_Input objects as well.
+The background color is the same for TeX\_Input objects as well.
 
 ## CORRECTION MENU
 * * *
@@ -221,19 +244,19 @@ that appear in the menu as well as categories in the menu. the parseXML() functi
 `CorrectionMenu.SymbolTree.js` parses an XML representation of the CorrectionMenu and returns an
 object tree representing it.
 
-The XML tree is loaded with m<sub>in</sub> and is started via an AJAX request. This can request either a
-file local to m<sub>in</sub> or on a remote server. As of this writing, `example_tree.xml` in the pen\_entry
+At start up, the XML tree is loaded with min and is started via an AJAX request. This can request either a
+file local to min or on a remote server. As of this writing, `example_tree.xml` in the pen\_entry
 directory is used.
 
 ## UTILITIES
 * * *
 
-Many functions in m<sub>in</sub> make use of the Vector2 object, which is like a Python 2-tuple but in our case 8-tuple. Most often they are used to represent x,y coordinates. This file also includes many functions for doing math on Vector2s and they are defined in the `Util.js`
+Many functions in min make use of the Vector2 object, which is like a Python 2-tuple but in our case 8-tuple. Most often they are used to represent x,y coordinates. This file also includes many functions for doing math on Vector2s and they are defined in the `Util.js`
 
-## ACTIONS
+## UNDO/REDO AND ACTION OBJECTS
 * * *
 
-Many operations that users can perform using m<sub>in</sub> can be encapsulated in an action object.
+Many operations that users can perform using min can be encapsulated in an action object.
 Action is an interface defined in Action.js which includes the `Undo()` and `Apply()` methods.
 Individual kinds of actions are defined in the `Action.*.js` files. Each of these individual
 action types implement the Action.js interface, but take different parameters in their
