@@ -21,7 +21,7 @@ Codepoint,Symbol,Classifier,LaTeX,Draculae
 &#x3e;,>,gtlower,>,>|greater-than,
 &#x2260;,≠,neqlower,neq,neq|notEqual|not-equal,
 &#xac;,¬,neg,neg,neg|not,
-&#x2228;,∨,lor,lor,lor|disjunction,
+&#x2228;,∨,lor,lor,lor|disjunction,m
 &#x2227;,∧,land,land,land|conjunction,
 &#x2264;,≤,less_than_or_equal,leq,leq|lessThanEqualTo|less-equal,
 &#x2225;,||,parallel,parallel,parallel|parallelLines,
