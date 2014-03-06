@@ -72,7 +72,8 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
         
         // Disabled.
         //document.getElementById( "getInkMLbutton" ).innerHTML = "Save InkML";
-    }
+    }else
+    	 document.getElementsByClassName("toolbar")[0].style.minWidth = "1073px";
     
     Editor.canvas_div = document.getElementById(String(in_equation_canvas_name));
     Editor.toolbar_div = document.getElementById(String(in_toolbar_name));
