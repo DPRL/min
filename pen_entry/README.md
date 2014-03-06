@@ -57,8 +57,9 @@ min's front end is web application hence it doesn't require any installation. Ho
 
 Where `server.out and classify.out` are output files and `server.err and classify.err` are error log files.
 
-All files and services relating to min can be downloaded from the 
-software tab of the lab website or via GitHub.
+All files and services relating to min can be downloaded from the software tab of the lab website or via GitHub. Once the files have been downloaded, they can be 
+uploaded to a web server or hosted. This installation technique requires that `index.xhtml` be pointed to for the website source. The other installation technique
+is simple and it can done by going to the downloaded files and opening the `index.xhtml` in web browser for instance Firefox or Chrome.
 
 The web services required by the front end accepts only XML formatted inputs and the formats are described in the `Documentation.md` under Classification and Recognition section.
 
