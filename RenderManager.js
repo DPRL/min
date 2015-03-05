@@ -440,13 +440,19 @@ RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 
 // Increases the opacity of strokes when in selection mode
 RenderManager.increase_stroke_opacity = function(){
+	var ImageBlobBBoxIndices = [];
 	for(var i = 0; i < Editor.segments.length; i++){
 		if(Editor.segments[i].constructor == PenStroke) {
 			$(Editor.segments[i].inner_svg).animate({opacity:0.9},600,function(){});
 		}
+        if(Editor.segments[i].constructor == ImageBlob){
+            ImageBlobBBoxIndices.push(Editor.segments[i].index);
+        }
 	}
 	for (var i = 0; i < RenderManager.segment_set_divs.length; i++) {
-		$(RenderManager.segment_set_divs[i].firstChild).animate({opacity:0.15},600,function(){});
+	    if(ImageBlobBBoxIndices.indexOf(i) == -1){
+		    $(RenderManager.segment_set_divs[i].firstChild).animate({opacity:0.15},600,function(){});
+		}
 	}
 }
 
