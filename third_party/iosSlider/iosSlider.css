@@ -62,7 +62,7 @@
 }
 
 .MathJax_SVG_Display, .MathJax_Display {
-	margin: 0 !important; 
+	//margin: 0 !important; 
 	display: table-cell !important;
 	vertical-align: middle;
 }
