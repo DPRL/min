@@ -106,8 +106,8 @@ Classifier.prototype.request_classification = function(server_url, in_segments, 
                         }
                     }
                     RecognitionManager.result_table.push(recognition);
-                    RenderManager.render();
                 }
+                RenderManager.render();
             }
             if(xmldoc.getElementsByTagName("ConnectedComponents").length == 0){
             	f();
