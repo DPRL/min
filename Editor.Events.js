@@ -336,6 +336,17 @@ Editor.align = function()
                 		var symbol = RecognitionManager.latex_to_symbol[joined_nodes[i].attributes.getNamedItem("symbol").value];
                 		if(symbol == null)
                 			symbol = joined_nodes[i].attributes.getNamedItem("symbol").value;
+                        // Special case: if min's segments are - and -, then they are equal signs Draculae mixed as joined_segments
+                        if(symbol == ""){
+                            if(ids.length == 2){
+                                var seg = Editor.get_segment_by_id( parseInt(ids[0]) )[0];
+                                var seg2 = Editor.get_segment_by_id( parseInt(ids[1]) )[0];
+                                if(seg.text == "-" && seg2.text == "-"){
+                                    // equal sign group found
+                                    symbol = "=";
+                                }
+                            }
+                        }
                 		if(symbol == "")
                 			break;
                 		var new_set_id = Segment.set_count++;
