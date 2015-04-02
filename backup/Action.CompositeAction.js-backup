@@ -24,8 +24,7 @@
 CompositeAction.prototype = new Action();
 
 function CompositeAction(){
-   	this.isComposite = true;
-	this.action_list = new Array();
+    this.action_list = new Array();
 }
 
 CompositeAction.prototype.shouldKeep = function(){
@@ -43,16 +42,6 @@ CompositeAction.prototype.add_action = function(action){
     console.log("adding action");
     this.action_list.unshift(action);
 }
-
-
-/**
-   This function will add an action to the end of the list of actions.
-**/
-CompositeAction.prototype.add_action_end = function(action){
-    console.log("adding action");
-    this.action_list.push(action);
-}
-
 
 /*
   Running the Apply() method will execute the Apply methods of

@@ -43,9 +43,12 @@ Buttons.UploadImage = 3;
 Buttons.Undo = 4;
 Buttons.Redo = 5;
 Buttons.Align = 6;
-Buttons.Search = 7;
-Buttons.AddSlide = 8;
-Buttons.RemoveSlide = 9;
+
+Buttons.Grid = 7;
+
+Buttons.Search = 8;
+Buttons.AddSlide = 9;
+Buttons.RemoveSlide = 10;
 
 function ButtonState(button_id)
 {
@@ -111,6 +114,7 @@ Editor.build_buttons = function(in_div_name)
     Editor.button_states.push(new ButtonState("undo"));
     Editor.button_states.push(new ButtonState("redo"));
     Editor.button_states.push(new ButtonState("align"));
+    Editor.button_states.push(new ButtonState("create_grid")); 
     Editor.button_states.push(new ButtonState("search"));
     
     Editor.clearButtonOverlays();

@@ -1,0 +1,10 @@
+Things to work on:
+
+1. Load image menu not working currently.
+2. Tool tips incorrectly formatted.
+3. Symbols from images are hard to see in edit mode (should behave like typed symbols).
+4. Slider expression drag no longer working.
+
+5. Still 'flickering' when parsing uploaded images or Undo-ing a grouping.
+   Perhaps we need to queue all symbols first, then call rendering functions
+   in this case?

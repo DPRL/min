@@ -113,11 +113,11 @@ RecognitionManager.build_symbol_table = function(){
     (
         Editor.generic_symbol_table,
         function(data, textStatus, xmlhttp){
-        	var data = xmlhttp.responseText;
+            var data = xmlhttp.responseText;
         	var array = data.split("\n");
         	for(var i = 0; i < array.length; i++){ // build map(symbol to latex)
         		var temp = array[i].split(",");
-        		if(temp[0] != "Codepoint"){
+        		if(temp[0] != "Codepoint" && temp.length > 1){
         			RecognitionManager.symbol_to_latex[temp[1]] = temp[3];
         			RecognitionManager.unicode_to_symbol[temp[0]] = temp[1];
         			if(temp[4] == null)

@@ -1,0 +1,226 @@
+8/8/2012
+
+Author: Christopher Sasarak - cms5347@rit.edu
+NOTE: The methods section for each file only includes some of the most used/most useful methods in a
+given file. There may be others that are needed for a particular task.
+
+Actions.js:
+
+        Defines the interface for command objects that can be undone/redone.
+
+Action.DeleteSegments.js:
+
+        Defines a command object which deletes segments from the canvas when applied.
+
+Action.EditText.js:
+
+        Defines a command object to undo/redo text additions to the canvas via keyboard.
+
+Action.GroupSegments.js:
+
+        Defines and object to group segments together into a single set. For example,
+        selecting multiple strokes with stroke select, then clicking/touching and holding
+        them creates and applies a GroupSegments object.
+
+Action.{Undo,Redo}.js:
+        
+        These objects represent Undo and Redo actions, but are never, and should never actually
+        be used.
+
+Action.TransformSegments.js:
+
+        Defines a command object which will re-size strokes when run.
+
+BoundingBox.js:
+
+        This file defines an object which represents the bounding box which surrounds objects
+        on the canvas when they are clicked or selected.
+
+        Methods:
+                translate - translates the bounding box on the screen by a given offset.
+                edge_clicked - determine which edge of the box was clicked based on a given point.
+
+Classifier.js:
+
+        This file defines a Classifier object which can classify a group of segments.
+
+        Methods:
+                classify - Takes a group of segments (objects implementing an interface like that
+                of the 'Segment' in Segment.js), dispatches them to a classifier and
+                request_classifition - Sends a request to a server and then processes and displays
+                the results on the canvas.
+
+CollisionManager.js:
+
+        Defines an object which stores Segments and can test if the mouse's position collides with
+        one of them.
+
+CorrectionMenu.js:
+
+        This file contains objects representing the correction menu that appears when a user clicks
+        and holds on an on-screen object and is used for correcting OCR errors. It also contains
+        methods with event handlers for the CorrectionMenu.
+
+        Methods:
+                initialize - Initialize will assign event handlers for the menu and also populate
+                it. It is populated by an Ajax request for an XML symboltree. Currently, this is a
+                file. But it can also come from a remote server.
+
+                show - Shows the correction menu for the user and allows them to select a
+                correction.
+
+CorrectionMenu.SymbolTree.js:
+
+        Defines objects for things in the symbol tree, such as SymbolNodes and CategoryNodes.
+        Also defines a parser for the XML symboltree.
+
+        Methods:
+                SymbolTree.parseXml - Parses an XML tree and creates a tree of Category/Symbol nodes
+                to be used by the CorrectionMenu.
+
+Editor.Buttons.js:
+
+        This file contains event handlers and methods for changing the state of the buttons that
+        appear along the top of min.
+
+        ButtonState: An object which holds and manages the state of a button (enabled, touched).
+
+        Methods:
+                Editor.build_buttons - Add ButtonStates for each of the buttons at the top of min.
+
+Editor.Constants.js:
+
+        This file contains a set of constants affecting how min behaves such as the list of
+        recognition servers and the server which performs alignment.
+
+Editor.Events.js:
+
+        This class contains most of the logic and events for the Editor as a whole. It is very
+        large.
+        
+        Events are defined for the following:
+               1. onMouseDown
+               2. onMouseMove
+               3. onMouseUp
+               4. onResize
+               5. onDoubleClick
+               6. onKeyPress
+               7. onPinchStart (iPad only)
+               8. onPinch (iPad only)
+               9. onPinchEnd (iPad only)
+               10. onImageLoad (browsers supporting FileReader only)
+        Methods that change the state of the editor are:
+               1. selectPenTool
+               2. strokeSelectionTool
+               3. rectangleSelectionTool
+               4. groupTool - Adds selected segments to one segment group.
+               5. deleteTool
+               6. typeTool
+               7. relabel
+               8. clear
+        Other methods:
+               1. align - Align objects on the canvas and populate the query bar with a LaTeX
+               string.
+               2. search - submit the LaTeX query to a search engine.
+               3. changeState - Switches the editor into a particular state when given a 
+               state ID.
+
+Editor.js:
+
+        Contains code for managing the canvas. Originally there was supposed to be a canvas for each
+        layer (image layer, stroke layer, bounding box layer), but currently Min is implemented with
+        only one.
+
+        Methods:
+                1. save_state/restore_state: Save and restore Min states in their
+                entirety. Currently not used.
+                2. 
+                3. add_selected_segment - Mark a segment as selected so the bounding box appears
+                around it.
+                4. update_selected_bb - Update the location and size of the bounding box based on
+                the location and sizes of the selected segments.
+                5. remove_segment/remove_selected_segment
+                6. add_canvas - create a canvas and add it to the list of contexts (canvases)
+
+ImageBlob.js:
+
+        Represents an image that has been uploaded to Min from the user's desktop.
+
+        Methods:
+                initialize_blob: take coordinates for the image blob to be displayed at and add
+                   it to the canvas. This needs to be run after the ImageBlob constructor to work.
+                populateCanvasFromCCs: Takes an xmldoc coming from the image recognition server
+                containing image blobs and populates the screen with them. This takes care of the
+                fact that one ImageBlob will probably turn into many ImageBlobs after being sent
+                through the recognition server.
+
+index.xhtml:
+
+        This is the xhtml document that shows the Min interface when rendered.
+
+PenStroke.js:
+
+        This file contains objects for modeling strokes made with Min's pen tool.
+
+        Methods:
+                add_point: Add another point to the stroke given the new point's position. SVG will
+                interpolate points between the last point and this one.
+                finish_stroke: Stop adding points to this PenStroke and render it on the canvas.
+
+RecognitionManager.js:
+
+        This file contains objects used for recognition results. It manages the classification
+        queue, and also keeps a list of recognitions for display on Min's canvas.
+
+        Methods:
+                enqueue_segment: add a segment to the classification queue.
+                classify_queued: Classify each object in the queue.
+                fromXML: Give a RecognitionResult XML element and add the recognition to the system.
+                addRecognitionForText: Add a recognition for a SymbolSegment.
+                getRecognition: Returns the recognition associated with a set.
+                addRecognitionForText: Adds a recognition for a SymbolSegment.
+
+RenderManager.js:
+
+        This file has objects and functions for drawing objects on the canvas.
+
+        Methods:
+                render_tools_layer: Render the boudning box, segments, rectangle selection box etc.
+                render: Go through all object on screen and render them, this mainly updates SVG
+                values, the browser actually draws the object on screen.
+                colorOCRbbs: Set the color of the translucent blue/red boxes based on the Editor's
+                state.
+                render_set_field: Creates and renders the OCR layer above a symbol.
+
+Segment.js:
+
+        This file defines the interface for Segments.
+
+style.css:
+
+        This file contains the style rules for the elements in Min. If something's appearance needs
+        to change, this file should be checked first.
+
+SymbolSegment.js:
+
+        This file contains objects which represent segments added to the canvas via keyboard.
+
+        Methods:
+                addCharacter: Add another character to this SymbolSegment.
+                popCharacter: Remove a character from this SymbolSegment.
+                finishEntry: This function takes the string in this SymbolSegment and breaks it into
+                SymbolSegments for each individual character.
+
+Utils.js:
+
+        Contains the Vector2 object which is used to create vectors of length 2 and methods for
+        doing math on them. Vector2s are typically used in Min to represent (x,y) coordinates.
+
+        Methods:
+                Pointwise
+                SquareDistance
+                Distance
+                Subtract
+                Multiply
+                transform: Translates and scales a Vector2
+                

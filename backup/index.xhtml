@@ -258,25 +258,86 @@
 
 	<!-- SCRIPTS -->
 
-    <!-- JQuery and Hammer mutlitouch libraries -->
-    <script type="text/javascript" src="third_party/00_AllJS.js"></script>
+	<!-- JQuery -->
+	<script type="text/javascript" src="third_party/jquery.js"></script>
 
-    <!-- DPRL Code -->
-    <script type="text/javascript" src="00_AllJS.js"></script>
+	<!-- Hammer multitouch library -->
+	<script type="text/javascript" src="third_party/hammer.js"></script>
+	<script type="text/javascript" src="third_party/jquery.hammer.js"></script>
 
-    <!-- MathJax configuration -->
-    <script type="text/x-mathjax-config">
-    MathJax.Hub.Config({
-        "HTML-CSS": {
-            scale: 100
-         }
-    });
-    </script>
-    
-    <script type="text/javascript"
+	<!-- Classifier -->
+	<script type="text/javascript" src="Classifier.js"></script>
+		
+	<!-- Editor components  -->
+	<script type="text/javascript" src="Editor.EditorMode.js"></script>
+    <script type="text/javascript" src="Editor.DrawMode.js"></script>
+	<script type="text/javascript" src="Editor.PermEvents.js"></script>
+	<script type="text/javascript" src="Editor.SelectionMode.js"></script>
+	<script type="text/javascript" src="Editor.RectSelectMode.js"></script>
+
+    <script type="text/javascript" src="Editor.js"></script>
+	<script type="text/javascript" src="Editor.Events.js"></script>
+	<script type="text/javascript" src="Editor.Buttons.js"></script>
+	<script type="text/javascript" src="Editor.Constants.js"></script>
+	<script type="text/javascript" src="CorrectionMenu.js"></script>
+	<script type="text/javascript" src="CorrectionMenu.SymbolTree.js"></script>
+	<script type="text/javascript" src="RenderManager.js"></script>
+	<script type="text/javascript" src="CollisionManager.js"></script>
+	<script type="text/javascript" src="RecognitionManager.js"></script>
+	
+	<!-- Imports -->
+	<script type="text/javascript" src="TeX_Input.js"></script> 
+	
+	<!-- Raphael -->
+	<script type="text/javascript" src="third_party/Raphael.js"></script>
+	
+	<!-- collision objects -->
+	<script type="text/javascript" src="BoundingBox.js"></script>
+
+	<!-- our Segment things -->
+	<script type="text/javascript" src="Segment.js"></script>
+	<script type="text/javascript" src="PenStroke.js"></script>
+	<script type="text/javascript" src="ImageBlob.js"></script>
+    <script type="text/javascript" src="SymbolSegment.js"></script>
+    <script type="text/javascript" src="SegmentGroup.js"></script>
+
+	<!-- Undoable/Redoable Actions -->
+    <script type="text/javascript" src="Action.js"></script>
+    <script type="text/javascript" src="Action.CompositeAction.js"></script>
+	<script type="text/javascript" src="Action.AddSegments.js"></script>
+	<script type="text/javascript" src="Action.TransformSegments.js"></script>
+	<script type="text/javascript" src="Action.GroupSegments.js"></script>
+	<script type="text/javascript" src="Action.EditText.js"></script>
+	<script type="text/javascript" src="Action.DeleteSegments.js"></script>
+	<script type="text/javascript" src="Action.Undo.js"></script>
+	<script type="text/javascript" src="Action.Redo.js"></script>
+
+	<!-- Misc tools -->
+	<script type="text/javascript" src="Utils.js"></script>
+
+	<!-- MathJax -->
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			"HTML-CSS": {
+				scale: 150
+			}
+		});
+	</script>
+
+	<script type="text/javascript"
 	  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-    </script>
-    
+  </script>
+  <!-- <script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script> -->
+
+	<!-- iosSlider plugin -->
+	<script type="text/javascript" src="third_party/iosSlider/jquery.easing-1.3.js"></script>
+	<script type="text/javascript" src="third_party/iosSlider/jquery.iosslider.js"></script>
+	<script type="text/javascript" src="Slider.js"></script>
+	
+	<!--JQuery UI -->
+	<script src="third_party/jquery-ui/js/jquery-ui-1.10.0.custom.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="third_party/jquery-ui/css/ui-lightness/jquery-ui-1.10.0.custom.min.css"/>
+        
 	<!-- Main -->
 	<script type="text/javascript">$(window).load(Editor.initialize("equation_canvas", "toolbar"));</script> 
 

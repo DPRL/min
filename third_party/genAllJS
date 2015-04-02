@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# WARNING: specialevent.hammer file might be 'old.'
+
+# Construct list of ordered file names.
+LIST="
+jquery.js 
+hammer.js 
+jquery.hammer.js 
+jquery.specialevent.hammer.js 
+jquery-ui/js/jquery-ui-1.10.0.custom.min.js"
+
+cat $LIST > 00_AllJS.js

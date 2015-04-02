@@ -103,10 +103,7 @@ RenderManager.render = function()
             seg.render();
         }
     }
-
-	// RZ: test for mode. Don't render recognition results when collecting data.
-	if (! Editor.dataCollection)
-   		RenderManager.render_tools_layer();
+    RenderManager.render_tools_layer();
 }
 
 RenderManager.render_selection_box = function(in_min, in_max, in_context_id)
@@ -237,14 +234,10 @@ RenderManager.render_set_field = function(in_context_id)
             if(recognition_result != null && set_segments[0].constructor != SymbolSegment && set_segments[0].constructor != TeX_Input)
             {
                 var tex = recognition_result.symbols[0];
-                
-				//console.log("HERE------------ (renderer) tex: " + tex);
-				// copy set_segments array
-				var segs = set_segments.slice(0, set_segments.length); 
+                var segs = set_segments.slice(0, set_segments.length); // copy set_segments array
                 if(is_visible){
                 	var recognition = ss_div.getAttribute("data-recognition");
-                	//console.log("HERE------------ data-recognition:" + recognition);
-					if(set_segments[0].constructor == ImageBlob && (tex.search("&#x") != -1)){
+                	if(set_segments[0].constructor == ImageBlob && (tex.search("&#x") != -1)){
                 			var latex = RecognitionManager.unicode_to_symbol[tex.toLowerCase()];
                 			if(latex == null){
                 				var unicode = tex.split("x")[1].split(";")[0];
@@ -294,14 +287,12 @@ RenderManager.render_set_field = function(in_context_id)
 	it calls insert_teX which inserts the tex into the BBox of the symbol on the canvas
 */
 RenderManager.start_display = function(ss_div,tex,set_segments){
-
-	//console.log("HERE------------ tex: " + tex);
 	var elem = document.createElement("div");
 	elem.setAttribute("id","RenderManager_Tex");
 	elem.style.visibility = "hidden"; 		// Hide the element
 	elem.style.position = "absolute";
 	elem.style.fontSize = "500%";
-	elem.innerHTML = "\\[ " + tex + " \\]"; 	// So MathJax can render it
+	elem.innerHTML = '\\[' + tex + '\\]'; 	// So MathJax can render it
 	document.body.appendChild(elem);
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"],
 		["Typeset",MathJax.Hub,elem],[RenderManager.insert_teX,elem,ss_div,set_segments]);
@@ -313,13 +304,11 @@ RenderManager.render_svg = function(BBox_div, set_segments){
 	var element,x_offset,y_offset;
 	var svg_root = BBox_div.firstChild;
 	var inner_svg = svg_root.getElementsByTagName("g")[0];
-	
 	inner_svg.removeAttribute("transform");
 	var svg_width = parseInt(inner_svg.getBoundingClientRect().width);
 	var svg_height = parseInt(inner_svg.getBoundingClientRect().height);
 	var scale_x = (parseInt(BBox_div.getBoundingClientRect().width)-2)/svg_width;
 	var scale_y = parseInt(BBox_div.getBoundingClientRect().height)/svg_height;
-	
 	inner_svg.setAttribute("transform", "scale("+scale_x+","+scale_y+")");
 	var BBox_top = $(BBox_div).offset().top;
 	var BBox_left = $(BBox_div).offset().left;
@@ -336,7 +325,6 @@ RenderManager.render_svg = function(BBox_div, set_segments){
 	inner_svg.setAttribute("transform", "translate("+(x_offset)+","+(y_offset)+") scale("+scale_x+","+scale_y+")");
 	// Hide strokes by making sure we are in DrawMode and making sure the opacity is not set 
 	// before hiding the stroke.
-	//
 	if(Editor.current_mode.segment_style_class == "segment_draw_mode"){ 
 		for(var z = 0; z < set_segments.length; z++){
 			if(set_segments[z].constructor == PenStroke && set_segments[z].inner_svg.style.opacity == "")
@@ -354,110 +342,74 @@ RenderManager.render_svg = function(BBox_div, set_segments){
    		 symbols like log and 2. Scaling just the SVG's inner_svg to fit the BBox without
    		 scaling the symbols congests the symbols.
 */
-RenderManager.insert_teX = function(elem, BBox_div, set_segments)
+RenderManager.insert_teX = function(elem,BBox_div,set_segments)
 {
     var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
     	element_width,old_bottom;
 	var svg_root = document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
-	
 	var use_tag_array = svg_root.getElementsByTagName("use");
 	var rect_tag_array = svg_root.getElementsByTagName("rect");
 	use_tag_array = Array.prototype.slice.call(use_tag_array);
 	rect_tag_array = Array.prototype.slice.call(rect_tag_array);
-
-	// Originally designed expecting one symbol, one rectangle - no longer the case.
-	var element = use_tag_array.concat(rect_tag_array); 
+	var element = use_tag_array.concat(rect_tag_array); // should be only one symbol
     var root_svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     root_svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     root_svg.setAttribute("style", "position: absolute; left: 0px; top: 0px; opacity:0;");
     root_svg.setAttribute("width", "100%");
     root_svg.setAttribute("height", "100%");
     var inner_svg = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    
-	for(var i = 0; i < element.length; i++){
-    	
-		var temp_root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    for(var i = 0; i < element.length; i++){
+    	var temp_root = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     	temp_root.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     	temp_root.setAttribute("visibility", "hidden");
     	var offset = element[i].getBoundingClientRect();
-		var elem_rect = element[i].getBoundingClientRect();
-		
 		if(element[i].tagName.toString() == "use"){
 			path_tag = document.getElementsByTagName("svg")[0].getElementById(element[i].getAttribute("href").split("#")[1]).cloneNode(true);
 			path_tag.removeAttribute("id");
 			path_tag.setAttribute("visibility","visible");
 			temp_root.appendChild(path_tag);
 			document.body.appendChild(temp_root);
-			
 			var path_rect = path_tag.getBoundingClientRect();
-			//console.log("path_rect " + path_rect.left + ", " + path_rect.top
-			//		+ "  " + path_rect.right + ", " + path_rect.bottom);
+			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			
-			// Scaling parameters need to be different for lines depending
-			// on whether there are vertical structures.
-			scale_x = path_scale_x;
-			scale_y = path_scale_y;
-
- 			var symbolCode = element[i].getAttribute("href").split("-")[1].toLowerCase();
-			var symbol = RecognitionManager.unicode_to_symbol["&#x" + symbolCode + ";"];
-			//console.log("Symbol: " + symbol);		
-			
-			if (element.length == 1) {
-				scale_x = 1;
-				scale_y = 1;
-			}
-			
-
-			//console.log("THERE ---- ++ " + i);
-			path_tag.setAttribute("transform",
-				   "translate(" + offset.left + "," + offset.bottom + ")"
-					+ " scale(" + scale_x + "," + scale_y + ") matrix(1 0 0 -1 0 0)");
-
-
-			// Clean up.
+			if(element.length > 1){
+				if(old_bottom && old_bottom != parseInt(offset.bottom)){
+					path_tag.setAttribute("transform", "translate("+offset.left+","+old_bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+				}else{
+					path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") scale("+path_scale_x+","+path_scale_y+") matrix(1 0 0 -1 0 0)");
+					old_bottom = parseInt(offset.bottom);
+				}
+			}else // makes single symbols like "-,2,3" look better.
+				path_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") matrix(1 0 0 -1 0 0)");
 			path_tag.removeAttribute("visibility");
 			path_tag.setAttribute("fill", Editor.segment_fill);
 			inner_svg.appendChild(path_tag);
-	
-		} else {
-			// Vertical structures, e.g. fraction lines (?)
-			//console.log("HERE------------ WHAAAH? " + i);
+			document.body.removeChild(temp_root);
+		}else{
 			rect_tag = element[i].cloneNode(true);
 			rect_tag.setAttribute("visibility","visible");
 			temp_root.appendChild(rect_tag);
 			document.body.appendChild(temp_root);
-			
 			var path_rect = rect_tag.getBoundingClientRect();
-			console.log("**path_rect " + path_rect.left + ", " + path_rect.top
-					+ "  " + path_rect.right + ", " + path_rect.bottom);
+			var elem_rect = element[i].getBoundingClientRect();
 			var path_scale_x = elem_rect.width/path_rect.width;
 			var path_scale_y = elem_rect.height/path_rect.height;
-			
-			rect_tag.setAttribute("transform", "translate(" + offset.left + "," 
-					+ offset.bottom
-					+ ") scale(" + path_scale_x + "," + path_scale_y 
-					+ ") matrix(1 0 0 -1 0 0)");
-			// Clean up.
+			rect_tag.setAttribute("transform", "translate("+offset.left+","+offset.bottom+") matrix(1 0 0 -1 0 0)");
 			rect_tag.removeAttribute("x");
 			rect_tag.removeAttribute("y");
 			rect_tag.removeAttribute("visibility");
 			rect_tag.setAttribute("fill", Editor.segment_fill);
 			inner_svg.appendChild(rect_tag);
+			document.body.removeChild(temp_root);
 		}
-		document.body.removeChild(temp_root);
-	}  // end for
-
+	}
 	while(BBox_div.hasChildNodes()){ // removes previous recognition svg
 		BBox_div.removeChild(BBox_div.lastChild);
 	}
-
-	// Fit result in bounding box for the passed div.
 	root_svg.appendChild(inner_svg);
 	BBox_div.appendChild(root_svg);
 	svg_width = parseInt(inner_svg.getBoundingClientRect().width);
-	//console.log("svg_width: " + svg_width);
 	svg_height = parseInt(inner_svg.getBoundingClientRect().height);
 	
 	var BBox_rect = BBox_div.getBoundingClientRect();
@@ -469,37 +421,38 @@ RenderManager.insert_teX = function(elem, BBox_div, set_segments)
 	var BBox_left = $(BBox_div).offset().left;
 	element_height = $(inner_svg).offset().top;
 	element_width = $(inner_svg).offset().left;
-
-	if(parseFloat(BBox_top - element_height) != 0)
+	if(parseFloat(BBox_top - element_height) != 0){
 		y_offset = parseFloat(BBox_top - element_height);
-	if(parseFloat(BBox_left - element_width) != 0)
+	}
+	if(parseFloat(BBox_left - element_width) != 0){
 		x_offset = parseFloat(BBox_left - element_width);
-	
+	}
 	inner_svg.setAttribute("transform", "translate("+x_offset+","+y_offset+") scale("+scale_x+","+scale_y+")");
-	
-	// Visualize fade-in of TeX string.
 	$(root_svg).fadeTo(450,1,function(){});
-	
 	for(var z = 0; z < set_segments.length; z++){
 		if(set_segments[z].constructor == PenStroke)
 			$(set_segments[z].inner_svg).animate({opacity:0},600,function(){});
 	}
 	document.body.removeChild(elem);
-
-	// Clear array, reset MathJax rendering mode.
-	set_segments.length = 0; 
+	set_segments.length = 0; // clear array
 	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "HTML-CSS"]);
 }
 
 // Increases the opacity of strokes when in selection mode
 RenderManager.increase_stroke_opacity = function(){
+	var ImageBlobBBoxIndices = [];
 	for(var i = 0; i < Editor.segments.length; i++){
 		if(Editor.segments[i].constructor == PenStroke) {
 			$(Editor.segments[i].inner_svg).animate({opacity:0.9},600,function(){});
 		}
+        if(Editor.segments[i].constructor == ImageBlob){
+            ImageBlobBBoxIndices.push(Editor.segments[i].index);
+        }
 	}
 	for (var i = 0; i < RenderManager.segment_set_divs.length; i++) {
-		$(RenderManager.segment_set_divs[i].firstChild).animate({opacity:0.15},600,function(){});
+	    if(ImageBlobBBoxIndices.indexOf(i) == -1){
+		    $(RenderManager.segment_set_divs[i].firstChild).animate({opacity:0.15},600,function(){});
+		}
 	}
 }
 

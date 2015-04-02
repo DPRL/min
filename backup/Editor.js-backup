@@ -34,32 +34,28 @@
                 5. remove_segment/remove_selected_segment
                 6. add_canvas - create a canvas and add it to the list of contexts (canvases)
 */
-
-function Editor() { }
+function Editor() {}
     
+Editor.instance = null;
 
 // Possible EditorModes
 Editor.modes = {
     "DrawMode": new DrawMode(),
-    "RectSelectMode": new RectSelectMode(),
+    "RectSelectMode": new RectSelectMode()
 };
 
 // Code for modes/mode switching
 Editor.current_mode = null;
 
-Editor.instance = null;
-
+/*
+	The method that initializes Min by calling all necessary methods that needs to run
+*/
 Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 {
-	// Make this red in annotation mode, as a reminder.
-	Editor.segment_color = "#FF4444"; 
-
-	// Support other tablet devices.
-    Editor.using_tablet = Modernizr.touch;
-	if(Editor.using_tablet == true)
+    if(Modernizr.touch == true)
     {
 		$('body').addClass('touch');
-        // removeh over css
+        // remove over css
         for(var i = 0; i < document.styleSheets.length; i++)
         {
             if ( document.styleSheets[ i ].rules != null ) {
@@ -69,13 +65,15 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
                     {
                         document.styleSheets[i].deleteRule(j--);
                     }
+                    //if(document.styleSheets[i].rules[j].mathch
                 }
             }
         }
         
-        // Disabled. Kept as a clue for later on.
+        // Disabled.
         //document.getElementById( "getInkMLbutton" ).innerHTML = "Save InkML";
-    }
+    }else
+    	 document.getElementsByClassName("toolbar")[0].style.minWidth = "1073px";
     
     Editor.canvas_div = document.getElementById(String(in_equation_canvas_name));
     Editor.toolbar_div = document.getElementById(String(in_toolbar_name));
@@ -88,8 +86,7 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     
     // set up our divs (canvas, toolbar);
     Editor.build_buttons(in_toolbar_name);
-	
-	// top left hand corner of our canvases relative to window
+    // top left hand corner of our canvases relative to window
     Editor.div_position = findPosition(Editor.canvas_div);
     
     // build our layers (two of each for double buffering)
@@ -107,13 +104,13 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
 
 	// initialize slider
 	Editor.slider = new Slider();
-
-    // create the event bindings.
+    
+    // create the mouse setup other events
     Editor.setup_events();
     
     // list of segments we deal with
     Editor.segments = new Array();
-    // segments currently selected
+    // segments currentlys elected
     Editor.selected_segments = new Array();
 
     // bounding box before we started resizing
@@ -142,6 +139,7 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     Editor.current_text = null;
     // the edge we are currently grabbing in resize mode
     Editor.grabbed_edge = -1;
+    
 
     // initialize mouse variables
     Editor.mouse1_down = false;
@@ -151,20 +149,16 @@ Editor.initialize = function(in_equation_canvas_name, in_toolbar_name)
     
     Editor.undo_stack = new Array();
     Editor.redo_stack = new Array();
+    // alla ctions including undo/redo stored here
     Editor.action_list = new Array();
     
     Editor.current_action = null;
-    
-    
-	Editor.FileReader = true;
 
-	// When we first start, switch to DrawMode.
+    Editor.FileReader = true;
+    // When we first start, switch to DrawMode manually
     $("#pen").trigger('click'); 
 
-
-
     Editor.current_expression_id = 0;
-
 }
 
 Editor.set_current_expression_id = function(id) {
@@ -173,14 +167,16 @@ Editor.set_current_expression_id = function(id) {
     Editor.clear_selected_segments();
 }
 
+/* 
+	Saves the segments on the canvas used for debugging purposes only
+*/
 Editor.save_state = function(clear)
 {
     var state = {
         segments: [],
 		recognition_results: []
     };
-    
-	for (var i = 0; i < Editor.segments.length; i++) {
+    for (var i = 0; i < Editor.segments.length; i++) {
         var seg = Editor.segments[i];
         state.segments.push(seg.save_state());
     }
@@ -194,6 +190,10 @@ Editor.save_state = function(clear)
     return JSON.stringify(state);
 }
 
+/* 
+	Restores the segments in the json_string on the canvas
+	Used for debugging purposes only
+*/
 Editor.restore_state = function(json_string)
 {
     var state = JSON.parse(json_string);
@@ -217,19 +217,6 @@ Editor.restore_state = function(json_string)
 	RenderManager.render();
 }
 
-// RZ: new (?) method to obtain the unique set ids for selected objects.
-Editor.get_selected_set_ids = function()
-{
-	var idsFound = new Array();
-	for (var k = 0; k < Editor.selected_segments.length; k++)
-	{
-		nextId = Editor.selected_segments[k].set_id;
-		if ( ! idsFound.contains(nextId) )
-			idsFound.push(nextId);
-	}
-	return idsFound;
-}
-
 // determines if the given segment is in the selected list
 Editor.segment_selected = function(in_segment)
 {
@@ -237,93 +224,16 @@ Editor.segment_selected = function(in_segment)
     {
         if(Editor.selected_segments[k] == in_segment)
             return true;
-        
-		if(Editor.selected_segments[k].type_id == SegmentGroup.type_id)
+/*            
+        if(Editor.selected_segments[k].type_id == SegmentGroup.type_id)
         {
             if(Editor.selected_segments[k].contains_segment(in_segment))
                 return true;
         }
+*/        
     }
     
     return false;
-}
-
-
-// RZ: recover symbols using data and methods already in the grouping
-// objects.
-Editor.forget_symbol_groups = function()
-{
-	// Undo symbol groupings backward in time (on the Undo stack)
-	for (var i = Editor.undo_stack.length - 1; i > -1; i--) 
-	{
-		nextAction = Editor.undo_stack[i];
-		if (nextAction.isGrouping )
-		{
-			//console.log("forgetting..." + i);
-			nextAction.ForgetSymbolGrouping();
-			//console.log("Segment ids: " + Editor.get_current_segment_ids().length);
-			//console.log(Editor.get_current_segment_ids());
-		} else if (nextAction.isComposite)
-		{
-			for (var j = nextAction.action_list.length - 1; j > -1; j--)
-			{
-				nextCompositeAction = nextAction.action_list[j];
-				if (nextCompositeAction.isGrouping)
-				{
-					//console.log("forgetting...compound " + i + " action " + j);
-					nextCompositeAction.ForgetSymbolGrouping();
-					//console.log("Segment ids: " + Editor.get_current_segment_ids().length);
-					//console.log(Editor.get_current_segment_ids());
-				}
-			}
-		}
-	}
-}
-
-Editor.restore_symbol_groups = function()
-{
-	// Undo symbol groupings backward in time (on the Undo stack)
-	for (var i = 0; i < Editor.undo_stack.length; i++)
-	{
-		nextAction = Editor.undo_stack[i];
-		if (nextAction.isGrouping )
-		{
-			//console.log("restoring..." + i);
-			nextAction.RestoreSymbolGrouping();
-			//console.log("Segment ids:" + Editor.get_current_segment_ids().length);
-			//console.log(Editor.get_current_segment_ids());
-		} else if (nextAction.isComposite)
-		{
-			for (var j = 0; j < nextAction.action_list.length; j++)
-			{
-				nextCompositeAction = nextAction.action_list[j];
-				if (nextCompositeAction.isGrouping)
-				{
-					//console.log("restoring...compound " + i + " action " + j);
-					nextCompositeAction.RestoreSymbolGrouping();
-					//console.log("Segment ids:" + Editor.get_current_segment_ids().length);
-					//console.log(Editor.get_current_segment_ids());
-				}
-			}
-		}
-	}
-}
-
-
-
-// RZ: New method to get the current segment id set. Have to
-// perform a linear scan of all the (primitive) segments to
-// obtain this.
-Editor.get_current_segment_ids = function()
-{
-	var result = new Array();
-
-	for (var i = 0; i < Editor.segments.length; i++) {
-		nextId = Editor.segments[i].set_id;
-		if (! result.contains(nextId) )
-			result.push(nextId);
-	}
-	return result;
 }
 
 Editor.get_segment_by_id = function(in_id)
@@ -465,7 +375,7 @@ Editor.remove_segment = function(in_segment)
         }
     }
 }
-
+// removes segment from selected segments list
 Editor.remove_selected_segment = function(in_segment)
 {
     if(in_segment == null) return;
@@ -494,19 +404,14 @@ Editor.clear_selected_segments = function()
 
 // adds a new canvas to the contexts list 
 Editor.add_canvas = function()
-{
+{    
     var svg_canvas = Editor.build_canvas();
     svg_canvas.style.zIndex = Editor.canvases.length;
 	Editor.canvases.push(svg_canvas);
-    Editor.canvas_div.appendChild(svg_canvas);
-    Editor.contexts.push(svg_canvas);
     
-	// OLD
-	// var canvas = Editor.build_canvas();
-    // canvas.style.zIndex = Editor.canvases.length;
-    // Editor.canvases.push(canvas);
-    // Editor.canvas_div.appendChild(canvas);
-    //Editor.contexts.push(canvas);
+    Editor.canvas_div.appendChild(svg_canvas);
+
+    Editor.contexts.push(svg_canvas);
 }
 
 // Builds the canvas which is an SVG object
@@ -558,17 +463,13 @@ Editor.undo = function()
     {
         
         var action = Editor.undo_stack.pop();
-		console.log("Undo stack contains: " + Editor.undo_stack.length);
-		console.log("   Undone: " + action);
-		if(action.shouldKeep())
+        if(action.shouldKeep())
         {
             action.Undo()
+            console.log("Undo " + action.toString());
             Editor.redo_stack.push(action);
             switch(Editor.state)
             {
-                case EditorState.StrokeSelecting:
-                    Editor.state = EditorState.ReadyToStrokeSelect;
-                    break;
                 case EditorState.RectangleSelecting:
                     Editor.state = EditorState.ReadyToRectangleSelect;
                     break;
@@ -595,14 +496,13 @@ Editor.redo = function()
     if(Editor.redo_stack.length > 0)
     {
         var action = Editor.redo_stack.pop();
-   		console.log("Redo stack contains: " + Editor.redo_stack.length);
-		console.log("   Redone: " + action);
-
-		action.Apply();
-		Editor.undo_stack.push(action);
+        action.Apply();
+        console.log("Redo " + action.toString());
+        Editor.undo_stack.push(action);
+        
+        RenderManager.render();
+        
         Editor.action_list.push(new Redo());
-		
-		RenderManager.render();
     }
 }
 
@@ -628,127 +528,3 @@ Editor.open_correction_menu = function(e)
     	Editor.relabel();
 	}
 }
-
-////////////////////////////////////////////////////////////////////////////////////
-// Generating CROHME InkML Output
-////////////////////////////////////////////////////////////////////////////////////
-
-// DIFFERS from min : used by the slider in the GT version.
-Editor.getStrokeString = function() {	
-    var segments = new Array();
-    var segarray = Editor.segments.slice( 0 );
-    segarray.sort( function( o1, o2 ) { return o1.instance_id - o2.instance_id } );
-
-	var inkml="";
-	for ( var i = 0; i < segarray.length; i++ ) {
-        var stroke = segarray[ i ];
-        var strokeid = stroke.instance_id;
-        var segid = stroke.set_id;
-        
-        // translation for absolute positioning
-        var tx = stroke.translation.x;
-        var ty = stroke.translation.y;
-        var sx = stroke.scale.x;
-        var sy = stroke.scale.y;
-        // add to proper segment
-        if ( segments[ segid ] == null ) segments[ segid ] = new Array();
-        segments[ segid ].push( strokeid );
-        
-        // add stroke data to inkml
-        inkml += "\n<trace id=\"" + strokeid + "\" seg=\"" + segid + "\">";
-        var strokedata = new Array();
-        for ( var j = 0; j < stroke.points.length; j++ ) {
-            strokedata.push( ( ( stroke.points[ j ].x * sx ) + tx ) + " " + ( ( stroke.points[ j ].y * sy ) + ty ) );
-        }
-        inkml += strokedata.join( ", " );
-        inkml += "\n</trace>";        
-    }
-	return inkml;
-}
-    
-
-// RZ: moved here from Editor.align, so that it could be used elsewhere easily.
-Editor.MathJaxRender = function(tex_math)
-{
-	// Divs used for alignment   
-	// !! RZ: This was tricky to find - this is how the expression
-	//     becomes centered/moved after 'align' operations - see style.css.
-	var outer_div = document.createElement("div");
-	outer_div.setAttribute("id","outer_div");
-
-	// Get BB (min, max coordinates) for segments on the canvas
-	// or selection.
-	var s = Editor.get_seg_dimensions(Editor.segments);
-	if (Editor.selected_segments.length > 0 && EditorState.SegmentsSelected)
-		s = Editor.get_seg_dimensions(Editor.selected_segments);
-
-	// Main div with content in it
-	var elem = document.createElement("div");
-	elem.setAttribute("id","Alignment_Tex");
-	elem.style.visibility = "hidden";
-	elem.style.fontSize = "500%";
-	elem.style.position = "absolute";
-	elem.innerHTML = '\\[' + tex_math + '\\]'; 	// So MathJax can render it
-
-	outer_div.appendChild(elem);
-	Editor.canvas_div.appendChild(outer_div);
-
-	// Change rendered to SVG and have MathJax display it
-	// First re-render, then copy tex to the outer_div/canvas.
-	MathJax.Hub.Queue(["setRenderer", MathJax.Hub, "SVG"]);
-	MathJax.Hub.Queue(["Rerender", MathJax.Hub, elem], 
-			[ function() { 
-				MathJax.Hub.Queue(["Typeset", MathJax.Hub, elem], 
-					[Editor.copy_tex, elem, outer_div, s]);
-				}]);
-
-}
-
-
-// Generate (CROHME) InkML output.
-Editor.getInkML = function() {
-	// Break groups apart so that segments match symbols, not whole symbol groups.
-	Editor.forget_symbol_groups();
-
-    var inkml = "<!-- CROHME InkML Data File -->\n<ink xmlns=\"http://www.w3.org/2003/InkML\">";
-    
-	// Annotation data - for ground truthing tool (*** DIFFERS FROM new min)
-	inkml += "\n<traceFormat>";
-	inkml += "\n<channel name=\"X\" type=\"decimal\"/>";
-	inkml += "\n<channel name=\"Y\" type=\"decimal\"/>";
-	inkml += "\n</traceFormat>";
-	inkml += "\n<annotation type=\"truth\">$ " + Editor.slider.getCurrentExpression() + "$</annotation>";
-	inkml += "\n<annotation type=\"writer\">" + Editor.slider.getCurrentFileName() + "</annotation>";
-	
-	//var strString = Editor.stroke_string; // Prevent modifying stroke attributes.
-	// RZ: line below will use stroke string; but when annotating, we only want to use
-	// the original stroke data collected from a writer.
-	var strString = Editor.getStrokeString();
-
-	// Find and replace segment id's, which may change.
-    // slice(0) copies all elements of the array, which we then sort by
-	// instance (i.e. primitive) identifier.
-	var segarray = Editor.segments.slice( 0 );
-    segarray.sort( function( o1, o2 ) { return o1.instance_id - o2.instance_id } );
-	for ( var i = 0; i < segarray.length; i++ ) {
-        var stroke = segarray[ i ];
-        var strokeid = stroke.instance_id;
-        var segid = stroke.set_id;
-        
-		console.log("Replace stroke id " + strokeid + " segment id as " + segid);
-
-        // Replace segment id for each stroke.
-		//console.log("strokeid: " + strokeid + " segid: " + segid);
-		pattern = new RegExp("\"" + strokeid + "\" seg=\"\\d+\"","g");
-		replacement = "\"" + strokeid + "\" seg=\"" + segid + "\"";
-		strString = strString.replace(pattern,replacement);
-	}
-    inkml += strString;
-	inkml += "\n</ink>";
-
-	// Restore the symbol groupings (to keep canvas state consistent).
-	Editor.restore_symbol_groups();
-
-	return inkml;
-}
-
