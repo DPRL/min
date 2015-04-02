@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+* This file is part of min.
+* 
+* min is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+* 
+* min is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+* 
+* You should have received a copy of the GNU General Public License
+* along with min.  If not, see <http://www.gnu.org/licenses/>.
+* 
+* Copyright (C) 2011-2014 Richard Pospesel, Kevin Hart, Lei Hu, Siyu Zhu, David Stalnaker,
+* Christopher Sasarak, Robert LiVolsi, Awelemdy Orakwue, and Richard Zanibbi
+* (Document and Pattern Recognition Lab, RIT) 
+-->
+<!DOCTYPE html
+
+      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:svg="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink">
+	<head>
+		<link href="http://fonts.googleapis.com/css?family=Ubuntu&amp;subset=cyrillic-ext,latin,greek,greek-ext,latin-ext,cyrillic&amp;v2" rel="stylesheet" type="text/css"/>
+		<meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8"></meta>
+		<meta name="viewport" content="user-scalable=no, maximum-scale=1.0, minimum-scale=1.0"></meta>
+		<meta name="apple-mobile-web-app-capable" content="yes"></meta>
+		<meta name="apple-mobile-web-app-status-bar-style" content="black"></meta>
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<link rel="stylesheet" media="screen" href="third_party/iosSlider/iosSlider.css" />
+        <script type="text/javascript" src="third_party/modernizr.js"></script>		
+	</head>
+
+	<!-- DEFINE THE INTERFACE OBJECTS -->
+	<body onload="document.getElementById('engine').focus();">
+		<div id="equation_editor_root" class="equation_editor" style="overflow: hidden;">
+			<div id="toolbar" class="toolbar">
+
+				<!-- Pen -->
+				<div class="toolbar_group">
+					<div class="toolbar_button button" id="pen">
+						<div class="toolbar_button_icon"><img src="img/pencil.png" alt="Pen" style="height: 48px; width: 48px;" /></div>
+						<div class="toolbar_button_label">Pen</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
+
+					<!-- Keyboard ('Text') -->
+					<!-- <div class="toolbar_button button" id="text">
+						<div class="toolbar_button_text"><span>T</span></div>
+						<div class="toolbar_button_label">Text</div>
+						<div class="toolbar_button_overlay"></div>
+					</div> -->
+
+	
+					<!-- Rectangle/Squiggle selection modes -->
+					<div class="toolbar_button button" id="rectangle_select">
+
+						<!-- <div class="toolbar_button_text"><span>&#9744;</span></div> -->
+						<div class="toolbar_button_icon"><img src="img/rectangle_select.png" alt="Rectangle Select" style="height: 48px;width:48px" /></div>
+						<div class="toolbar_button_label">Rectangle</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>				
+
+					<div class="toolbar_button button" id="change_recognition">
+						<div class="toolbar_button_icon"><img src="img/change_recognition.png" alt="Change Recognition" style="height: 48px; width: 48px;" /></div>		
+						<div class="toolbar_button_label">Change Recognition</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
+
+
+                    <div class="hidden_toolbar_button toolbar_button button" id="upload_image">
+					  <div class="toolbar_button_icon"><img src="img/upload.png"
+					                                        alt="Load Image" style="height: 48px; width: 48px;" /></div>		
+					  <div class="toolbar_button_label">Load Image</div>
+					  <div class="toolbar_button_overlay"></div>
+					</div>
+                                        
+				</div>
+					
+				<div class="toolbar_group_divider"></div>
+
+				<!-- Undo/Redo -->
+				<div class="toolbar_group">	
+					<div class="toolbar_button button" id="align">
+						<div class="toolbar_button_icon"><img src="img/align.png" alt="Align" style="height: 48px; width: 48px;" /></div> 
+						<!--<div class="toolbar_button_text"><span style="font-size: 38px;">&oplus;</span></div>-->
+						<div class="toolbar_button_label">Align</div>
+						<div class="toolbar_button_overlay"></div>
+                    </div>
+
+                    <!-- Addition Mar 2015 - 'grid' tool -->
+					<div class="toolbar_button button" id="create_grid">
+						<div class="toolbar_button_icon">
+						<table>
+							<TR>
+								<TD><img src="img/align.png" style="height: 18px;width: 18px" />
+								</TD>
+								<TD><img src="img/align.png" style="height: 18px;width:18px" />
+								</TD>
+						    </TR>
+								<TR>
+								<TD><img src="img/align.png" style="height: 18px;width: 18px" />
+								</TD>
+								<TD><img src="img/align.png" style="height: 18px;width:18px" />
+								</TD>
+						    </TR>
+					
+						</table>
+						</div>
+						
+						<div class="toolbar_button_label">Grid</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>	
+
+
+
+					<div class="toolbar_button button" id="undo">
+						<div class="toolbar_button_icon"><img src="img/undo.png" alt="Undo" style="height: 48px; width: 48px;" /></div>
+						<div class="toolbar_button_label">Undo</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
+
+					<div class="toolbar_button button" id="redo">
+						<div class="toolbar_button_icon"><img src="img/redo.png" alt="Redo" style="height: 48px; width: 48px;" /></div>		
+						<div class="toolbar_button_label">Redo</div>
+						<div class="toolbar_button_overlay"></div>
+					</div>
+					
+
+				</div>
+
+
+
+
+			<!-- Text boxes, Search button, drop-down fo search engines -->
+			<div class="toolbar_group" id="infobar-wrapper">
+
+				<div class="toolbar_group_divider"></div>
+				<div class="toolbar_button_small button" id="remove">
+					<div class="toolbar_button_icon_small"><img src="img/remove.png" alt="Remove"/></div>
+					<div class="toolbar_button_label">Remove</div>
+				</div>
+				<div class="toolbar_overlay_button button" id="left">
+					<div class="toolbar_overlay_button_icon"><img src="img/left.png" alt="Left" style="height: 24px; width: 13px;" /></div>
+					<div class="toolbar_button_label">Left</div>
+				</div>
+				<div class="iosSlider">
+					<div class="slider">
+						<div class="item"></div>
+					</div>
+					<div class="selectors">
+						<div class="item first selected"></div>
+					</div>
+				</div>
+				<div class="toolbar_overlay_button button" id="right">
+					<div class="toolbar_overlay_button_icon"><img src="img/right.png" alt="Right" style="height: 24px; width: 13px;" /></div>
+					<div class="toolbar_button_label">Right</div>
+				</div>
+
+				<div class="toolbar_button_small button" id="add">
+					<div class="toolbar_button_icon_small"><img src="img/add.png" alt="Add"/></div>
+					<div class="toolbar_button_label">Add</div>
+				</div>
+
+
+				<div id="texwrapper">
+					<input type="text" id="tex_result" placeholder="Keywords"/>
+					<div id="engine">
+						<select id="engineSelector" name="engineType" style="font-size: 14px;" value="NIST DLMF">
+                        <!-- CMS: TODO: I think that this should be moved to the javascript
+                        portion of the program rather than being right in the
+                        document -->
+							<option selected="selected">Tangent</option>
+							<option>NIST DLMF</option>
+							<option>LaTeX Search</option>
+							<option>Wolfram Alpha</option>
+                            <option>Wikipedia</option>
+							<option>Google</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="toolbar_button button" id="search">
+					<div class="toolbar_button_icon"><img src="img/search.png" alt="Search" style="height: 48px; width: 48px;" /></div>		
+					<div class="toolbar_button_label">search</div>
+					<div class="toolbar_button_overlay"></div>
+				</div>
+
+			</div>
+
+
+				</div>							
+			<!-- Canvas -->
+			<div id="equation_canvas" class="equation_canvas" tabindex="0" >
+
+				<!-- images at canvas bottom. -->
+				<div id="logobar-wrapper">
+					<div id="logobar-left"><img src="img/rit_logo.png" style="width: 58px; height: 58px;" alt="Rochester Institute of Technology" /></div>
+					<div id="logobar-right"><img src="img/nsf_logo.png" style="width: 58px; height: 58px;" alt="National Science Foundation" /></div>
+					
+					<div id="logobar-mid"><img src="img/min_logo.png" style="width: 75px; height: 75px; margin-top: -10px" alt="min" /></div>
+
+					<!-- Text entry widget -->
+					<!--
+					<div id="logobar-text">
+						
+						<input type="text" id="logo_text_entry" style="height:18px;width:250px;font-size:16px;"/></div>
+					-->
+				</div>	
+
+	<!-- bounding box div for selected segments-->
+				<div id="bounding_box"  ontouchstart="event.preventDefault();">
+					<div style="left: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="right: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="left: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="right: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>					
+					<div style="left: 50%; margin-left: -16px; top:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="left: 50%; margin-left: -16px; bottom:-16px;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="left: -16px; margin-top: -16px; top: 50%;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+					<div style="right: -16px; margin-top: -16px; top: 50%;" class="bb_handle" ontouchstart="event.preventDefault();"></div>
+				</div>
+				<!-- selection rectangle for box select -->
+				<div id="selection_rectangle"></div>
+				
+				<div class="Drop_text">Drop File Here</div>
+
+				<!-- Relabeling menu (hidden initially) -->
+				<div id="relabel_menu" style="visibility: hidden;" >
+					<div id="rr_node_label"></div>
+					<div id="rr_close_button" class="button">Exit</div>
+					<div id="rr_inner">
+						<!--<div id="rr_up_tree"></div>-->
+						<div id="rr_center">
+							<!-- prototype for category list -->
+							<div id="rr_category_list" >
+								<!--<div class="category_row"></div>-->
+							</div>	
+							<!-- prototype for category table -->
+							<div id="rr_symbol_grid" >
+								<!--<div class="symbol_cell"></div>-->
+							</div>
+						</div>
+					</div>
+				
+			
+					
+			</div>
+			
+		</div>
+	</div>
+
+	<!-- SCRIPTS -->
+
+	<!-- JQuery -->
+	<script type="text/javascript" src="third_party/jquery.js"></script>
+
+	<!-- Hammer multitouch library -->
+	<script type="text/javascript" src="third_party/hammer.js"></script>
+	<script type="text/javascript" src="third_party/jquery.hammer.js"></script>
+
+	<!-- Classifier -->
+	<script type="text/javascript" src="Classifier.js"></script>
+		
+	<!-- Editor components  -->
+	<script type="text/javascript" src="Editor.EditorMode.js"></script>
+    <script type="text/javascript" src="Editor.DrawMode.js"></script>
+	<script type="text/javascript" src="Editor.PermEvents.js"></script>
+	<script type="text/javascript" src="Editor.SelectionMode.js"></script>
+	<script type="text/javascript" src="Editor.RectSelectMode.js"></script>
+
+    <script type="text/javascript" src="Editor.js"></script>
+	<script type="text/javascript" src="Editor.Events.js"></script>
+	<script type="text/javascript" src="Editor.Buttons.js"></script>
+	<script type="text/javascript" src="Editor.Constants.js"></script>
+	<script type="text/javascript" src="CorrectionMenu.js"></script>
+	<script type="text/javascript" src="CorrectionMenu.SymbolTree.js"></script>
+	<script type="text/javascript" src="RenderManager.js"></script>
+	<script type="text/javascript" src="CollisionManager.js"></script>
+	<script type="text/javascript" src="RecognitionManager.js"></script>
+	
+	<!-- Imports -->
+	<script type="text/javascript" src="TeX_Input.js"></script> 
+	
+	<!-- Raphael -->
+	<script type="text/javascript" src="third_party/Raphael.js"></script>
+	
+	<!-- collision objects -->
+	<script type="text/javascript" src="BoundingBox.js"></script>
+
+	<!-- our Segment things -->
+	<script type="text/javascript" src="Segment.js"></script>
+	<script type="text/javascript" src="PenStroke.js"></script>
+	<script type="text/javascript" src="ImageBlob.js"></script>
+    <script type="text/javascript" src="SymbolSegment.js"></script>
+    <script type="text/javascript" src="SegmentGroup.js"></script>
+
+	<!-- Undoable/Redoable Actions -->
+    <script type="text/javascript" src="Action.js"></script>
+    <script type="text/javascript" src="Action.CompositeAction.js"></script>
+	<script type="text/javascript" src="Action.AddSegments.js"></script>
+	<script type="text/javascript" src="Action.TransformSegments.js"></script>
+	<script type="text/javascript" src="Action.GroupSegments.js"></script>
+	<script type="text/javascript" src="Action.EditText.js"></script>
+	<script type="text/javascript" src="Action.DeleteSegments.js"></script>
+	<script type="text/javascript" src="Action.Undo.js"></script>
+	<script type="text/javascript" src="Action.Redo.js"></script>
+
+	<!-- Misc tools -->
+	<script type="text/javascript" src="Utils.js"></script>
+
+	<!-- MathJax -->
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			"HTML-CSS": {
+				scale: 150
+			}
+		});
+	</script>
+
+	<script type="text/javascript"
+	  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script>
+  <!-- <script xmlns="http://www.w3.org/1999/xhtml" type="text/javascript" src="https://c328740.ssl.cf1.rackcdn.com/mathjax/latest/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script> -->
+
+	<!-- iosSlider plugin -->
+	<script type="text/javascript" src="third_party/iosSlider/jquery.easing-1.3.js"></script>
+	<script type="text/javascript" src="third_party/iosSlider/jquery.iosslider.js"></script>
+	<script type="text/javascript" src="Slider.js"></script>
+	
+	<!--JQuery UI -->
+	<script src="third_party/jquery-ui/js/jquery-ui-1.10.0.custom.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="third_party/jquery-ui/css/ui-lightness/jquery-ui-1.10.0.custom.min.css"/>
+        
+	<!-- Main -->
+	<script type="text/javascript">$(window).load(Editor.initialize("equation_canvas", "toolbar"));</script> 
+
+	</body>
+</html>
+
