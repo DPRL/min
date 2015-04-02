@@ -55,8 +55,8 @@ PermEvents.setup_toolbar = function(){
     document.getElementById("upload_image").addEventListener("mouseover",Editor.showToolTip("upload_image","Load Image"), true);
     document.getElementById("undo").addEventListener("mouseover",Editor.showToolTip("undo","Undo"), true);
     document.getElementById("redo").addEventListener("mouseover",Editor.showToolTip("redo","Redo"), true);
-    document.getElementById("align").addEventListener("mouseover",Editor.showToolTip("align","Parse"), true);
-    document.getElementById("create_grid").addEventListener("mouseover",Editor.showToolTip("create_grid","Grid"), true);
+    document.getElementById("align").addEventListener("mouseover",Editor.showToolTip("align","Parse/Group"), true);
+    document.getElementById("create_grid").addEventListener("mouseover",Editor.showToolTip("create_grid","Create Grid"), true);
     document.getElementById("search").addEventListener("mouseover",Editor.showToolTip("search","Search"), true);
     document.getElementById("add").addEventListener("mouseover",Editor.showToolTip("add","Add expression"), true);
     document.getElementById("remove").addEventListener("mouseover",Editor.showToolTip("remove","Delete expression"), true);

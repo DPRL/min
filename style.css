@@ -100,10 +100,20 @@ div#rr_close_button {
 	/* Text */
 	text-align: center;
 	font-size: 18px;
+	/*color: #FFF; /*color: #FFE;*/
 	 -webkit-text-stroke: 0.75px #000;
 	
-	background: #FF3030; /* old browsers */
+	/* gradient */
+	background: #FF5C49; /* old browsers */
+	/*background: -moz-linear-gradient(top, #FF5C49 0%, #E89F99 29%, #FF5C49 94%); /* firefox */
 
+	/* background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF5C49), color-stop(35%,#E99F99), color-stop(100%,#FF6C49)); /* webkit */
+
+	/* filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF5C49', endColorstr='#FF5C49',GradientType=0 ); /* ie */
+
+	/* background: -o-linear-gradient(top, #FF5C49 0%,#E89F99 29%,#FF5C49 94%); /* opera */
+	/* end gradient */
+	
 	/* border */
 	border-style: groove;
 	border-bottom-right-radius: 4px;
@@ -113,7 +123,14 @@ div#rr_close_button {
 	
 }
 div#rr_close_button:hover {
-	background: #FF5050; /* old browsers */
+	background: #FF4732; /* old browsers */
+	/* background: -moz-linear-gradient(top, #FF4732 0%, #F97C75 29%, #FF4935 94%); /* firefox */
+
+	/*background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#FF4732), color-stop(50%,#F97C75), color-stop(100%,#FF4945)); /* webkit */
+
+	/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#FF4732', endColorstr='#FF4935',GradientType=0 ); /* ie */
+
+	/* background: -o-linear-gradient(top, #FF4732 0%,#F97C75 29%,#FF4935 94%); /* opera */
 }
 
 span.rr_node {
@@ -206,7 +223,7 @@ div.equation_canvas {
 	height: 100%;
 	overflow: hidden;
 	cursor: default;
-    -moz-user-select: none;
+        -moz-user-select: none;
 }
 
 /* Can we use inheritance to be less redundant here? */
@@ -225,8 +242,8 @@ div.equation_canvas_stroke {
 div.toolbar {
 	position: relative;
 	display: block; 
-	/*//min-width: 1073px;
-	*/
+	//min-width: 1073px;
+	
 	/** background color **/
 	background: #eeeeee; /* old browsers */
 	
@@ -328,7 +345,7 @@ div.toolbar_button_enabled:hover {
 /* mousedown */
 div.toolbar_button_enabled:active {
 	border-radius: 4px;
-	background-color: rgba(128, 0, 0, 0.2);
+	background-color: rgba(0, 0, 0, 0.1);
 }
 
 div.toolbar_button_disabled {
@@ -390,6 +407,8 @@ div.toolbar_button_label {
 }
 
 li.toolbar_button:hover {
+/*background-color: #AAAA90;*/
+
 	background-color: rgba(50, 50, 120, 0.8); 
 }
 
@@ -453,20 +472,23 @@ div.bb_handle {
    stroke selection mode.
    */
 .segment_stroke_select {
-	background-color: rgba(40, 40, 178, 0.2); 
+	background-color: rgba(168, 99, 99, 0.41); 
 }
 
 /* This controls the appearance of overlaid recognition results in
    rectangle selection mode.
    */
 .segment_rect_select {
+	/* background-color: rgba(113, 168, 99, 0.10); 
+	*/
 	background-color: rgba(113, 113, 113, 0.12); 
 }
 
 /* This controls the appearance of overlaid recognition results. 
  * In the entry mode. */
 .segment_draw_mode {
-	/* NONE shown */
+	//background-color: rgba(126, 174, 235, 0.46);
+	/* background-color: rgba(50, 50, 50, 0.6);  */
 }
 
 
@@ -488,7 +510,7 @@ svg.pen_stroke {
     transform-origin: 0 0;
 	font-size: 72px;
 	line-height:0.85em;
-	color: rgba(0, 0, 0, 1.0);
+	color: rgba(121, 121, 121, 0.97);
 	position: absolute;
 	z-index: 1000;
 	top: 0;
@@ -533,7 +555,7 @@ div#texwrapper {
 /* Logos */
 div#logobar-wrapper {
 	position: absolute;
-	bottom: 48px;
+	bottom: 35px;
 	height: 100px;
 	width: 100%;
 }
@@ -573,6 +595,7 @@ div#equation_canvas.hover{
 #outer_div{
 	width: 100%;
 	padding: 0;
+	display: table;
 	height: 100%;
 	position: absolute;
 	top: 0;
@@ -582,20 +605,13 @@ div#equation_canvas.hover{
 
 #middle_div{
 	padding: 0;
+	vertical-align: middle;
+	display: table-cell;
 	margin: 0;
-
-	position: absolute;
-	/*
-	 vertical-align: middle;
-	*/
-	 display: table-cell;
 }
-
 #Alignment_Tex{
-	background-color: lightgrey;
+	background-color: grey;
 	margin: 0 auto;
 	text-align: left;
-	/* vertical-align: middle; */
+	vertical-align: middle;
 }
-
-
