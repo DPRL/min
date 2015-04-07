@@ -5293,7 +5293,7 @@ RenderManager.render_svg = function(BBox_div, set_segments){
 */
 RenderManager.insert_teX = function(elem, BBox_div, set_segments)
 {
-    var svg_width,svg_height,path_tag,rect_tag,x_offset,y_offset,element_height,
+    var svg_width,svg_height,path_tag,rect_tag,x_offset=0,y_offset=0,element_height,
     	element_width,old_bottom;
 	var svg_root = document.getElementById("RenderManager_Tex").getElementsByClassName("MathJax_SVG")[0].firstChild;
 	
